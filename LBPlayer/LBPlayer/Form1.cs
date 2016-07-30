@@ -16,5 +16,9 @@ namespace LBPlayer
         {
             InitializeComponent();
         }
+        public void s()
+        {
+
+        }
     }
 }
