@@ -20,9 +20,13 @@ namespace Test
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ComputerStatus c = new ComputerStatus();
-            c.GetCPUTemperature();
-           
+             ComputerStatus c = new ComputerStatus();
+            List<CPUModel> a= c.GetCPUTemperature();
+            for (int i = 0; i < a.Count; i++)
+            {
+                textBox1.Text += a[i].Name + ":" + a[i].Temperature;
+            }
+            
         }
     }
 }

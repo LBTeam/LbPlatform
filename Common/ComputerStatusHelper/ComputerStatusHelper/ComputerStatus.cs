@@ -12,8 +12,40 @@ using OpenHardwareMonitor.Hardware;
 
 namespace Com.Utility
 {
+    public class CPUModel
+    {
+        private string _name;
+        private string _temperature;
+
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+
+            set
+            {
+                _name = value;
+            }
+        }
+
+        public string Temperature
+        {
+            get
+            {
+                return _temperature;
+            }
+
+            set
+            {
+                _temperature = value;
+            }
+        }
+    }
     public class UpdateVisitor : IVisitor
     {
+
         public void VisitComputer(IComputer computer)
         {
             computer.Traverse(this);
@@ -63,44 +95,51 @@ namespace Com.Utility
             
         }
         
-        public void GetCPUTemperature()
+        public List<CPUModel> GetCPUTemperature()
         {
+            List<CPUModel> listTemp = new List<CPUModel>();
             Computer myComputer = new Computer();
-            UpdateVisitor updateVisitor = new UpdateVisitor();
-
-            myComputer.CPUEnabled = true;
-            myComputer.HDDEnabled = true;
-            myComputer.Accept(updateVisitor);
-            
-            myComputer.Open();
-
-           
-            foreach (var hardwareItem in myComputer.Hardware)
+            try
             {
+                
+                UpdateVisitor updateVisitor = new UpdateVisitor();
 
-                if (hardwareItem.HardwareType == HardwareType.CPU)
+                myComputer.CPUEnabled = true;
+                myComputer.Accept(updateVisitor);
+
+                myComputer.Open();
+
+                foreach (var hardwareItem in myComputer.Hardware)
                 {
-                    foreach (var sensor in hardwareItem.Sensors)
+                    hardwareItem.Update();
+                    if (hardwareItem.HardwareType == HardwareType.CPU)
                     {
-                        if (sensor.SensorType == SensorType.Temperature)
+                        foreach (var sensor in hardwareItem.Sensors)
                         {
-                            Console.WriteLine("CPU:" + Convert.ToString(sensor.Value));
+                            if (sensor.SensorType == SensorType.Temperature)
+                            {
+                                CPUModel cm = new CPUModel();
+                                cm.Name = sensor.Name;
+                                cm.Temperature = Convert.ToString(sensor.Value);
+                                listTemp.Add(cm);
+                            }
+                            
                         }
+                        
                     }
+                   
                 }
-
-                if (hardwareItem.HardwareType == HardwareType.HDD)
-                {
-                    foreach (var sensor in hardwareItem.Sensors)
-                    {
-                        if (sensor.SensorType == SensorType.Temperature)
-                        {
-                            Console.WriteLine("HDD:" + Convert.ToString(sensor.Value));
-                        }
-                    }
-                }
-
             }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("获取CPU温度异常：" + ex.ToString());
+                return listTemp;
+            }
+            finally
+            {
+                myComputer.Close();
+            }
+            return listTemp;
         }
 
         /// <summary>
