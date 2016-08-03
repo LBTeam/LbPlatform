@@ -35,9 +35,9 @@ class AliyunOSS
 	 * @param $timeout 下载地址有效时间（秒）
 	 * @return string
 	 */
-	public function download_uri($bucket, $object, $timeout=300){
+	public function download_uri($bucket, $object, $timeout=600){
 		try {
-			$result = $this->client->signUrl($bucket, $object, 300);
+			$result = $this->client->signUrl($bucket, $object, $timeout);
 			return $result;
 		} catch (OssException $e) {
 		    print $e->getMessage();
