@@ -35,30 +35,25 @@ namespace Com.Utility
             Int32 dwRop // 光栅的操作值
             );
 
-        #region 变量和属性
-        private readonly string DebugHeader = AppDomain.CurrentDomain.FriendlyName + "--" + "ScreenCapture" + ": >>>>";
-        private const int SourceCopy = 13369376;//
-        private const int CaptureBlt = 1073741824;//使用该参数可以截取透明窗口。
-
+        #region 变量
+        private const int SourceCopy = 13369376;
+        private const int CaptureBlt = 1073741824;
         private IntPtr _screenDC;
         private Graphics _graphicsScreen;
         private Graphics _graphicsBitmap;
-
-
         private Bitmap _myBitmap;
         #endregion
 
-        #region 构造函数
+        #region 构造
         public ScreenCapture()
         {
             _screenDC = CreateDC("Display", null, null, (IntPtr)null);
-            //由一个指定设备的句柄创建一个新的Graphics对象
             _graphicsScreen = Graphics.FromHdc(_screenDC);
 
         }
         #endregion
 
-        #region 公共方法
+        #region 公共
         /// <summary>
         /// 按照指定的区域捕捉图像并保存到文件中
         /// </summary>
@@ -71,18 +66,12 @@ namespace Com.Utility
         {
             try
             {
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToFile, 开始捕捉图像");
-                //开始捕捉头像
                 StartCapture(screenX, screenY, screenWidth, screenHeight);
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToFile, 结束捕捉图像，准备保存图像");
-
-                //开始保存图像到文件中
                 _myBitmap.Save(saveImagePath);
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToFile,保存图像完毕，保存路径为：" + saveImagePath);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToFile" + ex.Message);
+                Debug.WriteLine("CaptrueError" + ex.Message);
             }
             finally
             {
@@ -119,28 +108,19 @@ namespace Com.Utility
 
             try
             {
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToFile, 开始捕捉图像");
-                //开始捕捉头像
                 StartCapture(screenX, screenY, screenWidth, screenHeight);
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToFile, 结束捕捉图像，准备保存图像");
-
                 System.Drawing.Imaging.EncoderParameters ps;
                 System.Drawing.Imaging.EncoderParameter p;
-
                 ps = new System.Drawing.Imaging.EncoderParameters(1);
-
                 p = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
                 ps.Param[0] = p;
-
                 string pictureFomatDescription;
                 GetPictureFormat(fileExtention, out pictureFomatDescription);
-                //开始保存图像到文件中
                 _myBitmap.Save(saveImagePath, GetCodecInfo(pictureFomatDescription), ps);
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToFile,保存图像完毕，保存路径为：" + saveImagePath);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToFile" + ex.Message);
+                Debug.WriteLine("CaptrueError:" + ex.Message);
             }
             finally
             {
@@ -169,22 +149,15 @@ namespace Com.Utility
         {
             try
             {
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToDisplay, 开始捕捉图像");
-                //开始捕捉图像
                 StartCapture(screenX, screenY, screenWidth, screenHeight);
-
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToDisplay, 结束捕捉图像，准备绘制图像到控件上去");
-
-                //开始绘制图像到控件
                 Control displayControl = Control.FromHandle(controlPtr);
                 Graphics displayControlGraphic = displayControl.CreateGraphics();
                 displayControlGraphic.DrawImage(_myBitmap, 0, 0, screenWidth, screenHeight);
                 displayControlGraphic.Dispose();
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToDisplay, 绘制图像到控件上完毕");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(DebugHeader + "CaptrueScreenRegionToDisplay" + ex.Message);
+                Debug.WriteLine("CaptrueError:" + ex.Message);
             }
             finally
             {
@@ -214,10 +187,8 @@ namespace Com.Utility
         /// <param name="screenHeight">目标区域的高度</param>
         private void StartCapture(int screenX, int screenY, int screenWidth, int screenHeight)
         {
-            //根据目标区域大小创建一个与之相同大小的Bitmap对象
             _myBitmap = new Bitmap(screenWidth, screenHeight, _graphicsScreen);
             _graphicsBitmap = Graphics.FromImage(_myBitmap);
-
             IntPtr bitmapPtr = _graphicsBitmap.GetHdc();
             BitBlt(bitmapPtr, 0, 0, screenWidth, screenHeight, _screenDC, screenX, screenY, (SourceCopy | CaptureBlt));
             _graphicsBitmap.ReleaseHdc(bitmapPtr);
