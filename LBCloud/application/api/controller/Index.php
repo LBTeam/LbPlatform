@@ -9,9 +9,12 @@ class Index
     	$AliyunOSS = new AliyunOSS();
 		$buckets = $AliyunOSS->bucket_list();
 		dump($buckets);
-		$bucket = "lb-player-test";
+		$bucket = config("aliyun_oss_bucket");
 		$object = "wx_notify.php";
 		$result = $AliyunOSS->download_uri($bucket, $object);
 		dump($result);
+		$result = $AliyunOSS->object_meta($bucket, $object);
+		dump($result);
+		echo strtotime($result['last']);
     }
 }
