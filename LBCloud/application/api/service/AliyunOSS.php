@@ -140,6 +140,9 @@ class AliyunOSS
 		}
 	}
 	
+	/**
+	 * 分片上传完成合并文件
+	 */
 	public function complete_upload($object, $uploadId, $parts){
 		
 	}
