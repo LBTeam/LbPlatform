@@ -70,6 +70,11 @@ class AliyunOSS
 		}
 	}
 	
+	public function demo1(){
+		$res = $this->client->generateMultiuploadParts(1024001, 102400);
+		echo json_encode($res);
+	}
+	
 	public function demo(){
 		
 		try {
