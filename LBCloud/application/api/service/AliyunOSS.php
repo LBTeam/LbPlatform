@@ -170,7 +170,6 @@ class AliyunOSS
 		try {
 			$callback_uri	= ''; // "http://oss-demo.aliyuncs.com:23450";
 			$request_uri	= "http://{$this->bucket}.".substr($this->endpoint, 7);
-			$ossClient = new OssClient($this->ossId, $this->ossSecret, $this->endpoint);
 			$options = [
 				'partNumber'	=> $part,
 				'Content-Type'	=> 'application/octet-stream',
