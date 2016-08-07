@@ -17,11 +17,12 @@ class Manager
 		$proId = $proObj->Id;
 		$param = $proObj->Para;
 		
-		$respones = array();
+		$response = array();
 		
 		if(empty($proId)){
-			$respones = array("err_code"=>"100", "msg"=>"");
+			$response = array("err_code"=>"100", "msg"=>"内部协议号错误~!");
 		}
-		return 
+		
+		return $response;
 	}
 }
