@@ -1,6 +1,6 @@
-﻿namespace LBPlayer
+﻿namespace LBPlayerTool
 {
-    partial class Form1
+    partial class LBPlayerTool
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -30,14 +30,17 @@
         {
             this.SuspendLayout();
             // 
-            // Form1
+            // LBPlayerTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
-            this.Name = "Form1";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.ClientSize = new System.Drawing.Size(0, 0);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "LBPlayerTool";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+            this.Load += new System.EventHandler(this.LBPlayerTool_Load);
             this.ResumeLayout(false);
 
         }
