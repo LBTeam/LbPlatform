@@ -6,6 +6,23 @@ class Index
 {
     public function index()
     {
+    	$screen_model = model("Screen");
+		$result = $screen_model->user_all_screen("1");
+		echo $screen_model->getlastsql();
+		dump($result[0]->toArray());
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
     	$AliyunOSS = new AliyunOSS();
 		$bucket = config("aliyun_oss_bucket");
 		$object = "201608021433/wx_notify.php";
@@ -21,8 +38,8 @@ class Index
 		//$result = $AliyunOSS->upload_part_list();
 		//dump($result);
 		
-		$result = $AliyunOSS->part_list("57a31bcc1846c.txt", "A61D6A9B644B41B7A20A3CAD2C49BAC7");
-		dump($result);
+		//$result = $AliyunOSS->part_list("57a31bcc1846c.txt", "A61D6A9B644B41B7A20A3CAD2C49BAC7");
+		//dump($result);
 		
 		//$result = $AliyunOSS->get_upload_id(".txt");
 		//dump($result);
