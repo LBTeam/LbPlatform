@@ -2,5 +2,5 @@
 composer.lock
 *.log
 .project
-runtime/
+Application/Runtime/
 .gitognore
