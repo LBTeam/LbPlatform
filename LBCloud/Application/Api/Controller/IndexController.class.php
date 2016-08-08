@@ -6,6 +6,15 @@ use Api\Service\AliyunOSS;
 class IndexController extends Controller {
     public function index()
     {
+    	echo random_string(8);
+		exit;
+		
+		
+    	$screen_model = D("Screen");
+		$result = $screen_model->user_all_screen("1");
+		dump($result);
+		exit;
+		
     	$AliyunOSS = new AliyunOSS();
 		$bucket = C("aliyun_oss_bucket");
 		$object = "201608021433/wx_notify.php";
@@ -21,8 +30,8 @@ class IndexController extends Controller {
 		//$result = $AliyunOSS->upload_part_list();
 		//dump($result);
 		
-		$result = $AliyunOSS->part_list("57a31bcc1846c.txt", "A61D6A9B644B41B7A20A3CAD2C49BAC7");
-		dump($result);
+		//$result = $AliyunOSS->part_list("57a31bcc1846c.txt", "A61D6A9B644B41B7A20A3CAD2C49BAC7");
+		//dump($result);
 		
 		//$result = $AliyunOSS->get_upload_id(".txt");
 		//dump($result);

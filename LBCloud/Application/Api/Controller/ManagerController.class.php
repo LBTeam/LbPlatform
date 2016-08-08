@@ -17,6 +17,10 @@ class ManagerController extends CommonController
 		$proId = $proObj->Id;
 		$param = $proObj->Para;
 		
+		//testing start
+		$proId = '01003';
+		//testing end
+		
 		$response = array();
 		
 		if(empty($proId)){
@@ -32,6 +36,15 @@ class ManagerController extends CommonController
 				break;
 			case '01003':
 				//媒体文件分片
+				$AliyunOSS = new AliyunOSS();
+				$total = $param->total;
+				$part = $param->part;
+				//testing start
+				$total = 102682360;
+				$part = 1048576;
+				//testing end
+				$result = $AliyunOSS->generate_upload_part($total, $part);
+				$response = array("err_code"=>"00000", "msg"=>"ok", 'data'=>$result);
 				break;
 			case '01004':
 				//获取上传UploadId
@@ -61,6 +74,12 @@ class ManagerController extends CommonController
 				//获取媒体详情
 				break;
 			case '01013':
+				$uid = $param->UserId;
+				//testing start
+				$uid = 1;
+				//testing end
+				$result = self::_get_screen_list($uid);
+				$response = array("err_code"=>"00000", "msg"=>"ok", 'data'=>$result);
 				//获取终端列表
 				break;
 			case '01014':
@@ -74,5 +93,14 @@ class ManagerController extends CommonController
 				break;
 		}
 		$this->ajaxReturn($response);
+	}
+
+	/**
+	 * 获取终端列表
+	 */
+	protected function _get_screen_list($user_id){
+		$screen_model = D("Screen");
+		$result = $screen_model->user_all_screen($user_id);
+		return $result;
 	}
 }

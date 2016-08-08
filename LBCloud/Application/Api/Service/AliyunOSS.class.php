@@ -125,7 +125,7 @@ class AliyunOSS
 	/**
 	 * 文件分片
 	 * @param $size 文件大小
-	 * @param $part 分片大小
+	 * @param $part 分片大小(5M)
 	 * @return array
 	 */
 	public function generate_upload_part($size, $part = 5242880){
