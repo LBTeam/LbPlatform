@@ -8,12 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LBPlayerConfig;
+using CCWin;
 
 namespace LBPlayer
 {
-    public partial class Form1 : Form
+    public partial class LBPlayerMain : Skin_Color
     {
-        public Form1()
+        public LBPlayerMain()
         {
             InitializeComponent();
         }
@@ -29,11 +30,6 @@ namespace LBPlayer
             ConfigTool.SaveConfigData(c);
 
             Config f = ConfigTool.ReadConfigData();
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            s();
         }
     }
 }
