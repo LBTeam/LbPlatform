@@ -17,7 +17,8 @@ namespace LBPlayerTool
     public partial class LBPlayerTool : Form
     {
         private string _registName = "LBPlayerTool";
-        private string _processName = @"E:\LB\LBPlayer\LBPlayer\bin\Debug\LBPlayer.exe";
+        private string _processName = "LBPlayer";
+        private string _processPath = @"E:\LB\LBPlayer\LBPlayer\bin\Debug\LBPlayer.exe";
         private System.Threading.Timer _checkTimer = null;
         private static object locker = new object();
         private int _isUpNowTime = 1;
@@ -107,18 +108,18 @@ namespace LBPlayerTool
                     _config = ConfigTool.ReadConfigData();
                     if (_config.IsEnableAutoOpenOrClose)
                     {
-                        timeFromClose = _config.CloseTime - DateTime.Now.TimeOfDay;
-                        if ((Math.Abs(timeFromClose.TotalSeconds) * 1000 < 3000))
+                        timeFromClose = DateTime.Now.TimeOfDay;
+                        if (timeFromClose > _config.CloseTime)
                         {
                             KillRecentProcess(_processName);
-                            return;
                         }
-                        timeFromOpen = _config.OpenTime - DateTime.Now.TimeOfDay;
-                        if ((Math.Abs(timeFromOpen.TotalSeconds) * 1000 < 3000))
+                            
+                        timeFromOpen = DateTime.Now.TimeOfDay;
+                        if (timeFromOpen > _config.OpenTime && timeFromOpen < _config.CloseTime)
                         {
-                            StartProcess(_processName);
-                            return;
+                            StartProcess(_processName,_processPath);
                         }
+
                     }
                    
                 }
@@ -132,7 +133,7 @@ namespace LBPlayerTool
                 }
             }
         }
-        private void StartProcess(string processName)
+        private void StartProcess(string processName,string processPath)
         {
             bool bRunning = false;
             System.Diagnostics.Process[] curProc = System.Diagnostics.Process.GetProcesses();
@@ -146,7 +147,7 @@ namespace LBPlayerTool
             }
             if (!bRunning)
             {
-                System.Diagnostics.Process.Start(processName);
+                System.Diagnostics.Process.Start(processPath);
             }
         }
         /// <summary>
@@ -182,7 +183,7 @@ namespace LBPlayerTool
                     killId = m;
                 }
             }
-            if (Proc[killId].HasExited == false)
+            if (Proc.Length>0&&Proc[killId].HasExited == false)
             {
                 Proc[killId].Kill();
             }

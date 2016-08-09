@@ -23,8 +23,8 @@ namespace LBPlayer
             c.HeartBeatInterval = 10;
             c.LockUnLockPlayer = true;
             c.WebUrl = "1";
-            c.OpenTime = new TimeSpan(22, 00, 00);
-            c.CloseTime = new TimeSpan(23, 59, 00);
+            c.OpenTime = new TimeSpan(22, 45, 00);
+            c.CloseTime = new TimeSpan(22, 50, 00);
             c.IsEnableAutoOpenOrClose = true;
             ConfigTool.SaveConfigData(c);
 
