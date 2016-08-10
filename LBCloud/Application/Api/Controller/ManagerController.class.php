@@ -11,8 +11,6 @@ class ManagerController extends CommonController
 {
 	public function _initialize(){
 		$token = I("request.token");
-		echo "token:<br>";
-		dump($token);
 	}
 	
 	public function index(){
@@ -129,8 +127,10 @@ class ManagerController extends CommonController
 		$configure['bucket']			= C("aliyun_oss_bucket");
 		$configure['mediaBucket']		= C("oss_media_bucket");
 		$configure['programBucket']		= C("oss_program_bucket");
+		$configure = base64_encode(json_encode($configure));
 		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$configure];
-		$this->ajaxReturn($configure);
+		//$this->ajaxReturn($configure);
+		echo json_encode($response);
 	}
 
 	/**
