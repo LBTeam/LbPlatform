@@ -9,6 +9,12 @@ use Api\Service\AliyunOSS;
 
 class ManagerController extends CommonController
 {
+	public function _initialize(){
+		$token = I("request.token");
+		echo "token:<br>";
+		dump($token);
+	}
+	
 	public function index(){
 		$request = file_get_contents('php://input');
 		$token = I("request.token");
@@ -30,15 +36,6 @@ class ManagerController extends CommonController
 		switch($proId){
 			case '010100':
 				//oss配置
-				$configure = [];
-				$configure['accessKeyId']		= C("aliyun_oss_id");
-				$configure['accessKeySecret']	= C("aliyun_oss_secret");
-				$configure['endpoint']			= C("aliyun_oss_endpoint");
-				$configure['bucket']			= C("aliyun_oss_bucket");
-				$configure['mediaBucket']		= C("oss_media_bucket");
-				$configure['programBucket']		= C("oss_program_bucket");
-				$configure = base64_encode(json_encode($configure));
-				$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$configure];
 				break;
 			case '010101':
 				//登录
@@ -119,6 +116,21 @@ class ManagerController extends CommonController
 				break;
 		}
 		$this->ajaxReturn($response);
+	}
+	
+	/**
+	 * oss配置
+	 */
+	public function configuration(){
+		$configure = [];
+		$configure['accessKeyId']		= C("aliyun_oss_id");
+		$configure['accessKeySecret']	= C("aliyun_oss_secret");
+		$configure['endpoint']			= C("aliyun_oss_endpoint");
+		$configure['bucket']			= C("aliyun_oss_bucket");
+		$configure['mediaBucket']		= C("oss_media_bucket");
+		$configure['programBucket']		= C("oss_program_bucket");
+		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$configure];
+		$this->ajaxReturn($configure);
 	}
 
 	/**
