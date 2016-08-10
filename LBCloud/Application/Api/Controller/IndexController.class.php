@@ -6,14 +6,14 @@ use Api\Service\AliyunOSS;
 class IndexController extends Controller {
     public function index()
     {
-    	echo random_string(8);
-		exit;
+    	//echo random_string(8);
+		//exit;
 		
 		
-    	$screen_model = D("Screen");
-		$result = $screen_model->user_all_screen("1");
-		dump($result);
-		exit;
+    	//$screen_model = D("Screen");
+		//$result = $screen_model->user_all_screen("1");
+		//dump($result);
+		//exit;
 		
     	$AliyunOSS = new AliyunOSS();
 		$bucket = C("aliyun_oss_bucket");

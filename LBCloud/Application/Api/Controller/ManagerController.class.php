@@ -18,74 +18,100 @@ class ManagerController extends CommonController
 		$param = $proObj->Para;
 		
 		//testing start
-		$proId = '01003';
+		$proId = '010100';
 		//testing end
 		
 		$response = array();
 		
 		if(empty($proId)){
-			$response = array("err_code"=>"10001", "msg"=>"内部协议号错误~!");
+			$response = array("err_code"=>"010001", "msg"=>"内部协议号错误~!");
 		}
 		
 		switch($proId){
-			case '01001':
+			case '010100':
+				//oss配置
+				$configure = [];
+				$configure['accessKeyId']		= C("aliyun_oss_id");
+				$configure['accessKeySecret']	= C("aliyun_oss_secret");
+				$configure['endpoint']			= C("aliyun_oss_endpoint");
+				$configure['bucket']			= C("aliyun_oss_bucket");
+				$configure['mediaBucket']		= C("oss_media_bucket");
+				$configure['programBucket']		= C("oss_program_bucket");
+				$configure = base64_encode(json_encode($configure));
+				$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$configure];
+				break;
+			case '010101':
 				//登录
 				break;
-			case '01002':
+			case '010102':
 				//刷新token
 				break;
-			case '01003':
+			case '010103':
 				//媒体文件分片
 				$AliyunOSS = new AliyunOSS();
 				$total = $param->total;
 				$part = $param->part;
-				//testing start
-				$total = 102682360;
-				$part = 1048576;
-				//testing end
 				$result = $AliyunOSS->generate_upload_part($total, $part);
-				$response = array("err_code"=>"00000", "msg"=>"ok", 'data'=>$result);
+				$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>$result);
 				break;
-			case '01004':
+			case '010104':
 				//获取上传UploadId
+				$AliyunOSS = new AliyunOSS();
+				$name = $param->name;
+				$array = explode('.', $name);
+				$subfix = end($array);
+				$md5 = $param->md5;
+				$bucket = C("aliyun_oss_bucket");
+				$result = $AliyunOSS->get_upload_id($subfix, $bucket);
+				$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>$result);
 				break;
-			case '01005':
+			case '010105':
 				//获取分片上传签名地址
+				$AliyunOSS = new AliyunOSS();
+				$object = $param->Key;
+				$uploadId = $param->UploadId;
+				$part = $param->partNumber;
+				$md5 = $param->md5;
+				$uri = $AliyunOSS->upload_part_sign($object, $uploadId, $part, $md5);
+				$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>['url'=>$uri]);
 				break;
-			case '01006':
+			case '010106':
 				//完成上传
+				$AliyunOSS = new AliyunOSS();
+				$object = $param->Key;
+				$uploadId = $param->UploadId;
+				$parts = $param->uploadParts;
+				$result = $AliyunOSS->complete_upload($object, $uploadId, $parts);
+				$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>[]);
 				break;
-			case '01007':
+			case '010107':
 				//中止上传
 				break;
-			case '01008':
+			case '010108':
 				//查询媒体文件是否存在
 				break;
-			case '01009':
+			case '010109':
 				//获取播放方案列表
 				break;
-			case '01010':
+			case '010110':
 				//获取播放方案详情
 				break;
-			case '01011':
+			case '010111':
 				//获取媒体列表
 				break;
-			case '01012':
+			case '010112':
 				//获取媒体详情
 				break;
-			case '01013':
-				$uid = $param->UserId;
-				//testing start
-				$uid = 1;
-				//testing end
-				$result = self::_get_screen_list($uid);
-				$response = array("err_code"=>"00000", "msg"=>"ok", 'data'=>$result);
+			case '010113':
 				//获取终端列表
+				$uid = $param->UserId;
+				$result = self::_get_screen_list($uid);
+				$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>$result);
 				break;
-			case '01014':
+			case '010114':
 				//发布播放方案
 				break;
-			case '01015':
+			case '010115':
 				//备份播放方案
 				break;
 			default:

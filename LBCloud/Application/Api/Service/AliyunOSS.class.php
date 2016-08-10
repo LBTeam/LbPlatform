@@ -68,7 +68,7 @@ class AliyunOSS
 	 * @param $prefix 存储虚拟目录
 	 * @return array
 	 */
-	public function object_list($bucket = '', $prefix = ''){
+	public function object_list($bucket = false, $prefix = ''){
 		try {
 			$bucket = $bucket ? $bucket : $this->bucket;
 			$options = array();
@@ -140,16 +140,18 @@ class AliyunOSS
 	/**
 	 * 获取分块上传UploadId
 	 * @param $subfix 上传文件后缀名
+	 * @param $bucket 存储空间
 	 * @return array
 	 */
-	public function get_upload_id($subfix){
+	public function get_upload_id($subfix, $bucket=false){
 		try {
 			$subfix = trim($subfix, '.');
-			$object = uniqid() . (!empty($subfix) ? ".$subfix": '');
-			$uploadId = $this->client->initiateMultipartUpload($this->bucket, $object);
+			$object = date('Ymd') . uniqid() . (!empty($subfix) ? ".$subfix": '');
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$uploadId = $this->client->initiateMultipartUpload($bucket, $object);
 			$response = [];
 			$response['Key']		= $object;
-			$response['Bucket']		= $this->bucket;
+			$response['Bucket']		= $bucket;
 			$response['UploadId']	= $uploadId;
 			return $response;
 		} catch (OssException $e) {
@@ -166,10 +168,11 @@ class AliyunOSS
 	 * @param $timeout 签名过期时间
 	 * @return string
 	 */
-	public function upload_part_sign($object, $uploadId, $part=1, $md5=false, $timeout=300){
+	public function upload_part_sign($object, $uploadId, $part=1, $md5=false, $timeout=300, $bucket=false){
 		try {
 			$callback_uri	= ''; // "http://oss-demo.aliyuncs.com:23450";
-			$request_uri	= "http://{$this->bucket}.".substr($this->endpoint, 7);
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$request_uri	= "http://{$bucket}.".substr($this->endpoint, 7);
 			$options = [
 				'partNumber'	=> $part,
 				'Content-Type'	=> 'application/octet-stream',
@@ -178,7 +181,7 @@ class AliyunOSS
 			if ($md5) {
 				$options['Content-Md5'] = $md5;
 			}
-			$sign_uri = $this->client->signUrl($this->bucket, $object, $timeout, "PUT", $options);
+			$sign_uri = $this->client->signUrl($bucket, $object, $timeout, "PUT", $options);
 			$sign_uri = parse_url($sign_uri);
 			
 			parse_str($sign_uri['query'], $query);
@@ -218,9 +221,10 @@ class AliyunOSS
 	 *				)
 	 * @return boolen
 	 */
-	public function complete_upload($object, $uploadId, $parts){
+	public function complete_upload($object, $uploadId, $parts, $bucket=false){
 		try {
-			$this->client->completeMultipartUpload($this->bucket, $object, $uploadId, $parts);
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$this->client->completeMultipartUpload($bucket, $object, $uploadId, $parts);
 			return true;
 		} catch (OssException $e) {
 		    //print $e->getMessage();
@@ -234,9 +238,10 @@ class AliyunOSS
 	 * @param $uploadId 分块上传UploadId
 	 * @return boolen
 	 */
-	public function abort_upload($object, $uploadId){
+	public function abort_upload($object, $uploadId, $bucket=false){
 		try {
-			$this->client->abortMultipartUpload($this->bucket, $object, $uploadId);
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$this->client->abortMultipartUpload($bucket, $object, $uploadId);
 			return true;
 		} catch (OssException $e) {
 		    //print $e->getMessage();
@@ -248,7 +253,7 @@ class AliyunOSS
 	 * 未完成的分片上传列表
 	 * @return array
 	 */
-	public function upload_part_list(){
+	public function upload_part_list($bucket=false){
 		try {
 			$options = array(
 		        'max-uploads' => 100,
@@ -256,7 +261,8 @@ class AliyunOSS
 		        'prefix' => '',
 		        'upload-id-marker' => ''
 		    );
-	        $listMultipartUploadInfo = $this->client->listMultipartUploads($this->bucket, $options);
+			$bucket = $bucket ? $bucket : $this->bucket;
+	        $listMultipartUploadInfo = $this->client->listMultipartUploads($bucket, $options);
 			$listUploadInfo = $listMultipartUploadInfo->getUploads();
 			$uploads = array();
 			foreach($listUploadInfo as $val){
@@ -280,7 +286,7 @@ class AliyunOSS
 	 * @param $bucket 存储空间
 	 * @return array
 	 */
-	public function part_list($object, $uploadId, $bucket=''){
+	public function part_list($object, $uploadId, $bucket=false){
 		try {
 			$bucket = $bucket ? $bucket : $this->bucket;
 			$response = $this->client->listParts($bucket, $object, $uploadId);
