@@ -6,7 +6,11 @@ use Api\Service\AliyunOSS;
 class IndexController extends Controller {
     public function index()
     {
-    	//echo random_string(8);
+    	//$str = "OxWaEspL1Dw+ii1Ou+maPqWtciG6+xVAsAJK2ALk/dNVSaUmu6FbTQqwfbQv3x2BfReUAEniEDfit6uvzUmk8PJcjhqGF6Nqok93buh2xCF54uFCVe7xCiIxiUbZWYbDuAf/2Mz5otxU93icmzfBPSAJrS7H6rIO+E+hXTQcvoJ+Mc/9gDVAOhWGquN5B6XrwBRhsEGWEYUVP0o6hkEB0N79iPWB9982+g9OqGzHKS1fWjspA7+Bc4KoSXXncpUBbmvhfCaodbi/nShNQOVp/3AOOE7hEtnIYZW2lDRF2nYtTiCLLUeXlyBj+uL8WHjMpE4xt7O3RCdHg8/0fOgrUQ==";
+    	//dump(decrypt($str));
+		//exit;
+		
+    	//echo random_string(31);
 		//exit;
 		
 		

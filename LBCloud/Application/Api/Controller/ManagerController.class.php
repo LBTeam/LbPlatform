@@ -127,10 +127,45 @@ class ManagerController extends CommonController
 		$configure['bucket']			= C("aliyun_oss_bucket");
 		$configure['mediaBucket']		= C("oss_media_bucket");
 		$configure['programBucket']		= C("oss_program_bucket");
-		$configure = base64_encode(json_encode($configure));
+		$configure = encrypt(json_encode($configure));
 		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$configure];
-		//$this->ajaxReturn($configure);
-		echo json_encode($response);
+		$this->ajaxReturn($response);
+		//echo json_encode($response);
+	}
+
+	/**
+	 * 登录
+	 */
+	public function login(){
+		
+	}
+	
+	/**
+	 * 刷新token
+	 */
+	public function refresh_token(){
+		
+	}
+	
+	/**
+	 * 终端列表
+	 */
+	public function screens(){
+		
+	}
+	
+	/**
+	 * 播放方案列表
+	 */
+	public function programs(){
+		
+	}
+	
+	/**
+	 * 媒体列表
+	 */
+	public function medias(){
+		
 	}
 
 	/**
