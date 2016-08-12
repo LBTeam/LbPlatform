@@ -6,8 +6,8 @@ use Api\Service\AliyunOSS;
 class IndexController extends Controller {
     public function index()
     {
-    	//$str = "OxWaEspL1Dw+ii1Ou+maPqWtciG6+xVAsAJK2ALk/dNVSaUmu6FbTQqwfbQv3x2BfReUAEniEDfit6uvzUmk8PJcjhqGF6Nqok93buh2xCF54uFCVe7xCiIxiUbZWYbDuAf/2Mz5otxU93icmzfBPSAJrS7H6rIO+E+hXTQcvoJ+Mc/9gDVAOhWGquN5B6XrwBRhsEGWEYUVP0o6hkEB0N79iPWB9982+g9OqGzHKS1fWjspA7+Bc4KoSXXncpUBbmvhfCaodbi/nShNQOVp/3AOOE7hEtnIYZW2lDRF2nYtTiCLLUeXlyBj+uL8WHjMpE4xt7O3RCdHg8/0fOgrUQ==";
-    	//dump(decrypt($str));
+    	//$str = "RmeK6V8kOsuPV/LvJTjDvRMtyYvH9rZKtcMgcDVYMzI5vYJgqIGzknxTU82vf4ta+saxn5hljajWX/iW+SD7HVOx+NkQbJKuDoOWMqkwmVQefpCdIcwyFbxzONAgWrfQrNcvCFfumSm6UAEmzqwHv1D3JOLu+DSe6QzECXKACw50JYtXYBAef0JugdMionsu6eO7TbSTTKIysDVhmSMGT9QYFfK2+SObUM67CJdkpdjySPJRkcj0PnG23DOXuJt0nJT1V6i+GKziLb5nWuCVfCApmPal5BRRbPORxCif/Ag0i/cfvrKSR7DbtKKO0/1MPlz+L23Q8CwEDvrEvWp3C/GJsaiUrdjTyE8oUV17VKqR6gmyUbs+q9hVNau0T+ERs9ucv8WxVBV9hSTqfhAAjHhu+1S7ami0M5/1JrqmI7SsKKssYuZfOadoYV7hUFOz8IO73IbZs1eM266jcmizASNF8OLxljAyTo2j7YKf8PcDG2Y3n4XrHIGYhOwempSlj5i4fiNjMT/Fi5C2XPjWgjpbnO+/XH9b4P8dTgXHz4feTrk3JfqK5UFUL1/JEZQRzdUUusQL1u4QI8ek/64l3n6KSX8Swo+dji0Tv9f90OgBwfZB76PGbrsmCnvF6w7FhYE683fZPOPMb6/RYb4xGjDaHb9a/UWVnP753rzS8TAxgeb6x8s+FRjkFtUhz19wXVXRiOIbJ1SIPACwn0hZqIEpeDyT4Jb5Cuo/uAWbR4wXYTM9BXl6crbudO5jGcZfNoiOJWS4yBBvKuWnF3g7IJuihrJQtd7Hnq+Dh2JZFvzuLrp8wIBUOzeDKFMIXMdpYl+YmudzIYvkBmlBdDmBs/tFhBM9ERd5kM1Q+aGh/gbKaE26yQGFH/F563FP+H/C";
+    	//echo decrypt($str);
 		//exit;
 		
     	//echo random_string(31);

@@ -9,8 +9,13 @@ use Api\Service\AliyunOSS;
 
 class ManagerController extends CommonController
 {
+	private $param;
 	public function _initialize(){
+		$request = file_get_contents('php://input');
 		$token = I("request.token");
+		
+		$proObj = json_decode($request);
+		$this->param = $proObj->Para;
 	}
 	
 	public function index(){
@@ -99,9 +104,6 @@ class ManagerController extends CommonController
 				break;
 			case '010113':
 				//获取终端列表
-				$uid = $param->UserId;
-				$result = self::_get_screen_list($uid);
-				$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>$result);
 				break;
 			case '010114':
 				//发布播放方案
@@ -130,7 +132,6 @@ class ManagerController extends CommonController
 		$configure = encrypt(json_encode($configure));
 		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$configure];
 		$this->ajaxReturn($response);
-		//echo json_encode($response);
 	}
 
 	/**
@@ -151,7 +152,59 @@ class ManagerController extends CommonController
 	 * 终端列表
 	 */
 	public function screens(){
-		
+		$user_id = $this->param->UserId;
+		$user_id = 1;
+		$screen_model = D("Screen");
+		$result = $screen_model->user_all_screen($user_id);
+		$regions = D("Region")->all_region_name();
+		$screens = [];
+		$groups = [];
+		foreach($result as $val){
+			$province = $regions[$val['province']];
+			$city = $regions[$val['city']];
+			$district = $regions[$val['district']];
+			if(is_null($val['group_id'])){
+				$screens[] = [
+					'id'		=> $val['id'],
+					'name'		=> $val['name'],
+					'size_x'	=> $val['size_x'],
+					'size_y'	=> $val['size_y'],
+					'resolu_x'	=> $val['resolu_x'],
+					'resolu_y'	=> $val['resolu_y'],
+					'type'		=> $val['type'],
+					'operate'	=> $val['operate'],
+					'longitude'	=> $val['longitude'],
+					'latitude'	=> $val['latitude'],
+					'address'	=> "{$province}{$city}{$district}{$val['address']}",
+				];
+			}else{
+				if(!$groups[$val['group_id']]){
+					$groups[$val['group_id']] = [
+						'id'		=> $val['group_id'],
+						'name'		=> $val['group_name']
+					];
+				}
+				$groups[$val['group_id']]['screens'][] = [
+					'id'		=> $val['id'],
+					'name'		=> $val['name'],
+					'size_x'	=> $val['size_x'],
+					'size_y'	=> $val['size_y'],
+					'resolu_x'	=> $val['resolu_x'],
+					'resolu_y'	=> $val['resolu_y'],
+					'type'		=> $val['type'],
+					'operate'	=> $val['operate'],
+					'longitude'	=> $val['longitude'],
+					'latitude'	=> $val['latitude'],
+					'address'	=> "{$province}{$city}{$district}{$val['address']}",
+				];
+			}
+		}
+		$list = [];
+		$list['groups'] = array_values($groups);
+		$list['screens'] = $screens;
+		$list = encrypt(json_encode($list));
+		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$list];
+		$this->ajaxReturn($response);
 	}
 	
 	/**
@@ -166,14 +219,5 @@ class ManagerController extends CommonController
 	 */
 	public function medias(){
 		
-	}
-
-	/**
-	 * 获取终端列表
-	 */
-	protected function _get_screen_list($user_id){
-		$screen_model = D("Screen");
-		$result = $screen_model->user_all_screen($user_id);
-		return $result;
 	}
 }
