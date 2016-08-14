@@ -14,108 +14,7 @@ class ManagerController extends CommonController
 		$request = file_get_contents('php://input');
 		$token = I("request.token");
 		
-		$proObj = json_decode($request);
-		$this->param = $proObj->Para;
-	}
-	
-	public function index(){
-		$request = file_get_contents('php://input');
-		$token = I("request.token");
-		
-		$proObj = json_decode($request);
-		$proId = $proObj->Id;
-		$param = $proObj->Para;
-		
-		//testing start
-		$proId = '010100';
-		//testing end
-		
-		$response = array();
-		
-		if(empty($proId)){
-			$response = array("err_code"=>"010001", "msg"=>"内部协议号错误~!");
-		}
-		
-		switch($proId){
-			case '010100':
-				//oss配置
-				break;
-			case '010101':
-				//登录
-				break;
-			case '010102':
-				//刷新token
-				break;
-			case '010103':
-				//媒体文件分片
-				$AliyunOSS = new AliyunOSS();
-				$total = $param->total;
-				$part = $param->part;
-				$result = $AliyunOSS->generate_upload_part($total, $part);
-				$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>$result);
-				break;
-			case '010104':
-				//获取上传UploadId
-				$AliyunOSS = new AliyunOSS();
-				$name = $param->name;
-				$array = explode('.', $name);
-				$subfix = end($array);
-				$md5 = $param->md5;
-				$bucket = C("aliyun_oss_bucket");
-				$result = $AliyunOSS->get_upload_id($subfix, $bucket);
-				$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>$result);
-				break;
-			case '010105':
-				//获取分片上传签名地址
-				$AliyunOSS = new AliyunOSS();
-				$object = $param->Key;
-				$uploadId = $param->UploadId;
-				$part = $param->partNumber;
-				$md5 = $param->md5;
-				$uri = $AliyunOSS->upload_part_sign($object, $uploadId, $part, $md5);
-				$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>['url'=>$uri]);
-				break;
-			case '010106':
-				//完成上传
-				$AliyunOSS = new AliyunOSS();
-				$object = $param->Key;
-				$uploadId = $param->UploadId;
-				$parts = $param->uploadParts;
-				$result = $AliyunOSS->complete_upload($object, $uploadId, $parts);
-				$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>[]);
-				break;
-			case '010107':
-				//中止上传
-				break;
-			case '010108':
-				//查询媒体文件是否存在
-				break;
-			case '010109':
-				//获取播放方案列表
-				break;
-			case '010110':
-				//获取播放方案详情
-				break;
-			case '010111':
-				//获取媒体列表
-				break;
-			case '010112':
-				//获取媒体详情
-				break;
-			case '010113':
-				//获取终端列表
-				break;
-			case '010114':
-				//发布播放方案
-				break;
-			case '010115':
-				//备份播放方案
-				break;
-			default:
-				//登录
-				break;
-		}
-		$this->ajaxReturn($response);
+		$this->param = json_decode($request);
 	}
 	
 	/**
@@ -146,6 +45,114 @@ class ManagerController extends CommonController
 	 */
 	public function refresh_token(){
 		
+	}
+	
+	/**
+	 * 文件分片
+	 */
+	public function upload_part(){
+		$total = $this->param->total;
+		$part = $this->param->part;
+		$total = 2014568;
+		$part = 102400;
+		$AliyunOSS = new AliyunOSS();
+		$result = $AliyunOSS->generate_upload_part($total, $part);
+		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$result];
+		$this->ajaxReturn($response);
+	}
+	
+	/**
+	 * 获取uploadId
+	 */
+	public function upload_id(){
+		$AliyunOSS = new AliyunOSS();
+		$name = $this->param->name;
+		$array = explode('.', $name);
+		$subfix = end($array);
+		$md5 = $this->param->md5;
+		$bucket = C("aliyun_oss_bucket");
+		$result = $AliyunOSS->get_upload_id($subfix, $bucket);
+		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$result];
+		$this->ajaxReturn($response);
+	}
+	
+	/**
+	 * 分片上传地址
+	 */
+	public function part_sign_url(){
+		$AliyunOSS = new AliyunOSS();
+		$object = $this->param->Key;
+		$uploadId = $this->param->UploadId;
+		$part = $this->param->partNumber;
+		$md5 = $this->param->md5;
+		$uri = $AliyunOSS->upload_part_sign($object, $uploadId, $part, $md5);
+		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>['url'=>$uri]];
+		$this->ajaxReturn($response);
+	}
+	
+	public function upload(){
+		$result = [];
+		$obj = $this->param;
+		foreach ($obj as $val) {
+			if(true){
+				//文件不存在
+				
+				//文件分片
+				//获取uploadId
+				//上传文件信息入库
+				//获取每片文件签名地址
+			}else{
+				//文件存在
+				if(true){
+					//已上传完成
+					//不做处理
+				}else{
+					//未上传完成
+					//获取oss端上传成功的分片
+					//对比得出还需要上传的分片及上传地址等
+				}
+			}
+		}
+		
+	}
+	
+	public function demo1(){
+		$string = '"[{\"FilePath\":\"aaa\",\"FileSize\":\"222\",\"FileMD5\":\"333\"},{\"FilePath\":\"aaa\",\"FileSize\":\"222\",\"FileMD5\":\"333\"}]"';
+		$string = json_decode(json_decode($string, true), true);
+		dump($string);
+	}
+	
+	public function demo(){
+		//$request = file_get_contents('php://input');
+		//file_put_contents('./1.log', json_encode($request));
+		$result = [];
+		$part = [
+			['partNumber'=>1, 'seekTo'=>0, 'length'=> 102400, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx'],
+			['partNumber'=>2, 'seekTo'=>102400, 'length'=> 102400, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx'],
+			['partNumber'=>3, 'seekTo'=>204800, 'length'=> 102400, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx'],
+			['partNumber'=>4, 'seekTo'=>307200, 'length'=> 102400, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx'],
+			['partNumber'=>5, 'seekTo'=>409600, 'length'=> 102400, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx'],
+			['partNumber'=>6, 'seekTo'=>512000, 'length'=> 68968, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx']
+		];
+		$result = [
+			['name'=>"123.avi",'key'=>'57a31bb736fda.avi','parts'=>$part],
+			['name'=>"123.avi",'key'=>'57a31bb736fda.avi','parts'=>$part],
+			['name'=>"123.avi",'key'=>'57a31bb736fda.avi','parts'=>$part]
+		];		
+		echo json_encode($result);
+	}
+	
+	/**
+	 * 完成上传
+	 */
+	public function complete_upload(){
+		$AliyunOSS = new AliyunOSS();
+		$object = $this->param->Key;
+		$uploadId = $this->param->UploadId;
+		$parts = $this->param->uploadParts;
+		$result = $AliyunOSS->complete_upload($object, $uploadId, $parts);
+		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>[]];
+		$this->ajaxReturn($response);
 	}
 	
 	/**

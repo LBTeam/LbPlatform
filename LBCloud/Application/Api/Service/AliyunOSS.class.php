@@ -176,7 +176,7 @@ class AliyunOSS
 			$options = [
 				'partNumber'	=> $part,
 				'Content-Type'	=> 'application/octet-stream',
-				'UploadId'		=> $uploadId
+				'uploadId'		=> $uploadId
 			];
 			if ($md5) {
 				$options['Content-Md5'] = $md5;
@@ -227,7 +227,7 @@ class AliyunOSS
 			$this->client->completeMultipartUpload($bucket, $object, $uploadId, $parts);
 			return true;
 		} catch (OssException $e) {
-		    //print $e->getMessage();
+		    print $e->getMessage();
 		    return false;
 		}
 	}
