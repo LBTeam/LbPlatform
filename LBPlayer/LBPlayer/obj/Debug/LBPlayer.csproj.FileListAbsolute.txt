@@ -1,1 +1,12 @@
 E:\LB\LBPlayer\LBPlayer\bin\Debug\LBPlayer.exe.config
+E:\LB\LBPlayer\LBPlayer\bin\Debug\LBPlayer.exe
+E:\LB\LBPlayer\LBPlayer\bin\Debug\LBPlayer.pdb
+E:\LB\LBPlayer\LBPlayer\bin\Debug\LBPlayerConfig.dll
+E:\LB\LBPlayer\LBPlayer\bin\Debug\LBPlayerConfig.pdb
+E:\LB\LBPlayer\LBPlayer\obj\Debug\LBPlayer.csprojResolveAssemblyReference.cache
+E:\LB\LBPlayer\LBPlayer\obj\Debug\LBPlayer.Properties.Resources.resources
+E:\LB\LBPlayer\LBPlayer\obj\Debug\LBPlayer.csproj.GenerateResource.Cache
+E:\LB\LBPlayer\LBPlayer\obj\Debug\LBPlayer.exe
+E:\LB\LBPlayer\LBPlayer\obj\Debug\LBPlayer.pdb
+E:\LB\LBPlayer\LBPlayer\bin\Debug\CSkin.dll
+E:\LB\LBPlayer\LBPlayer\obj\Debug\LBPlayer.LBPlayerMain.resources
