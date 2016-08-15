@@ -22,13 +22,14 @@ class IndexController extends Controller {
     	$AliyunOSS = new AliyunOSS();
 		$bucket = C("aliyun_oss_bucket");
 		//$object = "201608021433/wx_notify.php";
-		$object = "57a3f9c7354bc.txt";
-		$upload_id = "2713681012614B3F95D78F14B3AF44E2";
-		
-		$result = $AliyunOSS->generate_upload_part(2014568, 102400);
+		$object = "57a31bb807650.txt";
+		$upload_id = "96B71273C03D44BB9C81C6C37C640CF0";
+		$media_bucket = C("oss_media_bucket");
+		$program_bucket = C("oss_program_bucket");
+		//$result = $AliyunOSS->generate_upload_part(2014568, 102400);
 		//echo json_encode($result);
-		dump($result);
-		exit;
+		//dump($result);
+		//exit;
 		
 		//$result = $AliyunOSS->object_list($bucket);
 		//dump($result);
@@ -36,8 +37,16 @@ class IndexController extends Controller {
 		
 		//$AliyunOSS->complete_upload("57a31bb736fda.txt", "F77135AFC16A4F538211515502EC1CFD", array());
 		
-		//$result = $AliyunOSS->upload_part_list();
-		//dump($result);
+		$result = $AliyunOSS->upload_part_list($media_bucket);
+		dump($result);
+		/*foreach($result as $val){
+			$AliyunOSS->abort_upload($val['key'], $val['uploadId'], $media_bucket);
+		}*/
+		$result = $AliyunOSS->upload_part_list($program_bucket);
+		dump($result);
+		/*foreach($result as $val){
+			$AliyunOSS->abort_upload($val['key'], $val['uploadId'], $program_bucket);
+		}*/
 		
 		//$result = $AliyunOSS->part_list($object, $upload_id);
 		//dump($result);
@@ -46,7 +55,7 @@ class IndexController extends Controller {
 		//$result = $AliyunOSS->get_upload_id(".txt");
 		//dump($result);
 
-		//$result = $AliyunOSS->upload_part_sign($object, $upload_id, 3, false, 3600);
+		//$result = $AliyunOSS->upload_part_sign($object, $upload_id, 1, false, 3600);
 		//echo $result;
 		
 		//$buckets = $AliyunOSS->bucket_list();

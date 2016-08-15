@@ -10,11 +10,19 @@ use Api\Service\AliyunOSS;
 class ManagerController extends CommonController
 {
 	private $param;
+	private $user_id;
+	private $media_bucket;
+	private $program_bucket;
 	public function _initialize(){
 		$request = file_get_contents('php://input');
+		//$request = '[{"FilePath":"aabbccdd.playprog","FileSize":"2097152","FileMD5":"586af24095a05643c3be4bb402bfaee5"},{"FilePath":"aabbcc.avi","FileSize":"20971520","FileMD5":"b3206b4529ba377b0fa9f4a3bd9261f2"}]';
 		$token = I("request.token");
 		
+		//$this->param = json_decode($request, true);
 		$this->param = json_decode($request);
+		$this->user_id = 1;
+		$this->media_bucket = C("oss_media_bucket");
+		$this->program_bucket = C("oss_program_bucket");
 	}
 	
 	/**
@@ -48,98 +56,184 @@ class ManagerController extends CommonController
 	}
 	
 	/**
-	 * 文件分片
+	 * 上传
 	 */
-	public function upload_part(){
-		$total = $this->param->total;
-		$part = $this->param->part;
-		$total = 2014568;
-		$part = 102400;
-		$AliyunOSS = new AliyunOSS();
-		$result = $AliyunOSS->generate_upload_part($total, $part);
-		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$result];
-		$this->ajaxReturn($response);
-	}
-	
-	/**
-	 * 获取uploadId
-	 */
-	public function upload_id(){
-		$AliyunOSS = new AliyunOSS();
-		$name = $this->param->name;
-		$array = explode('.', $name);
-		$subfix = end($array);
-		$md5 = $this->param->md5;
-		$bucket = C("aliyun_oss_bucket");
-		$result = $AliyunOSS->get_upload_id($subfix, $bucket);
-		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$result];
-		$this->ajaxReturn($response);
-	}
-	
-	/**
-	 * 分片上传地址
-	 */
-	public function part_sign_url(){
-		$AliyunOSS = new AliyunOSS();
-		$object = $this->param->Key;
-		$uploadId = $this->param->UploadId;
-		$part = $this->param->partNumber;
-		$md5 = $this->param->md5;
-		$uri = $AliyunOSS->upload_part_sign($object, $uploadId, $part, $md5);
-		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>['url'=>$uri]];
-		$this->ajaxReturn($response);
-	}
-	
 	public function upload(){
 		$result = [];
 		$obj = $this->param;
+		$program_model = D("Program");
+		$media_model = D("Media");
+		$AliyunOSS = new AliyunOSS();
 		foreach ($obj as $val) {
-			if(true){
-				//文件不存在
-				
-				//文件分片
-				//获取uploadId
-				//上传文件信息入库
-				//获取每片文件签名地址
-			}else{
-				//文件存在
-				if(true){
-					//已上传完成
-					//不做处理
+			$user_id = $this->user_id;
+			$filename = $val['FilePath'];
+			$filesize = $val['FileSize'];
+			$filemd5 = $val['FileMD5'];
+			$filesubfix = end(explode('.', $filename));
+			$part_size = C("oss_part_size");
+			if($filesubfix == C('player_program_subfix')){
+				//播放方案
+				$program_id = $program_model->program_exists($filename, $filemd5, $user_id);
+				if($program_id){
+					//文件存在
+					$program_info = $program_model->program_detail($program_id);
+					if($program_info['status'] == 0){
+						//未上传完成
+						//获取oss端上传成功的分片
+						//对比得出还需要上传的分片及上传地址等
+						$upload_parts = $AliyunOSS->generate_upload_part($filesize, $part_size);
+						$object = $program_info['object'];
+						$uploadId = $program_info['upload_id'];
+						$part_lists = $AliyunOSS->part_list($object, $uploadId, $this->program_bucket);
+						$part_list = [];
+						if($part_lists){
+							foreach($part_lists as $val){
+								$part_list[] = $val['partNumber'];
+							}
+						}
+						$parts = [];
+						foreach($upload_parts as $key=>$val){
+							$part_number = $key+1;
+							if(!in_array($part_number, $part_list)){
+								//需要上传的分片
+								$sign_url = $AliyunOSS->upload_part_sign($object, $uploadId, $part_number, $this->program_bucket);
+								$parts[] = [
+									'partNumber'	=> $part_number,
+									'seekTo'		=> $val['seekTo'],
+									'length'		=> $val['length'],
+									'url'			=> $sign_url
+								];
+							}
+						}
+						if($parts){
+							$result[] = [
+								'name'	=> $filename,
+								'key'	=> $object,
+								'parts'	=> $parts
+							];
+						}
+					}else{
+						//已上传完成
+						//不做处理
+					}
 				}else{
-					//未上传完成
-					//获取oss端上传成功的分片
-					//对比得出还需要上传的分片及上传地址等
+					//文件不存在
+					//文件分片
+					$upload_parts = $AliyunOSS->generate_upload_part($filesize, $part_size);
+					//获取uploadId
+					$upload_info = $AliyunOSS->get_upload_id($filesubfix, $this->program_bucket);
+					//上传文件信息入库
+					$object = $upload_info['Key'];
+					$uploadId = $upload_info['UploadId'];
+					$program_data = [];
+					$program_data['user_id'] = $this->user_id;
+					$program_data['name'] = $filename;
+					$program_data['object'] = $object;
+					$program_data['upload_id'] = $uploadId;
+					$program_data['md5'] = $filemd5;
+					$program_data['size'] = $filesize;
+					$program_data['publish'] = NOW_TIME;
+					$program_id = $program_model->add($program_data);
+					//获取每片文件签名地址
+					$parts = [];
+					foreach($upload_parts as $key=>$val){
+						$part_number = $key+1;
+						$sign_url = $AliyunOSS->upload_part_sign($object, $uploadId, $part_number, $this->program_bucket);
+						$parts[] = [
+							'partNumber'	=> $part_number,
+							'seekTo'		=> $val['seekTo'],
+							'length'		=> $val['length'],
+							'url'			=> $sign_url
+						];
+					}
+					if($parts){
+						$result[] = [
+							'name'	=> $filename,
+							'key'	=> $object,
+							'parts'	=> $parts
+						];
+					}
+				}
+			}else{
+				//媒体
+				$media_id = $media_model->media_exists($filename, $filemd5, $user_id);
+				if($media_id){
+					$media_info = $media_model->media_detail($media_id);
+					if($media_info['status'] == 0){
+						$upload_parts = $AliyunOSS->generate_upload_part($filesize, $part_size);
+						$object = $media_info['object'];
+						$uploadId = $media_info['upload_id'];
+						$part_lists = $AliyunOSS->part_list($object, $uploadId, $this->media_bucket);
+						$part_list = [];
+						foreach($part_lists as $val){
+							$part_list[] = $val['partNumber'];
+						}
+						$parts = [];
+						foreach($upload_parts as $key=>$val){
+							$part_number = $key+1;
+							if(!in_array($part_number, $part_list)){
+								//需要上传的分片
+								$sign_url = $AliyunOSS->upload_part_sign($object, $uploadId, $part_number, $this->media_bucket);
+								$parts[] = [
+									'partNumber'	=> $part_number,
+									'seekTo'		=> $val['seekTo'],
+									'length'		=> $val['length'],
+									'url'			=> $sign_url
+								];
+							}
+						}
+						if($parts){
+							$result[] = [
+								'name'	=> $filename,
+								'key'	=> $object,
+								'parts'	=> $parts
+							];
+						}
+					}else{
+						//已上传完成
+						//不做处理
+					}
+				}else{
+					//文件不存在
+					//文件分片
+					$upload_parts = $AliyunOSS->generate_upload_part($filesize, $part_size);
+					//获取uploadId
+					$upload_info = $AliyunOSS->get_upload_id($filesubfix, $this->media_bucket);
+					//上传文件信息入库
+					$object = $upload_info['Key'];
+					$uploadId = $upload_info['UploadId'];
+					$media_data = [];
+					$media_data['user_id'] = $this->user_id;
+					$media_data['name'] = $filename;
+					$media_data['object'] = $object;
+					$media_data['upload_id'] = $uploadId;
+					$media_data['md5'] = $filemd5;
+					$media_data['size'] = $filesize;
+					$media_data['publish'] = NOW_TIME;
+					$meida_id = $media_model->add($media_data);
+					//获取每片文件签名地址
+					$parts = [];
+					foreach($upload_parts as $key=>$val){
+						$part_number = $key+1;
+						$sign_url = $AliyunOSS->upload_part_sign($object, $uploadId, $part_number, $this->media_bucket);
+						$parts[] = [
+							'partNumber'	=> $part_number,
+							'seekTo'		=> $val['seekTo'],
+							'length'		=> $val['length'],
+							'url'			=> $sign_url
+						];
+					}
+					if($parts){
+						$result[] = [
+							'name'	=> $filename,
+							'key'	=> $object,
+							'parts'	=> $parts
+						];
+					}
 				}
 			}
 		}
-		
-	}
-	
-	public function demo1(){
-		$string = '"[{\"FilePath\":\"aaa\",\"FileSize\":\"222\",\"FileMD5\":\"333\"},{\"FilePath\":\"aaa\",\"FileSize\":\"222\",\"FileMD5\":\"333\"}]"';
-		$string = json_decode(json_decode($string, true), true);
-		dump($string);
-	}
-	
-	public function demo(){
-		//$request = file_get_contents('php://input');
-		//file_put_contents('./1.log', json_encode($request));
-		$result = [];
-		$part = [
-			['partNumber'=>1, 'seekTo'=>0, 'length'=> 102400, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx'],
-			['partNumber'=>2, 'seekTo'=>102400, 'length'=> 102400, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx'],
-			['partNumber'=>3, 'seekTo'=>204800, 'length'=> 102400, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx'],
-			['partNumber'=>4, 'seekTo'=>307200, 'length'=> 102400, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx'],
-			['partNumber'=>5, 'seekTo'=>409600, 'length'=> 102400, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx'],
-			['partNumber'=>6, 'seekTo'=>512000, 'length'=> 68968, 'url'=>'http://aliyunoss.com/xxxxxxxxxxxxx']
-		];
-		$result = [
-			['name'=>"123.avi",'key'=>'57a31bb736fda.avi','parts'=>$part],
-			['name'=>"123.avi",'key'=>'57a31bb736fda.avi','parts'=>$part],
-			['name'=>"123.avi",'key'=>'57a31bb736fda.avi','parts'=>$part]
-		];		
-		echo json_encode($result);
+		$this->ajaxReturn($result);
 	}
 	
 	/**

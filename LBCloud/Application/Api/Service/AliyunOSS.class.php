@@ -146,7 +146,7 @@ class AliyunOSS
 	public function get_upload_id($subfix, $bucket=false){
 		try {
 			$subfix = trim($subfix, '.');
-			$object = date('Ymd') . uniqid() . (!empty($subfix) ? ".$subfix": '');
+			$object = date('Ymd') . "/" . uniqid() . (!empty($subfix) ? ".$subfix": '');
 			$bucket = $bucket ? $bucket : $this->bucket;
 			$uploadId = $this->client->initiateMultipartUpload($bucket, $object);
 			$response = [];
@@ -164,11 +164,12 @@ class AliyunOSS
 	 * @param $object 存储对象名称
 	 * @param $uploadId 分块上传UploadId
 	 * @param $part 分块文件顺序
+	 * @param $bucket 存储空间
 	 * @param $md5 分块文件md5
 	 * @param $timeout 签名过期时间
 	 * @return string
 	 */
-	public function upload_part_sign($object, $uploadId, $part=1, $md5=false, $timeout=300, $bucket=false){
+	public function upload_part_sign($object, $uploadId, $part=1, $bucket=false, $md5=false, $timeout=300){
 		try {
 			$callback_uri	= ''; // "http://oss-demo.aliyuncs.com:23450";
 			$bucket = $bucket ? $bucket : $this->bucket;

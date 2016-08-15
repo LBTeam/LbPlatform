@@ -7,4 +7,7 @@ return array(
 	'aliyun_oss_bucket'		=>	'lb-player-test',
 	'oss_media_bucket'		=>	'lb-player-media',
 	'oss_program_bucket'	=>	'lb-player-program',
+	
+	'oss_part_size'			=>	'10485760', //oss上传分片大小
+	'player_program_subfix'	=>	'playprog',
 );
