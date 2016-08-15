@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-08-12 17:40:49
+-- Date/time:                    2016-08-15 18:50:40
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `player_group` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='屏幕组';
 
--- Dumping data for table player.player_group: ~1 rows (approximately)
+-- Dumping data for table player.player_group: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_group` DISABLE KEYS */;
 INSERT INTO `player_group` (`id`, `uid`, `name`, `addtime`) VALUES
 	(1, 1, '测试group', 0);
@@ -120,13 +120,18 @@ CREATE TABLE IF NOT EXISTS `player_media` (
   `name` varchar(128) NOT NULL DEFAULT '' COMMENT '媒体名字',
   `md5` varchar(64) NOT NULL DEFAULT '' COMMENT '媒体文件md5',
   `object` varchar(128) NOT NULL DEFAULT '' COMMENT '媒体文件oss存储对象名称',
+  `upload_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'oss存储uploadId',
+  `size` varchar(64) NOT NULL DEFAULT '' COMMENT '媒体文件大小',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '上传状态，0-未上传完成，1-上传完成',
   `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
   `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放媒体';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='播放媒体';
 
 -- Dumping data for table player.player_media: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_media` DISABLE KEYS */;
+INSERT INTO `player_media` (`id`, `user_id`, `name`, `md5`, `object`, `upload_id`, `size`, `status`, `publish`, `expired`) VALUES
+	(1, 1, 'aabbcc.avi', 'b3206b4529ba377b0fa9f4a3bd9261f2', '20160815/57b199f003221.avi', '809ED5E5F2EA4D499A51DAA48B07382E', '20971520', 0, 1471257071, 0);
 /*!40000 ALTER TABLE `player_media` ENABLE KEYS */;
 
 
@@ -192,16 +197,21 @@ CREATE TABLE IF NOT EXISTS `player_program` (
   `user_id` int(11) NOT NULL DEFAULT '0' COMMENT 'palyer_user表uid外键',
   `name` varchar(128) NOT NULL DEFAULT '' COMMENT '播放方案名称',
   `object` varchar(128) NOT NULL DEFAULT '' COMMENT '播放方案oss存储对象名称',
+  `upload_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'oss存储uploadId',
   `info` varchar(256) NOT NULL DEFAULT '',
+  `md5` varchar(64) NOT NULL DEFAULT '' COMMENT '播放方案文件md5',
   `type` tinyint(4) NOT NULL DEFAULT '0',
   `size` varchar(20) NOT NULL DEFAULT '',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '上传状态，0-未上传完成，1-上传完成',
   `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
   `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放方案';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='播放方案';
 
 -- Dumping data for table player.player_program: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_program` DISABLE KEYS */;
+INSERT INTO `player_program` (`id`, `user_id`, `name`, `object`, `upload_id`, `info`, `md5`, `type`, `size`, `status`, `publish`, `expired`) VALUES
+	(1, 1, 'aabbccdd.playprog', '20160815/57b199efc632e.playprog', 'BB51E4D5A72248A68BE33E4CA322F31B', '', '586af24095a05643c3be4bb402bfaee5', 0, '2097152', 0, 1471257071, 0);
 /*!40000 ALTER TABLE `player_program` ENABLE KEYS */;
 
 
@@ -3594,7 +3604,7 @@ CREATE TABLE IF NOT EXISTS `player_screen` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='屏幕表';
 
--- Dumping data for table player.player_screen: ~3 rows (approximately)
+-- Dumping data for table player.player_screen: ~2 rows (approximately)
 /*!40000 ALTER TABLE `player_screen` DISABLE KEYS */;
 INSERT INTO `player_screen` (`id`, `name`, `remark`, `size_x`, `size_y`, `resolu_x`, `resolu_y`, `type`, `operate`, `longitude`, `latitude`, `uid`, `province`, `city`, `district`, `address`, `file`, `db_version`, `is_delete`, `addtime`) VALUES
 	(1, '测试screen', '', 0, 0, 0, 0, 0, 0, '', '', 1, 2, 0, 0, '', '', '', 0, 0),
