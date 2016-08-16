@@ -123,6 +123,29 @@ class AliyunOSS
 	}
 	
 	/**
+	 * 根据文件大小获取合理的分片文件大小
+	 * @param $filesize 文件总大小
+	 * @return int
+	 */
+	public function part_size($filesize){
+		$part_size = 0;
+		if($filesize <= C("oss_100K_size")){
+			$part_size = C("oss_100K_size");
+		}else if($filesize <= C("oss_1M_part_size")){
+			$part_size = C("oss_200K_size");
+		}else if($filesize <= C("oss_5M_part_size")){
+			$part_size = C("oss_1M_part_size");
+		}else if($filesize <= C("oss_10M_part_size")){
+			$part_size = C("oss_2M_part_size");
+		}else if($filesize <= C("oss_50M_part_size")){
+			$part_size = C("oss_5M_part_size");
+		}else{
+			$part_size = C("oss_10M_part_size");
+		}
+		return $part_size;
+	}
+	
+	/**
 	 * 文件分片
 	 * @param $size 文件大小
 	 * @param $part 分片大小(5M)
@@ -146,7 +169,7 @@ class AliyunOSS
 	public function get_upload_id($subfix, $bucket=false){
 		try {
 			$subfix = trim($subfix, '.');
-			$object = date('Ymd') . "/" . uniqid() . (!empty($subfix) ? ".$subfix": '');
+			$object = oss_object($subfix);
 			$bucket = $bucket ? $bucket : $this->bucket;
 			$uploadId = $this->client->initiateMultipartUpload($bucket, $object);
 			$response = [];
@@ -206,6 +229,25 @@ class AliyunOSS
 			}
 			return $response;
 			*/
+		} catch (OssException $e) {
+		    print $e->getMessage();
+		}
+	}
+
+	/**
+	 * 上传文件签名地址
+	 * @param $object 存储对象名称
+	 * @param $bucket 存储空间
+	 * @param $timeout 签名过期时间
+	 */
+	public function upload_sign_uri($object, $bucket=false, $timeout=300){
+		try {
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$options = [
+				'Content-Type'	=> 'application/octet-stream'
+			];
+			$sign_uri = $this->client->signUrl($bucket, $object, $timeout, "PUT", $options);
+			return $sign_uri;
 		} catch (OssException $e) {
 		    print $e->getMessage();
 		}
@@ -305,5 +347,26 @@ class AliyunOSS
 		} catch (OssException $e) {
 		    print $e->getMessage();
 		}
+	}
+	
+	public function demo($bucket, $object){
+	    try{
+	    	//$options = [];
+	        //$options['headers'] = ['range' => '0-100'];
+			//$timeout = time() + 300;
+	        //$options['preauth'] = $timeout;
+	        //$options['Date'] = $timeout;
+			//$sign_uri = $this->client->signUrl($bucket, $object, '300', "GET", $options);
+			//dump($sign_uri);
+			$options = ['range' => '0-100'];
+			$content = $this->client->getObject($bucket, $object, $options);
+			dump($content);
+			
+	    } catch(OssException $e) {
+	        printf(__FUNCTION__ . ": FAILED\n");
+	        printf($e->getMessage() . "\n");
+	        return;
+	    }
+	    print(__FUNCTION__ . ": OK" . "\n");
 	}
 }

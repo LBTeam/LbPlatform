@@ -22,7 +22,7 @@ class ProgramModel extends Model
 		$map['name'] = $name;
 		$map['md5'] = $md5;
 		$program_id = $this->where($map)->getField('id');
-		if($program_id){
+		if($result){
 			return $program_id;
 		}else{
 			return false;
@@ -36,7 +36,22 @@ class ProgramModel extends Model
 	 */
 	public function program_detail($program_id){
 		$map = [];
-		$map['id'] = $program_id;
+		$map['id'] = $user_id;
+		return $this->where($map)->find();
+	}
+	
+	/**
+	 * 获取播放方案详情
+	 * @param $name 播放方案名称
+	 * @param $md5 播放方案md5
+	 * @param $user_id 用户ID
+	 * @return array
+	 */
+	public function program_by_name_md5($name, $md5, $user_id){
+		$map = [];
+		$map['user_id'] = $user_id;
+		$map['name'] = $name;
+		$map['md5'] = $md5;
 		return $this->where($map)->find();
 	}
 }
