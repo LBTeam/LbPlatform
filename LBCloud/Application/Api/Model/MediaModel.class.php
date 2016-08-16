@@ -39,4 +39,19 @@ class MediaModel extends Model
 		$map['id'] = $media_id;
 		return $this->where($map)->find();
 	}
+	
+	/**
+	 * 获取媒体详情
+	 * @param $name 媒体名称
+	 * @param $md5 媒体md5
+	 * @param $user_id 用户ID
+	 * @return array
+	 */
+	public function media_by_name_md5($name, $md5, $user_id){
+		$map = [];
+		$map['user_id'] = $user_id;
+		$map['name'] = $name;
+		$map['md5'] = $md5;
+		return $this->where($map)->find();
+	}
 }

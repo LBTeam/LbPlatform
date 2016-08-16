@@ -29,6 +29,15 @@ function random_string($length, $num=false){
 	return $code;
 }
 
+/**
+ * 获取oss存储对象名称
+ * @param $subfix 后缀名
+ * @return string
+ */
+function oss_object($subfix){
+	$object = date('Ymd') . "/" . uniqid() . (!empty($subfix) ? ".$subfix": '');
+	return $object;
+}
 
 //===================协议加密解密start========================
 $AES_Key = "NeBnjf3TqsDERvafpO4xyNAk2ZPjVRs=";
