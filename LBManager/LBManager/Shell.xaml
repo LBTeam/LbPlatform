@@ -23,7 +23,8 @@
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">LED Media Manager</TextBlock>
                     </DockPanel>
                 </materialDesign:ColorZone>
-                <ContentControl Margin="16" Content="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.Content}" />
+                <!--<ContentControl Margin="16" Content="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.Content}" />-->
+                <local:ProgramScheduleDetailView Margin="16" DataContext="{Binding ScheduleDetailViewModel}"/>
             </DockPanel>
         </materialDesign:DialogHost>
     </metroUI:MetroContentControl>

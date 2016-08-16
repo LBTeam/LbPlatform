@@ -16,6 +16,8 @@ namespace LBManager
             base.InitializeShell();
 
             Application.Current.MainWindow = (Window)Shell;
+            ShellViewModel viewModel = new ShellViewModel();
+            Application.Current.MainWindow.DataContext = viewModel;
             Application.Current.MainWindow.Show();
         }
         protected override void ConfigureContainerBuilder(ContainerBuilder builder)

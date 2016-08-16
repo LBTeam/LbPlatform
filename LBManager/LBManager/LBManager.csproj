@@ -79,6 +79,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ShellViewModel.cs" />
+    <Page Include="ProgramScheduleDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Shell.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -88,6 +93,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="LBManagerBootstrapper.cs" />
+    <Compile Include="ProgramScheduleDetailView.xaml.cs">
+      <DependentUpon>ProgramScheduleDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ProgramScheduleDetailViewModel.cs" />
     <Compile Include="Shell.xaml.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
       <SubType>Code</SubType>
