@@ -5,17 +5,34 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LBManager"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:extra="http://schemas.extra.com/ui"
+             xmlns:params="http://schemas.codeplex.com/elysium/params"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.DataGrid.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Framework.UI;component/Themes/ElysiumExtra/ExpanderMenu.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <DataGrid Margin="0 8 0 0" ItemsSource="{Binding MediaList}" CanUserSortColumns="True" CanUserAddRows="False" AutoGenerateColumns="False"
+        <extra:ByteUpDown Value="12"/>
+        <extra:ExpanderMenu Visibility="Collapsed"
+                          ExpandDirection="Right"
+                          IsExpanded="True"
+                          Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}">
+            <extra:ExpanderMenuItem 
+                                  Style="{StaticResource EditExpanderMenuItemStyle}"/>
+            <extra:ExpanderMenuItem 
+                                  Style="{StaticResource DeleteExpanderMenuItemStyle}"/>
+            <extra:ExpanderMenuItem 
+                                  Style="{StaticResource UpExpanderMenuItemStyle}"/>
+            <extra:ExpanderMenuItem 
+                                  Style="{StaticResource DownExpanderMenuItemStyle}"/>
+        </extra:ExpanderMenu>
+        <DataGrid Visibility="Collapsed" Margin="0 8 0 0" ItemsSource="{Binding MediaList}" CanUserSortColumns="True" CanUserAddRows="False" AutoGenerateColumns="False"
                       materialDesign:DataGridAssist.CellPadding="13 8 8 8" materialDesign:DataGridAssist.ColumnHeaderPadding="8">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Width="*"
@@ -31,7 +48,35 @@
                                                         Header="Size" 
                                                         EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" 
                                                         />
-                <materialDesign:MaterialDataGridTextColumn Width="auto"
+
+                <DataGridTemplateColumn Header="ExpanderMenu Column"
+                                        Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <extra:ExpanderMenu Grid.Column="1"
+                                                  IsExpanded="True">
+                                    <extra:ExpanderMenuItem Style="{StaticResource EditExpanderMenuItemStyle}"/>
+                                    <extra:ExpanderMenuItem Style="{StaticResource DeleteExpanderMenuItemStyle}"/>
+                                    <extra:ExpanderMenuItem Style="{StaticResource UpExpanderMenuItemStyle}"/>
+                                    <extra:ExpanderMenuItem Style="{StaticResource DownExpanderMenuItemStyle}"/>
+                                </extra:ExpanderMenu>
+
+                                <TextBlock Grid.Column="0" 
+                                           Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}"
+                                           Text="{Binding Name}"
+                                           VerticalAlignment="Center"/>
+
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <!--<materialDesign:MaterialDataGridTextColumn Width="auto"
                                                         Header=""                                                         
                                                         EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}">
                     <DataGridTextColumn.HeaderStyle>
@@ -44,7 +89,7 @@
                             <Setter Property="HorizontalAlignment" Value="Right" />
                         </Style>
                     </DataGridTextColumn.ElementStyle>
-                </materialDesign:MaterialDataGridTextColumn>               
+                </materialDesign:MaterialDataGridTextColumn>-->               
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
