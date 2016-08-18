@@ -21,7 +21,7 @@ class IndexController extends Controller {
     	//echo decrypt($str);
 		//exit;
 		
-    	//echo random_string(31);
+    	//echo random_string(10);
 		//exit;
 		
 		

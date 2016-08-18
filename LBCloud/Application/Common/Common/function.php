@@ -74,3 +74,38 @@ function decrypt($string = "") {
     return strippadding ( mcrypt_decrypt ( MCRYPT_RIJNDAEL_256, $key, $string, MCRYPT_MODE_CBC, $iv ) );
 }
 //===================协议加密解密end========================
+
+/**
+ * 密码加密方法
+ * @param string $pw 要加密的字符串
+ * @param string $key 加密密钥
+ * @return string
+ */
+function sp_password($pw, $key = ''){
+    if(empty($key)){
+        $key = C("pwd_auth_key");
+    }
+	$result = "###" . md5(md5("{$key}{$pw}"));
+	return $result;
+}
+
+/**
+ * 密码比较方法,所有涉及密码比较的地方都用这个方法
+ * @param string $password 要比较的密码
+ * @param string $password_in_db 数据库保存的已经加密过的密码
+ * @return boolean 密码相同，返回true
+ */
+function sp_compare_password($password, $password_in_db){
+	return sp_password($password) == $password_in_db;
+}
+
+/**
+ * 生成用户token
+ * @return array
+ */
+function create_access_token($username){
+	$random = uniqid();
+	$time = time()+7200;
+	$token = sha1("{$username}_{$random}_{$time}");
+	return array('token'=>$token, 'expire'=>$time);
+}

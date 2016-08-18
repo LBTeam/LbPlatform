@@ -18,8 +18,7 @@ class ManagerController extends CommonController
 		//$request = '[{"FilePath":"aabbcc.playprog","FileSize":"102400","FileMD5":"586af24095a05643c3be4bb402dsdwqs"},{"FilePath":"aabbccdd.playprog","FileSize":"2097152","FileMD5":"586af24095a05643c3be4bb402bfaee5"},{"FilePath":"aabbcc.avi","FileSize":"20971520","FileMD5":"b3206b4529ba377b0fa9f4a3bd9261f2"}]';
 		$token = I("request.token");
 		
-		//$this->param = json_decode($request, true);
-		$this->param = json_decode($request);
+		$this->param = json_decode($request, true);
 		$this->user_id = 1;
 		$this->media_bucket = C("oss_media_bucket");
 		$this->program_bucket = C("oss_program_bucket");
@@ -45,7 +44,26 @@ class ManagerController extends CommonController
 	 * 登录
 	 */
 	public function login(){
-		
+		$obj = $this->param;
+		$username = $obj['user'];
+		$password = $obj['pwd'];
+		$response = [];
+		$user_model = D("User");
+		$user_info = $user_model->user_by_email($username);
+		if($user_info){
+			$db_pwd = $user_info['password'];
+			if(sp_compare_password($password, $db_pwd)){
+				$access_token = create_access_token($username);
+				$token = $access_token['token'];
+				$expire = $access_token['expire'];
+				
+			}else{
+				$response = ['err_code'=>'010101', 'msg'=>"Password error"];
+			}
+		}else{
+			$response = ['err_code'=>'010101', 'msg'=>"User does not exist"];
+		}
+		$this->ajaxReturn($response);
 	}
 	
 	/**
@@ -66,12 +84,9 @@ class ManagerController extends CommonController
 		$AliyunOSS = new AliyunOSS();
 		foreach ($obj as $val) {
 			$user_id = $this->user_id;
-			//$filename = end(explode('/', str_replace('\\', '/', $val['FilePath'])));
-			//$filesize = $val['FileSize'];
-			//$filemd5 = $val['FileMD5'];
-			$filename = end(explode('/', str_replace('\\', '/', $val->FilePath)));
-			$filesize = $val->FileSize;
-			$filemd5 = $val->FileMD5;
+			$filename = end(explode('/', str_replace('\\', '/', $val['FilePath'])));
+			$filesize = $val['FileSize'];
+			$filemd5 = $val['FileMD5'];
 			$filesubfix = end(explode('.', $filename));
 			if($filesubfix == C('player_program_subfix')){
 				//播放方案
@@ -95,9 +110,9 @@ class ManagerController extends CommonController
 	 */
 	public function complete_upload(){
 		$obj = $this->param;
-		$filename = $obj->FileName;
-		$filemd5 = $obj->FileMD5;
-		$fileparts = $obj->Parts;
+		$filename = $obj['FileName'];
+		$filemd5 = $obj['FileMD5'];
+		$fileparts = $obj['Parts'];
 		$filesubfix = end(explode('.', $filename));
 		$user_id = $this->user_id;
 		if($filesubfix == C('player_program_subfix')){
@@ -151,8 +166,7 @@ class ManagerController extends CommonController
 	 * 终端列表
 	 */
 	public function screens(){
-		$user_id = $this->param->UserId;
-		$user_id = 1;
+		$user_id = $this->user_id;
 		$screen_model = D("Screen");
 		$result = $screen_model->user_all_screen($user_id);
 		$regions = D("Region")->all_region_name();
@@ -198,11 +212,9 @@ class ManagerController extends CommonController
 				];
 			}
 		}
-		$list = [];
-		$list['groups'] = array_values($groups);
-		$list['screens'] = $screens;
-		$list = encrypt(json_encode($list));
-		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$list];
+		$response = [];
+		$response['groups'] = array_values($groups);
+		$response['screens'] = $screens;
 		$this->ajaxReturn($response);
 	}
 	
