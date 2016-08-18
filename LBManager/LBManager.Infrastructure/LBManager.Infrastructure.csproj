@@ -40,8 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\ICheckService.cs" />
+    <Compile Include="Interfaces\IChecksumProvider.cs" />
+    <Compile Include="Models\ImageMedia.cs" />
+    <Compile Include="Models\Media.cs" />
+    <Compile Include="Models\TextMedia.cs" />
+    <Compile Include="Models\VideoMedia.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
