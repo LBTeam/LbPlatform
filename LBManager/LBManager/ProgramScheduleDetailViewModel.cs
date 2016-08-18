@@ -1,4 +1,5 @@
-﻿using Prism.Mvvm;
+﻿using Prism.Commands;
+using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +14,7 @@ namespace LBManager
 
         public ProgramScheduleDetailViewModel()
         {
+
             MediaList = new ObservableCollection<MediaItem>()
             {
                 new MediaItem()
@@ -47,6 +49,13 @@ namespace LBManager
                 },
 
             };
+
+            EditMediaCommand = new DelegateCommand(() => { EditMedia(); });
+        }
+
+        private void EditMedia()
+        {
+            
         }
 
         private ObservableCollection<MediaItem> _mediaList;
@@ -55,6 +64,8 @@ namespace LBManager
             get { return _mediaList; }
             set { SetProperty(ref _mediaList, value); }
         }
+
+        public DelegateCommand EditMediaCommand { get; private set; } 
     }
 
     public class MediaItem:BindableBase

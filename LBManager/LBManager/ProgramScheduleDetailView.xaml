@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LBManager"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:extra="http://schemas.extra.com/ui"
+             xmlns:mycontrol="http://lbmanager.net/winfx/xaml/controls"
              xmlns:params="http://schemas.codeplex.com/elysium/params"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
@@ -13,27 +13,59 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.DataGrid.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Framework.UI;component/Themes/ElysiumExtra/ExpanderMenu.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/LBManager.Controls;component/Geometry.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="DeleteExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+                <Setter Property="Icon" Value="{StaticResource Delete1Geometry}"/>
+                <Setter Property="ToolTip" Value="Delete"/>
+            </Style>
+            <Style x:Key="UpExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+                <Setter Property="Icon" Value="{StaticResource RoadForwardGeometry}"/>
+                <Setter Property="ToolTip" Value="Up"/>
+            </Style>
+            <Style x:Key="DownExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+                <Setter Property="Icon" Value="{StaticResource RoadBackwardGeometry}"/>
+                <Setter Property="ToolTip" Value="Down"/>
+            </Style>
+            <Style x:Key="EditExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+                <Setter Property="Icon" Value="{StaticResource Edit2Geometry}"/>
+                <Setter Property="ToolTip" Value="Edit"/>
+            </Style>
+            <Style x:Key="TrashExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+                <Setter Property="Icon" Value="{StaticResource TrashGeometry}"/>
+                <Setter Property="ToolTip" Value="Remove"/>
+            </Style>
+            <Style x:Key="OpenExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+                <Setter Property="Icon" Value="{StaticResource Open2Geometry}"/>
+                <Setter Property="ToolTip" Value="Remove"/>
+            </Style>
+            <Style x:Key="AddExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+                <Setter Property="Icon" Value="{StaticResource Add1Geometry}"/>
+                <Setter Property="ToolTip" Value="Add"/>
+            </Style>
+            <Style x:Key="CopyExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+                <Setter Property="Icon" Value="{StaticResource CopyGeometry}"/>
+                <Setter Property="ToolTip" Value="Copy"/>
+            </Style>
+
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <extra:ByteUpDown Value="12"/>
-        <extra:ExpanderMenu Visibility="Collapsed"
+        <!--<mycontrol:ExpanderMenu Visibility="Visible" Width="100" Height="25"
                           ExpandDirection="Right"
-                          IsExpanded="True"
-                          Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}">
-            <extra:ExpanderMenuItem 
-                                  Style="{StaticResource EditExpanderMenuItemStyle}"/>
-            <extra:ExpanderMenuItem 
-                                  Style="{StaticResource DeleteExpanderMenuItemStyle}"/>
-            <extra:ExpanderMenuItem 
-                                  Style="{StaticResource UpExpanderMenuItemStyle}"/>
-            <extra:ExpanderMenuItem 
-                                  Style="{StaticResource DownExpanderMenuItemStyle}"/>
-        </extra:ExpanderMenu>
-        <DataGrid Visibility="Collapsed" Margin="0 8 0 0" ItemsSource="{Binding MediaList}" CanUserSortColumns="True" CanUserAddRows="False" AutoGenerateColumns="False"
-                      materialDesign:DataGridAssist.CellPadding="13 8 8 8" materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                          IsExpanded="True">
+            <mycontrol:ExpanderMenuItem Style="{StaticResource EditExpanderMenuItemStyle}"/>
+            <mycontrol:ExpanderMenuItem Style="{StaticResource DeleteExpanderMenuItemStyle}"/>
+            <mycontrol:ExpanderMenuItem Style="{StaticResource UpExpanderMenuItemStyle}"/>
+            <mycontrol:ExpanderMenuItem Style="{StaticResource DownExpanderMenuItemStyle}"/>
+        </mycontrol:ExpanderMenu>-->
+        <DataGrid  ItemsSource="{Binding MediaList}" 
+                   CanUserSortColumns="True"
+                   CanUserAddRows="False" 
+                   AutoGenerateColumns="False"
+                   materialDesign:DataGridAssist.CellPadding="13 8 8 8"
+                   materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                   Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Width="*"
                                             Header="Name"
@@ -59,13 +91,12 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <extra:ExpanderMenu Grid.Column="1"
-                                                  IsExpanded="True">
-                                    <extra:ExpanderMenuItem Style="{StaticResource EditExpanderMenuItemStyle}"/>
-                                    <extra:ExpanderMenuItem Style="{StaticResource DeleteExpanderMenuItemStyle}"/>
-                                    <extra:ExpanderMenuItem Style="{StaticResource UpExpanderMenuItemStyle}"/>
-                                    <extra:ExpanderMenuItem Style="{StaticResource DownExpanderMenuItemStyle}"/>
-                                </extra:ExpanderMenu>
+                                <mycontrol:ExpanderMenu Grid.Column="1"
+                                                        IsExpanded="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}">
+                                    <mycontrol:ExpanderMenuItem Style="{StaticResource EditExpanderMenuItemStyle}" Command="{Binding DataContext.EditMediaCommand,RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                    <mycontrol:ExpanderMenuItem Style="{StaticResource DeleteExpanderMenuItemStyle}"/>
+                                    <mycontrol:ExpanderMenuItem Style="{StaticResource AddExpanderMenuItemStyle}"/>
+                                </mycontrol:ExpanderMenu>
 
                                 <TextBlock Grid.Column="0" 
                                            Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}"
@@ -76,20 +107,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <!--<materialDesign:MaterialDataGridTextColumn Width="auto"
-                                                        Header=""                                                         
-                                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}">
-                    <DataGridTextColumn.HeaderStyle>
-                        <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
-                            <Setter Property="HorizontalAlignment" Value="Right" />
-                        </Style>
-                    </DataGridTextColumn.HeaderStyle>
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="HorizontalAlignment" Value="Right" />
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </materialDesign:MaterialDataGridTextColumn>-->               
+                           
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
