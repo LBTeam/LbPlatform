@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:LBManager"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mycontrol="http://lbmanager.net/winfx/xaml/controls"
+             xmlns:params="http://schemas.codeplex.com/elysium/params"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -58,8 +59,13 @@
             <mycontrol:ExpanderMenuItem Style="{StaticResource UpExpanderMenuItemStyle}"/>
             <mycontrol:ExpanderMenuItem Style="{StaticResource DownExpanderMenuItemStyle}"/>
         </mycontrol:ExpanderMenu>-->
-        <DataGrid  Margin="0 8 0 0" ItemsSource="{Binding MediaList}" CanUserSortColumns="True" CanUserAddRows="False" AutoGenerateColumns="False"
-                      materialDesign:DataGridAssist.CellPadding="13 8 8 8" materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+        <DataGrid  ItemsSource="{Binding MediaList}" 
+                   CanUserSortColumns="True"
+                   CanUserAddRows="False" 
+                   AutoGenerateColumns="False"
+                   materialDesign:DataGridAssist.CellPadding="13 8 8 8"
+                   materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                   Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Width="*"
                                             Header="Name"
@@ -86,13 +92,14 @@
                                 </Grid.ColumnDefinitions>
 
                                 <mycontrol:ExpanderMenu Grid.Column="1"
-                                                  IsExpanded="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}">
+                                                        IsExpanded="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}">
                                     <mycontrol:ExpanderMenuItem Style="{StaticResource EditExpanderMenuItemStyle}" Command="{Binding DataContext.EditMediaCommand,RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                                     <mycontrol:ExpanderMenuItem Style="{StaticResource DeleteExpanderMenuItemStyle}"/>
                                     <mycontrol:ExpanderMenuItem Style="{StaticResource AddExpanderMenuItemStyle}"/>
                                 </mycontrol:ExpanderMenu>
 
                                 <TextBlock Grid.Column="0" 
+                                           Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}"
                                            Text="{Binding Name}"
                                            VerticalAlignment="Center"/>
 

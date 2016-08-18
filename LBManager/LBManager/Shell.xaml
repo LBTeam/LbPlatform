@@ -6,12 +6,37 @@
         xmlns:local="clr-namespace:LBManager"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:metroUI="http://metro.mahapps.com/winfx/xaml/controls"
+                     xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525"
                      GlowBrush="{DynamicResource AccentColorBrush}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto">
+    <Window.Resources>
+        <!--  Link Button  -->
+        <SolidColorBrush x:Key="LinkButtonForeground" options:Freeze="True" Color="#1297FB" />
+        <SolidColorBrush x:Key="LinkButtonForegroundHighlighted" options:Freeze="True" Color="#55AAFF" />
+        <Style x:Key="LinkButton" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{StaticResource LinkButtonForeground}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock>
+                        <ContentPresenter />
+                        </TextBlock>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Foreground" Value="{StaticResource LinkButtonForegroundHighlighted}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
     <metroUI:MetroContentControl>
         <materialDesign:DialogHost Identifier="RootDialog">
             <DockPanel>
@@ -21,6 +46,10 @@
                         <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" IsChecked="False"
                                       x:Name="MenuToggleButton"/>
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">LED Media Manager</TextBlock>
+                        <Button DockPanel.Dock="Right" Margin="0,0,10,0" Content="登录" FontSize="12" 
+                                HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" 
+                                Style="{StaticResource LinkButton}" 
+                                Command="{Binding LoginCommand}"/>
                     </DockPanel>
                 </materialDesign:ColorZone>
                 <!--<ContentControl Margin="16" Content="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.Content}" />-->
