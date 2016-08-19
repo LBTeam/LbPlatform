@@ -17,7 +17,7 @@ class ManagerController extends CommonController
 		$request = file_get_contents('php://input');
 		//$request = '[{"FilePath":"aabbcc.playprog","FileSize":"102400","FileMD5":"586af24095a05643c3be4bb402dsdwqs"},{"FilePath":"aabbccdd.playprog","FileSize":"2097152","FileMD5":"586af24095a05643c3be4bb402bfaee5"},{"FilePath":"aabbcc.avi","FileSize":"20971520","FileMD5":"b3206b4529ba377b0fa9f4a3bd9261f2"}]';
 		$token = I("request.token");
-		
+		$request = '{"user":"15934854815@163.com","pwd":"123456"}';
 		$this->param = json_decode($request, true);
 		$this->user_id = 1;
 		$this->media_bucket = C("oss_media_bucket");
@@ -57,6 +57,19 @@ class ManagerController extends CommonController
 				$token = $access_token['token'];
 				$expire = $access_token['expire'];
 				
+				$data = array();
+				$data['uid'] = $user_info['uid'];
+				$data['lasttime'] = NOW_TIME;
+				$data['lastip'] = get_client_ip();
+				$data['token'] = $token;
+				$data['expire'] = $expire;
+				$res = $user_model->save($data);
+				if($res){
+					$return = array('token'=>$token, 'expire'=>7200);
+					$response = array('err_code'=>'000000', 'msg'=>"ok", 'data'=>$return);
+				}else{
+					$response = array('err_code'=>'010101', 'msg'=>"Login failed");
+				}
 			}else{
 				$response = array('err_code'=>'010101', 'msg'=>"Password error");
 			}

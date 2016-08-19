@@ -6,6 +6,9 @@ use Api\Service\AliyunOSS;
 class IndexController extends Controller {
     public function index()
     {
+    	/*echo sp_password("123456");
+		exit;*/
+    	
     	/*$start = "2016-08-02";
 		$end = "2016-08-02";
 		if($start < $end){
