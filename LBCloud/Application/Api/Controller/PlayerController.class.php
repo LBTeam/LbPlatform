@@ -44,7 +44,7 @@ class PlayerController extends CommonController
 	 */
 	public function download_url(){
 		$obj = $this->param;
-		$response = [];
+		$response = array();
 		$media_model = D("Media");
 		$program_model = D("Program");
 		$AliyunOSS = new AliyunOSS();
@@ -64,12 +64,12 @@ class PlayerController extends CommonController
 			if($fileinfo){
 				$object = $fileinfo['object'];
 				$request_uri = $AliyunOSS->download_uri($bucket, $object, 1800);
-				$response[] = [
+				$response[] = array(
 					'name'	=>	$filename,
 					'md5'	=>	$filemd5,
 					'key'	=>	$object,
 					'url'	=>	$request_uri
-				];
+				);
 			}else{
 				continue;
 			}

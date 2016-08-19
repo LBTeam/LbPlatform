@@ -6,13 +6,22 @@ use Api\Service\AliyunOSS;
 class IndexController extends Controller {
     public function index()
     {
-    	/*$array = [];
+    	/*$start = "2016-08-02";
+		$end = "2016-08-02";
+		if($start < $end){
+			echo "<";
+		}else{
+			echo ">=";
+		}
+		exit;*/
+		
+    	/*$array = array();
 		$array['FileName'] = 'aabbcc.jpg';
 		$array['FileMD5'] = 'b3206b4529ba377b0fa9f4a3bd9261f2';
-		$array['Parts'] = [
-			['partNumber'=>1, 'MD5'=>'96b71273c03d44bb9c81c6c37c640cf0'],
-			['partNumber'=>2, 'MD5'=>'96b71273c03d44bb9c81c6c37c640cf0']
-		];
+		$array['Parts'] = array(
+			array('partNumber'=>1, 'MD5'=>'96b71273c03d44bb9c81c6c37c640cf0'),
+			array('partNumber'=>2, 'MD5'=>'96b71273c03d44bb9c81c6c37c640cf0')
+		);
 		echo json_encode($array);
 		exit;*/
 		
@@ -99,11 +108,11 @@ class IndexController extends Controller {
 		//dump($result);
 		
 		//上传成功
-		/*$parts = [
-			['PartNumber' => 1,'ETag' => "1968AF318A72C56BDB3BE8B26F09EA3B"],
-			['PartNumber' => 2,'ETag' => "97908FC7F9A744CA8C5DA2643000A249"],
-			['PartNumber' => 3,'ETag' => "A7B7C3CD26EF3C18B43AD6CA6B041122"],
-		];
+		/*$parts = array(
+			array('PartNumber' => 1,'ETag' => "1968AF318A72C56BDB3BE8B26F09EA3B"),
+			array('PartNumber' => 2,'ETag' => "97908FC7F9A744CA8C5DA2643000A249"),
+			array('PartNumber' => 3,'ETag' => "A7B7C3CD26EF3C18B43AD6CA6B041122"),
+		);
 		$result = $AliyunOSS->complete_upload($object, $upload_id, $parts);
 		dump($result);
 		

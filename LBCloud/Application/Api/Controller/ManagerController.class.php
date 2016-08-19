@@ -28,7 +28,7 @@ class ManagerController extends CommonController
 	 * oss配置
 	 */
 	public function configuration(){
-		$configure = [];
+		$configure = array();
 		$configure['accessKeyId']		= C("aliyun_oss_id");
 		$configure['accessKeySecret']	= C("aliyun_oss_secret");
 		$configure['endpoint']			= C("aliyun_oss_endpoint");
@@ -36,7 +36,7 @@ class ManagerController extends CommonController
 		$configure['mediaBucket']		= C("oss_media_bucket");
 		$configure['programBucket']		= C("oss_program_bucket");
 		$configure = encrypt(json_encode($configure));
-		$response = ["err_code"=>"000000", "msg"=>"ok", 'data'=>$configure];
+		$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>$configure);
 		$this->ajaxReturn($response);
 	}
 
@@ -47,7 +47,7 @@ class ManagerController extends CommonController
 		$obj = $this->param;
 		$username = $obj['user'];
 		$password = $obj['pwd'];
-		$response = [];
+		$response = array();
 		$user_model = D("User");
 		$user_info = $user_model->user_by_email($username);
 		if($user_info){
@@ -58,10 +58,10 @@ class ManagerController extends CommonController
 				$expire = $access_token['expire'];
 				
 			}else{
-				$response = ['err_code'=>'010101', 'msg'=>"Password error"];
+				$response = array('err_code'=>'010101', 'msg'=>"Password error");
 			}
 		}else{
-			$response = ['err_code'=>'010101', 'msg'=>"User does not exist"];
+			$response = array('err_code'=>'010101', 'msg'=>"User does not exist");
 		}
 		$this->ajaxReturn($response);
 	}
@@ -77,7 +77,7 @@ class ManagerController extends CommonController
 	 * 上传
 	 */
 	public function upload(){
-		$result = [];
+		$result = array();
 		$obj = $this->param;
 		$media_model = D("Media");
 		$program_model = D("Program");
@@ -119,16 +119,16 @@ class ManagerController extends CommonController
 			//播放方案
 			$prog_model = D("Program");
 			$prog_info = $prog_model->program_by_name_md5($filename, $filemd5, $user_id);
-			$prog_map = ['id'=>$prog_info['id']];
+			$prog_map = array('id'=>$prog_info['id']);
 			$prog_res = $prog_model->where($prog_map)->setField('status', 1);
 			if($prog_info['size'] <= C("oss_100K_size")){
 				$AliyunOSS = new AliyunOSS();
 				//合并文件
 				$object = $prog_info['object'];
 				$uploadId = $prog_info['upload_id'];
-				$parts = [];
+				$parts = array();
 				foreach($fileparts as $val){
-					$parts[] = ['PartNumber'=>$val['partNumber'],'ETag' => $val['MD5']];
+					$parts[] = array('PartNumber'=>$val['partNumber'],'ETag' => $val['MD5']);
 				}
 				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->program_bucket);
 			}
@@ -136,16 +136,16 @@ class ManagerController extends CommonController
 			//媒体
 			$media_model = D("Media");
 			$media_info = $media_model->media_by_name_md5($filename, $filemd5, $user_id);
-			$media_map = ['id'=>$media_info['id']];
+			$media_map = array('id'=>$media_info['id']);
 			$media_res = $media_model->where($media_map)->setField('status', 1);
 			if($media_info['size'] <= C("oss_100K_size")){
 				$AliyunOSS = new AliyunOSS();
 				//合并文件
 				$object = $media_info['object'];
 				$uploadId = $media_info['upload_id'];
-				$parts = [];
+				$parts = array();
 				foreach($fileparts as $val){
-					$parts[] = ['PartNumber'=>$val['partNumber'],'ETag' => $val['MD5']];
+					$parts[] = array('PartNumber'=>$val['partNumber'],'ETag' => $val['MD5']);
 				}
 				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->media_bucket);
 			}
@@ -170,14 +170,14 @@ class ManagerController extends CommonController
 		$screen_model = D("Screen");
 		$result = $screen_model->user_all_screen($user_id);
 		$regions = D("Region")->all_region_name();
-		$screens = [];
-		$groups = [];
+		$screens = array();
+		$groups = array();
 		foreach($result as $val){
 			$province = $regions[$val['province']];
 			$city = $regions[$val['city']];
 			$district = $regions[$val['district']];
 			if(is_null($val['group_id'])){
-				$screens[] = [
+				$screens[] = array(
 					'id'		=> $val['id'],
 					'name'		=> $val['name'],
 					'size_x'	=> $val['size_x'],
@@ -189,15 +189,15 @@ class ManagerController extends CommonController
 					'longitude'	=> $val['longitude'],
 					'latitude'	=> $val['latitude'],
 					'address'	=> "{$province}{$city}{$district}{$val['address']}",
-				];
+				);
 			}else{
 				if(!$groups[$val['group_id']]){
-					$groups[$val['group_id']] = [
+					$groups[$val['group_id']] = array(
 						'id'		=> $val['group_id'],
 						'name'		=> $val['group_name']
-					];
+					);
 				}
-				$groups[$val['group_id']]['screens'][] = [
+				$groups[$val['group_id']]['screens'][] = array(
 					'id'		=> $val['id'],
 					'name'		=> $val['name'],
 					'size_x'	=> $val['size_x'],
@@ -209,10 +209,10 @@ class ManagerController extends CommonController
 					'longitude'	=> $val['longitude'],
 					'latitude'	=> $val['latitude'],
 					'address'	=> "{$province}{$city}{$district}{$val['address']}",
-				];
+				);
 			}
 		}
-		$response = [];
+		$response = array();
 		$response['groups'] = array_values($groups);
 		$response['screens'] = $screens;
 		$this->ajaxReturn($response);
@@ -236,7 +236,7 @@ class ManagerController extends CommonController
 	 * 上传播放方案
 	 */
 	private function _upload_program($model, $oss_obj, $user_id, $filename, $filesize, $filemd5, $subfix){
-		$result = [];
+		$result = array();
 		$program_id = $model->program_exists($filename, $filemd5, $user_id);
 		if($program_id){
 			//文件存在
@@ -247,19 +247,19 @@ class ManagerController extends CommonController
 				if($filesize <= C("oss_100K_size")){
 					//不使用分片
 					$sign_url = $oss_obj->upload_sign_uri($object, $this->program_bucket);
-					$parts = [];
-					$parts[] = [
+					$parts = array();
+					$parts[] = array(
 						'partNumber'	=> 1,
 						'seekTo'		=> 0,
 						'length'		=> $filesize,
 						'url'			=> $sign_url
-					];
-					$result = [
+					);
+					$result = array(
 						'name'	=> $filename,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
-					];
+					);
 				}else{
 					//未上传完成
 					//获取oss端上传成功的分片
@@ -267,33 +267,33 @@ class ManagerController extends CommonController
 					$part_size = $oss_obj->part_size($filesize);
 					$upload_parts = $oss_obj->generate_upload_part($filesize, $part_size);
 					$part_lists = $oss_obj->part_list($object, $uploadId, $this->program_bucket);
-					$part_list = [];
+					$part_list = array();
 					if($part_lists){
 						foreach($part_lists as $val){
 							$part_list[] = $val['partNumber'];
 						}
 					}
-					$parts = [];
+					$parts = array();
 					foreach($upload_parts as $key=>$val){
 						$part_number = $key+1;
 						if(!in_array($part_number, $part_list)){
 							//需要上传的分片
 							$sign_url = $oss_obj->upload_part_sign($object, $uploadId, $part_number, $this->program_bucket);
-							$parts[] = [
+							$parts[] = array(
 								'partNumber'	=> $part_number,
 								'seekTo'		=> $val['seekTo'],
 								'length'		=> $val['length'],
 								'url'			=> $sign_url
-							];
+							);
 						}
 					}
 					if($parts){
-						$result = [
+						$result = array(
 							'name'	=> $filename,
 							'md5'	=> $filemd5,
 							'key'	=> $object,
 							'parts'	=> $parts
-						];
+						);
 					}
 				}
 			}else{
@@ -305,7 +305,7 @@ class ManagerController extends CommonController
 			if($filesize <= C("oss_100K_size")){
 				//不使用分片
 				$object = oss_object($subfix);
-				$program_data = [];
+				$program_data = array();
 				$program_data['user_id'] = $user_id;
 				$program_data['name'] = $filename;
 				$program_data['object'] = $object;
@@ -315,19 +315,19 @@ class ManagerController extends CommonController
 				$program_data['publish'] = NOW_TIME;
 				$program_id = $model->add($program_data);
 				$sign_url = $oss_obj->upload_sign_uri($object, $this->program_bucket);
-				$parts = [];
-				$parts[] = [
+				$parts = array();
+				$parts[] = array(
 					'partNumber'	=> 1,
 					'seekTo'		=> 0,
 					'length'		=> $filesize,
 					'url'			=> $sign_url
-				];
-				$result = [
+				);
+				$result = array(
 					'name'	=> $filename,
 					'md5'	=> $filemd5,
 					'key'	=> $object,
 					'parts'	=> $parts
-				];
+				);
 			}else{
 				//文件分片
 				$part_size = $oss_obj->part_size($filesize);
@@ -337,7 +337,7 @@ class ManagerController extends CommonController
 				//上传文件信息入库
 				$object = $upload_info['Key'];
 				$uploadId = $upload_info['UploadId'];
-				$program_data = [];
+				$program_data = array();
 				$program_data['user_id'] = $user_id;
 				$program_data['name'] = $filename;
 				$program_data['object'] = $object;
@@ -347,24 +347,24 @@ class ManagerController extends CommonController
 				$program_data['publish'] = NOW_TIME;
 				$program_id = $model->add($program_data);
 				//获取每片文件签名地址
-				$parts = [];
+				$parts = array();
 				foreach($upload_parts as $key=>$val){
 					$part_number = $key+1;
 					$sign_url = $oss_obj->upload_part_sign($object, $uploadId, $part_number, $this->program_bucket);
-					$parts[] = [
+					$parts[] = array(
 						'partNumber'	=> $part_number,
 						'seekTo'		=> $val['seekTo'],
 						'length'		=> $val['length'],
 						'url'			=> $sign_url
-					];
+					);
 				}
 				if($parts){
-					$result = [
+					$result = array(
 						'name'	=> $filename,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
-					];
+					);
 				}
 			}
 		}
@@ -375,7 +375,7 @@ class ManagerController extends CommonController
 	 * 上传媒体
 	 */
 	private function _upload_media($model, $oss_obj, $user_id, $filename, $filesize, $filemd5, $subfix){
-		$result = [];
+		$result = array();
 		$media_id = $model->media_exists($filename, $filemd5, $user_id);
 		if($media_id){
 			$media_info = $model->media_detail($media_id);
@@ -385,48 +385,48 @@ class ManagerController extends CommonController
 				if($filesize <= C("oss_100K_size")){
 					//不使用分片
 					$sign_url = $oss_obj->upload_sign_uri($object, $this->media_bucket);
-					$parts = [];
-					$parts[] = [
+					$parts = array();
+					$parts[] = array(
 						'partNumber'	=> 1,
 						'seekTo'		=> 0,
 						'length'		=> $filesize,
 						'url'			=> $sign_url
-					];
-					$result = [
+					);
+					$result = array(
 						'name'	=> $filename,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
-					];
+					);
 				}else{
 					$part_size = $oss_obj->part_size($filesize);
 					$upload_parts = $oss_obj->generate_upload_part($filesize, $part_size);
 					$part_lists = $oss_obj->part_list($object, $uploadId, $this->media_bucket);
-					$part_list = [];
+					$part_list = array();
 					foreach($part_lists as $val){
 						$part_list[] = $val['partNumber'];
 					}
-					$parts = [];
+					$parts = array();
 					foreach($upload_parts as $key=>$val){
 						$part_number = $key+1;
 						if(!in_array($part_number, $part_list)){
 							//需要上传的分片
 							$sign_url = $oss_obj->upload_part_sign($object, $uploadId, $part_number, $this->media_bucket);
-							$parts[] = [
+							$parts[] = array(
 								'partNumber'	=> $part_number,
 								'seekTo'		=> $val['seekTo'],
 								'length'		=> $val['length'],
 								'url'			=> $sign_url
-							];
+							);
 						}
 					}
 					if($parts){
-						$result = [
+						$result = array(
 							'name'	=> $filename,
 							'md5'	=> $filemd5,
 							'key'	=> $object,
 							'parts'	=> $parts
-						];
+						);
 					}
 				}
 			}else{
@@ -438,7 +438,7 @@ class ManagerController extends CommonController
 			if($filesize <= C("oss_100K_size")){
 				//不使用分片
 				$object = oss_object($subfix);
-				$media_data = [];
+				$media_data = array();
 				$media_data['user_id'] = $user_id;
 				$media_data['name'] = $filename;
 				$media_data['object'] = $object;
@@ -448,19 +448,19 @@ class ManagerController extends CommonController
 				$media_data['publish'] = NOW_TIME;
 				$meida_id = $model->add($media_data);
 				$sign_url = $oss_obj->upload_sign_uri($object, $this->media_bucket);
-				$parts = [];
-				$parts[] = [
+				$parts = array();
+				$parts[] = array(
 					'partNumber'	=> 1,
 					'seekTo'		=> 0,
 					'length'		=> $filesize,
 					'url'			=> $sign_url
-				];
-				$result = [
+				);
+				$result = array(
 					'name'	=> $filename,
 					'md5'	=> $filemd5,
 					'key'	=> $object,
 					'parts'	=> $parts
-				];
+				);
 			}else{
 				//文件分片
 				$part_size = $oss_obj->part_size($filesize);
@@ -470,7 +470,7 @@ class ManagerController extends CommonController
 				//上传文件信息入库
 				$object = $upload_info['Key'];
 				$uploadId = $upload_info['UploadId'];
-				$media_data = [];
+				$media_data = array();
 				$media_data['user_id'] = $user_id;
 				$media_data['name'] = $filename;
 				$media_data['object'] = $object;
@@ -480,24 +480,24 @@ class ManagerController extends CommonController
 				$media_data['publish'] = NOW_TIME;
 				$meida_id = $model->add($media_data);
 				//获取每片文件签名地址
-				$parts = [];
+				$parts = array();
 				foreach($upload_parts as $key=>$val){
 					$part_number = $key+1;
 					$sign_url = $oss_obj->upload_part_sign($object, $uploadId, $part_number, $this->media_bucket);
-					$parts[] = [
+					$parts[] = array(
 						'partNumber'	=> $part_number,
 						'seekTo'		=> $val['seekTo'],
 						'length'		=> $val['length'],
 						'url'			=> $sign_url
-					];
+					);
 				}
 				if($parts){
-					$result = [
+					$result = array(
 						'name'	=> $filename,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
-					];
+					);
 				}
 			}
 		}

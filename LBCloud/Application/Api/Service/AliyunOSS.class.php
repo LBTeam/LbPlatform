@@ -95,7 +95,7 @@ class AliyunOSS
 					'prefix' => $val->getPrefix()
 				);
 			}
-			return ['objects'=>$objs, 'prefixs'=>$pres];
+			return array('objects'=>$objs, 'prefixs'=>$pres);
 		} catch (OssException $e) {
 		    print $e->getMessage();
 		}
@@ -172,7 +172,7 @@ class AliyunOSS
 			$object = oss_object($subfix);
 			$bucket = $bucket ? $bucket : $this->bucket;
 			$uploadId = $this->client->initiateMultipartUpload($bucket, $object);
-			$response = [];
+			$response = array();
 			$response['Key']		= $object;
 			$response['Bucket']		= $bucket;
 			$response['UploadId']	= $uploadId;
@@ -197,11 +197,11 @@ class AliyunOSS
 			$callback_uri	= ''; // "http://oss-demo.aliyuncs.com:23450";
 			$bucket = $bucket ? $bucket : $this->bucket;
 			$request_uri	= "http://{$bucket}.".substr($this->endpoint, 7);
-			$options = [
+			$options = array(
 				'partNumber'	=> $part,
 				'Content-Type'	=> 'application/octet-stream',
 				'uploadId'		=> $uploadId
-			];
+			);
 			if ($md5) {
 				$options['Content-Md5'] = $md5;
 			}
@@ -214,7 +214,7 @@ class AliyunOSS
 			return $request_uri;
 			/*
 			
-			$response = [];
+			$response = array();
 			$response['OSSAccessKeyId']  = $this->ossId;
 			$response['PostServer']      = $request_uri;
 			$response['Endpoint']        = $this->endpoint;
@@ -243,9 +243,9 @@ class AliyunOSS
 	public function upload_sign_uri($object, $bucket=false, $timeout=300){
 		try {
 			$bucket = $bucket ? $bucket : $this->bucket;
-			$options = [
+			$options = array(
 				'Content-Type'	=> 'application/octet-stream'
-			];
+			);
 			$sign_uri = $this->client->signUrl($bucket, $object, $timeout, "PUT", $options);
 			return $sign_uri;
 		} catch (OssException $e) {
@@ -334,14 +334,14 @@ class AliyunOSS
 			$bucket = $bucket ? $bucket : $this->bucket;
 			$response = $this->client->listParts($bucket, $object, $uploadId);
 			$listPart = $response->getListPart();
-			$parts = [];
+			$parts = array();
 			foreach($listPart as $val){
-				$parts[] = [
+				$parts[] = array(
 					'partNumber' => $val->getPartNumber(),
 					'lastModified' => $val->getLastModified(),
 					'eTag' => $val->getETag(),
 					'size' => $val->getSize()
-				];
+				);
 			}
 			return $parts;
 		} catch (OssException $e) {
@@ -351,14 +351,14 @@ class AliyunOSS
 	
 	public function demo($bucket, $object){
 	    try{
-	    	//$options = [];
+	    	//$options = array();
 	        //$options['headers'] = ['range' => '0-100'];
 			//$timeout = time() + 300;
 	        //$options['preauth'] = $timeout;
 	        //$options['Date'] = $timeout;
 			//$sign_uri = $this->client->signUrl($bucket, $object, '300', "GET", $options);
 			//dump($sign_uri);
-			$options = ['range' => '0-100'];
+			$options = array('range' => '0-100');
 			$content = $this->client->getObject($bucket, $object, $options);
 			dump($content);
 			

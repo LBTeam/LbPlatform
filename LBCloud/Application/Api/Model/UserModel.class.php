@@ -15,7 +15,7 @@ class UserModel extends Model
 	 * @return array
 	 */
 	public function user_by_email($email){
-		$map = [];
+		$map = array();
 		$map['email'] = $email;
 		$map['type'] = 2;
 		return $this->where($map)->find();

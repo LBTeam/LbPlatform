@@ -17,7 +17,7 @@ class ProgramModel extends Model
 	 * @return int|boolen
 	 */
 	public function program_exists($name, $md5, $user_id){
-		$map = [];
+		$map = array();
 		$map['user_id'] = $user_id;
 		$map['name'] = $name;
 		$map['md5'] = $md5;
@@ -35,7 +35,7 @@ class ProgramModel extends Model
 	 * @return array
 	 */
 	public function program_detail($program_id){
-		$map = [];
+		$map = array();
 		$map['id'] = $user_id;
 		return $this->where($map)->find();
 	}
@@ -48,7 +48,7 @@ class ProgramModel extends Model
 	 * @return array
 	 */
 	public function program_by_name_md5($name, $md5, $user_id){
-		$map = [];
+		$map = array();
 		$map['user_id'] = $user_id;
 		$map['name'] = $name;
 		$map['md5'] = $md5;

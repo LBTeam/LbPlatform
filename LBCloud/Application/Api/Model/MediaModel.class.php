@@ -17,7 +17,7 @@ class MediaModel extends Model
 	 * @return int|boolen
 	 */
 	public function media_exists($name, $md5, $user_id){
-		$map = [];
+		$map = array();
 		$map['user_id'] = $user_id;
 		$map['name'] = $name;
 		$map['md5'] = $md5;
@@ -35,7 +35,7 @@ class MediaModel extends Model
 	 * @return array
 	 */
 	public function media_detail($media_id){
-		$map = [];
+		$map = array();
 		$map['id'] = $media_id;
 		return $this->where($map)->find();
 	}
@@ -48,7 +48,7 @@ class MediaModel extends Model
 	 * @return array
 	 */
 	public function media_by_name_md5($name, $md5, $user_id){
-		$map = [];
+		$map = array();
 		$map['user_id'] = $user_id;
 		$map['name'] = $name;
 		$map['md5'] = $md5;
