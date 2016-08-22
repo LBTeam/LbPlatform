@@ -24,6 +24,10 @@ class ManagerController extends CommonController
 		$token = I("request.token");
 		//$request = '{"user":"15934854815@163.com","pwd":"123456"}';
 		$this->param = json_decode($request, true);
+		if(empty($this->param) === true){
+			$response = array('err_code'=>'010101', 'msg'=>"Protocol content error");
+			$this->ajaxReturn($response);exit;
+		}
 		$this->user_id = 1;
 		$this->media_bucket = C("oss_media_bucket");
 		$this->program_bucket = C("oss_program_bucket");
@@ -108,7 +112,8 @@ class ManagerController extends CommonController
 			$filesubfix = end(explode('.', $filename));
 			if($filesubfix == C('player_program_subfix')){
 				//播放方案
-				$program_data = $this->_upload_program($program_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix);
+				$medias = $val['MediaList'];
+				$program_data = $this->_upload_program($program_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix, $medias);
 				if($program_data){
 					$result[] = $program_data;
 				}
@@ -168,8 +173,8 @@ class ManagerController extends CommonController
 				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->media_bucket);
 			}
 		}
-		//$this->ajaxReturn($response);
-		echo "success";
+		$response = array("err_code"=>"000000","msg"=>"success");
+		$this->ajaxReturn($response);
 	}
 
 	/**
@@ -258,7 +263,7 @@ class ManagerController extends CommonController
 	/**
 	 * 上传播放方案
 	 */
-	private function _upload_program($model, $oss_obj, $user_id, $filename, $filesize, $filemd5, $subfix){
+	private function _upload_program($model, $oss_obj, $user_id, $filename, $filesize, $filemd5, $subfix, $medias){
 		$result = array();
 		$program_id = $model->program_exists($filename, $filemd5, $user_id);
 		if($program_id){
@@ -323,6 +328,10 @@ class ManagerController extends CommonController
 				//已上传完成
 				//不做处理
 			}
+			$update = array();
+			$update['id'] = $program_id;
+			$update['info'] = json_encode($medias);
+			$model->save($update);
 		}else{
 			//文件不存在
 			if($filesize <= C("oss_100K_size")){
@@ -333,6 +342,7 @@ class ManagerController extends CommonController
 				$program_data['name'] = mysql_real_escape_string($filename);
 				$program_data['object'] = $object;
 				$program_data['upload_id'] = '';
+				$program_data['info'] = json_encode($medias);
 				$program_data['md5'] = $filemd5;
 				$program_data['size'] = $filesize;
 				$program_data['publish'] = NOW_TIME;
@@ -365,6 +375,7 @@ class ManagerController extends CommonController
 				$program_data['name'] = mysql_real_escape_string($filename);
 				$program_data['object'] = $object;
 				$program_data['upload_id'] = $uploadId;
+				$program_data['info'] = json_encode($medias);
 				$program_data['md5'] = $filemd5;
 				$program_data['size'] = $filesize;
 				$program_data['publish'] = NOW_TIME;
