@@ -15,9 +15,14 @@ class ManagerController extends CommonController
 	private $program_bucket;
 	public function _initialize(){
 		$request = file_get_contents('php://input');
-		//$request = '[{"FilePath":"aabbcc.playprog","FileSize":"102400","FileMD5":"586af24095a05643c3be4bb402dsdwqs"},{"FilePath":"aabbccdd.playprog","FileSize":"2097152","FileMD5":"586af24095a05643c3be4bb402bfaee5"},{"FilePath":"aabbcc.avi","FileSize":"20971520","FileMD5":"b3206b4529ba377b0fa9f4a3bd9261f2"}]';
+		/*$array = array(
+			array("FilePath"=>"aabb'cc.playprog", "FileSize"=>"102400", "FileMD5"=>"586af24095a05643c3be4bb402dsdwqs"),
+			array("FilePath"=>"aabbccdd.playprog", "FileSize"=>"2097152", "FileMD5"=>"586af24095a05643c3be4bb402bfaee5"),
+			array("FilePath"=>"aab'bcc.avi", "FileSize"=>"20971520", "FileMD5"=>"b3206b4529ba377b0fa9f4a3bd9261f2"),
+		);
+		$request = json_encode($array);*/
 		$token = I("request.token");
-		$request = '{"user":"15934854815@163.com","pwd":"123456"}';
+		//$request = '{"user":"15934854815@163.com","pwd":"123456"}';
 		$this->param = json_decode($request, true);
 		$this->user_id = 1;
 		$this->media_bucket = C("oss_media_bucket");
@@ -235,7 +240,12 @@ class ManagerController extends CommonController
 	 * 播放方案列表
 	 */
 	public function programs(){
-		
+		$program_model = D("Program");
+		$result = $program_model->select();
+		foreach($result as &$val){
+			$val['name'] = stripslashes($val['name']);
+		}
+		$this->ajaxReturn($result);
 	}
 	
 	/**
@@ -320,7 +330,7 @@ class ManagerController extends CommonController
 				$object = oss_object($subfix);
 				$program_data = array();
 				$program_data['user_id'] = $user_id;
-				$program_data['name'] = $filename;
+				$program_data['name'] = mysql_real_escape_string($filename);
 				$program_data['object'] = $object;
 				$program_data['upload_id'] = '';
 				$program_data['md5'] = $filemd5;
@@ -352,7 +362,7 @@ class ManagerController extends CommonController
 				$uploadId = $upload_info['UploadId'];
 				$program_data = array();
 				$program_data['user_id'] = $user_id;
-				$program_data['name'] = $filename;
+				$program_data['name'] = mysql_real_escape_string($filename);
 				$program_data['object'] = $object;
 				$program_data['upload_id'] = $uploadId;
 				$program_data['md5'] = $filemd5;
@@ -453,7 +463,7 @@ class ManagerController extends CommonController
 				$object = oss_object($subfix);
 				$media_data = array();
 				$media_data['user_id'] = $user_id;
-				$media_data['name'] = $filename;
+				$media_data['name'] = mysql_real_escape_string($filename);
 				$media_data['object'] = $object;
 				$media_data['upload_id'] = '';
 				$media_data['md5'] = $filemd5;
@@ -485,7 +495,7 @@ class ManagerController extends CommonController
 				$uploadId = $upload_info['UploadId'];
 				$media_data = array();
 				$media_data['user_id'] = $user_id;
-				$media_data['name'] = $filename;
+				$media_data['name'] = mysql_real_escape_string($filename);
 				$media_data['object'] = $object;
 				$media_data['upload_id'] = $uploadId;
 				$media_data['md5'] = $filemd5;

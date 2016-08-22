@@ -19,7 +19,7 @@ class MediaModel extends Model
 	public function media_exists($name, $md5, $user_id){
 		$map = array();
 		$map['user_id'] = $user_id;
-		$map['name'] = $name;
+		$map['name'] = mysql_real_escape_string($name);
 		$map['md5'] = $md5;
 		$media_id = $this->where($map)->getField('id');
 		if($media_id){
@@ -50,7 +50,7 @@ class MediaModel extends Model
 	public function media_by_name_md5($name, $md5, $user_id){
 		$map = array();
 		$map['user_id'] = $user_id;
-		$map['name'] = $name;
+		$map['name'] = mysql_real_escape_string($name);
 		$map['md5'] = $md5;
 		return $this->where($map)->find();
 	}
