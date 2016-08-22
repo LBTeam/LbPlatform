@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-08-19 19:09:41
+-- Date/time:                    2016-08-22 13:40:13
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -126,12 +126,10 @@ CREATE TABLE IF NOT EXISTS `player_media` (
   `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
   `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='播放媒体';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放媒体';
 
 -- Dumping data for table player.player_media: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_media` DISABLE KEYS */;
-INSERT INTO `player_media` (`id`, `user_id`, `name`, `md5`, `object`, `upload_id`, `size`, `status`, `publish`, `expired`) VALUES
-	(1, 1, 'aabbcc.avi', 'b3206b4529ba377b0fa9f4a3bd9261f2', '20160816/57b2c0ee5160a.avi', '77F104F3FC7848E987ECDAC07868046E', '20971520', 0, 1471332589, 0);
 /*!40000 ALTER TABLE `player_media` ENABLE KEYS */;
 
 
@@ -206,13 +204,10 @@ CREATE TABLE IF NOT EXISTS `player_program` (
   `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
   `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='播放方案';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放方案';
 
--- Dumping data for table player.player_program: ~2 rows (approximately)
+-- Dumping data for table player.player_program: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_program` DISABLE KEYS */;
-INSERT INTO `player_program` (`id`, `user_id`, `name`, `object`, `upload_id`, `info`, `md5`, `type`, `size`, `status`, `publish`, `expired`) VALUES
-	(1, 1, 'aabbcc.playprog', '20160816/57b2c0ee04398.playprog', '', '', '586af24095a05643c3be4bb402dsdwqs', 0, '102400', 0, 1471332589, 0),
-	(2, 1, 'aabbccdd.playprog', '20160816/57b2c0ee0e3c2.playprog', '06729381D1354E9D8129CD15C2CABC86', '', '586af24095a05643c3be4bb402bfaee5', 0, '2097152', 0, 1471332589, 0);
 /*!40000 ALTER TABLE `player_program` ENABLE KEYS */;
 
 
@@ -3638,7 +3633,7 @@ CREATE TABLE IF NOT EXISTS `player_user` (
 -- Dumping data for table player.player_user: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `type`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 2, 1471597300, '127.0.0.1', 0, '', 'cf5160b023c508c482c3c6544e2cf4da0bf2c5cd', 1471604500);
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 2, 1471830984, '127.0.0.1', 0, '', '55ebacae625518e60f50442749c50198fde1fab0', 1471838184);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
