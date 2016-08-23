@@ -24,8 +24,8 @@ class ManagerController extends CommonController
 		$token = I("request.token");
 		//$request = '{"user":"15934854815@163.com","pwd":"123456"}';
 		$this->param = json_decode($request, true);
-		if(empty($this->param) === true){
-			$response = array('err_code'=>'010101', 'msg'=>"Protocol content error");
+		if(!$this->param){
+			$response = array('err_code'=>'010001', 'msg'=>"Protocol content error");
 			$this->ajaxReturn($response);exit;
 		}
 		$this->user_id = 1;
@@ -77,10 +77,10 @@ class ManagerController extends CommonController
 					$return = array('token'=>$token, 'expire'=>7200);
 					$response = array('err_code'=>'000000', 'msg'=>"ok", 'data'=>$return);
 				}else{
-					$response = array('err_code'=>'010101', 'msg'=>"Login failed");
+					$response = array('err_code'=>'010103', 'msg'=>"Login failed");
 				}
 			}else{
-				$response = array('err_code'=>'010101', 'msg'=>"Password error");
+				$response = array('err_code'=>'010102', 'msg'=>"Password error");
 			}
 		}else{
 			$response = array('err_code'=>'010101', 'msg'=>"User does not exist");
@@ -239,6 +239,13 @@ class ManagerController extends CommonController
 		$response['groups'] = array_values($groups);
 		$response['screens'] = $screens;
 		$this->ajaxReturn($response);
+	}
+
+	/**
+	 * 发布方案
+	 */
+	public function publish(){
+		
 	}
 	
 	/**
