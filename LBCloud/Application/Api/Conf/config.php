@@ -17,5 +17,10 @@ return array(
 	'oss_10M_part_size'		=>	10485760,	//10M大小
 	'oss_50M_part_size'		=>	52428800,	//50M大小
 	
-	'player_program_subfix'	=>	'playprog',
+	'player_program_subfix'	=>	'playprog',	//播放方案文件后缀名
+	
+	//未登录可访问模块
+	'not_logged_allow' => array(
+		'login',
+	),
 );

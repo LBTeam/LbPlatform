@@ -349,6 +349,22 @@ class AliyunOSS
 		}
 	}
 	
+	/**
+	 * 文件是否存在
+	 * @param $object 存储对象
+	 * @param $bucket 存储空间
+	 * @return boolen
+	 */
+	public function object_exists($object, $bucket=false){
+		try {
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$response = $this->client->doesObjectExist($bucket, $object);
+			return $response;
+		} catch (OssException $e) {
+		    print $e->getMessage();
+		}
+	}
+	
 	public function demo($bucket, $object){
 	    try{
 	    	//$options = array();

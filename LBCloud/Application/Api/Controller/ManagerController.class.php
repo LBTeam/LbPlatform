@@ -11,6 +11,7 @@ class ManagerController extends CommonController
 {
 	private $param;
 	private $user_id;
+	private $user_model;
 	private $media_bucket;
 	private $program_bucket;
 	public function _initialize(){
@@ -21,14 +22,39 @@ class ManagerController extends CommonController
 			array("FilePath"=>"aab'bcc.avi", "FileSize"=>"20971520", "FileMD5"=>"b3206b4529ba377b0fa9f4a3bd9261f2"),
 		);
 		$request = json_encode($array);*/
-		$token = I("request.token");
 		//$request = '{"user":"15934854815@163.com","pwd":"123456"}';
+		/*登录令牌（token）检测开始*/
+		/*$token = I("request.token");
+		$this->user_model = D("User");
+		if(in_array(ACTION_NAME, C("not_logged_allow"))){
+			//未登录可访问模块
+			//不检查登录令牌
+			
+		}else{
+			//检查token
+			if($token){
+				$this->user_id = $this->user_model->check_token($token);
+				if($this->user_id === false){
+					$response = array('err_code'=>'010002', 'msg'=>"Token error");
+					$this->ajaxReturn($response);exit;
+				}else{
+					if(!$this->user_id){
+						$response = array('err_code'=>'010003', 'msg'=>"Token timeout");
+						$this->ajaxReturn($response);exit;
+					}
+				}
+			}else{
+				$response = array('err_code'=>'010002', 'msg'=>"Token error");
+				$this->ajaxReturn($response);exit;
+			}
+		}*/
+		$this->user_id = 1;
+		/*登录令牌（token）检测结束*/
 		$this->param = json_decode($request, true);
-		if(!$this->param){
+		/*if(!$this->param){
 			$response = array('err_code'=>'010001', 'msg'=>"Protocol content error");
 			$this->ajaxReturn($response);exit;
-		}
-		$this->user_id = 1;
+		}*/
 		$this->media_bucket = C("oss_media_bucket");
 		$this->program_bucket = C("oss_program_bucket");
 	}
@@ -57,8 +83,7 @@ class ManagerController extends CommonController
 		$username = $obj['user'];
 		$password = $obj['pwd'];
 		$response = array();
-		$user_model = D("User");
-		$user_info = $user_model->user_by_email($username);
+		$user_info = $this->user_model->user_by_email($username);
 		if($user_info){
 			$db_pwd = $user_info['password'];
 			if(sp_compare_password($password, $db_pwd)){
@@ -72,7 +97,7 @@ class ManagerController extends CommonController
 				$data['lastip'] = get_client_ip();
 				$data['token'] = $token;
 				$data['expire'] = $expire;
-				$res = $user_model->save($data);
+				$res = $this->user_model->save($data);
 				if($res){
 					$return = array('token'=>$token, 'expire'=>7200);
 					$response = array('err_code'=>'000000', 'msg'=>"ok", 'data'=>$return);
@@ -245,8 +270,32 @@ class ManagerController extends CommonController
 	 * 发布方案
 	 */
 	public function publish(){
-		
+		$obj = $this->param;
+		$groups = $obj['groups'];
+		$screens = $obj['screens'];
+		$program = $obj['program'];
+		$user_id = $this->user_id;
+		$program_model = D("Program");
+		$release = $program_model->program_can_release($program, $user_id);
+		if($release){
+			$group_model = D("Group");
+			$g_screens = $group_model->group_screens($groups, $user_id);
+			$all_screen = array_merge($g_screens, $screens);
+			
+			
+		}else{
+			$response = array('err_code'=>'010110', 'msg'=>"Program is not complete, can not be released");
+		}
+		$this->ajaxReturn($response);
 	}
+	
+	/*public function demo(){
+		$group_model = D("Group");
+		$groups = array('1','2');
+		$user_id = $this->user_id;
+		$temp = $group_model->group_screens($groups, $user_id);
+		dump($temp);
+	}*/
 	
 	/**
 	 * 播放方案列表
