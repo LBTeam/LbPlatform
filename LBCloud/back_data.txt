@@ -1,0 +1,60 @@
+上传接口返回数据
+[
+	{
+		//不使用分片上传
+        "name": "aabbccdd.playprog",
+        "key": "20160815/57b199efc632e.playprog",
+        "parts": [
+            {
+                "url": "http://lb-player-program.oss-cn-shenzhen.aliyuncs.com/20160815/57b199efc632e.playprog?partNumber=1&uploadId=BB51E4D5A72248A68BE33E4CA322F31B&OSSAccessKeyId=f1mcwCSSqB9tIY57&Expires=1471257372&Signature=i2RJhye0xGjOYgJl2Rb1ATq%2B30o%3D"
+            }
+        ]
+    },
+    {
+		//使用分片上传但文件只分成1片
+        "name": "aabbccdd.playprog",
+        "key": "20160815/57b199efc632e.playprog",
+        "parts": [
+            {
+                "partNumber": 1,
+                "seekTo": 0,
+                "length": 2097152,
+                "url": "http://lb-player-program.oss-cn-shenzhen.aliyuncs.com/20160815/57b199efc632e.playprog?partNumber=1&uploadId=BB51E4D5A72248A68BE33E4CA322F31B&OSSAccessKeyId=f1mcwCSSqB9tIY57&Expires=1471257372&Signature=i2RJhye0xGjOYgJl2Rb1ATq%2B30o%3D"
+            }
+        ]
+    },
+    {
+		//使用分片上传文件分成多片
+        "name": "aabbcc.avi",
+        "key": "20160815/57b199f003221.avi",
+        "parts": [
+            {
+                "partNumber": 1,
+                "seekTo": 0,
+                "length": 10485760,
+                "url": "http://lb-player-media.oss-cn-shenzhen.aliyuncs.com/20160815/57b199f003221.avi?partNumber=1&uploadId=809ED5E5F2EA4D499A51DAA48B07382E&OSSAccessKeyId=f1mcwCSSqB9tIY57&Expires=1471257372&Signature=NpT2mSLPZA7lw%2FWqdtskV6Y9xkU%3D"
+            },
+            {
+                "partNumber": 2,
+                "seekTo": 10485760,
+                "length": 10485760,
+                "url": "http://lb-player-media.oss-cn-shenzhen.aliyuncs.com/20160815/57b199f003221.avi?partNumber=2&uploadId=809ED5E5F2EA4D499A51DAA48B07382E&OSSAccessKeyId=f1mcwCSSqB9tIY57&Expires=1471257372&Signature=RRJXVESPg9av89e%2FpyaM8oxiRyc%3D"
+            }
+        ]
+    }
+]
+完成提交数据
+{
+    "FileName": "aabbcc.jpg",
+    "FileMD5": "b3206b4529ba377b0fa9f4a3bd9261f2",
+    "Parts": [
+        {
+            "partNumber": 1,
+            "MD5": "96b71273c03d44bb9c81c6c37c640cf0"
+        },
+        {
+            "partNumber": 2,
+            "MD5": "96b71273c03d44bb9c81c6c37c640cf0"
+        }
+    ]
+}

@@ -1,22 +1,103 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBManager", "LBManager\LBManager.csproj", "{4872C236-C70E-4249-A050-D64CBA29AF5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesignColors.Wpf", "..\Common\MaterialDesign\MaterialDesignColors.Wpf\MaterialDesignColors.Wpf.csproj", "{90B53209-C60C-4655-B28D-A1B3E1044BA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesignThemes.Wpf", "..\Common\MaterialDesign\MaterialDesignThemes.Wpf\MaterialDesignThemes.Wpf.csproj", "{F079FB0A-A8ED-4216-B6A5-345756751A04}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MaterialDesign", "MaterialDesign", "{94CDA7B9-31D8-47BE-82D7-C2CB7F5F6853}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MahAppsMetro", "MahAppsMetro", "{38566858-49C1-424A-80FD-670D83AA323F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahApps.Metro.NET45", "..\Common\MahAppsMetro\MahApps.Metro\MahApps.Metro.NET45.csproj", "{942D11C4-29F5-46C4-8C14-4B976D56C637}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahApps.Metro.Resources", "..\Common\MahAppsMetro\MahApps.Metro.Resources\MahApps.Metro.Resources.csproj", "{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ElysiumExtra", "ElysiumExtra", "{64CBEBD4-4531-41A3-B975-EC6D4D3B75F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework", "..\Common\ElysiumExtra\Framework\Framework.csproj", "{20D52B40-00B7-40D1-A3A0-56F3D900C0D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.UI", "..\Common\ElysiumExtra\Framework.UI\Framework.UI.csproj", "{925D4016-8D41-4E81-9287-695C5A1E1E85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBManager.Controls", "LBManager.Controls\LBManager.Controls.csproj", "{5DC0AEC5-E59B-4868-B125-92EEB3C1225B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBManager.Infrastructure", "LBManager.Infrastructure\LBManager.Infrastructure.csproj", "{AE40C0E5-6C31-4364-874D-6A0A6C028367}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		AppVeyor|Any CPU = AppVeyor|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4872C236-C70E-4249-A050-D64CBA29AF5A}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{4872C236-C70E-4249-A050-D64CBA29AF5A}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
 		{4872C236-C70E-4249-A050-D64CBA29AF5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4872C236-C70E-4249-A050-D64CBA29AF5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4872C236-C70E-4249-A050-D64CBA29AF5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4872C236-C70E-4249-A050-D64CBA29AF5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90B53209-C60C-4655-B28D-A1B3E1044BA3}.AppVeyor|Any CPU.ActiveCfg = AppVeyor|Any CPU
+		{90B53209-C60C-4655-B28D-A1B3E1044BA3}.AppVeyor|Any CPU.Build.0 = AppVeyor|Any CPU
+		{90B53209-C60C-4655-B28D-A1B3E1044BA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90B53209-C60C-4655-B28D-A1B3E1044BA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90B53209-C60C-4655-B28D-A1B3E1044BA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90B53209-C60C-4655-B28D-A1B3E1044BA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.AppVeyor|Any CPU.ActiveCfg = AppVeyor|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.AppVeyor|Any CPU.Build.0 = AppVeyor|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{942D11C4-29F5-46C4-8C14-4B976D56C637}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{942D11C4-29F5-46C4-8C14-4B976D56C637}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
+		{942D11C4-29F5-46C4-8C14-4B976D56C637}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{942D11C4-29F5-46C4-8C14-4B976D56C637}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{942D11C4-29F5-46C4-8C14-4B976D56C637}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{942D11C4-29F5-46C4-8C14-4B976D56C637}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
+		{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20D52B40-00B7-40D1-A3A0-56F3D900C0D6}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{20D52B40-00B7-40D1-A3A0-56F3D900C0D6}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
+		{20D52B40-00B7-40D1-A3A0-56F3D900C0D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20D52B40-00B7-40D1-A3A0-56F3D900C0D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20D52B40-00B7-40D1-A3A0-56F3D900C0D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20D52B40-00B7-40D1-A3A0-56F3D900C0D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{925D4016-8D41-4E81-9287-695C5A1E1E85}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{925D4016-8D41-4E81-9287-695C5A1E1E85}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
+		{925D4016-8D41-4E81-9287-695C5A1E1E85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{925D4016-8D41-4E81-9287-695C5A1E1E85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{925D4016-8D41-4E81-9287-695C5A1E1E85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{925D4016-8D41-4E81-9287-695C5A1E1E85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DC0AEC5-E59B-4868-B125-92EEB3C1225B}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{5DC0AEC5-E59B-4868-B125-92EEB3C1225B}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
+		{5DC0AEC5-E59B-4868-B125-92EEB3C1225B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DC0AEC5-E59B-4868-B125-92EEB3C1225B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DC0AEC5-E59B-4868-B125-92EEB3C1225B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DC0AEC5-E59B-4868-B125-92EEB3C1225B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE40C0E5-6C31-4364-874D-6A0A6C028367}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{AE40C0E5-6C31-4364-874D-6A0A6C028367}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
+		{AE40C0E5-6C31-4364-874D-6A0A6C028367}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE40C0E5-6C31-4364-874D-6A0A6C028367}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE40C0E5-6C31-4364-874D-6A0A6C028367}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE40C0E5-6C31-4364-874D-6A0A6C028367}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{90B53209-C60C-4655-B28D-A1B3E1044BA3} = {94CDA7B9-31D8-47BE-82D7-C2CB7F5F6853}
+		{F079FB0A-A8ED-4216-B6A5-345756751A04} = {94CDA7B9-31D8-47BE-82D7-C2CB7F5F6853}
+		{942D11C4-29F5-46C4-8C14-4B976D56C637} = {38566858-49C1-424A-80FD-670D83AA323F}
+		{E708AC99-605B-42A0-8D20-ABCA8FE42DD2} = {38566858-49C1-424A-80FD-670D83AA323F}
+		{20D52B40-00B7-40D1-A3A0-56F3D900C0D6} = {64CBEBD4-4531-41A3-B975-EC6D4D3B75F5}
+		{925D4016-8D41-4E81-9287-695C5A1E1E85} = {64CBEBD4-4531-41A3-B975-EC6D4D3B75F5}
 	EndGlobalSection
 EndGlobal

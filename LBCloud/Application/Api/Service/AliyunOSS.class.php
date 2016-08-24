@@ -68,7 +68,7 @@ class AliyunOSS
 	 * @param $prefix 存储虚拟目录
 	 * @return array
 	 */
-	public function object_list($bucket = '', $prefix = ''){
+	public function object_list($bucket = false, $prefix = ''){
 		try {
 			$bucket = $bucket ? $bucket : $this->bucket;
 			$options = array();
@@ -95,7 +95,7 @@ class AliyunOSS
 					'prefix' => $val->getPrefix()
 				);
 			}
-			return ['objects'=>$objs, 'prefixs'=>$pres];
+			return array('objects'=>$objs, 'prefixs'=>$pres);
 		} catch (OssException $e) {
 		    print $e->getMessage();
 		}
@@ -123,6 +123,29 @@ class AliyunOSS
 	}
 	
 	/**
+	 * 根据文件大小获取合理的分片文件大小
+	 * @param $filesize 文件总大小
+	 * @return int
+	 */
+	public function part_size($filesize){
+		$part_size = 0;
+		if($filesize <= C("oss_100K_size")){
+			$part_size = C("oss_100K_size");
+		}else if($filesize <= C("oss_1M_part_size")){
+			$part_size = C("oss_200K_size");
+		}else if($filesize <= C("oss_5M_part_size")){
+			$part_size = C("oss_1M_part_size");
+		}else if($filesize <= C("oss_10M_part_size")){
+			$part_size = C("oss_2M_part_size");
+		}else if($filesize <= C("oss_50M_part_size")){
+			$part_size = C("oss_5M_part_size");
+		}else{
+			$part_size = C("oss_10M_part_size");
+		}
+		return $part_size;
+	}
+	
+	/**
 	 * 文件分片
 	 * @param $size 文件大小
 	 * @param $part 分片大小(5M)
@@ -140,16 +163,18 @@ class AliyunOSS
 	/**
 	 * 获取分块上传UploadId
 	 * @param $subfix 上传文件后缀名
+	 * @param $bucket 存储空间
 	 * @return array
 	 */
-	public function get_upload_id($subfix){
+	public function get_upload_id($subfix, $bucket=false){
 		try {
 			$subfix = trim($subfix, '.');
-			$object = uniqid() . (!empty($subfix) ? ".$subfix": '');
-			$uploadId = $this->client->initiateMultipartUpload($this->bucket, $object);
-			$response = [];
+			$object = oss_object($subfix);
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$uploadId = $this->client->initiateMultipartUpload($bucket, $object);
+			$response = array();
 			$response['Key']		= $object;
-			$response['Bucket']		= $this->bucket;
+			$response['Bucket']		= $bucket;
 			$response['UploadId']	= $uploadId;
 			return $response;
 		} catch (OssException $e) {
@@ -162,23 +187,25 @@ class AliyunOSS
 	 * @param $object 存储对象名称
 	 * @param $uploadId 分块上传UploadId
 	 * @param $part 分块文件顺序
+	 * @param $bucket 存储空间
 	 * @param $md5 分块文件md5
 	 * @param $timeout 签名过期时间
 	 * @return string
 	 */
-	public function upload_part_sign($object, $uploadId, $part=1, $md5=false, $timeout=300){
+	public function upload_part_sign($object, $uploadId, $part=1, $bucket=false, $md5=false, $timeout=300){
 		try {
 			$callback_uri	= ''; // "http://oss-demo.aliyuncs.com:23450";
-			$request_uri	= "http://{$this->bucket}.".substr($this->endpoint, 7);
-			$options = [
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$request_uri	= "http://{$bucket}.".substr($this->endpoint, 7);
+			$options = array(
 				'partNumber'	=> $part,
 				'Content-Type'	=> 'application/octet-stream',
-				'UploadId'		=> $uploadId
-			];
+				'uploadId'		=> $uploadId
+			);
 			if ($md5) {
 				$options['Content-Md5'] = $md5;
 			}
-			$sign_uri = $this->client->signUrl($this->bucket, $object, $timeout, "PUT", $options);
+			$sign_uri = $this->client->signUrl($bucket, $object, $timeout, "PUT", $options);
 			$sign_uri = parse_url($sign_uri);
 			
 			parse_str($sign_uri['query'], $query);
@@ -187,7 +214,7 @@ class AliyunOSS
 			return $request_uri;
 			/*
 			
-			$response = [];
+			$response = array();
 			$response['OSSAccessKeyId']  = $this->ossId;
 			$response['PostServer']      = $request_uri;
 			$response['Endpoint']        = $this->endpoint;
@@ -206,6 +233,25 @@ class AliyunOSS
 		    print $e->getMessage();
 		}
 	}
+
+	/**
+	 * 上传文件签名地址
+	 * @param $object 存储对象名称
+	 * @param $bucket 存储空间
+	 * @param $timeout 签名过期时间
+	 */
+	public function upload_sign_uri($object, $bucket=false, $timeout=300){
+		try {
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$options = array(
+				'Content-Type'	=> 'application/octet-stream'
+			);
+			$sign_uri = $this->client->signUrl($bucket, $object, $timeout, "PUT", $options);
+			return $sign_uri;
+		} catch (OssException $e) {
+		    print $e->getMessage();
+		}
+	}
 	
 	/**
 	 * 分片上传完成合并文件
@@ -218,12 +264,13 @@ class AliyunOSS
 	 *				)
 	 * @return boolen
 	 */
-	public function complete_upload($object, $uploadId, $parts){
+	public function complete_upload($object, $uploadId, $parts, $bucket=false){
 		try {
-			$this->client->completeMultipartUpload($this->bucket, $object, $uploadId, $parts);
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$this->client->completeMultipartUpload($bucket, $object, $uploadId, $parts);
 			return true;
 		} catch (OssException $e) {
-		    //print $e->getMessage();
+		    print $e->getMessage();
 		    return false;
 		}
 	}
@@ -234,9 +281,10 @@ class AliyunOSS
 	 * @param $uploadId 分块上传UploadId
 	 * @return boolen
 	 */
-	public function abort_upload($object, $uploadId){
+	public function abort_upload($object, $uploadId, $bucket=false){
 		try {
-			$this->client->abortMultipartUpload($this->bucket, $object, $uploadId);
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$this->client->abortMultipartUpload($bucket, $object, $uploadId);
 			return true;
 		} catch (OssException $e) {
 		    //print $e->getMessage();
@@ -248,7 +296,7 @@ class AliyunOSS
 	 * 未完成的分片上传列表
 	 * @return array
 	 */
-	public function upload_part_list(){
+	public function upload_part_list($bucket=false){
 		try {
 			$options = array(
 		        'max-uploads' => 100,
@@ -256,7 +304,8 @@ class AliyunOSS
 		        'prefix' => '',
 		        'upload-id-marker' => ''
 		    );
-	        $listMultipartUploadInfo = $this->client->listMultipartUploads($this->bucket, $options);
+			$bucket = $bucket ? $bucket : $this->bucket;
+	        $listMultipartUploadInfo = $this->client->listMultipartUploads($bucket, $options);
 			$listUploadInfo = $listMultipartUploadInfo->getUploads();
 			$uploads = array();
 			foreach($listUploadInfo as $val){
@@ -280,23 +329,44 @@ class AliyunOSS
 	 * @param $bucket 存储空间
 	 * @return array
 	 */
-	public function part_list($object, $uploadId, $bucket=''){
+	public function part_list($object, $uploadId, $bucket=false){
 		try {
 			$bucket = $bucket ? $bucket : $this->bucket;
 			$response = $this->client->listParts($bucket, $object, $uploadId);
 			$listPart = $response->getListPart();
-			$parts = [];
+			$parts = array();
 			foreach($listPart as $val){
-				$parts[] = [
+				$parts[] = array(
 					'partNumber' => $val->getPartNumber(),
 					'lastModified' => $val->getLastModified(),
 					'eTag' => $val->getETag(),
 					'size' => $val->getSize()
-				];
+				);
 			}
 			return $parts;
 		} catch (OssException $e) {
 		    print $e->getMessage();
 		}
+	}
+	
+	public function demo($bucket, $object){
+	    try{
+	    	//$options = array();
+	        //$options['headers'] = ['range' => '0-100'];
+			//$timeout = time() + 300;
+	        //$options['preauth'] = $timeout;
+	        //$options['Date'] = $timeout;
+			//$sign_uri = $this->client->signUrl($bucket, $object, '300', "GET", $options);
+			//dump($sign_uri);
+			$options = array('range' => '0-100');
+			$content = $this->client->getObject($bucket, $object, $options);
+			dump($content);
+			
+	    } catch(OssException $e) {
+	        printf(__FUNCTION__ . ": FAILED\n");
+	        printf($e->getMessage() . "\n");
+	        return;
+	    }
+	    print(__FUNCTION__ . ": OK" . "\n");
 	}
 }
