@@ -97,7 +97,6 @@ namespace Com.Net
             System.Diagnostics.Debug.WriteLine("Post : " + data);
             return bRes;
         }
-
         public bool Post(string url, String data, out String replydata, out Exception errInfo)
         {
             replydata = "";
@@ -168,7 +167,7 @@ namespace Com.Net
             return bRes;
         }
         private bool CheckValidationResult(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors errors)
-        { 
+        {
             return true; //总是接受
         }
     }
