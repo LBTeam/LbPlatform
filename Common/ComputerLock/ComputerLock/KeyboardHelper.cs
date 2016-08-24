@@ -191,6 +191,42 @@ namespace Com.Utility
                         return 1;
                     }
                 }
+                if (kbh.vkCode == 91)  // 截获左win(开始菜单键) 
+                {
+                    return 1;
+                }
+                if (kbh.vkCode == 92)// 截获右win 
+                {
+                    return 1;
+                }
+                if (kbh.vkCode == (int)Keys.Escape && (int)Control.ModifierKeys == (int)Keys.Control) //截获Ctrl+Esc 
+                {
+                    return 1;
+                }
+                if (kbh.vkCode == (int)Keys.F4 && (int)Control.ModifierKeys == (int)Keys.Alt)  //截获alt+f4 
+                {
+                    return 1;
+                }
+                if (kbh.vkCode == (int)Keys.Tab && (int)Control.ModifierKeys == (int)Keys.Alt) //截获alt+tab 
+                {
+                    return 1;
+                }
+                if (kbh.vkCode == (int)Keys.Escape && (int)Control.ModifierKeys == (int)Keys.Control + (int)Keys.Shift) //截获Ctrl+Shift+Esc 
+                {
+                    return 1;
+                }
+                if (kbh.vkCode == (int)Keys.Space && (int)Control.ModifierKeys == (int)Keys.Alt)  //截获alt+空格 
+                {
+                    return 1;
+                }
+                if (kbh.vkCode == 241)                  //截获F1 
+                {
+                    return 1;
+                }
+                if ((int)Control.ModifierKeys == (int)Keys.Control + (int)Keys.Alt + (int)Keys.Delete)      //截获Ctrl+Alt+Delete 
+                {
+                    return 1;
+                }
 
             }
             return CallNextHookEx(this.hKeyboardHook, nCode, wParam, lParam);
@@ -279,13 +315,7 @@ namespace Com.Utility
 
             if ((nCode >= 0) && (lParam.ToInt32() > 0))
             {
-                Debug.WriteLine("MOUSE- Point:" + mbh.p);
-
-                Debug.WriteLine("MOUSE- HWnd:" + mbh.HWnd);
-                Debug.WriteLine("MOUSE- nCode:" + nCode.ToString());
-                Debug.WriteLine("MOUSE- lParam:" + lParam.ToString());
-                Debug.WriteLine("MOUSE- wParam:" + wParam.ToString());
-                //当鼠标左键按下的时候wParam = WM_MOUSELEFTDOWN，当鼠标左键抬起的时候wParam = WM_MOUSELEFTUP
+               
                 switch (wParam)
                 {
                     case WM_MOUSELEFTDOWN:
