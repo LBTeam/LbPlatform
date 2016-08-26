@@ -280,7 +280,7 @@ class ManagerController extends CommonController
 		if($release){
 			$group_model = D("Group");
 			$g_screens = $group_model->group_screens($groups, $user_id);
-			$all_screen = array_merge($g_screens, $screens);
+			$all_screen = array_unique(array_merge($g_screens, $screens));
 			
 			
 		}else{

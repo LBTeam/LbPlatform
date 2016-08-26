@@ -11,6 +11,16 @@ use Api\Service\AliyunOSS;
 class ProgramModel extends Model
 {
 	/**
+	 * 用户播放方案
+	 * @param $user_id 用户ID
+	 * @return array
+	 */
+	public function all_program($user_id){
+		
+	}
+	
+	
+	/**
 	 * 检查播放方案是否存在
 	 * @param $name 播放方案名称
 	 * @param $md5 播放方案md5
