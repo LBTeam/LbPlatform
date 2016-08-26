@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-08-22 13:40:13
+-- Date/time:                    2016-08-26 19:19:18
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -104,11 +104,15 @@ CREATE TABLE IF NOT EXISTS `player_group_screen` (
   `group_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏幕组ID，player_group表id外键'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='屏幕分组及屏幕对应表';
 
--- Dumping data for table player.player_group_screen: ~2 rows (approximately)
+-- Dumping data for table player.player_group_screen: ~6 rows (approximately)
 /*!40000 ALTER TABLE `player_group_screen` DISABLE KEYS */;
 INSERT INTO `player_group_screen` (`uid`, `screen_id`, `group_id`) VALUES
 	(1, 1, 1),
-	(1, 3, 1);
+	(1, 3, 1),
+	(1, 8, 1),
+	(1, 8, 2),
+	(1, 4, 2),
+	(1, 4, 3);
 /*!40000 ALTER TABLE `player_group_screen` ENABLE KEYS */;
 
 
@@ -126,10 +130,12 @@ CREATE TABLE IF NOT EXISTS `player_media` (
   `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
   `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放媒体';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='播放媒体';
 
 -- Dumping data for table player.player_media: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_media` DISABLE KEYS */;
+INSERT INTO `player_media` (`id`, `user_id`, `name`, `md5`, `object`, `upload_id`, `size`, `status`, `publish`, `expired`) VALUES
+	(1, 1, 'aab\\\'bcc.avi', 'b3206b4529ba377b0fa9f4a3bd9261f2', '20160822/57ba998526ba9.avi', '064A0509F679494DBB2CE13D3A01726E', '20971520', 0, 1471846788, 0);
 /*!40000 ALTER TABLE `player_media` ENABLE KEYS */;
 
 
@@ -196,7 +202,7 @@ CREATE TABLE IF NOT EXISTS `player_program` (
   `name` varchar(128) NOT NULL DEFAULT '' COMMENT '播放方案名称',
   `object` varchar(128) NOT NULL DEFAULT '' COMMENT '播放方案oss存储对象名称',
   `upload_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'oss存储uploadId',
-  `info` varchar(256) NOT NULL DEFAULT '',
+  `info` text NOT NULL,
   `md5` varchar(64) NOT NULL DEFAULT '' COMMENT '播放方案文件md5',
   `type` tinyint(4) NOT NULL DEFAULT '0',
   `size` varchar(20) NOT NULL DEFAULT '',
@@ -204,10 +210,13 @@ CREATE TABLE IF NOT EXISTS `player_program` (
   `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
   `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放方案';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='播放方案';
 
--- Dumping data for table player.player_program: ~0 rows (approximately)
+-- Dumping data for table player.player_program: ~2 rows (approximately)
 /*!40000 ALTER TABLE `player_program` DISABLE KEYS */;
+INSERT INTO `player_program` (`id`, `user_id`, `name`, `object`, `upload_id`, `info`, `md5`, `type`, `size`, `status`, `publish`, `expired`) VALUES
+	(1, 1, 'aabb\\\'cc.playprog', '20160822/57ba9984bb292.playprog', '', '', '586af24095a05643c3be4bb402dsdwqs', 0, '102400', 0, 1471846788, 0),
+	(2, 1, 'aabbccdd.playprog', '20160822/57ba9984ca8ae.playprog', '7CFA11C27EB94E2AB9B8C889AF81713B', '', '586af24095a05643c3be4bb402bfaee5', 0, '2097152', 0, 1471846788, 0);
 /*!40000 ALTER TABLE `player_program` ENABLE KEYS */;
 
 
@@ -244,9 +253,9 @@ CREATE TABLE IF NOT EXISTS `player_region` (
   `type` tinyint(1) NOT NULL DEFAULT '2',
   `agency_id` smallint(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3409 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3409 DEFAULT CHARSET=utf8;
 
--- Dumping data for table player.player_region: 3,295 rows
+-- Dumping data for table player.player_region: ~3,295 rows (approximately)
 /*!40000 ALTER TABLE `player_region` DISABLE KEYS */;
 INSERT INTO `player_region` (`id`, `parent_id`, `name`, `type`, `agency_id`) VALUES
 	(1, 0, '中国', 0, 0),
@@ -3633,7 +3642,7 @@ CREATE TABLE IF NOT EXISTS `player_user` (
 -- Dumping data for table player.player_user: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `type`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 2, 1471830984, '127.0.0.1', 0, '', '55ebacae625518e60f50442749c50198fde1fab0', 1471838184);
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 2, 1471852043, '127.0.0.1', 0, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
