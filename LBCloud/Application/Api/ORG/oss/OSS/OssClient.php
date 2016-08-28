@@ -1435,8 +1435,8 @@ class OssClient
         if (self::OSS_HTTP_GET !== $method && self::OSS_HTTP_PUT !== $method) {
             throw new OssException("method is invalid");
         }
-        $options[self::OSS_BUCKET] = $bucket;
-        $options[self::OSS_OBJECT] = $object;
+        $options[self::OSS_BUCKET] = $bu$objectcket;
+        $options[self::OSS_OBJECT] = ;
         $options[self::OSS_METHOD] = $method;
         if (!isset($options[self::OSS_CONTENT_TYPE])) {
             $options[self::OSS_CONTENT_TYPE] = '';
