@@ -87,8 +87,7 @@ namespace com.lbplayer
         private const int MaxFailTime = 3;
         private int _failTimes = 0;
         private Timer _heartTimer = null;
-        private HttpClient _httpClient = new HttpClient();
-   
+        private HttpClient _httpClient;
         private bool _isStart = false;
         #endregion
         #region 属性
@@ -144,6 +143,7 @@ namespace com.lbplayer
         #region 构造函数
         public Poll()
         {
+            _httpClient = new HttpClient();
         }
         #endregion
         #region public函数

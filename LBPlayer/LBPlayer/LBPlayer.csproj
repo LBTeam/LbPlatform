@@ -34,11 +34,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Aliyun.OSS, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0ad4175f0dac0b9b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Common\HttpClient\HttpClient\bin\Debug\Aliyun.OSS.dll</HintPath>
+    </Reference>
     <Reference Include="CSkin">
       <HintPath>lib\CSkin.dll</HintPath>
     </Reference>
+    <Reference Include="JumpKick.HttpLib, Version=2.0.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Common\HttpClient\HttpClient\bin\Debug\JumpKick.HttpLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Common\HttpClient\packages\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -100,12 +113,18 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\ComputerLock\ComputerLock\ComputerLock.csproj">
       <Project>{d004f6bb-f4bc-48a8-af4f-7ff8796967d7}</Project>
       <Name>ComputerLock</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\HttpClient\HttpClient\HttpClient.csproj">
+      <Project>{9b2237ef-04f3-4541-9189-5827a99ef851}</Project>
+      <Name>HttpClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\ScreenCaptrue\ScreenCaptrue\ScreenCaptrue.csproj">
       <Project>{390ea3e4-14ce-43b1-a896-86a018a2cabd}</Project>
@@ -114,6 +133,10 @@
     <ProjectReference Include="..\LBPlayerConfig\LBPlayerConfig.csproj">
       <Project>{e4445e90-fd5e-4d10-9a53-b71c0e38725d}</Project>
       <Name>LBPlayerConfig</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Poll\Poll.csproj">
+      <Project>{87676881-5d8f-421d-8acb-3fd924959ccf}</Project>
+      <Name>Poll</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

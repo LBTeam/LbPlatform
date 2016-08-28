@@ -13,12 +13,19 @@ namespace LBPlayerConfig
     [Serializable]
     public class Config
     {
+
         public bool LockUnLockPlayer = false;
         public string WebUrl = "";
-        public int HeartBeatInterval = 300;
+        public int HeartBeatInterval = 60;
         public bool IsEnableAutoOpenOrClose = false;
         public TimeSpan OpenTime=new TimeSpan(00,00,00);
         public TimeSpan CloseTime = new TimeSpan(00,00,00);
+        public bool IsEnableScreenCupture = false;
+        public int ScreenCuptureX = 0;
+        public int ScreenCuptureY = 0;
+        public int ScreenCuptureW = 0;
+        public int ScreenCuptureH = 0;
+        public string FileSavePath;
     }
     public static class ConfigTool
     {
@@ -46,7 +53,11 @@ namespace LBPlayerConfig
         }
         public static Config ReadConfigData()
         {
-            Config obj = null;
+            Config obj = new Config();
+            if(!File.Exists(ConfigPath))
+            {
+                SaveConfigData(obj);
+            }
             try
             {
                 IFormatter formatter = new BinaryFormatter();

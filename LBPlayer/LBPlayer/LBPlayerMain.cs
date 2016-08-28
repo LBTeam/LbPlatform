@@ -13,6 +13,7 @@ using Com.Utility;
 using System.IO;
 using Microsoft.Win32;
 using System.Management;
+using com.lbplayer;
 
 namespace LBPlayer
 {
@@ -34,23 +35,74 @@ namespace LBPlayer
         private string _lbPlanPath = "";
         private string _mediaPath = "";
         private string _offlinePlanPath = "";
+        private string _picPath = "";
         private Config _config =null;
+        private string _privewPic = "Privew.jpg";
+        private Poll _poll;
 
         public LBPlayerMain()
         {
             InitializeComponent();
         }
+        /// <summary>
+        /// 初始化心跳
+        /// </summary>
+        private void initialPoll()
+        {
+            _poll = new Poll();
+            _poll.SendPollEvent +=new SendPollEventHandler(_poll_SendPollEvent);
+            _poll.GetPollResponseEvent += new GetPollResponseEventHandler(_poll_GetPollResponseEvent);
+            _poll.Initializer();
+            _poll.Start();
+        }
+        /// <summary>
+        /// 心跳结束事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void _poll_GetPollResponseEvent(object sender, GetPollResponseEventArgs args)
+        {
+            //throw new NotImplementedException();
+            SetControlText(skinLabel8, "心跳完成");
+        }
+        /// <summary>
+        /// 心跳开始事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void _poll_SendPollEvent(object sender, PollEventArgs args)
+        {
+            //throw new NotImplementedException();
+            SetControlText(skinLabel8, "开始心跳");
+        }
+        private delegate void SetControlTextDelegate(System.Windows.Forms.Control setControl, string text);
+        private void SetControlText(System.Windows.Forms.Control setControl, string text)
+        {
+            if (!this.InvokeRequired)
+            {
+                setControl.Text = text;
+                return;
+            }
+            SetControlTextDelegate setTextDelegate = new SetControlTextDelegate(SetControlText);
+            this.Invoke(setTextDelegate, new object[] { setControl, text });
+        }
+        /// <summary>
+        /// 初始化配置文件
+        /// </summary>
         private void LoadConfig()
         {
             _config = new Config();
             _config = ConfigTool.ReadConfigData();
         }
-        
+        /// <summary>
+        /// 初始化工作目录
+        /// </summary>
         private void initialWorkPath()
         {
             if(_config.FileSavePath==null||_config.FileSavePath=="")
             {
                 _config.FileSavePath= Path.Combine(Path.GetPathRoot(Application.ExecutablePath), "LBPlay");
+                ConfigTool.SaveConfigData(_config);
             }
             _playLogPath = Path.Combine(_config.FileSavePath, "PlayLog");
             if(!Directory.Exists(_playLogPath))
@@ -72,11 +124,40 @@ namespace LBPlayer
             {
                 Directory.CreateDirectory(_offlinePlanPath);
             }
+            _picPath = Path.Combine(_config.FileSavePath, "Pic");
+            if (!Directory.Exists(_picPath))
+            {
+                Directory.CreateDirectory(_picPath);
+            }
         }
+        /// <summary>
+        /// 初始化控件值
+        /// </summary>
         private void InitialConfigValue()
         {
-
+            skinTextBox_workPath.Text = _config.FileSavePath;
+            Rectangle rect = new Rectangle();
+            rect = Screen.GetBounds(this);  
+            if(_config.ScreenCuptureW==0||_config.ScreenCuptureH==0)
+            {
+                _config.ScreenCuptureW = rect.Width;
+                _config.ScreenCuptureH= rect.Height;
+                ConfigTool.SaveConfigData(_config);
+            }
+            skinNumericUpDown_W.Maximum = rect.Width;
+            skinNumericUpDown_H.Maximum = rect.Height;
+            skinNumericUpDown_X.Maximum = rect.Width;
+            skinNumericUpDown_Y.Maximum = rect.Height;
+            skinNumericUpDown_W.Value = _config.ScreenCuptureW;
+            skinNumericUpDown_H.Value = _config.ScreenCuptureH;
+            skinNumericUpDown_X.Value = _config.ScreenCuptureX;
+            skinNumericUpDown_Y.Value = _config.ScreenCuptureY;
         }
+        /// <summary>
+        /// 获取MAC地址
+        /// </summary>
+        /// <param name="macList">返回MAC地址列表</param>
+        /// <returns></returns>
         private bool GetMacAddress(out List<string> macList)
         {
 
@@ -125,37 +206,39 @@ namespace LBPlayer
                 return false;
             }
         }
-
+        /// <summary>
+        /// 窗体加载
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LBPlayerMain_Load(object sender, EventArgs e)
         {
             LoadConfig();
             initialWorkPath();
             _screenCapture = new ScreenCapture();
-            InitialCaptureInfo();
+            InitialConfigValue();
+            initialPoll();
         }
-
+        /// <summary>
+        /// 锁定
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void skinButton_lock_Click(object sender, EventArgs e)
         {
             
             InitialLock();
         }
-
-        private void InitialCaptureInfo()
-        {
-            Rectangle rect = new Rectangle();
-            rect = Screen.GetBounds(this);
-            skinNumericUpDown_W.Maximum = rect.Width;
-            skinNumericUpDown_H.Maximum = rect.Height;
-            skinNumericUpDown_X.Maximum = rect.Width;
-            skinNumericUpDown_Y.Maximum = rect.Height;
-
-            skinNumericUpDown_W.Value = rect.Width;
-            skinNumericUpDown_H.Value = rect.Height;
-            skinNumericUpDown_X.Value = rect.Width;
-            skinNumericUpDown_Y.Value = rect.Height;
-        }
-
+        /// <summary>
+        /// 初始化桌面截屏
+        /// </summary>
+       
         #region 锁定
+        /// <summary>
+        /// 解锁事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnUnLockEvent(object sender, EventArgs e)
         {
             //解除锁定时,关闭任务管理器流对象
@@ -185,6 +268,11 @@ namespace LBPlayer
             //currentUser.Close();
 
         }
+        /// <summary>
+        /// 锁定事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnLockEvent(object sender, EventArgs e)
         {
             if (_TaskMgrStream != null)
@@ -217,7 +305,6 @@ namespace LBPlayer
 
         }
 
-        
         private void Hook_KeyUp(object sender, KeyEventArgs e)
         {
             if (!InvokeRequired)
@@ -340,7 +427,9 @@ namespace LBPlayer
             }
 
         }
-
+        /// <summary>
+        /// 初始化锁定
+        /// </summary>
         private void InitialLock()
         {
             #region 锁定相关
@@ -387,13 +476,21 @@ namespace LBPlayer
         }
 
         #endregion
-
+        /// <summary>
+        /// 桌面截屏预览
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void skinButton3_Click(object sender, EventArgs e)
         {
+            if (this.skinPictureBox_pic.Image != null)
+            {
+                this.skinPictureBox_pic.Image.Dispose();
+            }
             skinPictureBox_pic.Width = int.Parse(skinNumericUpDown_W.Value.ToString());
             skinPictureBox_pic.Height = int.Parse(skinNumericUpDown_H.Value.ToString());
-            _screenCapture.CaptrueScreenRegionToFile((int)skinNumericUpDown_X.Value, (int)skinNumericUpDown_Y.Value, (int)skinNumericUpDown_W.Value, (int)skinNumericUpDown_H.Value, @"D:\1.jpg");
-            skinPictureBox_pic.Image = Image.FromFile(@"D:\1.jpg");
+            _screenCapture.CaptrueScreenRegionToFile((int)skinNumericUpDown_X.Value, (int)skinNumericUpDown_Y.Value, (int)skinNumericUpDown_W.Value, (int)skinNumericUpDown_H.Value, Path.Combine(_picPath, _privewPic));
+            skinPictureBox_pic.Image = Image.FromFile(Path.Combine(_picPath, _privewPic));
         }
     }
 }
