@@ -1,0 +1,14 @@
+OSS：
+	OSS外网域名：http://blowfish.oss-cn-shenzhen.aliyuncs.com
+	OSS内网域名：http://blowfish.oss-cn-shenzhen-internal.aliyuncs.com
+	endpoint(外网):http://oss-cn-shenzhen.aliyuncs.com
+	endpoint(内网):http://oss-cn-shenzhen-internal.aliyuncs.com
+	accessKeyId:f1mcwCSSqB9tIY57
+	accessKeySecret:7aSeEDlyyV5pIddw49FhLXFMVvG9UK
+ECS:
+	host：182.92.181.175
+	port：22
+	user：root
+	pass：LK201604linux
+	123.56.240.172?(公)
+	10.171.126.247?(内)
