@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C3449629-4640-4D50-9ADA-B1668757CDDC}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JumpKick.HttpLib.Silverlight</RootNamespace>
+    <AssemblyName>JumpKick.HttpLib.Silverlight</AssemblyName>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <!-- This property group is only here to support building this project using the 
+       MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
+       to set the TargetFrameworkVersion to v3.5 -->
+  <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System.Windows" />
+    <Reference Include="system" />
+    <Reference Include="System.Core">
+      <HintPath>$(TargetFrameworkDirectory)System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\JumpKick.HttpLib\Builder\RequestBuilder.Action.cs">
+      <Link>Builder\RequestBuilder.Action.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Builder\RequestBuilder.Auth.cs">
+      <Link>Builder\RequestBuilder.Auth.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Builder\RequestBuilder.Body.cs">
+      <Link>Builder\RequestBuilder.Body.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Builder\RequestBuilder.cs">
+      <Link>Builder\RequestBuilder.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Builder\RequestBuilder.Header.cs">
+      <Link>Builder\RequestBuilder.Header.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Collector\BaseCollector.cs">
+      <Link>Collector\BaseCollector.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Collector\Collection.cs">
+      <Link>Collector\Collection.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Collector\DisableCollector.cs">
+      <Link>Collector\DisableCollector.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Collector\Install.cs">
+      <Link>Collector\Install.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Collector\Usage.cs">
+      <Link>Collector\Usage.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Cookies.cs">
+      <Link>Cookies.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Header.cs">
+      <Link>Header.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Http.cs">
+      <Link>Http.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\HttpVerb.cs">
+      <Link>HttpVerb.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\NamedFileStream.cs">
+      <Link>NamedFileStream.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\ActionProvider.cs">
+      <Link>Provider\ActionProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\AuthenticationProvider.cs">
+      <Link>Provider\AuthenticationProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\BasicAuthenticationProvider.cs">
+      <Link>Provider\BasicAuthenticationProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\BodyProvider.cs">
+      <Link>Provider\BodyProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\DefaultBodyProvider.cs">
+      <Link>Provider\DefaultBodyProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\DictionaryHeaderProvider.cs">
+      <Link>Provider\DictionaryHeaderProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\FormBodyProvider.cs">
+      <Link>Provider\FormBodyProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\HeaderProvider.cs">
+      <Link>Provider\HeaderProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\MultiHeaderProvider.cs">
+      <Link>Provider\MultiHeaderProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\MultipartBodyProvider.cs">
+      <Link>Provider\MultipartBodyProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\NonActionProvider.cs">
+      <Link>Provider\NonActionProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\SettableActionProvider.cs">
+      <Link>Provider\SettableActionProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\StreamBodyProvider.cs">
+      <Link>Provider\StreamBodyProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\TextAuthenticationProvider.cs">
+      <Link>Provider\TextAuthenticationProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Provider\TextBodyProvider.cs">
+      <Link>Provider\TextBodyProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Request.cs">
+      <Link>Request.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\RequestTemplate.cs">
+      <Link>RequestTemplate.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Streams\ProgressCallbackHelper.cs">
+      <Link>Streams\ProgressCallbackHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Streams\ProgressChangedEventArgs.cs">
+      <Link>Streams\ProgressChangedEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\JumpKick.HttpLib\Streams\ProgressMonitorStream.cs">
+      <Link>Streams\ProgressMonitorStream.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
