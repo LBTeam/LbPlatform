@@ -63,6 +63,8 @@ namespace LBPlayer
         private void _poll_GetPollResponseEvent(object sender, GetPollResponseEventArgs args)
         {
             //throw new NotImplementedException();
+            SetControlText(skinLabel8, "心跳完成");//throw new NotImplementedException();
+            SetControlText(skinLabel8, "心跳完成");//throw new NotImplementedException();
             SetControlText(skinLabel8, "心跳完成");
         }
         /// <summary>
