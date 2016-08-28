@@ -97,18 +97,15 @@ namespace Com.Utility
         
         public List<CPUModel> GetCPUTemperature()
         {
+
             List<CPUModel> listTemp = new List<CPUModel>();
             Computer myComputer = new Computer();
             try
             {
-                
                 UpdateVisitor updateVisitor = new UpdateVisitor();
-
                 myComputer.CPUEnabled = true;
                 myComputer.Accept(updateVisitor);
-
                 myComputer.Open();
-
                 foreach (var hardwareItem in myComputer.Hardware)
                 {
                     hardwareItem.Update();
@@ -123,11 +120,8 @@ namespace Com.Utility
                                 cm.Temperature = Convert.ToString(sensor.Value);
                                 listTemp.Add(cm);
                             }
-                            
                         }
-                        
                     }
-                   
                 }
             }
             catch (Exception ex)
@@ -140,6 +134,44 @@ namespace Com.Utility
                 myComputer.Close();
             }
             return listTemp;
+        }
+
+        public bool GetFanSpeed(out string fanSpeed)
+        {
+            fanSpeed = "";
+            Computer myComputer = new Computer();
+            try
+            {
+                UpdateVisitor updateVisitor = new UpdateVisitor();
+                myComputer.CPUEnabled = true;
+                myComputer.Accept(updateVisitor);
+                myComputer.Open();
+                foreach (var hardwareItem in myComputer.Hardware)
+                {
+                    hardwareItem.Update();
+                    if (hardwareItem.HardwareType == HardwareType.CPU)
+                    {
+                        foreach (var sensor in hardwareItem.Sensors)
+                        {
+                            if (sensor.SensorType == SensorType.Fan)
+                            {
+                                fanSpeed= Convert.ToString(sensor.Value);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("获取Fan异常：" + ex.ToString());
+                return false;
+            }
+            finally
+            {
+                myComputer.Close();
+            }
+            return false;
         }
 
         /// <summary>
@@ -172,7 +204,6 @@ namespace Com.Utility
                 return false;
             }
         }
-
         /// <summary>
         /// 获取磁盘空间
         /// </summary>

@@ -26,7 +26,10 @@ namespace Test
             {
                 textBox1.Text += a[i].Name + ":" + a[i].Temperature;
             }
-            
+            string s = "无";
+            c.GetFanSpeed(out s);
+            textBox1.Text += s;
+
         }
     }
 }
