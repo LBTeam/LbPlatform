@@ -16,7 +16,10 @@ class ProgramModel extends Model
 	 * @return array
 	 */
 	public function all_program($user_id){
-		
+		$map = array();
+		$map['user_id'] = $user_id;
+		$map['status'] = 0;
+		return $this->where($map)->select();
 	}
 	
 	

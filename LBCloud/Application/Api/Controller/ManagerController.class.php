@@ -131,20 +131,22 @@ class ManagerController extends CommonController
 		$AliyunOSS = new AliyunOSS();
 		foreach ($obj as $val) {
 			$user_id = $this->user_id;
-			$filename = end(explode('/', str_replace('\\', '/', $val['FilePath'])));
+			$filepath = $val['FilePath'];
+			$filename = end(explode('/', str_replace('\\', '/', $filepath)));
 			$filesize = $val['FileSize'];
 			$filemd5 = $val['FileMD5'];
 			$filesubfix = end(explode('.', $filename));
-			if($filesubfix == C('player_program_subfix')){
+			$filetype = $val['FileType'];   //0-播放方案,1-图片,2-视频,3-文字
+			if($filetype == 0){
 				//播放方案
 				$medias = $val['MediaList'];
-				$program_data = $this->_upload_program($program_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix, $medias);
+				$program_data = $this->_upload_program($program_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix, $medias, $filepath);
 				if($program_data){
 					$result[] = $program_data;
 				}
 			}else{
 				//媒体
-				$media_data = $this->_upload_media($media_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix);
+				$media_data = $this->_upload_media($media_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix, $filepath);
 				if($media_data){
 					$result[] = $media_data;
 				}
@@ -158,18 +160,21 @@ class ManagerController extends CommonController
 	 */
 	public function complete_upload(){
 		$obj = $this->param;
-		$filename = $obj['FileName'];
+		//$filename = $obj['FileName'];
+		$filepath = $obj['FileName'];
+		$filename = end(explode('/', str_replace('\\', '/', $filepath)));
 		$filemd5 = $obj['FileMD5'];
+		$filetype = $obj['FileType'];
 		$fileparts = $obj['Parts'];
-		$filesubfix = end(explode('.', $filename));
 		$user_id = $this->user_id;
-		if($filesubfix == C('player_program_subfix')){
+		if($filetype == 0){
 			//播放方案
+			$screens = $obj['Screens'];
 			$prog_model = D("Program");
 			$prog_info = $prog_model->program_by_name_md5($filename, $filemd5, $user_id);
 			$prog_map = array('id'=>$prog_info['id']);
 			$prog_res = $prog_model->where($prog_map)->setField('status', 1);
-			if($prog_info['size'] <= C("oss_100K_size")){
+			if($prog_info['size'] >= C("oss_100K_size")){
 				$AliyunOSS = new AliyunOSS();
 				//合并文件
 				$object = $prog_info['object'];
@@ -180,13 +185,15 @@ class ManagerController extends CommonController
 				}
 				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->program_bucket);
 			}
+			//播放方案下发
+			
 		}else{
 			//媒体
 			$media_model = D("Media");
 			$media_info = $media_model->media_by_name_md5($filename, $filemd5, $user_id);
 			$media_map = array('id'=>$media_info['id']);
 			$media_res = $media_model->where($media_map)->setField('status', 1);
-			if($media_info['size'] <= C("oss_100K_size")){
+			if($media_info['size'] >= C("oss_100K_size")){
 				$AliyunOSS = new AliyunOSS();
 				//合并文件
 				$object = $media_info['object'];
@@ -301,12 +308,43 @@ class ManagerController extends CommonController
 	 * 播放方案列表
 	 */
 	public function programs(){
+		$user_id = $this->user_id;
 		$program_model = D("Program");
+		$media_model = D("Media");
+		$AliyunOSS = new AliyunOSS();
+		$all_program = $program_model->all_program($user_id);
+		$programs  = array();
+		foreach($all_program as $val){
+			$release = $program_model->program_can_release($val['id'], $user_id);
+			$release = true;
+			if($release){
+				$temp = array();
+				$temp['ProgramId']		= $val['id'];
+				$temp['ProgramName']	= stripslashes($val['name']);
+				$temp['ProgramUrl']		= $AliyunOSS->download_uri($this->program_bucket, $val['object']);
+				$medias = json_decode($val['info'], true);
+				$media_list = array();
+				foreach($medias as $v){
+					$media_info = $media_model->media_by_name_md5($v['MediaName'], $v['MediaMD5'], $user_id);
+					$media_list[] = array(
+						'MediaId'	=> $media_info['id'],
+						'MediaName'	=> stripslashes($media_info['name']),
+						'MediaUrl'	=> $AliyunOSS->download_uri($this->media_bucket, $media_info['object'])
+					);
+				}
+				$temp['MediaList'] = $media_list;
+				$programs[] = $temp;
+			}
+			
+		}
+		dump($programs);
+		/*
 		$result = $program_model->select();
 		foreach($result as &$val){
 			$val['name'] = stripslashes($val['name']);
 		}
 		$this->ajaxReturn($result);
+		*/
 	}
 	
 	/**
@@ -319,7 +357,7 @@ class ManagerController extends CommonController
 	/**
 	 * 上传播放方案
 	 */
-	private function _upload_program($model, $oss_obj, $user_id, $filename, $filesize, $filemd5, $subfix, $medias){
+	private function _upload_program($model, $oss_obj, $user_id, $filename, $filesize, $filemd5, $subfix, $medias, $filepath){
 		$result = array();
 		$program_id = $model->program_exists($filename, $filemd5, $user_id);
 		if($program_id){
@@ -340,6 +378,7 @@ class ManagerController extends CommonController
 					);
 					$result = array(
 						'name'	=> $filename,
+						'path'	=> $file_path,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
@@ -374,6 +413,7 @@ class ManagerController extends CommonController
 					if($parts){
 						$result = array(
 							'name'	=> $filename,
+							'path'	=> $file_path,
 							'md5'	=> $filemd5,
 							'key'	=> $object,
 							'parts'	=> $parts
@@ -413,6 +453,7 @@ class ManagerController extends CommonController
 				);
 				$result = array(
 					'name'	=> $filename,
+					'path'	=> $file_path,
 					'md5'	=> $filemd5,
 					'key'	=> $object,
 					'parts'	=> $parts
@@ -451,6 +492,7 @@ class ManagerController extends CommonController
 				if($parts){
 					$result = array(
 						'name'	=> $filename,
+						'path'	=> $file_path,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
@@ -464,7 +506,7 @@ class ManagerController extends CommonController
 	/**
 	 * 上传媒体
 	 */
-	private function _upload_media($model, $oss_obj, $user_id, $filename, $filesize, $filemd5, $subfix){
+	private function _upload_media($model, $oss_obj, $user_id, $filename, $filesize, $filemd5, $subfix, $filepath){
 		$result = array();
 		$media_id = $model->media_exists($filename, $filemd5, $user_id);
 		if($media_id){
@@ -484,6 +526,7 @@ class ManagerController extends CommonController
 					);
 					$result = array(
 						'name'	=> $filename,
+						'path'	=> $filepath,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
@@ -513,6 +556,7 @@ class ManagerController extends CommonController
 					if($parts){
 						$result = array(
 							'name'	=> $filename,
+							'path'	=> $filepath,
 							'md5'	=> $filemd5,
 							'key'	=> $object,
 							'parts'	=> $parts
@@ -547,6 +591,7 @@ class ManagerController extends CommonController
 				);
 				$result = array(
 					'name'	=> $filename,
+					'path'	=> $filepath,
 					'md5'	=> $filemd5,
 					'key'	=> $object,
 					'parts'	=> $parts
@@ -584,6 +629,7 @@ class ManagerController extends CommonController
 				if($parts){
 					$result = array(
 						'name'	=> $filename,
+						'path'	=> $filepath,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
