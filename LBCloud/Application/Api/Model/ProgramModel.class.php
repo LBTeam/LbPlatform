@@ -18,7 +18,7 @@ class ProgramModel extends Model
 	public function all_program($user_id){
 		$map = array();
 		$map['user_id'] = $user_id;
-		$map['status'] = 0;
+		$map['status'] = 1;
 		return $this->where($map)->select();
 	}
 	
@@ -36,7 +36,7 @@ class ProgramModel extends Model
 		$map['name'] = mysql_real_escape_string($name);
 		$map['md5'] = $md5;
 		$program_id = $this->where($map)->getField('id');
-		if($result){
+		if($program_id){
 			return $program_id;
 		}else{
 			return false;

@@ -16,6 +16,10 @@ class PlayerController extends CommonController
 	public function _initialize(){
 		$request = file_get_contents('php://input');
 		$this->param = json_decode($request, true);
+		if(empty($this->param) === true){
+			$response = array('err_code'=>'010001', 'msg'=>"Protocol content error");
+			$this->ajaxReturn($response);exit;
+		}
 		$this->user_id = 1;
 		$this->media_bucket = C("oss_media_bucket");
 		$this->program_bucket = C("oss_program_bucket");
@@ -36,44 +40,56 @@ class PlayerController extends CommonController
 	 * 心跳
 	 */
 	public function heartbeat(){
-		
-	}
-	
-	/**
-	 * 下载地址
-	 */
-	public function download_url(){
 		$obj = $this->param;
-		$response = array();
+		$id = $obj['Id'];
+		//testing start
+		$id = 1;
+		//testing end
+		$key = $obj['Key'];
+		$mac = strtoupper(str_replace(':', '-', $obj['Mac']));
+		$screen_model = D("Screen");
+		$cmd_model = D("Command");
+		$plan_model = D("Program");
 		$media_model = D("Media");
-		$program_model = D("Program");
-		$AliyunOSS = new AliyunOSS();
-		foreach($obj as $val){
-			$filename = $val['FileName'];
-			$filemd5 = $val['FileMD5'];
-			$filesubfix = end(explode('.', $filename));
-			if($filesubfix == C('player_program_subfix')){
-				//播放方案
-				$fileinfo = $program_model->program_by_name_md5($filename, $filemd5, $this->user_id);
-				$bucket = $this->program_bucket;
-			}else{
-				//媒体
-				$fileinfo = $media_model->media_by_name_md5($filename, $filemd5, $this->user_id);
-				$bucket = $this->media_bucket;
-			}
-			if($fileinfo){
-				$object = $fileinfo['object'];
-				$request_uri = $AliyunOSS->download_uri($bucket, $object, 1800);
-				$response[] = array(
-					'name'	=>	$filename,
-					'md5'	=>	$filemd5,
-					'key'	=>	$object,
-					'url'	=>	$request_uri
-				);
-			}else{
-				continue;
+		$screen = $screen_model->screen_by_id($id);
+		$cmds_list = $cmd_model->cmds_list($screen['uid'], $id);
+		$cmds = array();
+		foreach($cmds_list as $val){
+			switch($val['type']){
+				case "0":
+					$param = json_decode($val['param'], true);
+					$plan = $plan_model->program_detail($param['program_id']);
+					$medias = array();
+					foreach($plan['info'] as $v){
+						$media = $media_model->media_by_name_md5($v['MediaName'], $v['MediaMD5'], $screen['uid']);
+						$medias[] = array(
+							'MediaId'	=> $media['id'],
+							'MediaName'	=> stripslashes($media['name']),
+							'MediaUrl'	=> $AliyunOSS->download_uri($this->media_bucket, $media['object'])
+						);
+					}
+					$cmdParam = array();
+					$cmdParam['Id'] = $id;
+					$cmdParam['Key'] = $key;
+					$cmdParam['Mac'] = $mac;
+					$cmdParam['Param'] = array(
+						'ProgramId'		=> $plan['id'],
+						'ProgramName'	=> stripslashes($plan['name']),
+						'ProgramUrl'	=> $AliyunOSS->download_uri($this->program_bucket, $plan['object']),
+						'Medias'		=> $medias
+					);
+					$cmds[] = array(
+						"CmdType"	=>	$val['type'],
+						"CmdParam"	=>	$cmdParam
+					);
+					break;
+				case "1":
+					break;
+				default:
+					break;
 			}
 		}
+		$response = array("err_code"=>"000000", "msg"=>"ok", "data"=>$cmds);
 		$this->ajaxReturn($response);
 	}
 }
