@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="LBManager.ProgramScheduleDetailView"
+﻿<UserControl x:Class="LBManager.ScreenListView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,11 +7,10 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mycontrol="http://lbmanager.net/winfx/xaml/controls"
              xmlns:params="http://schemas.codeplex.com/elysium/params"
-             mc:Ignorable="d params" 
+             mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-   
     <Grid>
-        <DataGrid  ItemsSource="{Binding MediaList}" 
+        <DataGrid  ItemsSource="{Binding ScreenList}" 
                    CanUserSortColumns="True"
                    CanUserAddRows="False" 
                    AutoGenerateColumns="False"
@@ -20,10 +19,10 @@
                    Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Width="*"
-                                            Header="Name"
+                                            Header="名称"
                                             EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
                 <!-- if you want to use the pop up style (MaterialDesignDataGridTextColumnPopupEditingStyle), you must use MaterialDataGridTextColumn -->
-                <materialDesign:MaterialDataGridTextColumn Binding="{Binding Duration}" Width="*"
+                <materialDesign:MaterialDataGridTextColumn Binding="{Binding Width}" Width="*"
                                                         Header="Duration"                                                        
                                                         EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" 
                                                         />
@@ -59,7 +58,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                           
+
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

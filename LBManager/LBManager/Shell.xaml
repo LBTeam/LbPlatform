@@ -53,7 +53,7 @@
                     </DockPanel>
                 </materialDesign:ColorZone>
                 <!--<ContentControl Margin="16" Content="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.Content}" />-->
-                <local:ProgramScheduleDetailView Margin="16" DataContext="{Binding ScheduleDetailViewModel}"/>
+                <local:ScreenListView Margin="16" DataContext="{Binding ScreenList}"/>
             </DockPanel>
         </materialDesign:DialogHost>
     </metroUI:MetroContentControl>

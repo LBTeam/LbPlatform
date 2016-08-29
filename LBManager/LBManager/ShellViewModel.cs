@@ -14,6 +14,7 @@ namespace LBManager
         public ShellViewModel()
         {
             ScheduleDetailViewModel = new ProgramScheduleDetailViewModel();
+            ScreenList = new ScreenListViewModel(new ScreenService());
             LoginCommand = new DelegateCommand(() => { OpenLoginDialog(); });
         }
 
@@ -33,6 +34,13 @@ namespace LBManager
         {
             get { return _scheduleDetailViewModel; }
             set { SetProperty(ref _scheduleDetailViewModel, value); }
+        }
+
+        private ScreenListViewModel _screenList;
+        public ScreenListViewModel ScreenList
+        {
+            get { return _screenList; }
+            set { SetProperty(ref _screenList, value); }
         }
 
         public DelegateCommand LoginCommand { get; private set; }

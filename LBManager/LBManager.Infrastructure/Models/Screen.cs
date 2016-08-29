@@ -33,10 +33,10 @@ namespace LBManager.Infrastructure.Models
         public int PixelsHeight { get; set; }
 
         [JsonProperty("type")]
-        public string Type { get; set; }
+        public int Type { get; set; }
 
         [JsonProperty("operate")]
-        public string Operate { get; set; }
+        public int Operate { get; set; }
 
         [JsonProperty("longitude")]
         public double Longitude { get; set; }

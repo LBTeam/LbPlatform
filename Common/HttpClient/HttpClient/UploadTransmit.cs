@@ -36,16 +36,16 @@ namespace Com.Net
             _uploadFileList = UploadFileList;
 
 
-            UploadFileInfo u = new UploadFileInfo(@"E:\Test\test.playprog", "4", "333", FileType.Plan);
-            u.MediaList = new List<media>();
-            u.MediaList.Add(new media(@"E:\Test\1.png", "333"));
-            u.MediaList.Add(new media(@"E:\Test\2.png", "333"));
+            //UploadFileInfo u = new UploadFileInfo(@"E:\Test\test.playprog", "4", "333", FileType.Plan);
+            //u.MediaList = new List<media>();
+            //u.MediaList.Add(new media(@"E:\Test\1.png", "333"));
+            //u.MediaList.Add(new media(@"E:\Test\2.png", "333"));
 
-            UploadFileInfo u2 = new UploadFileInfo(@"E:\Test\1.png", "4", "333",FileType.Image);
-            UploadFileInfo u3 = new UploadFileInfo(@"E:\Test\2.png", "4", "333",FileType.Image);
-            _uploadFileList.Add(u);
-            _uploadFileList.Add(u2);
-            _uploadFileList.Add(u3);
+            //UploadFileInfo u2 = new UploadFileInfo(@"E:\Test\1.png", "4", "333",FileType.Image);
+            //UploadFileInfo u3 = new UploadFileInfo(@"E:\Test\2.png", "4", "333",FileType.Image);
+            //_uploadFileList.Add(u);
+            //_uploadFileList.Add(u2);
+            //_uploadFileList.Add(u3);
 
         }
         public bool StartUpload()

@@ -1,0 +1,41 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:LBManager"
+                    xmlns:mycontrol="http://lbmanager.net/winfx/xaml/controls">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.DataGrid.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/LBManager.Controls;component/Geometry.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <Style x:Key="DeleteExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+        <Setter Property="Icon" Value="{StaticResource Delete1Geometry}"/>
+        <Setter Property="ToolTip" Value="Delete"/>
+    </Style>
+    <Style x:Key="UpExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+        <Setter Property="Icon" Value="{StaticResource RoadForwardGeometry}"/>
+        <Setter Property="ToolTip" Value="Up"/>
+    </Style>
+    <Style x:Key="DownExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+        <Setter Property="Icon" Value="{StaticResource RoadBackwardGeometry}"/>
+        <Setter Property="ToolTip" Value="Down"/>
+    </Style>
+    <Style x:Key="EditExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+        <Setter Property="Icon" Value="{StaticResource Edit2Geometry}"/>
+        <Setter Property="ToolTip" Value="Edit"/>
+    </Style>
+    <Style x:Key="TrashExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+        <Setter Property="Icon" Value="{StaticResource TrashGeometry}"/>
+        <Setter Property="ToolTip" Value="Remove"/>
+    </Style>
+    <Style x:Key="OpenExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+        <Setter Property="Icon" Value="{StaticResource Open2Geometry}"/>
+        <Setter Property="ToolTip" Value="Remove"/>
+    </Style>
+    <Style x:Key="AddExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+        <Setter Property="Icon" Value="{StaticResource Add1Geometry}"/>
+        <Setter Property="ToolTip" Value="Add"/>
+    </Style>
+    <Style x:Key="CopyExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+        <Setter Property="Icon" Value="{StaticResource CopyGeometry}"/>
+        <Setter Property="ToolTip" Value="Copy"/>
+    </Style>
+</ResourceDictionary>
