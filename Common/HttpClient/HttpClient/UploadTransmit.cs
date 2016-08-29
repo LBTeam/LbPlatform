@@ -36,13 +36,13 @@ namespace Com.Net
             _uploadFileList = UploadFileList;
 
 
-            UploadFileInfo u = new UploadFileInfo(@"E:\Test\test.playprog", "4", "333");
+            UploadFileInfo u = new UploadFileInfo(@"E:\Test\test.playprog", "4", "333", FileType.Plan);
             u.MediaList = new List<media>();
             u.MediaList.Add(new media(@"E:\Test\1.png", "333"));
             u.MediaList.Add(new media(@"E:\Test\2.png", "333"));
 
-            UploadFileInfo u2 = new UploadFileInfo(@"E:\Test\1.png", "4", "333");
-            UploadFileInfo u3 = new UploadFileInfo(@"E:\Test\2.png", "4", "333");
+            UploadFileInfo u2 = new UploadFileInfo(@"E:\Test\1.png", "4", "333",FileType.Image);
+            UploadFileInfo u3 = new UploadFileInfo(@"E:\Test\2.png", "4", "333",FileType.Image);
             _uploadFileList.Add(u);
             _uploadFileList.Add(u2);
             _uploadFileList.Add(u3);
@@ -66,22 +66,22 @@ namespace Com.Net
                     var fs = File.Open(streamPartList[i].Name, FileMode.Open, FileAccess.Read, FileShare.Read);
                     fs.Seek(long.Parse(streamPartList[i].Parts[j].SeekTo), 0);
 
-                    Http.Put(streamPartList[i].Parts[j].Url).Upload(new[] { new NamedFileStream(streamPartList[i].Key, streamPartList[i].Name, "application/octet-stream", fs) },new { },(bytesSent, totalBytes)=>
-                    {
-                         //UpdateText(bytesSent.ToString());
-                    },
-                    (totalBytes) => { }).
-
-                    OnFail((fail) =>
-                    {
-                        // UpdateText(fail.Message.ToString());
-                    }
-                    )
-                    .OnSuccess((result) =>
-                    {
-                        
-                        //UpdateText("Completed");
-                    }).Go();
+                    Http.Put(streamPartList[i].Parts[j].Url)
+                        .Upload(new[] { new NamedFileStream(streamPartList[i].Key, streamPartList[i].Name, "application/octet-stream", fs) },
+                                new { },
+                                (bytesSent, totalBytes)=>
+                                {
+                                    //UpdateText(bytesSent.ToString());
+                                },
+                                (totalBytes) => { }).OnFail((fail) =>
+                                                            {
+                                                                 // UpdateText(fail.Message.ToString());
+                                                            })
+                                                     .OnSuccess((result) =>
+                                                               {
+                                                                   //UpdateText("Completed");
+                                                               })
+                                                     .Go();
                 }
 
             }
