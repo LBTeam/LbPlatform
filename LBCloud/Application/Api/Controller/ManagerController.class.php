@@ -16,17 +16,10 @@ class ManagerController extends CommonController
 	private $program_bucket;
 	public function _initialize(){
 		$request = file_get_contents('php://input');
-		/*$array = array(
-			array("FilePath"=>"aabb'cc.playprog", "FileSize"=>"102400", "FileMD5"=>"586af24095a05643c3be4bb402dsdwqs"),
-			array("FilePath"=>"aabbccdd.playprog", "FileSize"=>"2097152", "FileMD5"=>"586af24095a05643c3be4bb402bfaee5"),
-			array("FilePath"=>"aab'bcc.avi", "FileSize"=>"20971520", "FileMD5"=>"b3206b4529ba377b0fa9f4a3bd9261f2"),
-		);
-		$request = json_encode($array);*/
-		//$request = '{"user":"15934854815@163.com","pwd":"123456"}';
 		/*登录令牌（token）检测开始*/
 		/*$token = I("request.token");
 		$this->user_model = D("User");
-		if(in_array(ACTION_NAME, C("not_logged_allow"))){
+		if(in_array(ACTION_NAME, C("manager_not_logged"))){
 			//未登录可访问模块
 			//不检查登录令牌
 			
@@ -51,10 +44,18 @@ class ManagerController extends CommonController
 		$this->user_id = 1;
 		/*登录令牌（token）检测结束*/
 		$this->param = json_decode($request, true);
-		/*if(!$this->param){
-			$response = array('err_code'=>'010001', 'msg'=>"Protocol content error");
-			$this->ajaxReturn($response);exit;
-		}*/
+		/*请求数据检测开始*/
+		if(in_array(ACTION_NAME, C("manager_param_empty"))){
+			//空请求数据可访问模块
+			
+		}else{
+			//检查请求数据
+			if(empty($this->param) === true){
+				$response = array('err_code'=>'010001', 'msg'=>"Protocol content error");
+				$this->ajaxReturn($response);exit;
+			}
+		}
+		/*请求数据检测结束*/
 		$this->media_bucket = C("oss_media_bucket");
 		$this->program_bucket = C("oss_program_bucket");
 	}
@@ -70,7 +71,7 @@ class ManagerController extends CommonController
 		$configure['bucket']			= C("aliyun_oss_bucket");
 		$configure['mediaBucket']		= C("oss_media_bucket");
 		$configure['programBucket']		= C("oss_program_bucket");
-		$configure = encrypt(json_encode($configure));
+		//$configure = encrypt(json_encode($configure));
 		$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>$configure);
 		$this->ajaxReturn($response);
 	}
@@ -136,10 +137,13 @@ class ManagerController extends CommonController
 			$filesize = $val['FileSize'];
 			$filemd5 = $val['FileMD5'];
 			$filesubfix = end(explode('.', $filename));
-			$filetype = $val['FileType'];   //0-播放方案,1-图片,2-视频,3-文字
+			$filetype = $val['Type'];   //0-播放方案,1-图片,2-视频,3-文字
 			if($filetype == 0){
 				//播放方案
 				$medias = $val['MediaList'];
+				foreach($medias as &$v){
+					$v['MediaName'] = end(explode('/', str_replace('\\', '/', $v['MediaName'])));
+				}
 				$program_data = $this->_upload_program($program_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix, $medias, $filepath);
 				if($program_data){
 					$result[] = $program_data;
@@ -164,7 +168,7 @@ class ManagerController extends CommonController
 		$filepath = $obj['FileName'];
 		$filename = end(explode('/', str_replace('\\', '/', $filepath)));
 		$filemd5 = $obj['FileMD5'];
-		$filetype = $obj['FileType'];
+		$filetype = $obj['Type'];
 		$fileparts = $obj['Parts'];
 		$user_id = $this->user_id;
 		if($filetype == 0){
@@ -186,7 +190,24 @@ class ManagerController extends CommonController
 				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->program_bucket);
 			}
 			//播放方案下发
-			
+			$cmds = array();
+			foreach($screens as $val){
+				$cmds[] = array(
+					'user_id'	=> $user_id,
+					'screen_id'	=> $val,
+					'type'		=> 0,
+					'param'		=> json_encode(array('program_id'=>$prog_info['id'])),
+					'publish'	=> NOW_TIME,
+					'execute'	=> NOW_TIME,
+					'expired'	=> NOW_TIME,
+					'status'	=> 0
+				);
+			}
+			if($cmds){
+				$cmd_model = D("Command");
+				$cmd_del = $cmd_model->remove_cmd($user_id, $screens, 0, 0);
+				$cmd_add = $cmd_model->release_cmd($cmds);
+			}
 		}else{
 			//媒体
 			$media_model = D("Media");
@@ -210,14 +231,6 @@ class ManagerController extends CommonController
 	}
 
 	/**
-	 * 下载地址
-	 */
-	public function download_url(){
-		$obj = $this->param;
-		
-	}
-	
-	/**
 	 * 终端列表
 	 */
 	public function screens(){
@@ -226,6 +239,27 @@ class ManagerController extends CommonController
 		$result = $screen_model->user_all_screen($user_id);
 		$regions = D("Region")->all_region_name();
 		$screens = array();
+		//testing start
+		foreach($result as $val){
+			$province = $regions[$val['province']];
+			$city = $regions[$val['city']];
+			$district = $regions[$val['district']];
+			$screens[] = array(
+				'id'		=> $val['id'],
+				'name'		=> $val['name'],
+				'size_x'	=> intval($val['size_x']),
+				'size_y'	=> intval($val['size_y']),
+				'resolu_x'	=> intval($val['resolu_x']),
+				'resolu_y'	=> intval($val['resolu_y']),
+				'type'		=> intval($val['type']),
+				'operate'	=> intval($val['operate']),
+				'longitude'	=> floatval($val['longitude']),
+				'latitude'	=> floatval($val['latitude']),
+				'address'	=> "{$province}{$city}{$district}{$val['address']}",
+			);
+		}
+		$this->ajaxReturn($screens);
+		//testing end
 		$groups = array();
 		foreach($result as $val){
 			$province = $regions[$val['province']];
@@ -235,14 +269,14 @@ class ManagerController extends CommonController
 				$screens[] = array(
 					'id'		=> $val['id'],
 					'name'		=> $val['name'],
-					'size_x'	=> $val['size_x'],
-					'size_y'	=> $val['size_y'],
-					'resolu_x'	=> $val['resolu_x'],
-					'resolu_y'	=> $val['resolu_y'],
-					'type'		=> $val['type'],
-					'operate'	=> $val['operate'],
-					'longitude'	=> $val['longitude'],
-					'latitude'	=> $val['latitude'],
+					'size_x'	=> intval($val['size_x']),
+					'size_y'	=> intval($val['size_y']),
+					'resolu_x'	=> intval($val['resolu_x']),
+					'resolu_y'	=> intval($val['resolu_y']),
+					'type'		=> intval($val['type']),
+					'operate'	=> intval($val['operate']),
+					'longitude'	=> floatval($val['longitude']),
+					'latitude'	=> floatval($val['latitude']),
 					'address'	=> "{$province}{$city}{$district}{$val['address']}",
 				);
 			}else{
@@ -255,14 +289,14 @@ class ManagerController extends CommonController
 				$groups[$val['group_id']]['screens'][] = array(
 					'id'		=> $val['id'],
 					'name'		=> $val['name'],
-					'size_x'	=> $val['size_x'],
-					'size_y'	=> $val['size_y'],
-					'resolu_x'	=> $val['resolu_x'],
-					'resolu_y'	=> $val['resolu_y'],
-					'type'		=> $val['type'],
-					'operate'	=> $val['operate'],
-					'longitude'	=> $val['longitude'],
-					'latitude'	=> $val['latitude'],
+					'size_x'	=> intval($val['size_x']),
+					'size_y'	=> intval($val['size_y']),
+					'resolu_x'	=> intval($val['resolu_x']),
+					'resolu_y'	=> intval($val['resolu_y']),
+					'type'		=> intval($val['type']),
+					'operate'	=> intval($val['operate']),
+					'longitude'	=> floatval($val['longitude']),
+					'latitude'	=> floatval($val['latitude']),
 					'address'	=> "{$province}{$city}{$district}{$val['address']}",
 				);
 			}
@@ -296,14 +330,6 @@ class ManagerController extends CommonController
 		$this->ajaxReturn($response);
 	}
 	
-	/*public function demo(){
-		$group_model = D("Group");
-		$groups = array('1','2');
-		$user_id = $this->user_id;
-		$temp = $group_model->group_screens($groups, $user_id);
-		dump($temp);
-	}*/
-	
 	/**
 	 * 播放方案列表
 	 */
@@ -316,7 +342,6 @@ class ManagerController extends CommonController
 		$programs  = array();
 		foreach($all_program as $val){
 			$release = $program_model->program_can_release($val['id'], $user_id);
-			$release = true;
 			if($release){
 				$temp = array();
 				$temp['ProgramId']		= $val['id'];
@@ -337,14 +362,7 @@ class ManagerController extends CommonController
 			}
 			
 		}
-		dump($programs);
-		/*
-		$result = $program_model->select();
-		foreach($result as &$val){
-			$val['name'] = stripslashes($val['name']);
-		}
-		$this->ajaxReturn($result);
-		*/
+		$this->ajaxReturn($programs);
 	}
 	
 	/**
@@ -377,8 +395,9 @@ class ManagerController extends CommonController
 						'url'			=> $sign_url
 					);
 					$result = array(
-						'name'	=> $filename,
-						'path'	=> $file_path,
+						//'name'	=> $filename,
+						//'path'	=> $filepath,
+						'name'	=> $filepath,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
@@ -412,8 +431,9 @@ class ManagerController extends CommonController
 					}
 					if($parts){
 						$result = array(
-							'name'	=> $filename,
-							'path'	=> $file_path,
+							//'name'	=> $filename,
+							//'path'	=> $filepath,
+							'name'	=> $filepath,
 							'md5'	=> $filemd5,
 							'key'	=> $object,
 							'parts'	=> $parts
@@ -452,8 +472,9 @@ class ManagerController extends CommonController
 					'url'			=> $sign_url
 				);
 				$result = array(
-					'name'	=> $filename,
-					'path'	=> $file_path,
+					//'name'	=> $filename,
+					//'path'	=> $filepath,
+					'name'	=> $filepath,
 					'md5'	=> $filemd5,
 					'key'	=> $object,
 					'parts'	=> $parts
@@ -491,8 +512,9 @@ class ManagerController extends CommonController
 				}
 				if($parts){
 					$result = array(
-						'name'	=> $filename,
-						'path'	=> $file_path,
+						//'name'	=> $filename,
+						//'path'	=> $filepath,
+						'name'	=> $filepath,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
@@ -525,8 +547,9 @@ class ManagerController extends CommonController
 						'url'			=> $sign_url
 					);
 					$result = array(
-						'name'	=> $filename,
-						'path'	=> $filepath,
+						//'name'	=> $filename,
+						//'path'	=> $filepath,
+						'name'	=> $filepath,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
@@ -555,8 +578,9 @@ class ManagerController extends CommonController
 					}
 					if($parts){
 						$result = array(
-							'name'	=> $filename,
-							'path'	=> $filepath,
+							//'name'	=> $filename,
+							//'path'	=> $filepath,
+							'name'	=> $filepath,
 							'md5'	=> $filemd5,
 							'key'	=> $object,
 							'parts'	=> $parts
@@ -590,8 +614,9 @@ class ManagerController extends CommonController
 					'url'			=> $sign_url
 				);
 				$result = array(
-					'name'	=> $filename,
-					'path'	=> $filepath,
+					//'name'	=> $filename,
+					//'path'	=> $filepath,
+					'name'	=> $filepath,
 					'md5'	=> $filemd5,
 					'key'	=> $object,
 					'parts'	=> $parts
@@ -628,8 +653,9 @@ class ManagerController extends CommonController
 				}
 				if($parts){
 					$result = array(
-						'name'	=> $filename,
-						'path'	=> $filepath,
+						//'name'	=> $filename,
+						//'path'	=> $filepath,
+						'name'	=> $filepath,
 						'md5'	=> $filemd5,
 						'key'	=> $object,
 						'parts'	=> $parts
