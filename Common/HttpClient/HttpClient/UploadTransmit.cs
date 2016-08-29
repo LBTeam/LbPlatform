@@ -273,6 +273,7 @@ namespace Com.Net
         private string _filePath;
         private string _fileSize;
         private string _fileMD5;
+        private FileType _type;
         private List<media> _mediaList;
 
         public string FilePath
@@ -327,11 +328,24 @@ namespace Com.Net
             }
         }
 
-        public UploadFileInfo(string filePath,string fileSize,string fileMD5)
+        public FileType Type
+        {
+            get
+            {
+                return _type;
+            }
+            set
+            {
+                _type = value;
+            }
+        }
+
+        public UploadFileInfo(string filePath,string fileSize,string fileMD5,FileType type)
         {
             _filePath = filePath;
             _fileSize = fileSize;
             _fileMD5 = fileMD5;
+            _type = type;
         }
     }
 
@@ -371,5 +385,16 @@ namespace Com.Net
                 _mediaMD5 = value;
             }
         }
+    }
+}
+
+namespace Com.Net
+{
+    public enum FileType
+    {
+        Plan,
+        Image,
+        Video,
+        Text
     }
 }
