@@ -24,7 +24,7 @@ namespace HttpTest
 
         private void button1_Click(object sender, EventArgs e)
         {
-            UploadTransmit u =new UploadTransmit("",new List<UploadFileInfo>());
+            UploadTransmit u =new UploadTransmit("",new List<UploadFileInfo>(),new List<int>() { 1, 2, 3 });
 
             OpenFileDialog dlg = new OpenFileDialog();
             if (dlg.ShowDialog() == DialogResult.OK)
@@ -80,10 +80,17 @@ namespace HttpTest
             });
         }
 
-        private void richTxtControl1_Load(object sender, EventArgs e)
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            DownloadTransmit d = new DownloadTransmit();
+            d.Download("http://lb-player-program.oss-cn-shenzhen.aliyuncs.com/20160829/57c3e67b95cb0.playprog?OSSAccessKeyId=f1mcwCSSqB9tIY57&Expires=1472553675&Signature=49ZFrZKmoa5RBTyR96AE1Gk2eHM%3D", @"C:\MarsSite\MarsSite\ListDownLoad\1.plan");
+        }
+
+        private void button2_Click(object sender, EventArgs e)
         {
             List<UploadFileInfo> list = new List<UploadFileInfo>();
-            UploadTransmit uploadTransmit = new UploadTransmit("http://lbcloud.ddt123.cn/?s=api/Manager/upload", list);
+            UploadTransmit uploadTransmit = new UploadTransmit("http://lbcloud.ddt123.cn/?s=api/Manager/upload", list, new List<int>() { 1, 2, 3 });
             string md5;
             FileStream fs1 = new FileStream(@"E:\Test\test.playprog", FileMode.Open);
             md5 = uploadTransmit.ComputeContentMd5(fs1, fs1.Length);
@@ -117,7 +124,6 @@ namespace HttpTest
             uploadTransmit.UploadFileList = list;
 
             uploadTransmit.StartUpload();
-
         }
     }
 }

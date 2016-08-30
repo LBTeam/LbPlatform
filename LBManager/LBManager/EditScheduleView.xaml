@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="LBManager.ScreenListView"
+﻿<UserControl x:Class="LBManager.EditScheduleView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,10 +7,25 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mycontrol="http://lbmanager.net/winfx/xaml/controls"
              xmlns:params="http://schemas.codeplex.com/elysium/params"
-             mc:Ignorable="d" 
+             xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" Width="450" Height="300"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <DataGrid  ItemsSource="{Binding ScreenList}" 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <ToolBarTray Grid.Row="0">
+            <ToolBar Style="{DynamicResource MaterialDesignToolBar}">
+                <Button ToolTip="新建播放方案" >
+                    <materialDesign:PackIcon Kind="PlaylistPlus" Width="24" Height="24"/>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding ScreenList}" 
                    AutoGenerateColumns="False"
                    VerticalContentAlignment="Center"
                    Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}">
@@ -19,7 +34,8 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Width="*"
                                             Header="名称"
-                                           /> <!--EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"-->
+                                           />
+                <!--EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"-->
                 <!-- if you want to use the pop up style (MaterialDesignDataGridTextColumnPopupEditingStyle), you must use MaterialDataGridTextColumn -->
                 <materialDesign:MaterialDataGridTextColumn Binding="{Binding Width}" Width="*"
                                                         Header="Width"   
@@ -32,7 +48,7 @@
                                                                DisplayMemberPath="FileName"
                                                                SelectedValueBinding="{Binding ScheduleList.SelectedScheduleFile}"
                                                                ItemsSourceBinding="{Binding ScheduleList.ScheduleFileInfoList}" />
-                
+
                 <DataGridTemplateColumn Header=""
                                         Width="*">
                     <DataGridTemplateColumn.CellTemplate>
@@ -50,5 +66,22 @@
 
             </DataGrid.Columns>
         </DataGrid>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center"
+                    Margin="0 0 0 10">
+            <Button IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}"
+                    Command="{x:Static wpf:DialogHost.CloseDialogCommand}">
+                <Button.CommandParameter>
+                    <system:Boolean>True</system:Boolean>
+                </Button.CommandParameter>
+                确定
+            </Button>
+            <Button IsCancel="True" Margin="8 0 0 0" Style="{DynamicResource MaterialDesignFlatButton}"
+                    Command="{x:Static wpf:DialogHost.CloseDialogCommand}">
+                <Button.CommandParameter>
+                    <system:Boolean>False</system:Boolean>
+                </Button.CommandParameter>
+                取消
+            </Button>
+        </StackPanel>
     </Grid>
 </UserControl>
