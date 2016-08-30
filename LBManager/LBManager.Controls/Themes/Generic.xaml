@@ -67,6 +67,527 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ExpanderRightHeaderStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+        <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled"/>
+        <Setter Property="Background" Value="{StaticResource TransparentBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource TransparentBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.ContentFontSize), Mode=OneWay}"/>
+        <Setter Property="FontStretch" Value="Medium"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource ContrastBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Padding" Value="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}"/>
+        <Setter Property="Tag" Value="{StaticResource ContrastBrush}"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <local:BorderFix Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            TextBlock.Foreground="{TemplateBinding Foreground}"
+                            TextBlock.FontFamily="{TemplateBinding FontFamily}"
+                            TextBlock.FontSize="{TemplateBinding FontSize}"
+                            TextBlock.FontStretch="{TemplateBinding FontStretch}"
+                            TextBlock.FontStyle="{TemplateBinding FontStyle}"
+                            TextBlock.FontWeight="{TemplateBinding FontWeight}"
+                            TextOptions.TextFormattingMode="{TemplateBinding TextOptions.TextFormattingMode}"
+                            TextOptions.TextRenderingMode="{TemplateBinding TextOptions.TextRenderingMode}"
+                            RenderOptions.ClearTypeHint="{TemplateBinding RenderOptions.ClearTypeHint}"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Border x:Name="Bd"
+                                        Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Left, Top, Right', Path=Padding.Left, RelativeSource={RelativeSource TemplatedParent}}"
+                                        SnapsToDevicePixels="true">
+                                <Path x:Name="arrow" 
+                                          Data="{StaticResource ArrowHeadDownGeometry}"
+                                          Fill="{TemplateBinding Tag}"
+                                          Height="18"
+                                          HorizontalAlignment="Center" 
+                                          Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Bottom', RelativeSource={RelativeSource Self}, Path=(params:General.BoldPaddingValue), Mode=OneWay}"
+                                          RenderTransformOrigin="0.5,0.5" 
+                                          Stretch="Uniform"
+                                          VerticalAlignment="Center"
+                                          Width="18">
+                                    <Path.RenderTransform>
+                                        <RotateTransform Angle="-90"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Border>
+
+                            <ContentPresenter x:Name="ContentPresenter" 
+                                                  Grid.Row="1" 
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                                  Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Left, Right, Bottom', Path=Padding.Left, RelativeSource={RelativeSource TemplatedParent}}"              
+                                                  RecognizesAccessKey="True"
+                                                  SnapsToDevicePixels="True"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+
+                        </Grid>
+                    </local:BorderFix>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=Content, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+                            <Setter Property="Visibility" TargetName="ContentPresenter" Value="Collapsed"/>
+                        </DataTrigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="arrow" 
+                                                         Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                         Duration="00:00:00.3"
+                                                         To="90"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="arrow" 
+                                                         Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                         Duration="00:00:00.3"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="ExpanderUpHeaderStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+        <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled"/>
+        <Setter Property="Background" Value="{StaticResource TransparentBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource TransparentBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.ContentFontSize), Mode=OneWay}"/>
+        <Setter Property="FontStretch" Value="Medium"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource ContrastBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Padding" Value="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}"/>
+        <Setter Property="Tag" Value="{StaticResource ContrastBrush}"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <local:BorderFix Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            TextBlock.Foreground="{TemplateBinding Foreground}"
+                            TextBlock.FontFamily="{TemplateBinding FontFamily}"
+                            TextBlock.FontSize="{TemplateBinding FontSize}"
+                            TextBlock.FontStretch="{TemplateBinding FontStretch}"
+                            TextBlock.FontStyle="{TemplateBinding FontStyle}"
+                            TextBlock.FontWeight="{TemplateBinding FontWeight}"
+                            TextOptions.TextFormattingMode="{TemplateBinding TextOptions.TextFormattingMode}"
+                            TextOptions.TextRenderingMode="{TemplateBinding TextOptions.TextRenderingMode}"
+                            RenderOptions.ClearTypeHint="{TemplateBinding RenderOptions.ClearTypeHint}"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border x:Name="Bd"
+                                    Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Left, Top, Bottom', Path=Padding.Left, RelativeSource={RelativeSource TemplatedParent}}"
+                                    SnapsToDevicePixels="true">
+                                <Path x:Name="arrow" 
+                                      Data="{StaticResource ArrowHeadDownGeometry}"
+                                      Fill="{TemplateBinding Tag}"
+                                      Height="18"
+                                      HorizontalAlignment="Center" 
+                                      Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Right', RelativeSource={RelativeSource Self}, Path=(params:General.BoldPaddingValue), Mode=OneWay}"
+                                      RenderTransformOrigin="0.5,0.5" 
+                                      Stretch="Uniform"
+                                      VerticalAlignment="Center"
+                                      Width="18">
+                                    <Path.RenderTransform>
+                                        <RotateTransform Angle="180"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Border>
+
+                            <ContentPresenter x:Name="ContentPresenter" 
+                                              Grid.Column="1"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                              Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Top, Right, Bottom', Path=Padding.Left, RelativeSource={RelativeSource TemplatedParent}}"
+                                              SnapsToDevicePixels="True" 
+                                              RecognizesAccessKey="True"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+
+                        </Grid>
+                    </local:BorderFix>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=Content, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+                            <Setter Property="Visibility" TargetName="ContentPresenter" Value="Collapsed"/>
+                        </DataTrigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="arrow" 
+                                                         Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                         Duration="00:00:00.3"
+                                                         To="360"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="arrow" 
+                                                         Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                         Duration="00:00:00.3"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="ExpanderLeftHeaderStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+        <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled"/>
+        <Setter Property="Background" Value="{StaticResource TransparentBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource TransparentBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.ContentFontSize), Mode=OneWay}"/>
+        <Setter Property="FontStretch" Value="Medium"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource ContrastBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Padding" Value="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}"/>
+        <Setter Property="Tag" Value="{StaticResource ContrastBrush}"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <local:BorderFix Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            TextBlock.Foreground="{TemplateBinding Foreground}"
+                            TextBlock.FontFamily="{TemplateBinding FontFamily}"
+                            TextBlock.FontSize="{TemplateBinding FontSize}"
+                            TextBlock.FontStretch="{TemplateBinding FontStretch}"
+                            TextBlock.FontStyle="{TemplateBinding FontStyle}"
+                            TextBlock.FontWeight="{TemplateBinding FontWeight}"
+                            TextOptions.TextFormattingMode="{TemplateBinding TextOptions.TextFormattingMode}"
+                            TextOptions.TextRenderingMode="{TemplateBinding TextOptions.TextRenderingMode}"
+                            RenderOptions.ClearTypeHint="{TemplateBinding RenderOptions.ClearTypeHint}"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Border x:Name="Bd" 
+                                    Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Left, Top, Right', Path=Padding.Left, RelativeSource={RelativeSource TemplatedParent}}"
+                                    SnapsToDevicePixels="true">
+                                <Path x:Name="arrow" 
+                                      Data="{StaticResource ArrowHeadDownGeometry}"
+                                      Fill="{TemplateBinding Tag}"
+                                      Height="18"
+                                      HorizontalAlignment="Center" 
+                                      Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Bottom', RelativeSource={RelativeSource Self}, Path=(params:General.BoldPaddingValue), Mode=OneWay}"
+                                      RenderTransformOrigin="0.5,0.5" 
+                                      Stretch="Uniform"
+                                      VerticalAlignment="Center"
+                                      Width="18">
+                                    <Path.RenderTransform>
+                                        <RotateTransform Angle="90"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Border>
+
+                            <ContentPresenter x:Name="ContentPresenter" 
+                                              Grid.Row="1"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                              Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Left, Right, Bottom', Path=Padding.Left, RelativeSource={RelativeSource TemplatedParent}}"
+                                              RecognizesAccessKey="True"
+                                              SnapsToDevicePixels="True" 
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+
+                        </Grid>
+                    </local:BorderFix>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=Content, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+                            <Setter Property="Visibility" TargetName="ContentPresenter" Value="Collapsed"/>
+                        </DataTrigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="arrow" 
+                                                         Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                         Duration="00:00:00.3"
+                                                         To="270"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="arrow" 
+                                                         Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                         Duration="00:00:00.3"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="ExpanderDownHeaderStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+        <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled"/>
+        <Setter Property="Background" Value="{StaticResource TransparentBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource TransparentBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{StaticResource ContrastBrush}"/>
+        <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.ContentFontSize), Mode=OneWay}"/>
+        <Setter Property="FontStretch" Value="Medium"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Padding" Value="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}"/>
+        <Setter Property="Tag" Value="{StaticResource ContrastBrush}"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <local:BorderFix Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border x:Name="Bd"
+                                    Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Left, Top, Bottom', Path=Padding.Left, RelativeSource={RelativeSource TemplatedParent}}"
+                                    SnapsToDevicePixels="true">
+                                <Path x:Name="arrow" 
+                                      Data="{StaticResource ArrowHeadDownGeometry}"
+                                      Fill="{TemplateBinding Tag}"
+                                      Height="18"
+                                      HorizontalAlignment="Center" 
+                                      Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Right', RelativeSource={RelativeSource Self}, Path=(params:General.BoldPaddingValue), Mode=OneWay}"
+                                      RenderTransformOrigin="0.5,0.5" 
+                                      Stretch="Uniform"
+                                      VerticalAlignment="Center"
+                                      Width="18">
+                                    <Path.RenderTransform>
+                                        <RotateTransform Angle="0"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Border>
+
+                            <ContentPresenter x:Name="ContentPresenter" 
+                                              Grid.Column="1"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              Margin="{Binding Converter={StaticResource DoubleToThicknessConverter}, ConverterParameter='Top, Right, Bottom', Path=Padding.Left, RelativeSource={RelativeSource TemplatedParent}}"                                                  
+                                              SnapsToDevicePixels="True" 
+                                              RecognizesAccessKey="True"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+
+                        </Grid>
+                    </local:BorderFix>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=Content, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+                            <Setter Property="Visibility" TargetName="ContentPresenter" Value="Collapsed"/>
+                        </DataTrigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="arrow" 
+                                                         Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                         Duration="00:00:00.3"
+                                                         To="180"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="arrow" 
+                                                         Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                         Duration="00:00:00.3"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="{x:Type Expander}" TargetType="{x:Type Expander}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+        <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled"/>
+        <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"/>
+        <Setter Property="Foreground" Value="{StaticResource ContrastBrush}"/>
+        <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.ContentFontSize), Mode=OneWay}"/>
+        <Setter Property="FontStretch" Value="Medium"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Padding" Value="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Expander}">
+                    <local:BorderFix BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            SnapsToDevicePixels="True">
+                        <DockPanel>
+                            <ToggleButton x:Name="HeaderSite" 
+										  DockPanel.Dock="Top" 
+                                          Background="{TemplateBinding Background}" 
+							              BorderBrush="{TemplateBinding BorderBrush}" 
+                                          Content="{TemplateBinding Header}" 
+										  ContentTemplate="{TemplateBinding HeaderTemplate}" 
+										  ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"  
+                                          FocusVisualStyle="{TemplateBinding FocusVisualStyle}" 
+										  FontFamily="{TemplateBinding FontFamily}" 
+										  FontSize="{TemplateBinding FontSize}" 
+										  FontStretch="{TemplateBinding FontStretch}" 
+										  FontStyle="{TemplateBinding FontStyle}" 
+										  FontWeight="{TemplateBinding FontWeight}" 
+                                          Foreground="{TemplateBinding Foreground}"
+                                          IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          IsTabStop="True"
+										  MinHeight="0" 
+										  MinWidth="0" 
+                                          Padding="{TemplateBinding Padding}"
+                                          Style="{StaticResource ExpanderDownHeaderStyle}"
+                                          Tag="{StaticResource ContrastBrush}"/>
+                            <local:ExpandableContentControl x:Name="ExpandSite"
+											                   DockPanel.Dock="Bottom"
+                                                               Content="{TemplateBinding Content}"
+                                                               ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                               ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+											                   Focusable="false"
+                                                               FontFamily="{TemplateBinding FontFamily}"
+                                                               FontSize="{TemplateBinding FontSize}"
+                                                               FontStretch="{TemplateBinding FontStretch}"
+                                                               FontStyle="{TemplateBinding FontStyle}"
+                                                               FontWeight="{TemplateBinding FontWeight}"
+                                                               Foreground="{StaticResource ForegroundBrush}"
+											                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                                               HorizontalContentAlignment="Stretch"
+                                                               Percentage="0"
+                                                               RecalculateOnSizeChanged="True"
+                                                               RevealMode="{TemplateBinding ExpandDirection}" 
+											                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                               VerticalContentAlignment="Stretch"/>
+                        </DockPanel>
+                    </local:BorderFix>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{StaticResource ForegroundBrush}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource ForegroundBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsExpanded" Value="true">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="ExpandedBeginStoryboard">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ExpandSite" 
+                                                                       Storyboard.TargetProperty="(local:ExpandableContentControl.Percentage)"
+                                                                       BeginTime="00:00:00">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00.3" KeySpline="0.2,0,0,1" Value="1"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                                <StopStoryboard BeginStoryboardName="CollapsedBeginStoryboard"/>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="CollapsedBeginStoryboard">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ExpandSite" 
+                                                                       Storyboard.TargetProperty="(local:ExpandableContentControl.Percentage)"
+                                                                       BeginTime="00:00:00">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00.3" KeySpline="0.2,0,0,1" Value="0"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ExpandSite" 
+                                                                       Storyboard.TargetProperty="(UIElement.Visibility)"
+                                                                       BeginTime="00:00:00.3" 
+                                                                       Duration="00:00:00">
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                <ObjectKeyFrame.Value>
+                                                    <Visibility>Collapsed</Visibility>
+                                                </ObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                                <StopStoryboard BeginStoryboardName="ExpandedBeginStoryboard"/>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="ExpandDirection" Value="Right">
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <Setter Property="DockPanel.Dock" TargetName="ExpandSite" Value="Right"/>
+                            <Setter Property="DockPanel.Dock" TargetName="HeaderSite" Value="Left"/>
+                            <Setter Property="Style" TargetName="HeaderSite" Value="{StaticResource ExpanderRightHeaderStyle}"/>
+                        </Trigger>
+                        <Trigger Property="ExpandDirection" Value="Up">
+                            <Setter Property="DockPanel.Dock" TargetName="ExpandSite" Value="Top"/>
+                            <Setter Property="DockPanel.Dock" TargetName="HeaderSite" Value="Bottom"/>
+                            <Setter Property="Style" TargetName="HeaderSite" Value="{StaticResource ExpanderUpHeaderStyle}"/>
+                        </Trigger>
+                        <Trigger Property="ExpandDirection" Value="Left">
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                            <Setter Property="DockPanel.Dock" TargetName="ExpandSite" Value="Left"/>
+                            <Setter Property="DockPanel.Dock" TargetName="HeaderSite" Value="Right"/>
+                            <Setter Property="Style" TargetName="HeaderSite" Value="{StaticResource ExpanderLeftHeaderStyle}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{StaticResource DisabledBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="NoHeaderExpanderStyle" BasedOn="{StaticResource {x:Type Expander}}" TargetType="{x:Type Expander}">
         <Setter Property="Background" Value="{StaticResource TransparentBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource TransparentBrush}"/>
@@ -181,7 +702,7 @@
                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
                             <ContentControl.Content>
                                 <Path Data="{TemplateBinding Icon}"
-                                          Fill="Black"
+                                          Fill="{TemplateBinding Foreground}"
                                           Height="15"
                                           Margin="{TemplateBinding Padding}"
                                           SnapsToDevicePixels="True"

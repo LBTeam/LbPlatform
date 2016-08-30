@@ -1,5 +1,6 @@
 ﻿using LBManager.Infrastructure.Interfaces;
 using LBManager.Infrastructure.Models;
+using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,9 @@ namespace LBManager
             _height = screen.Height;
             _pixelsWidth = screen.PixelsWidth;
             _pixelsHeight = screen.PixelsHeight;
+            ScheduleList = new ProgramScheduleListViewModel();
+            PublishScheduleCommand = new DelegateCommand(() => { PublishSchedule(); });
+            PreviewScheduleCommand = new DelegateCommand(() => { PreviewSchedule(); });
         }
 
         private string _id;
@@ -62,5 +66,29 @@ namespace LBManager
             get { return _pixelsHeight; }
             set { SetProperty(ref _pixelsHeight, value); }
         }
+
+
+        private ProgramScheduleListViewModel _scheduleList;
+        public ProgramScheduleListViewModel ScheduleList
+        {
+            get { return _scheduleList; }
+            set { SetProperty(ref _scheduleList, value); }
+        }
+
+
+        public DelegateCommand PublishScheduleCommand { get; private set; }
+
+        public DelegateCommand PreviewScheduleCommand { get; private set; }
+
+        private void PublishSchedule()
+        {
+            
+        }
+
+        private void PreviewSchedule()
+        {
+            
+        }
+
     }
 }

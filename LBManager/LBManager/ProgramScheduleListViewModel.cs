@@ -1,6 +1,7 @@
 ﻿using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,14 +10,34 @@ using System.Windows.Data;
 
 namespace LBManager
 {
-    public class ProgramScheduleListViewModel:BindableBase
+    public class ProgramScheduleListViewModel : BindableBase
     {
         private FileSystemWatcher _fileWatcher;
         public ProgramScheduleListViewModel()
         {
-            FetchProgramSchedules();
-            InitializeFileWatcher();
+            string mediaDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media");
+            if (!Directory.Exists(mediaDirectory))
+            {
+                Directory.CreateDirectory(mediaDirectory);
+            }
+            FetchProgramSchedules(mediaDirectory);
+            InitializeFileWatcher(mediaDirectory);
 
+        }
+
+
+        private ObservableCollection<ScheduleFileInfo> _scheduleFileInfoList = new ObservableCollection<ScheduleFileInfo>();
+        public ObservableCollection<ScheduleFileInfo> ScheduleFileInfoList
+        {
+            get { return _scheduleFileInfoList; }
+            set { SetProperty(ref _scheduleFileInfoList, value); }
+        }
+
+        private ScheduleFileInfo _selectedScheduleFile;
+        public ScheduleFileInfo SelectedScheduleFile
+        {
+            get { return _selectedScheduleFile; }
+            set { SetProperty(ref _selectedScheduleFile, value); }
         }
 
         private void FetchProgramSchedules(string directoryPath)
@@ -25,14 +46,14 @@ namespace LBManager
 
             foreach (FileInfo fileInfo in folder.GetFiles("*.playprog"))
             {
-                Console.WriteLine(file.FullName);
+                ScheduleFileInfoList.Add(new ScheduleFileInfo(fileInfo));
             }
         }
 
-        private void InitializeFileWatcher()
+        private void InitializeFileWatcher(string targetDirectory)
         {
             _fileWatcher = new FileSystemWatcher();
-            _fileWatcher.Path = "";
+            _fileWatcher.Path = targetDirectory;
             _fileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             _fileWatcher.Filter = "";
             _fileWatcher.IncludeSubdirectories = true;
@@ -63,5 +84,45 @@ namespace LBManager
         {
             throw new NotImplementedException();
         }
+    }
+
+    public class ScheduleFileInfo : BindableBase
+    {
+        public ScheduleFileInfo(FileInfo fileInfo)
+        {
+            _fileName = fileInfo.Name;
+            _fileSize = fileInfo.Length / 1048576.0;
+            _lastWriteTime = fileInfo.LastWriteTime;
+            _filePath = fileInfo.FullName;
+        }
+
+        private string _fileName;
+        public string FileName
+        {
+            get { return _fileName; }
+            set { SetProperty(ref _fileName, value); }
+        }
+
+        private double _fileSize;
+        public double FileSize
+        {
+            get { return _fileSize; }
+            set { SetProperty(ref _fileSize, value); }
+        }
+
+        private DateTime _lastWriteTime;
+        public DateTime LastWriteTime
+        {
+            get { return _lastWriteTime; }
+            set { SetProperty(ref _lastWriteTime, value); }
+        }
+
+        private string _filePath;
+        public string FilePath
+        {
+            get { return _filePath; }
+            set { SetProperty(ref _filePath, value); }
+        }
+
     }
 }

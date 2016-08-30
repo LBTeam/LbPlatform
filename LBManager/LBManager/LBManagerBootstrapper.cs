@@ -17,6 +17,7 @@ namespace LBManager
 
             Application.Current.MainWindow = (Window)Shell;
             ShellViewModel viewModel = new ShellViewModel();
+            Application.Current.MainWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             Application.Current.MainWindow.DataContext = viewModel;
             Application.Current.MainWindow.Show();
         }
