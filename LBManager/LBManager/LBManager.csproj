@@ -43,8 +43,16 @@
       <HintPath>..\packages\Elysium.Theme.2.0.4\lib\net45\Elysium.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="JumpKick.HttpLib, Version=2.0.14.62, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HttpLib.2.0.14.62\lib\net45\JumpKick.HttpLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Prism, Version=6.2.0.0, Culture=neutral, PublicKeyToken=91a96d2a154366d8, processorArchitecture=MSIL">
@@ -88,9 +96,17 @@
     </Compile>
     <Compile Include="LoginDialogViewModel.cs" />
     <Compile Include="NotEmptyValidationRule.cs" />
+    <Compile Include="ProgramScheduleListViewModel.cs" />
+    <Compile Include="ProgramScheduleViewModel.cs" />
     <Compile Include="SampleProgressDialog.xaml.cs">
       <DependentUpon>SampleProgressDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ScreenListView.xaml.cs">
+      <DependentUpon>ScreenListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ScreenListViewModel.cs" />
+    <Compile Include="ScreenService.cs" />
+    <Compile Include="ScreenViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Page Include="LoginDialog.xaml">
       <SubType>Designer</SubType>
@@ -101,6 +117,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SampleProgressDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ScreenListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -121,6 +141,10 @@
       <DependentUpon>Shell.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -166,6 +190,10 @@
     <ProjectReference Include="..\LBManager.Controls\LBManager.Controls.csproj">
       <Project>{5dc0aec5-e59b-4868-b125-92eeb3c1225b}</Project>
       <Name>LBManager.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LBManager.Infrastructure\LBManager.Infrastructure.csproj">
+      <Project>{AE40C0E5-6C31-4364-874D-6A0A6C028367}</Project>
+      <Name>LBManager.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

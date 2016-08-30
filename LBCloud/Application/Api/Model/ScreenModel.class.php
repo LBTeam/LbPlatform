@@ -18,4 +18,10 @@ class ScreenModel extends Model
 				->where("s.uid = {$user_id} AND s.is_delete = 0")
 				->select();
 	}
+	
+	public function screen_by_id($screen_id){
+		return $this
+				->where("id = {$screen_id}")
+				->find();
+	}
 }

@@ -20,7 +20,13 @@ return array(
 	'player_program_subfix'	=>	'playprog',	//播放方案文件后缀名
 	
 	//未登录可访问模块
-	'not_logged_allow' => array(
+	'manager_not_logged' => array(
 		'login',
+	),
+	//空数据可访问模块
+	'manager_param_empty' => array(
+		'configuration',
+		'screens',
+		'programs'
 	),
 );

@@ -46,8 +46,10 @@
   <ItemGroup>
     <Compile Include="Interfaces\ICheckService.cs" />
     <Compile Include="Interfaces\IChecksumProvider.cs" />
+    <Compile Include="Interfaces\IScreenService.cs" />
     <Compile Include="Models\ImageMedia.cs" />
     <Compile Include="Models\Media.cs" />
+    <Compile Include="Models\MediaSchedule.cs" />
     <Compile Include="Models\Screen.cs" />
     <Compile Include="Models\TextMedia.cs" />
     <Compile Include="Models\VideoMedia.cs" />
