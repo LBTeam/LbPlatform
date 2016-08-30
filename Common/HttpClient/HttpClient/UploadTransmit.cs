@@ -30,7 +30,7 @@ namespace Com.Net
             {
                 return _uploadFileList;
             }
-
+       
             set
             {
                 _uploadFileList = value;
@@ -49,8 +49,6 @@ namespace Com.Net
             _url = url;
             _uploadFileList = UploadFileList;
             _screenList = screenList;
-
-
 
         }
         public string GetMD5HashFromFile(string fileName)
@@ -114,7 +112,11 @@ namespace Com.Net
                     fs.Seek(long.Parse(streamPartList[i].Parts[j].SeekTo), 0);
                     PartComplete pc = new PartComplete();
                     pc.PartNumber = int.Parse(streamPartList[i].Parts[j].PartNumber);
-                    pc.MD5= ComputeContentMd5(fs, fs.Length);
+                    pc.MD5= ComputeContentMd5(fs, long.Parse(streamPartList[i].Parts[j].Length));
+                    if(uploadComplete.Parts==null)
+                    {
+                        uploadComplete.Parts = new List<PartComplete>();
+                    }
                     uploadComplete.Parts.Add(pc);
                     Http.Put(streamPartList[i].Parts[j].Url)
                         .Upload(new[] { new NamedFileStream(streamPartList[i].Key, streamPartList[i].Name, "application/octet-stream", fs) },
@@ -142,6 +144,7 @@ namespace Com.Net
                                                                })
                                                      .Go();
                 }
+                _listUploadComplete.Add(uploadComplete);
 
             }
 
