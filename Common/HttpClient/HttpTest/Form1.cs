@@ -79,5 +79,45 @@ namespace HttpTest
                 txtResult.Text = text;
             });
         }
+
+        private void richTxtControl1_Load(object sender, EventArgs e)
+        {
+            List<UploadFileInfo> list = new List<UploadFileInfo>();
+            UploadTransmit uploadTransmit = new UploadTransmit("http://lbcloud.ddt123.cn/?s=api/Manager/upload", list);
+            string md5;
+            FileStream fs1 = new FileStream(@"E:\Test\test.playprog", FileMode.Open);
+            md5 = uploadTransmit.ComputeContentMd5(fs1, fs1.Length);
+            UploadFileInfo u = new UploadFileInfo(@"E:\Test\test.playprog", fs1.Length.ToString(), md5, FileType.Plan);
+            fs1.Close();
+            u.MediaList = new List<media>();
+
+            FileStream fs2 = new FileStream(@"E:\Test\1.png", FileMode.Open);
+            md5 = uploadTransmit.ComputeContentMd5(fs2, fs2.Length);
+            u.MediaList.Add(new media(@"E:\Test\1.png", md5));
+            fs2.Close();
+
+            FileStream fs3 = new FileStream(@"E:\Test\Wildlife.wmv", FileMode.Open);
+            md5 = uploadTransmit.ComputeContentMd5(fs3, fs3.Length);
+            u.MediaList.Add(new media(@"E:\Test\Wildlife.wmv", md5));
+            fs3.Close();
+
+            FileStream fs4 = new FileStream(@"E:\Test\Wildlife.wmv", FileMode.Open);
+            md5 = uploadTransmit.ComputeContentMd5(fs4, fs4.Length);
+            UploadFileInfo u2 = new UploadFileInfo(@"E:\Test\Wildlife.wmv", fs4.Length.ToString(), md5, FileType.Image);
+            fs4.Close();
+
+            FileStream fs5 = new FileStream(@"E:\Test\Wildlife.wmv", FileMode.Open);
+            md5 = uploadTransmit.ComputeContentMd5(fs5, fs5.Length);
+            UploadFileInfo u3 = new UploadFileInfo(@"E:\Test\2.png", fs5.Length.ToString(), md5, FileType.Image);
+            fs5.Close();
+            list.Add(u);
+            list.Add(u2);
+            list.Add(u3);
+
+            uploadTransmit.UploadFileList = list;
+
+            uploadTransmit.StartUpload();
+
+        }
     }
 }

@@ -8,5 +8,6 @@ namespace Com.Net
 {
     class DownloadTransmit
     {
+
     }
 }
