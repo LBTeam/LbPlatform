@@ -136,10 +136,8 @@ namespace Com.Net
                                                                    successCount++;
                                                                    if(Count==successCount)
                                                                    {
-                                                                       if(Completed!=null)
-                                                                       {
-                                                                           Completed(0);
-                                                                       }
+                                                                       UploadComplete(_listUploadComplete);
+                                                                      
                                                                    }
                                                                })
                                                      .Go();
@@ -149,6 +147,27 @@ namespace Com.Net
             }
 
             return true;
+
+        }
+
+        private void UploadComplete(List<UploadComplete> _listUploadComplete)
+        {
+            HttpClient _httpClient = new HttpClient();
+            for (int i = 0; i < _listUploadComplete.Count; i++)
+            {
+
+                string UploadFileJson = JsonConvert.SerializeObject(_listUploadComplete[i]);
+                string replayData, errorInfo;
+                _httpClient.Post("http://lbcloud.ddt123.cn/?s=api/Manager/complete_upload", UploadFileJson, out replayData, out errorInfo);
+                if (errorInfo != null && errorInfo != "")
+                {
+                    Debug.WriteLine("GetStreamUrl Error:" + errorInfo);
+                }
+            }
+            if (Completed != null)
+            {
+                Completed(0);
+            }
 
         }
 
