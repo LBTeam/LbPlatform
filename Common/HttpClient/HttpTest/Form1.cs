@@ -24,7 +24,7 @@ namespace HttpTest
 
         private void button1_Click(object sender, EventArgs e)
         {
-            UploadTransmit u =new UploadTransmit("",new List<UploadFileInfo>());
+            UploadTransmit u =new UploadTransmit("",new List<UploadFileInfo>(),new List<int>() { 1, 2, 3 });
 
             OpenFileDialog dlg = new OpenFileDialog();
             if (dlg.ShowDialog() == DialogResult.OK)
@@ -78,6 +78,52 @@ namespace HttpTest
             {
                 txtResult.Text = text;
             });
+        }
+
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            DownloadTransmit d = new DownloadTransmit();
+            d.Download("http://lb-player-program.oss-cn-shenzhen.aliyuncs.com/20160829/57c3e67b95cb0.playprog?OSSAccessKeyId=f1mcwCSSqB9tIY57&Expires=1472553675&Signature=49ZFrZKmoa5RBTyR96AE1Gk2eHM%3D", @"C:\MarsSite\MarsSite\ListDownLoad\1.plan");
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            List<UploadFileInfo> list = new List<UploadFileInfo>();
+            UploadTransmit uploadTransmit = new UploadTransmit("http://lbcloud.ddt123.cn/?s=api/Manager/upload", list, new List<int>() { 1, 2, 3 });
+            string md5;
+            FileStream fs1 = new FileStream(@"E:\Test\test.playprog", FileMode.Open);
+            md5 = uploadTransmit.ComputeContentMd5(fs1, fs1.Length);
+            UploadFileInfo u = new UploadFileInfo(@"E:\Test\test.playprog", fs1.Length.ToString(), md5, FileType.Plan);
+            fs1.Close();
+            u.MediaList = new List<media>();
+
+            FileStream fs2 = new FileStream(@"E:\Test\1.png", FileMode.Open);
+            md5 = uploadTransmit.ComputeContentMd5(fs2, fs2.Length);
+            u.MediaList.Add(new media(@"E:\Test\1.png", md5));
+            fs2.Close();
+
+            FileStream fs3 = new FileStream(@"E:\Test\Wildlife.wmv", FileMode.Open);
+            md5 = uploadTransmit.ComputeContentMd5(fs3, fs3.Length);
+            u.MediaList.Add(new media(@"E:\Test\Wildlife.wmv", md5));
+            fs3.Close();
+
+            FileStream fs4 = new FileStream(@"E:\Test\Wildlife.wmv", FileMode.Open);
+            md5 = uploadTransmit.ComputeContentMd5(fs4, fs4.Length);
+            UploadFileInfo u2 = new UploadFileInfo(@"E:\Test\Wildlife.wmv", fs4.Length.ToString(), md5, FileType.Image);
+            fs4.Close();
+
+            FileStream fs5 = new FileStream(@"E:\Test\Wildlife.wmv", FileMode.Open);
+            md5 = uploadTransmit.ComputeContentMd5(fs5, fs5.Length);
+            UploadFileInfo u3 = new UploadFileInfo(@"E:\Test\2.png", fs5.Length.ToString(), md5, FileType.Image);
+            fs5.Close();
+            list.Add(u);
+            list.Add(u2);
+            list.Add(u3);
+
+            uploadTransmit.UploadFileList = list;
+
+            uploadTransmit.StartUpload();
         }
     }
 }

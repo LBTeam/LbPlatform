@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Com.Net
 {
     public delegate void ProgressChanged(long bytesRead, long? totalBytes);
-    public delegate void Completed(long totalBytes);
+    public delegate void Completed(object obj);
     public class UploadTransmit
     {
         public event ProgressChanged ProgressChanged = delegate { };
@@ -22,34 +22,69 @@ namespace Com.Net
         private List<UploadFileInfo> _uploadFileList = new List<UploadFileInfo>();
         private const string DefaultBaseChars = "0123456789ABCDEF";
         private HttpClient _httpClient = new HttpClient();
+        private List<int> _screenList;
 
+        public List<UploadFileInfo> UploadFileList
+        {
+            get
+            {
+                return _uploadFileList;
+            }
        
+            set
+            {
+                _uploadFileList = value;
+            }
+        }
+
+
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="url">访问ECS服务器路径</param>
         /// <param name="UploadFileList">上传文件的列表</param>
-        public UploadTransmit(string url,List<UploadFileInfo> UploadFileList)
+        public UploadTransmit(string url,List<UploadFileInfo> UploadFileList,List<int> screenList)
         {
             _url = url;
             _uploadFileList = UploadFileList;
-
-
-            //UploadFileInfo u = new UploadFileInfo(@"E:\Test\test.playprog", "4", "333", FileType.Plan);
-            //u.MediaList = new List<media>();
-            //u.MediaList.Add(new media(@"E:\Test\1.png", "333"));
-            //u.MediaList.Add(new media(@"E:\Test\2.png", "333"));
-
-            //UploadFileInfo u2 = new UploadFileInfo(@"E:\Test\1.png", "4", "333",FileType.Image);
-            //UploadFileInfo u3 = new UploadFileInfo(@"E:\Test\2.png", "4", "333",FileType.Image);
-            //_uploadFileList.Add(u);
-            //_uploadFileList.Add(u2);
-            //_uploadFileList.Add(u3);
+            _screenList = screenList;
 
         }
+        public string GetMD5HashFromFile(string fileName)
+        {
+            try
+            {
+                FileStream file = new FileStream(fileName, System.IO.FileMode.Open);
+                MD5 md5 = new MD5CryptoServiceProvider();
+                byte[] retVal = md5.ComputeHash(file);
+                file.Close();
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < retVal.Length; i++)
+                {
+                    sb.Append(retVal[i].ToString("x2"));
+                }
+                return sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("GetMD5HashFromFile() fail,error:" + ex.Message);
+            }
+        }
+        private int GetUploadCount(List<UploadFileInfoForServer> streamPartList)
+        {
+            int count = 0;
+            for (int i = 0; i < streamPartList.Count; i++)
+            {
+                count += streamPartList[i].Parts.Count;
+            }
+            return count;
+        }
+        private int Count;
         public bool StartUpload()
         {
+            int successCount = 0;
+            int failCount = 0;
             List<UploadFileInfoForServer> streamPartList = null;
             if(!GetStreamUrl(out streamPartList))
             {
@@ -59,13 +94,30 @@ namespace Com.Net
             {
                 return false;
             }
+            Count=GetUploadCount(streamPartList);
+            List<UploadComplete> _listUploadComplete = new List<UploadComplete>();
             for (int i = 0; i < streamPartList.Count; i++)
             {
+                UploadComplete uploadComplete = new UploadComplete();
+                uploadComplete.FileName = streamPartList[i].Name;
+                uploadComplete.FileMD5= streamPartList[i].MD5;
+                uploadComplete.FileType = streamPartList[i].Type;
+                if(streamPartList[i].Type== FileType.Plan)
+                {
+                    uploadComplete.Screens = _screenList;
+                }
                 for (int j = 0; j < streamPartList[i].Parts.Count; j++)
                 {
                     var fs = File.Open(streamPartList[i].Name, FileMode.Open, FileAccess.Read, FileShare.Read);
                     fs.Seek(long.Parse(streamPartList[i].Parts[j].SeekTo), 0);
-
+                    PartComplete pc = new PartComplete();
+                    pc.PartNumber = int.Parse(streamPartList[i].Parts[j].PartNumber);
+                    pc.MD5= ComputeContentMd5(fs, long.Parse(streamPartList[i].Parts[j].Length));
+                    if(uploadComplete.Parts==null)
+                    {
+                        uploadComplete.Parts = new List<PartComplete>();
+                    }
+                    uploadComplete.Parts.Add(pc);
                     Http.Put(streamPartList[i].Parts[j].Url)
                         .Upload(new[] { new NamedFileStream(streamPartList[i].Key, streamPartList[i].Name, "application/octet-stream", fs) },
                                 new { },
@@ -75,18 +127,47 @@ namespace Com.Net
                                 },
                                 (totalBytes) => { }).OnFail((fail) =>
                                                             {
+                                                                failCount++;
                                                                  // UpdateText(fail.Message.ToString());
                                                             })
                                                      .OnSuccess((result) =>
                                                                {
                                                                    //UpdateText("Completed");
+                                                                   successCount++;
+                                                                   if(Count==successCount)
+                                                                   {
+                                                                       UploadComplete(_listUploadComplete);
+                                                                      
+                                                                   }
                                                                })
                                                      .Go();
                 }
+                _listUploadComplete.Add(uploadComplete);
 
             }
 
             return true;
+
+        }
+
+        private void UploadComplete(List<UploadComplete> _listUploadComplete)
+        {
+            HttpClient _httpClient = new HttpClient();
+            for (int i = 0; i < _listUploadComplete.Count; i++)
+            {
+
+                string UploadFileJson = JsonConvert.SerializeObject(_listUploadComplete[i]);
+                string replayData, errorInfo;
+                _httpClient.Post("http://lbcloud.ddt123.cn/?s=api/Manager/complete_upload", UploadFileJson, out replayData, out errorInfo);
+                if (errorInfo != null && errorInfo != "")
+                {
+                    Debug.WriteLine("GetStreamUrl Error:" + errorInfo);
+                }
+            }
+            if (Completed != null)
+            {
+                Completed(0);
+            }
 
         }
 
@@ -97,7 +178,6 @@ namespace Com.Net
             {
                 string UploadFileJson = JsonConvert.SerializeObject(_uploadFileList);
                 string replayData, errorInfo;
-                //_httpClient.Post("http://192.168.1.107/LbPlatform/LBCloud/?s=api/Manager/demo", UploadFileJson, out d, out cc);
                 _httpClient.Post(_url, UploadFileJson, out replayData, out errorInfo);
                 if (errorInfo != null && errorInfo != "")
                 {
@@ -150,7 +230,9 @@ namespace Com.Net
     public class UploadFileInfoForServer
     {
         private string _name;
+        private string _mD5;
         private string _key;
+        private FileType _type;
         private List<Part> _parts;
         [JsonProperty("name")]
         public string Name
@@ -189,6 +271,32 @@ namespace Com.Net
             set
             {
                 _parts = value;
+            }
+        }
+        [JsonProperty("md5")]
+        public string MD5
+        {
+            get
+            {
+                return _mD5;
+            }
+
+            set
+            {
+                _mD5 = value;
+            }
+        }
+        [JsonProperty("type")]
+        public FileType Type
+        {
+            get
+            {
+                return _type;
+            }
+
+            set
+            {
+                _type = value;
             }
         }
 
@@ -383,6 +491,125 @@ namespace Com.Net
             set
             {
                 _mediaMD5 = value;
+            }
+        }
+    }
+
+    public class UploadComplete
+    {
+        private string _fileName;
+        private FileType _fileType;
+        private string _fileMD5;
+        private List<PartComplete> _parts;
+        private List<int> _screens;
+
+        public UploadComplete()
+        {
+
+        }
+
+        public UploadComplete(string _fileName, FileType _fileType, string _fileMD5, List<PartComplete> _parts, List<int> _screens)
+        {
+            this._fileName = _fileName;
+            this._fileType = _fileType;
+            this._fileMD5 = _fileMD5;
+            this._parts = _parts;
+            this._screens = _screens;
+        }
+
+        public string FileName
+        {
+            get
+            {
+                return _fileName;
+            }
+
+            set
+            {
+                _fileName = value;
+            }
+        }
+
+        public FileType FileType
+        {
+            get
+            {
+                return _fileType;
+            }
+
+            set
+            {
+                _fileType = value;
+            }
+        }
+
+        public string FileMD5
+        {
+            get
+            {
+                return _fileMD5;
+            }
+
+            set
+            {
+                _fileMD5 = value;
+            }
+        }
+
+        public List<PartComplete> Parts
+        {
+            get
+            {
+                return _parts;
+            }
+
+            set
+            {
+                _parts = value;
+            }
+        }
+
+        public List<int> Screens
+        {
+            get
+            {
+                return _screens;
+            }
+
+            set
+            {
+                _screens = value;
+            }
+        }
+    }
+    public class PartComplete
+    {
+        private int _partNumber;
+        private string _mD5;
+
+        public int PartNumber
+        {
+            get
+            {
+                return _partNumber;
+            }
+
+            set
+            {
+                _partNumber = value;
+            }
+        }
+
+        public string MD5
+        {
+            get
+            {
+                return _mD5;
+            }
+
+            set
+            {
+                _mD5 = value;
             }
         }
     }
