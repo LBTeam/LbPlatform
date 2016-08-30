@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Com.Net
 {
     public delegate void ProgressChanged(long bytesRead, long? totalBytes);
-    public delegate void Completed(long totalBytes);
+    public delegate void Completed(object obj);
     public class UploadTransmit
     {
         public event ProgressChanged ProgressChanged = delegate { };
