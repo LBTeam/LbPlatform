@@ -51,6 +51,7 @@ class PlayerController extends CommonController
 		$cmd_model = D("Command");
 		$plan_model = D("Program");
 		$media_model = D("Media");
+		$AliyunOSS = new AliyunOSS();
 		$screen = $screen_model->screen_by_id($id);
 		$cmds_list = $cmd_model->cmds_list($screen['uid'], $id);
 		$cmds = array();

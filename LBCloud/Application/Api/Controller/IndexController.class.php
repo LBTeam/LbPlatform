@@ -44,8 +44,8 @@ class IndexController extends Controller {
 		
     	$AliyunOSS = new AliyunOSS();
 		$bucket = C("aliyun_oss_bucket");
-		$object = "20160829/57c3e67b95cb0.playprog";
-		$upload_id = "96B71273C03D44BB9C81C6C37C640CF0";
+		$object = "20160830/57c546fcbfdb0.playprog";
+		$upload_id = "B8332F246AC54EB8AB4064EB756E837B";
 		$media_bucket = C("oss_media_bucket");
 		$program_bucket = C("oss_program_bucket");
 		
@@ -88,7 +88,7 @@ class IndexController extends Controller {
 		//dump($result);
 		
 		//上传成功分片文件列表
-		//$result = $AliyunOSS->part_list($object, $upload_id);
+		//$result = $AliyunOSS->part_list($object, $upload_id, $media_bucket);
 		//dump($result);
 		//exit;
 		
@@ -109,8 +109,8 @@ class IndexController extends Controller {
 		echo $result;
 		
 		//文件信息
-		//$result = $AliyunOSS->object_meta($bucket, $object);
-		//dump($result);
+		$result = $AliyunOSS->object_meta($program_bucket, $object);
+		dump($result);
 		
 		//中止上传
 		//$result = $AliyunOSS->abort_upload("57a3fcd14549a.txt", "E1B36EBA4C9946C3BFAAFDC836950172");
