@@ -146,12 +146,14 @@ class ManagerController extends CommonController
 				}
 				$program_data = $this->_upload_program($program_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix, $medias, $filepath);
 				if($program_data){
+					$program_data['type'] = $filetype;
 					$result[] = $program_data;
 				}
 			}else{
 				//媒体
 				$media_data = $this->_upload_media($media_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix, $filepath);
 				if($media_data){
+					$media_data['type'] = $filetype;
 					$result[] = $media_data;
 				}
 			}
