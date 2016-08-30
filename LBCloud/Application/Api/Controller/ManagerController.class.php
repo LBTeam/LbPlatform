@@ -173,7 +173,7 @@ class ManagerController extends CommonController
 		$filepath = $obj['FileName'];
 		$filename = end(explode('/', str_replace('\\', '/', $filepath)));
 		$filemd5 = $obj['FileMD5'];
-		$filetype = $obj['Type'];
+		$filetype = $obj['FileType'];
 		$fileparts = $obj['Parts'];
 		$user_id = $this->user_id;
 		if($filetype == 0){
@@ -365,7 +365,6 @@ class ManagerController extends CommonController
 				$temp['MediaList'] = $media_list;
 				$programs[] = $temp;
 			}
-			
 		}
 		$this->ajaxReturn($programs);
 	}
