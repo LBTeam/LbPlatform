@@ -110,6 +110,8 @@ namespace Com.Net
                 {
                     var fs = File.Open(streamPartList[i].Name, FileMode.Open, FileAccess.Read, FileShare.Read);
                     fs.Seek(long.Parse(streamPartList[i].Parts[j].SeekTo), 0);
+                   
+                    
                     PartComplete pc = new PartComplete();
                     pc.PartNumber = int.Parse(streamPartList[i].Parts[j].PartNumber);
                     pc.MD5= ComputeContentMd5(fs, long.Parse(streamPartList[i].Parts[j].Length));

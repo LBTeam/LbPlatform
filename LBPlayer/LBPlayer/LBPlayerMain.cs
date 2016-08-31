@@ -52,6 +52,7 @@ namespace LBPlayer
         private void initialPoll()
         {
             _poll = new Poll();
+            _poll.PollInterval = _config.HeartBeatInterval;
             _poll.SendPollEvent +=new SendPollEventHandler(_poll_SendPollEvent);
             _poll.GetPollResponseEvent += new GetPollResponseEventHandler(_poll_GetPollResponseEvent);
             _poll.Initializer();

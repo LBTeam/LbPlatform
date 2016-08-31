@@ -16,7 +16,7 @@ namespace LBPlayerConfig
 
         public bool LockUnLockPlayer = false;
         public string WebUrl = "";
-        public int HeartBeatInterval = 60;
+        public int HeartBeatInterval = 6000;
         public bool IsEnableAutoOpenOrClose = false;
         public TimeSpan OpenTime=new TimeSpan(00,00,00);
         public TimeSpan CloseTime = new TimeSpan(00,00,00);
