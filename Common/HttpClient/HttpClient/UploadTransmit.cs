@@ -126,21 +126,20 @@ namespace Com.Net
                                     //UpdateText(bytesSent.ToString());
                                 },
                                 (totalBytes) => { }).OnFail((fail) =>
-                                                            {
-                                                                failCount++;
-                                                                 // UpdateText(fail.Message.ToString());
-                                                            })
-                                                     .OnSuccess((result) =>
-                                                               {
-                                                                   //UpdateText("Completed");
-                                                                   successCount++;
-                                                                   if(Count==successCount)
-                                                                   {
-                                                                       UploadComplete(_listUploadComplete);
+                                {
+                                    failCount++;
+                                        // UpdateText(fail.Message.ToString());
+                                })
+                                .OnSuccess((result) =>
+                                {
+                                    //UpdateText("Completed");
+                                    successCount++;
+                                    if(Count==successCount)
+                                    {
+                                        UploadComplete(_listUploadComplete);
                                                                       
-                                                                   }
-                                                               })
-                                                     .Go();
+                                    }
+                                }).Go();
                 }
                 _listUploadComplete.Add(uploadComplete);
 
@@ -209,15 +208,14 @@ namespace Com.Net
                 readSize = input.Read(buffer, 0, readSize);
 
                 var data = md5.ComputeHash(buffer, 0, readSize);
-                var charset = DefaultBaseChars.ToCharArray();
-                var sBuilder = new StringBuilder();
-                foreach (var b in data)
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < data.Length; i++)
                 {
-                    sBuilder.Append(charset[b >> 4]);
-                    sBuilder.Append(charset[b & 0x0F]);
+                    sb.Append(data[i].ToString("x2"));
                 }
-                input.Seek(pos, SeekOrigin.Begin);
-                return Convert.ToBase64String(data);
+                return sb.ToString();
+               // input.Seek(pos, SeekOrigin.Begin);
+                //return Convert.ToBase64String(data);
             }
         }
 
