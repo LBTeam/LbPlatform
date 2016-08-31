@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -83,14 +84,38 @@ namespace HttpTest
 
         private void button3_Click(object sender, EventArgs e)
         {
+            
             DownloadTransmit d = new DownloadTransmit();
             d.Download("http://lb-player-program.oss-cn-shenzhen.aliyuncs.com/20160829/57c3e67b95cb0.playprog?OSSAccessKeyId=f1mcwCSSqB9tIY57&Expires=1472553675&Signature=49ZFrZKmoa5RBTyR96AE1Gk2eHM%3D", @"C:\MarsSite\MarsSite\ListDownLoad\1.plan");
         }
+        private string GetMD5HashFromFile(string fileName)
+        {
+            try
+            {
+                FileStream file = new FileStream(fileName, FileMode.Open);
+                System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+                byte[] retVal = md5.ComputeHash(file);
+                file.Close();
 
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < retVal.Length; i++)
+                {
+                    sb.Append(retVal[i].ToString("x2"));
+                }
+                return sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("GetMD5HashFromFile() fail, error:" + ex.Message);
+            }
+        }
         private void button2_Click(object sender, EventArgs e)
         {
             List<UploadFileInfo> list = new List<UploadFileInfo>();
             UploadTransmit uploadTransmit = new UploadTransmit("http://lbcloud.ddt123.cn/?s=api/Manager/upload", list, new List<int>() { 1, 2, 3 });
+
+            string a= GetMD5HashFromFile(@"E:\Test\test.playprog");
+
             string md5;
             FileStream fs1 = new FileStream(@"E:\Test\test.playprog", FileMode.Open);
             md5 = uploadTransmit.ComputeContentMd5(fs1, fs1.Length);
@@ -113,9 +138,9 @@ namespace HttpTest
             UploadFileInfo u2 = new UploadFileInfo(@"E:\Test\Wildlife.wmv", fs4.Length.ToString(), md5, FileType.Image);
             fs4.Close();
 
-            FileStream fs5 = new FileStream(@"E:\Test\Wildlife.wmv", FileMode.Open);
+            FileStream fs5 = new FileStream(@"E:\Test\1.png", FileMode.Open);
             md5 = uploadTransmit.ComputeContentMd5(fs5, fs5.Length);
-            UploadFileInfo u3 = new UploadFileInfo(@"E:\Test\2.png", fs5.Length.ToString(), md5, FileType.Image);
+            UploadFileInfo u3 = new UploadFileInfo(@"E:\Test\1.png", fs5.Length.ToString(), md5, FileType.Image);
             fs5.Close();
             list.Add(u);
             list.Add(u2);

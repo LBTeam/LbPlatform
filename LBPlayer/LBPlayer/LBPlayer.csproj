@@ -69,6 +69,7 @@
     <Compile Include="Encryption.Designer.cs">
       <DependentUpon>Encryption.cs</DependentUpon>
     </Compile>
+    <Compile Include="HartBeatObj.cs" />
     <Compile Include="LBPlayerMain.cs">
       <SubType>Form</SubType>
     </Compile>

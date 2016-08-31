@@ -14,6 +14,8 @@ using System.IO;
 using Microsoft.Win32;
 using System.Management;
 using com.lbplayer;
+using Newtonsoft.Json;
+using Com.Net;
 
 namespace LBPlayer
 {
@@ -62,6 +64,7 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _poll_GetPollResponseEvent(object sender, GetPollResponseEventArgs args)
         {
+            
             //throw new NotImplementedException();
             SetControlText(skinLabel8, "心跳完成");
         }
@@ -72,6 +75,13 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _poll_SendPollEvent(object sender, PollEventArgs args)
         {
+            HartBeatRequestObj obj = new HartBeatRequestObj();
+            obj.Id = "1";
+            obj.Key = "1";
+            obj.Mac = "1";
+            args.Url = "http://lbcloud.ddt123.cn/?s=api/Player/heartbeat";
+            args.PollData = JsonConvert.SerializeObject(obj);
+
             //throw new NotImplementedException();
             SetControlText(skinLabel8, "开始心跳");
         }
@@ -213,6 +223,7 @@ namespace LBPlayer
         /// <param name="e"></param>
         private void LBPlayerMain_Load(object sender, EventArgs e)
         {
+          
             LoadConfig();
             initialWorkPath();
             _screenCapture = new ScreenCapture();
