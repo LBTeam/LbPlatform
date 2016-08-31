@@ -143,7 +143,7 @@ class AliyunOSS
 			$part_size = C("oss_5M_part_size");
 		}
 		//testing start
-		$part_size = "3145728";
+		//$part_size = "3145728";
 		//testing end
 		return $part_size;
 	}
