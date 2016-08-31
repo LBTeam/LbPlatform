@@ -93,13 +93,13 @@ class IndexController extends Controller {
 		//dump($result);
 		
 		//上传成功分片文件列表
-		$result = $AliyunOSS->part_list($object, $upload_id, $media_bucket);
-		dump($result);
+		/*$result = $AliyunOSS->part_list($object, $upload_id, $media_bucket);
+		dump($result);*/
 		//exit;
 		
 		//存储对象是否存在
-		$result = $AliyunOSS->object_exists($object, $media_bucket);
-		dump($result);
+		/*$result = $AliyunOSS->object_exists($object, $media_bucket);
+		dump($result);*/
 		
 		//$result = $AliyunOSS->get_upload_id(".txt");
 		//dump($result);
@@ -136,6 +136,8 @@ class IndexController extends Controller {
 			array('PartNumber' => 8,'ETag' => "E0760A001A3A815D04E30FF4A7D66340"),
 			array('PartNumber' => 9,'ETag' => "8C5813E235B40A543E97C7662E12486C"),
 		);
+		dump(count($parts));
+		exit;
 		$result = $AliyunOSS->complete_upload($object, $upload_id, $parts, $media_bucket);
 		dump($result);
 		
