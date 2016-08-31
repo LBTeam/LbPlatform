@@ -91,13 +91,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="EditScheduleView.xaml.cs">
+      <DependentUpon>EditScheduleView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LoginDialog.xaml.cs">
       <DependentUpon>LoginDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="LoginDialogViewModel.cs" />
     <Compile Include="NotEmptyValidationRule.cs" />
     <Compile Include="ProgramScheduleListViewModel.cs" />
-    <Compile Include="ProgramScheduleViewModel.cs" />
     <Compile Include="SampleProgressDialog.xaml.cs">
       <DependentUpon>SampleProgressDialog.xaml</DependentUpon>
     </Compile>
@@ -108,6 +110,10 @@
     <Compile Include="ScreenService.cs" />
     <Compile Include="ScreenViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
+    <Page Include="EditScheduleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LoginDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

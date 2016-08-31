@@ -15,8 +15,12 @@ namespace LBManager
         {
             ScheduleDetailViewModel = new ProgramScheduleDetailViewModel();
             ScreenList = new ScreenListViewModel(new ScreenService());
+            
             LoginCommand = new DelegateCommand(() => { OpenLoginDialog(); });
+            NewScheduleCommand = new DelegateCommand(() => { NewSchedule(); });
         }
+
+       
 
         private async void OpenLoginDialog()
         {
@@ -28,6 +32,13 @@ namespace LBManager
             //show the dialog
             var result = await DialogHost.Show(view, "RootDialog", ExtendedOpenedEventHandler, ExtendedClosingEventHandler);
         }
+
+        private async void NewSchedule()
+        {
+            var view = new EditScheduleView();
+            var result = await DialogHost.Show(view, "RootDialog", null, null);
+        }
+
 
         private ProgramScheduleDetailViewModel _scheduleDetailViewModel;
         public ProgramScheduleDetailViewModel ScheduleDetailViewModel
@@ -44,6 +55,8 @@ namespace LBManager
         }
 
         public DelegateCommand LoginCommand { get; private set; }
+
+        public DelegateCommand NewScheduleCommand { get; private set; } 
 
         private void ExtendedOpenedEventHandler(object sender, DialogOpenedEventArgs eventargs)
         {

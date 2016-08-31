@@ -4,8 +4,11 @@
                     xmlns:mycontrol="http://lbmanager.net/winfx/xaml/controls">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.DataGrid.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToolBar.xaml" />
         <ResourceDictionary Source="pack://application:,,,/LBManager.Controls;component/Geometry.xaml" />
     </ResourceDictionary.MergedDictionaries>
+    <Geometry x:Key="PublishGeometry">M14,13V17H10V13H7L12,8L17,13M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z</Geometry>
+    <Geometry x:Key="PreviewGeometry">M2,3H10A2,2 0 0,1 12,1A2,2 0 0,1 14,3H22V5H21V16H15.25L17,22H15L13.25,16H10.75L9,22H7L8.75,16H3V5H2V3M5,5V14H19V5H5M11.85,11.85C11.76,11.94 11.64,12 11.5,12A0.5,0.5 0 0,1 11,11.5V7.5A0.5,0.5 0 0,1 11.5,7C11.64,7 11.76,7.06 11.85,7.15L13.25,8.54C13.57,8.86 13.89,9.18 13.89,9.5C13.89,9.82 13.57,10.14 13.25,10.46L11.85,11.85Z</Geometry>
     <Style x:Key="DeleteExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
         <Setter Property="Icon" Value="{StaticResource Delete1Geometry}"/>
         <Setter Property="ToolTip" Value="Delete"/>
@@ -37,5 +40,13 @@
     <Style x:Key="CopyExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
         <Setter Property="Icon" Value="{StaticResource CopyGeometry}"/>
         <Setter Property="ToolTip" Value="Copy"/>
+    </Style>
+    <Style x:Key="PublishExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+        <Setter Property="Icon" Value="{StaticResource PublishGeometry}"/>
+        <Setter Property="ToolTip" Value="Publish"/>
+    </Style>
+    <Style x:Key="PreviewExpanderMenuItemStyle" BasedOn="{StaticResource {x:Type mycontrol:ExpanderMenuItem}}" TargetType="{x:Type mycontrol:ExpanderMenuItem}">
+        <Setter Property="Icon" Value="{StaticResource PreviewGeometry}"/>
+        <Setter Property="ToolTip" Value="Preview"/>
     </Style>
 </ResourceDictionary>

@@ -33,5 +33,7 @@ namespace LBManager
             get { return _screenList; }
             set { SetProperty(ref _screenList, value); }
         }
+
+
     }
 }

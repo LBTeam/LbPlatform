@@ -55,6 +55,7 @@ class ManagerController extends CommonController
 				$this->ajaxReturn($response);exit;
 			}
 		}
+		//file_put_contents('./1.log', json_encode($this->param)."\r\n", FILE_APPEND);
 		/*请求数据检测结束*/
 		$this->media_bucket = C("oss_media_bucket");
 		$this->program_bucket = C("oss_program_bucket");
@@ -152,12 +153,14 @@ class ManagerController extends CommonController
 			}else{
 				//媒体
 				$media_data = $this->_upload_media($media_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix, $filepath);
+				//file_put_contents('./1.log', json_encode($media_data)."\r\n", FILE_APPEND);
 				if($media_data){
 					$media_data['type'] = $filetype;
 					$result[] = $media_data;
 				}
 			}
 		}
+		//file_put_contents('./1.log', json_encode($result)."\r\n", FILE_APPEND);
 		$this->ajaxReturn($result);
 	}
 	
@@ -170,7 +173,7 @@ class ManagerController extends CommonController
 		$filepath = $obj['FileName'];
 		$filename = end(explode('/', str_replace('\\', '/', $filepath)));
 		$filemd5 = $obj['FileMD5'];
-		$filetype = $obj['Type'];
+		$filetype = $obj['FileType'];
 		$fileparts = $obj['Parts'];
 		$user_id = $this->user_id;
 		if($filetype == 0){
@@ -362,7 +365,6 @@ class ManagerController extends CommonController
 				$temp['MediaList'] = $media_list;
 				$programs[] = $temp;
 			}
-			
 		}
 		$this->ajaxReturn($programs);
 	}
@@ -533,8 +535,10 @@ class ManagerController extends CommonController
 	private function _upload_media($model, $oss_obj, $user_id, $filename, $filesize, $filemd5, $subfix, $filepath){
 		$result = array();
 		$media_id = $model->media_exists($filename, $filemd5, $user_id);
+		//file_put_contents('./1.log', json_encode($media_id)."\r\n", FILE_APPEND);
 		if($media_id){
 			$media_info = $model->media_detail($media_id);
+			//file_put_contents('./1.log', json_encode($media_info)."\r\n", FILE_APPEND);
 			if($media_info['status'] == 0){
 				$object = $media_info['object'];
 				$uploadId = $media_info['upload_id'];
@@ -559,7 +563,9 @@ class ManagerController extends CommonController
 				}else{
 					$part_size = $oss_obj->part_size($filesize);
 					$upload_parts = $oss_obj->generate_upload_part($filesize, $part_size);
+					//file_put_contents('./1.log', json_encode($upload_parts)."\r\n", FILE_APPEND);
 					$part_lists = $oss_obj->part_list($object, $uploadId, $this->media_bucket);
+					//file_put_contents('./1.log', json_encode($part_lists)."\r\n", FILE_APPEND);
 					$part_list = array();
 					foreach($part_lists as $val){
 						$part_list[] = $val['partNumber'];
@@ -578,6 +584,7 @@ class ManagerController extends CommonController
 							);
 						}
 					}
+					//file_put_contents('./1.log', json_encode($parts)."\r\n", FILE_APPEND);
 					if($parts){
 						$result = array(
 							//'name'	=> $filename,

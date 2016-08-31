@@ -51,6 +51,7 @@ class PlayerController extends CommonController
 		$cmd_model = D("Command");
 		$plan_model = D("Program");
 		$media_model = D("Media");
+		$AliyunOSS = new AliyunOSS();
 		$screen = $screen_model->screen_by_id($id);
 		$cmds_list = $cmd_model->cmds_list($screen['uid'], $id);
 		$cmds = array();
@@ -68,11 +69,7 @@ class PlayerController extends CommonController
 							'MediaUrl'	=> $AliyunOSS->download_uri($this->media_bucket, $media['object'])
 						);
 					}
-					$cmdParam = array();
-					$cmdParam['Id'] = $id;
-					$cmdParam['Key'] = $key;
-					$cmdParam['Mac'] = $mac;
-					$cmdParam['Param'] = array(
+					$cmdParam = array(
 						'ProgramId'		=> $plan['id'],
 						'ProgramName'	=> stripslashes($plan['name']),
 						'ProgramUrl'	=> $AliyunOSS->download_uri($this->program_bucket, $plan['object']),
@@ -89,7 +86,14 @@ class PlayerController extends CommonController
 					break;
 			}
 		}
-		$response = array("err_code"=>"000000", "msg"=>"ok", "data"=>$cmds);
+		$response = array(
+			"err_code"=>"000000",
+			"msg"=>"ok",
+			"Id"=>$id,
+			"Key"=>$key,
+			"Mac"=>$mac,
+			"data"=>$cmds
+		);
 		$this->ajaxReturn($response);
 	}
 }

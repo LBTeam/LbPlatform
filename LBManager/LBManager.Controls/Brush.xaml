@@ -6,6 +6,15 @@
         <ResourceDictionary Source="/LBManager.Controls;component/Color.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     
+    <Color x:Key="TransparentColor" options:Freeze="True">#00FFFFFF</Color>
+    <Color x:Key="SemitransparentColor" options:Freeze="True">#20FFFFFF</Color>
+    <Color x:Key="BackgroundColor" options:Freeze="True">#FFFFFFFF</Color>
+    <Color x:Key="ForegroundColor" options:Freeze="True">#FF000000</Color>
+    <Color x:Key="HighlightColor" options:Freeze="True">#FFDEDEDE</Color>
+    <Color x:Key="MiddleLightColor" options:Freeze="True">#FF777777</Color>
+    <Color x:Key="LowlightColor" options:Freeze="True">#FF4D4D4D</Color>
+    <Color x:Key="DisabledColor" options:Freeze="True">#FFB8B5B2</Color>
+    
     <!-- Theme -->
     <SolidColorBrush x:Key="AccentBrush" options:Freeze="True" Color="{DynamicResource AccentColor}" />
     <SolidColorBrush x:Key="ContrastBrush" options:Freeze="True" Color="{DynamicResource ContrastColor}" />
