@@ -60,25 +60,27 @@ class PlayerController extends CommonController
 				case "0":
 					$param = json_decode($val['param'], true);
 					$plan = $plan_model->program_detail($param['program_id']);
-					$medias = array();
-					foreach($plan['info'] as $v){
-						$media = $media_model->media_by_name_md5($v['MediaName'], $v['MediaMD5'], $screen['uid']);
-						$medias[] = array(
-							'MediaId'	=> $media['id'],
-							'MediaName'	=> stripslashes($media['name']),
-							'MediaUrl'	=> $AliyunOSS->download_uri($this->media_bucket, $media['object'])
+					if($plan){
+						$medias = array();
+						foreach($plan['info'] as $v){
+							$media = $media_model->media_by_name_md5($v['MediaName'], $v['MediaMD5'], $screen['uid']);
+							$medias[] = array(
+								'MediaId'	=> $media['id'],
+								'MediaName'	=> stripslashes($media['name']),
+								'MediaUrl'	=> $AliyunOSS->download_uri($this->media_bucket, $media['object'])
+							);
+						}
+						$cmdParam = array(
+							'ProgramId'		=> $plan['id'],
+							'ProgramName'	=> stripslashes($plan['name']),
+							'ProgramUrl'	=> $AliyunOSS->download_uri($this->program_bucket, $plan['object']),
+							'Medias'		=> $medias
+						);
+						$cmds[] = array(
+							"CmdType"	=>	$val['type'],
+							"CmdParam"	=>	$cmdParam
 						);
 					}
-					$cmdParam = array(
-						'ProgramId'		=> $plan['id'],
-						'ProgramName'	=> stripslashes($plan['name']),
-						'ProgramUrl'	=> $AliyunOSS->download_uri($this->program_bucket, $plan['object']),
-						'Medias'		=> $medias
-					);
-					$cmds[] = array(
-						"CmdType"	=>	$val['type'],
-						"CmdParam"	=>	$cmdParam
-					);
 					break;
 				case "1":
 					break;

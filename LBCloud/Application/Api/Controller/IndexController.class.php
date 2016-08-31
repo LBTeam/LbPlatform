@@ -44,25 +44,30 @@ class IndexController extends Controller {
 		
     	$AliyunOSS = new AliyunOSS();
 		$bucket = C("aliyun_oss_bucket");
-		$object = "20160830/57c580d9af030.wmv";
-		$upload_id = "6090E688301644AB9D01B0100DAFD650";
+		$object = "20160831/57c64e0cae741.wmv";
+		$upload_id = "C886438E739B4E909839247DD57EFD66";
 		$media_bucket = C("oss_media_bucket");
 		$program_bucket = C("oss_program_bucket");
 		
 		//$AliyunOSS->demo($program_bucket, $object);
 		
+		/*$filesize = 3145728;
+		$result = $AliyunOSS->part_size($filesize);
+		dump($result);*/
+		//exit;
 		//分片
-		//$result = $AliyunOSS->generate_upload_part(2014568, 102400);
+		//$result = $AliyunOSS->generate_upload_part($filesize, $result);
 		//echo json_encode($result);
 		//dump($result);
 		//exit;
 
 		//文件列表
-		//$result = $AliyunOSS->object_list($program_bucket, "20160816/");
-		//dump($result);
+		/*$result = $AliyunOSS->object_list($media_bucket,  "20160831/");
+		dump($result);
 		
-		//$result = $AliyunOSS->object_list($program_bucket, "20160829/");
-		//dump($result);
+		
+		$result = $AliyunOSS->object_list($program_bucket, "20160831/");
+		dump($result);*/
 		
 		/*$result = $AliyunOSS->object_list($media_bucket);
 		dump($result);*/
@@ -92,6 +97,9 @@ class IndexController extends Controller {
 		dump($result);
 		//exit;
 		
+		//存储对象是否存在
+		$result = $AliyunOSS->object_exists($object, $media_bucket);
+		dump($result);
 		
 		//$result = $AliyunOSS->get_upload_id(".txt");
 		//dump($result);
@@ -117,16 +125,19 @@ class IndexController extends Controller {
 		//dump($result);
 		
 		//上传成功
-		/*$parts = array(
-			array('PartNumber' => 1,'ETag' => "e432006349b3c7810c902615928266bc"),
-			array('PartNumber' => 2,'ETag' => "2e672357fc96512658bc751a838d17c8"),
-			array('PartNumber' => 3,'ETag' => "f23d2a9329fa8f0164ccf43d725c7966"),
-			array('PartNumber' => 4,'ETag' => "c45ce4e824ac56829df67d20fa43de57"),
-			array('PartNumber' => 5,'ETag' => "684437c3cc0607326245b6e177b90570"),
-			array('PartNumber' => 6,'ETag' => "a296832f26163c1daa0551e3a9bf5c25"),
+		$parts = array(
+			array('PartNumber' => 1,'ETag' => "92E77633FBFE610E632A3BBD7E5DAB04"),
+			array('PartNumber' => 2,'ETag' => "DE94A4344D775EC44346768E6BFE49EB"),
+			array('PartNumber' => 3,'ETag' => "434B60D81F461D94A6E965CFCCB81394"),
+			array('PartNumber' => 4,'ETag' => "FCD52A07669BACA0D887B2AE3CC8E437"),
+			array('PartNumber' => 5,'ETag' => "9B099E61A3DF726F3DDB99E729F4DB17"),
+			array('PartNumber' => 6,'ETag' => "7FD2783485AAC99EF159562B27EE7B30"),
+			array('PartNumber' => 7,'ETag' => "0B213D35CEA1D9585F2EFAB23841439B"),
+			array('PartNumber' => 8,'ETag' => "E0760A001A3A815D04E30FF4A7D66340"),
+			array('PartNumber' => 9,'ETag' => "8C5813E235B40A543E97C7662E12486C"),
 		);
 		$result = $AliyunOSS->complete_upload($object, $upload_id, $parts, $media_bucket);
-		dump($result);*/
+		dump($result);
 		
 		//下载地址
 		/*
