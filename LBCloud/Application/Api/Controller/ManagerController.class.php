@@ -190,7 +190,7 @@ class ManagerController extends CommonController
 				$uploadId = $prog_info['upload_id'];
 				$parts = array();
 				foreach($fileparts as $val){
-					$parts[] = array('PartNumber'=>$val['partNumber'],'ETag' => $val['MD5']);
+					$parts[] = array('PartNumber'=>$val['partNumber'],'ETag'=>strtoupper($val['MD5']));
 				}
 				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->program_bucket);
 			}
@@ -226,7 +226,7 @@ class ManagerController extends CommonController
 				$uploadId = $media_info['upload_id'];
 				$parts = array();
 				foreach($fileparts as $val){
-					$parts[] = array('PartNumber'=>$val['partNumber'],'ETag' => $val['MD5']);
+					$parts[] = array('PartNumber'=>$val['partNumber'],'ETag'=>strtoupper($val['MD5']));
 				}
 				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->media_bucket);
 			}

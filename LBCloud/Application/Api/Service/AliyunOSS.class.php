@@ -140,8 +140,11 @@ class AliyunOSS
 		}else if($filesize <= C("oss_50M_part_size")){
 			$part_size = C("oss_5M_part_size");
 		}else{
-			$part_size = C("oss_10M_part_size");
+			$part_size = C("oss_5M_part_size");
 		}
+		//testing start
+		$part_size = "3145728";
+		//testing end
 		return $part_size;
 	}
 	
