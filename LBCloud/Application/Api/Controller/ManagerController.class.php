@@ -160,7 +160,7 @@ class ManagerController extends CommonController
 				}
 			}
 		}
-		//file_put_contents('./1.log', json_encode($result)."\r\n", FILE_APPEND);
+		file_put_contents('./1.log', json_encode($result)."\r\n", FILE_APPEND);
 		$this->ajaxReturn($result);
 	}
 	
