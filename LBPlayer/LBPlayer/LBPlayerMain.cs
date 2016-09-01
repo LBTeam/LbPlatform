@@ -31,6 +31,7 @@ namespace LBPlayer
         private Encryption _keyPasswordWindow = new Encryption();
 
         #endregion
+        #region 字段
         
         private ScreenCapture _screenCapture;
         private string _playLogPath = "";
@@ -41,23 +42,18 @@ namespace LBPlayer
         private Config _config =null;
         private string _privewPic = "Privew.jpg";
         private Poll _poll;
-
+        private List<Cmd> _cmdList;
+        private string _cmdSavePath;
+        private System.Windows.Forms.Timer _queryTimer;   
+        private const int QueryTimerInterval = 3000;
+        #endregion
+        #region 构造函数
         public LBPlayerMain()
         {
             InitializeComponent();
         }
-        /// <summary>
-        /// 初始化心跳
-        /// </summary>
-        private void initialPoll()
-        {
-            _poll = new Poll();
-            _poll.PollInterval = _config.HeartBeatInterval;
-            _poll.SendPollEvent +=new SendPollEventHandler(_poll_SendPollEvent);
-            _poll.GetPollResponseEvent += new GetPollResponseEventHandler(_poll_GetPollResponseEvent);
-            _poll.Initializer();
-            _poll.Start();
-        }
+        #endregion
+        #region 心跳
         /// <summary>
         /// 心跳结束事件
         /// </summary>
@@ -65,9 +61,29 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _poll_GetPollResponseEvent(object sender, GetPollResponseEventArgs args)
         {
-            
+            HartBeatResponseObj hartBeatResponseObj;
             //throw new NotImplementedException();
             SetControlText(skinLabel8, "心跳完成");
+            hartBeatResponseObj = JsonConvert.DeserializeObject<HartBeatResponseObj>(args.Replydata);
+
+            HartBeatHandle(hartBeatResponseObj);
+
+        }
+        /// <summary>
+        /// 处理心跳结果
+        /// </summary>
+        /// <param name="hartBeatResponseObj"></param>
+        private void HartBeatHandle(HartBeatResponseObj hartBeatResponseObj)
+        {
+            if (hartBeatResponseObj == null || hartBeatResponseObj.Data == null || hartBeatResponseObj.Data.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0; i < hartBeatResponseObj.Data.Count; i++)
+            {
+                _cmdList.Add(hartBeatResponseObj.Data[i]);
+            }
+            XmlUtil.XmlSerializeToFile(_cmdList, _cmdSavePath, Encoding.UTF8);
         }
         /// <summary>
         /// 心跳开始事件
@@ -86,17 +102,8 @@ namespace LBPlayer
             //throw new NotImplementedException();
             SetControlText(skinLabel8, "开始心跳");
         }
-        private delegate void SetControlTextDelegate(System.Windows.Forms.Control setControl, string text);
-        private void SetControlText(System.Windows.Forms.Control setControl, string text)
-        {
-            if (!this.InvokeRequired)
-            {
-                setControl.Text = text;
-                return;
-            }
-            SetControlTextDelegate setTextDelegate = new SetControlTextDelegate(SetControlText);
-            this.Invoke(setTextDelegate, new object[] { setControl, text });
-        }
+        #endregion
+        #region 初始化
         /// <summary>
         /// 初始化配置文件
         /// </summary>
@@ -110,13 +117,13 @@ namespace LBPlayer
         /// </summary>
         private void initialWorkPath()
         {
-            if(_config.FileSavePath==null||_config.FileSavePath=="")
+            if (_config.FileSavePath == null || _config.FileSavePath == "")
             {
-                _config.FileSavePath= Path.Combine(Path.GetPathRoot(Application.ExecutablePath), "LBPlay");
+                _config.FileSavePath = Path.Combine(Path.GetPathRoot(Application.ExecutablePath), "LBPlay");
                 ConfigTool.SaveConfigData(_config);
             }
             _playLogPath = Path.Combine(_config.FileSavePath, "PlayLog");
-            if(!Directory.Exists(_playLogPath))
+            if (!Directory.Exists(_playLogPath))
             {
                 Directory.CreateDirectory(_playLogPath);
             }
@@ -146,13 +153,15 @@ namespace LBPlayer
         /// </summary>
         private void InitialConfigValue()
         {
+            //工作目录
             skinTextBox_workPath.Text = _config.FileSavePath;
+            //桌面截图
             Rectangle rect = new Rectangle();
-            rect = Screen.GetBounds(this);  
-            if(_config.ScreenCuptureW==0||_config.ScreenCuptureH==0)
+            rect = Screen.GetBounds(this);
+            if (_config.ScreenCuptureW == 0 || _config.ScreenCuptureH == 0)
             {
                 _config.ScreenCuptureW = rect.Width;
-                _config.ScreenCuptureH= rect.Height;
+                _config.ScreenCuptureH = rect.Height;
                 ConfigTool.SaveConfigData(_config);
             }
             skinNumericUpDown_W.Maximum = rect.Width;
@@ -163,7 +172,78 @@ namespace LBPlayer
             skinNumericUpDown_H.Value = _config.ScreenCuptureH;
             skinNumericUpDown_X.Value = _config.ScreenCuptureX;
             skinNumericUpDown_Y.Value = _config.ScreenCuptureY;
+
+            //配置
+            skinTextBox_Id.Text = _config.ID;
+            skinTextBox_Key.Text = _config.Key;
+            List<string> macList = null;
+            GetMacAddress(out macList);
+            for (int i = 0; i < macList.Count; i++)
+            {
+                skinComboBox_Mac.Items.Add(macList[i]);
+                if(macList[i]== _config.Mac)
+                {
+                    skinComboBox_Mac.SelectedIndex = i;
+                }
+            }
         }
+        /// <summary>
+        /// 初始化心跳
+        /// </summary>
+        private void initialPoll()
+        {
+            _poll = new Poll();
+            _poll.PollInterval = _config.HeartBeatInterval;
+            _poll.SendPollEvent += new SendPollEventHandler(_poll_SendPollEvent);
+            _poll.GetPollResponseEvent += new GetPollResponseEventHandler(_poll_GetPollResponseEvent);
+            _poll.Initializer();
+            _poll.Start();
+        }
+        /// <summary>
+        /// 启动命令轮询
+        /// </summary>
+        private void StartCmdTimer()
+        {
+            _queryTimer = new System.Windows.Forms.Timer();
+            _queryTimer.Interval = QueryTimerInterval;
+            _queryTimer.Tick += new EventHandler(QueryTimer_Tick);
+            _queryTimer.Enabled = true;
+        }
+        /// <summary>
+        /// 轮询命令事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void QueryTimer_Tick(object sender, EventArgs e)
+        {
+            for (int i = 0; i < _cmdList.Count; i++)
+            {
+                switch (_cmdList[i].CmdType)
+                {
+                    case CmdType.DownloadPlan:
+                        DownloadPlan(_cmdList[i]);
+                        break;
+                    default:
+                        UnKnowCmd(_cmdList[i]);
+                        break;
+                }
+            }
+        }
+        /// <summary>
+        /// 初始化命令列表
+        /// </summary>
+        private void InitialCmdList()
+        {
+            _cmdSavePath = Path.Combine(ConfigTool.ConfigDir, "Cmd.xml");
+            if (!File.Exists(_cmdSavePath))
+            {
+                _cmdList = new List<Cmd>();
+                return;
+            }
+            _cmdList = XmlUtil.XmlDeserializeFromFile<List<Cmd>>(_cmdSavePath, Encoding.UTF8);
+        }
+        #endregion
+        #region 私有函数
         /// <summary>
         /// 获取MAC地址
         /// </summary>
@@ -218,33 +298,37 @@ namespace LBPlayer
             }
         }
         /// <summary>
-        /// 窗体加载
+        /// 64位字符串解密
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void LBPlayerMain_Load(object sender, EventArgs e)
+        /// <param name="encode"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private string DecodeBase64(Encoding encode, string result)
         {
-          
-            LoadConfig();
-            initialWorkPath();
-            _screenCapture = new ScreenCapture();
-            InitialConfigValue();
-            initialPoll();
+            string decode = "";
+            byte[] bytes = Convert.FromBase64String(result);
+            try
+            {
+                decode = encode.GetString(bytes);
+            }
+            catch
+            {
+                decode = result;
+            }
+            return decode;
         }
-        /// <summary>
-        /// 锁定
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void skinButton_lock_Click(object sender, EventArgs e)
+        private delegate void SetControlTextDelegate(System.Windows.Forms.Control setControl, string text);
+        private void SetControlText(System.Windows.Forms.Control setControl, string text)
         {
-            
-            InitialLock();
+            if (!this.InvokeRequired)
+            {
+                setControl.Text = text;
+                return;
+            }
+            SetControlTextDelegate setTextDelegate = new SetControlTextDelegate(SetControlText);
+            this.Invoke(setTextDelegate, new object[] { setControl, text });
         }
-        /// <summary>
-        /// 初始化桌面截屏
-        /// </summary>
-       
+        #endregion
         #region 锁定
         /// <summary>
         /// 解锁事件
@@ -316,7 +400,6 @@ namespace LBPlayer
             //currentUser.Close();
 
         }
-
         private void Hook_KeyUp(object sender, KeyEventArgs e)
         {
             if (!InvokeRequired)
@@ -486,8 +569,24 @@ namespace LBPlayer
             }
             #endregion
         }
-
         #endregion
+        #region 窗体事件
+        /// <summary>
+        /// 窗体加载
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LBPlayerMain_Load(object sender, EventArgs e)
+        {
+
+            LoadConfig();
+            initialWorkPath();
+            _screenCapture = new ScreenCapture();
+            InitialConfigValue();
+            InitialCmdList();
+            StartCmdTimer();
+            initialPoll();
+        }
         /// <summary>
         /// 桌面截屏预览
         /// </summary>
@@ -504,5 +603,78 @@ namespace LBPlayer
             _screenCapture.CaptrueScreenRegionToFile((int)skinNumericUpDown_X.Value, (int)skinNumericUpDown_Y.Value, (int)skinNumericUpDown_W.Value, (int)skinNumericUpDown_H.Value, Path.Combine(_picPath, _privewPic));
             skinPictureBox_pic.Image = Image.FromFile(Path.Combine(_picPath, _privewPic));
         }
+        /// <summary>
+        /// 锁定
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void skinButton_lock_Click(object sender, EventArgs e)
+        {
+            InitialLock();
+        }
+        /// <summary>
+        /// 配置页面保存
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void skinButton_Ok_Click(object sender, EventArgs e)
+        {
+            _config.ID = skinTextBox_Id.Text.Trim();
+            _config.Key = skinTextBox_Key.Text.Trim();
+            _config.Mac = skinComboBox_Mac.SelectedItem.ToString();
+            if (ConfigTool.SaveConfigData(_config))
+            {
+                MessageBoxEx.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+        #endregion
+        #region 执行命令
+        private int _fileCount = 0;
+        private bool _bDownloading = false;
+        private int _completeCount = 0;
+        private Cmd _PlanCmdTemp = null;
+        private void DownloadPlan(Cmd cmd)
+        {
+            if(cmd==null||cmd.CmdType!= CmdType.DownloadPlan|| _bDownloading==true)
+            {
+                return;
+            }
+            _bDownloading = true;
+            _PlanCmdTemp = cmd;
+            PlanCmdPar planCmdPar=JsonConvert.DeserializeObject<PlanCmdPar>(DecodeBase64((Encoding.UTF8),cmd.CmdParam));
+            _fileCount = planCmdPar.Medias.Count + 1;
+
+            DownloadTransmit downloadTransmit = new DownloadTransmit();
+            downloadTransmit.Completed += DownloadTransmit_Completed;
+            downloadTransmit.Download(planCmdPar.ProgramUrl, Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)));
+            for (int i = 0; i < planCmdPar.Medias.Count; i++)
+            {
+                downloadTransmit.Download(planCmdPar.Medias[i].MediaUrl, Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)));
+            }
+        }
+        
+        private void DownloadTransmit_Completed(object obj)
+        {
+            _completeCount++;
+            if (_fileCount == _completeCount)
+            {
+                _fileCount = 0;
+                _completeCount = 0;
+                _bDownloading = false;
+            }
+        }
+
+        private void UnKnowCmd(Cmd cmd)
+        {
+
+        }
+        #endregion
+
+        
     }
 }

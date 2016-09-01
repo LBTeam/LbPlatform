@@ -13,10 +13,12 @@ namespace LBPlayerConfig
     [Serializable]
     public class Config
     {
-
+        public string ID="";
+        public string Key="";
+        public string Mac = "";
         public bool LockUnLockPlayer = false;
         public string WebUrl = "";
-        public int HeartBeatInterval = 6000;
+        public int HeartBeatInterval = 60000;
         public bool IsEnableAutoOpenOrClose = false;
         public TimeSpan OpenTime=new TimeSpan(00,00,00);
         public TimeSpan CloseTime = new TimeSpan(00,00,00);
@@ -29,7 +31,7 @@ namespace LBPlayerConfig
     }
     public static class ConfigTool
     {
-        private static readonly string ConfigDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\LBPlayer"; //配置文件存放目录
+        public static readonly string ConfigDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\LBPlayer"; //配置文件存放目录
         private static readonly string ConfigPath = Path.Combine(ConfigDir, "config.bin");//配置文件路径
         public static bool SaveConfigData(Config config)
         {
