@@ -77,8 +77,9 @@ class PlayerController extends CommonController
 							'Medias'		=> $medias
 						);
 						$cmds[] = array(
+							"CmdId"		=>	$val['id'],
 							"CmdType"	=>	$val['type'],
-							"CmdParam"	=>	$cmdParam
+							"CmdParam"	=>	base64_encode(json_encode($cmdParam))
 						);
 					}
 					break;
