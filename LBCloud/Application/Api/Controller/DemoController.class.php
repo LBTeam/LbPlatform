@@ -39,6 +39,7 @@ class DemoController extends Controller
 		//生成分片文件curl上传命令
 		/*foreach($parts as $key=>$val){
 			$number = $key+1;
+		  	//分片文件put地址
 			$part_uri = $AliyunOSS->upload_part_sign($object, $upload_id, $number, $media_bucket, false, 1200);
 			$curl_string = "curl -T /d/www/LbPlatform/LBCloud/temp{$number} '{$part_uri}' -H 'Content-Type: application/octet-stream'";
 			echo $curl_string;
