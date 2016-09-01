@@ -84,6 +84,7 @@
     <Compile Include="ToolTipWindow.Designer.cs">
       <DependentUpon>ToolTipWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="XmlUtil.cs" />
     <EmbeddedResource Include="Encryption.resx">
       <DependentUpon>Encryption.cs</DependentUpon>
     </EmbeddedResource>

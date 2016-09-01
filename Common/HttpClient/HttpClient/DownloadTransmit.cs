@@ -9,8 +9,6 @@ namespace Com.Net
 {
     public class DownloadTransmit
     {
-        
-
         public event ProgressChanged ProgressChanged = delegate { };
         public event Completed Completed = delegate { };
 
@@ -26,6 +24,5 @@ namespace Com.Net
                 Completed(headers);//UpdateText("Download Complete");
             }).Go();
         }
-
     }
 }
