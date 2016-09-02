@@ -94,6 +94,7 @@
     <Compile Include="EditScheduleView.xaml.cs">
       <DependentUpon>EditScheduleView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EditScheduleViewModel.cs" />
     <Compile Include="LoginDialog.xaml.cs">
       <DependentUpon>LoginDialog.xaml</DependentUpon>
     </Compile>
@@ -103,6 +104,7 @@
     <Compile Include="SampleProgressDialog.xaml.cs">
       <DependentUpon>SampleProgressDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ScheduleViewModel.cs" />
     <Compile Include="ScreenListView.xaml.cs">
       <DependentUpon>ScreenListView.xaml</DependentUpon>
     </Compile>

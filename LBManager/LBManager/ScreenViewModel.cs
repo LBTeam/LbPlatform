@@ -12,7 +12,7 @@ namespace LBManager
 {
     public class ScreenViewModel:BindableBase
     {
-        public ScreenViewModel(Screen screen)
+        public ScreenViewModel(Screen screen, ProgramScheduleListViewModel scheduleList)
         {
             _id = screen.Id;
             _name = screen.Name;
@@ -20,7 +20,7 @@ namespace LBManager
             _height = screen.Height;
             _pixelsWidth = screen.PixelsWidth;
             _pixelsHeight = screen.PixelsHeight;
-            ScheduleList = new ProgramScheduleListViewModel();
+            ScheduleList = scheduleList;
             PublishScheduleCommand = new DelegateCommand(() => { PublishSchedule(); });
             PreviewScheduleCommand = new DelegateCommand(() => { PreviewSchedule(); });
         }
@@ -67,6 +67,13 @@ namespace LBManager
             set { SetProperty(ref _pixelsHeight, value); }
         }
 
+
+        private ScheduleFileInfo _selectedScheduleFile;
+        public ScheduleFileInfo SelectedScheduleFile
+        {
+            get { return _selectedScheduleFile; }
+            set { SetProperty(ref _selectedScheduleFile, value); }
+        }
 
         private ProgramScheduleListViewModel _scheduleList;
         public ProgramScheduleListViewModel ScheduleList
