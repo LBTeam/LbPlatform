@@ -55,7 +55,9 @@ class PlayerController extends CommonController
 		$screen = $screen_model->screen_by_id($id);
 		$cmds_list = $cmd_model->cmds_list($screen['uid'], $id);
 		$cmds = array();
+		$cmd_ids = array();
 		foreach($cmds_list as $val){
+			$cmd_ids[] = $val['id'];
 			switch($val['type']){
 				case "0":
 					$param = json_decode($val['param'], true);
@@ -78,7 +80,7 @@ class PlayerController extends CommonController
 						);
 						$cmds[] = array(
 							"CmdId"		=>	$val['id'],
-							"CmdType"	=>	$val['type'],
+							"CmdType"	=>	intval($val['type']),
 							"CmdParam"	=>	base64_encode(json_encode($cmdParam))
 						);
 					}
@@ -89,6 +91,8 @@ class PlayerController extends CommonController
 					break;
 			}
 		}
+		//更改命令已下发
+		//$cmd_model->cmd_issued($cmd_ids);
 		$response = array(
 			"err_code"=>"000000",
 			"msg"=>"ok",

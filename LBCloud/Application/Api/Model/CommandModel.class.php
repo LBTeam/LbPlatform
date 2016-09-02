@@ -47,4 +47,19 @@ class CommandModel extends Model
 		$map['status'] = 0;
 		return $this->where($map)->select();
 	}
+	
+	/**
+	 * 更改命令为已下发
+	 */
+	public function cmd_issued($cmd_ids){
+		if($cmd_ids){
+			if(!is_array($cmd_ids)){
+				$cmd_ids = explode(',', $cmd_ids);
+			}
+			$map = array();
+			$map['id'] = array('IN', $cmd_ids);
+			return $this->where($map)->setField("status", 1);
+		}
+		return true;
+	}
 }
