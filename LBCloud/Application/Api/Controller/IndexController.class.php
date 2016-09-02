@@ -44,8 +44,9 @@ class IndexController extends Controller {
 		
     	$AliyunOSS = new AliyunOSS();
 		$bucket = C("aliyun_oss_bucket");
-		$object = "20160831/57c64e0cae741.wmv";
-		$upload_id = "C886438E739B4E909839247DD57EFD66";
+		$object = "20160901/57c7bcbd72b88.rar";
+		//$object = "20160831/57c68c98d9826.playprog";
+		$upload_id = "54A7A19EF7964908840F6AB7F7DD2DFA";
 		$media_bucket = C("oss_media_bucket");
 		$program_bucket = C("oss_program_bucket");
 		
@@ -70,15 +71,16 @@ class IndexController extends Controller {
 		dump($result);*/
 		
 		/*$result = $AliyunOSS->object_list($media_bucket);
-		dump($result);*/
-		//exit;
+		dump($result);
+		exit;*/
 		
 		//完成上传，合并文件
 		//$AliyunOSS->complete_upload("57a31bb736fda.txt", "F77135AFC16A4F538211515502EC1CFD", array());
 		
 		//uploadid列表
-		//$result = $AliyunOSS->upload_part_list($media_bucket);
-		//dump($result);
+		/*$result = $AliyunOSS->upload_part_list($media_bucket);
+		dump($result);
+		exit;*/
 		//foreach($result as $val){
 		//	$AliyunOSS->abort_upload($val['key'], $val['uploadId'], $media_bucket);
 		//}
@@ -98,8 +100,9 @@ class IndexController extends Controller {
 		//exit;
 		
 		//存储对象是否存在
-		/*$result = $AliyunOSS->object_exists($object, $media_bucket);
-		dump($result);*/
+		//$result = $AliyunOSS->object_exists($object, $media_bucket);
+		//dump($result);
+		//exit;
 		
 		//$result = $AliyunOSS->get_upload_id(".txt");
 		//dump($result);
@@ -109,8 +112,8 @@ class IndexController extends Controller {
 		//echo $result;
 		
 		//bucket列表
-		//$buckets = $AliyunOSS->bucket_list();
-		//dump($buckets);
+		/*$buckets = $AliyunOSS->bucket_list();
+		dump($buckets);*/
 		
 		//下载地址
 		//$result = $AliyunOSS->download_uri($program_bucket, $object, 3600);
@@ -125,25 +128,19 @@ class IndexController extends Controller {
 		//dump($result);
 		
 		//上传成功
-		$parts = array(
-			array('PartNumber' => 1,'ETag' => "92E77633FBFE610E632A3BBD7E5DAB04"),
-			array('PartNumber' => 2,'ETag' => "DE94A4344D775EC44346768E6BFE49EB"),
-			array('PartNumber' => 3,'ETag' => "434B60D81F461D94A6E965CFCCB81394"),
-			array('PartNumber' => 4,'ETag' => "FCD52A07669BACA0D887B2AE3CC8E437"),
-			array('PartNumber' => 5,'ETag' => "9B099E61A3DF726F3DDB99E729F4DB17"),
-			array('PartNumber' => 6,'ETag' => "7FD2783485AAC99EF159562B27EE7B30"),
-			array('PartNumber' => 7,'ETag' => "0B213D35CEA1D9585F2EFAB23841439B"),
-			array('PartNumber' => 8,'ETag' => "E0760A001A3A815D04E30FF4A7D66340"),
-			array('PartNumber' => 9,'ETag' => "8C5813E235B40A543E97C7662E12486C"),
+		/*$parts = array(
+			array('PartNumber' => 1,'ETag' => "42A85F0C53035D7FA05E73D1A35CD3D3"),
+			array('PartNumber' => 2,'ETag' => "1977A6725CD0DF48409881C5EBCB9D5C"),
+			array('PartNumber' => 3,'ETag' => "6F1D0D4D3B16F16C57E4562C432B6866"),
+			array('PartNumber' => 4,'ETag' => "38EAB8682D4A420DDEC747927508F499"),
+			array('PartNumber' => 5,'ETag' => "34D38E57F64423BEEB1D514A52DA466E"),
+			array('PartNumber' => 6,'ETag' => "E8CA766727669C7E0505E650EF72986C")
 		);
-		dump(count($parts));
-		exit;
 		$result = $AliyunOSS->complete_upload($object, $upload_id, $parts, $media_bucket);
-		dump($result);
+		dump($result);*/
 		
 		//下载地址
-		/*
-		$result = $AliyunOSS->download_uri($bucket, $object);
-		dump($result);*/
+		$result = $AliyunOSS->download_uri($media_bucket, $object);
+		dump($result);
     }
 }

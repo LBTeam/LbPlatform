@@ -42,7 +42,8 @@ class AliyunOSS
 			}
 			return $buckets;
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		    //print $e->getMessage();
+		    return array();
 		}
 	}
 	
@@ -58,7 +59,8 @@ class AliyunOSS
 			$uri = $this->client->signUrl($bucket, $object, $timeout);
 			return $uri;
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		    //print $e->getMessage();
+		    return "";
 		}
 	}
 	
@@ -97,7 +99,8 @@ class AliyunOSS
 			}
 			return array('objects'=>$objs, 'prefixs'=>$pres);
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		    //print $e->getMessage();
+		    return array();
 		}
 	}
 	
@@ -118,7 +121,8 @@ class AliyunOSS
 			$result['last'] = $response['last-modified'];
 			return $result;
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		    //print $e->getMessage();
+		    return array();
 		}
 	}
 	
@@ -159,7 +163,8 @@ class AliyunOSS
 			$result = $this->client->generateMultiuploadParts($size, $part);
 			return $result;
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		    //print $e->getMessage();
+		    return array();
 		}
 	}
 	
@@ -181,7 +186,8 @@ class AliyunOSS
 			$response['UploadId']	= $uploadId;
 			return $response;
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		    //print $e->getMessage();
+		    return array();
 		}
 	}
 	
@@ -233,7 +239,8 @@ class AliyunOSS
 			return $response;
 			*/
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		    //print $e->getMessage();
+		    return "";
 		}
 	}
 
@@ -252,7 +259,8 @@ class AliyunOSS
 			$sign_uri = $this->client->signUrl($bucket, $object, $timeout, "PUT", $options);
 			return $sign_uri;
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		   // print $e->getMessage();
+		   return "";
 		}
 	}
 	
@@ -273,7 +281,7 @@ class AliyunOSS
 			$this->client->completeMultipartUpload($bucket, $object, $uploadId, $parts);
 			return true;
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		    //print $e->getMessage();
 		    return false;
 		}
 	}
@@ -320,8 +328,8 @@ class AliyunOSS
 			}
 			return $uploads;
 	    } catch (OssException $e) {
-	        printf($e->getMessage() . "\n");
-	        return;
+	        //printf($e->getMessage() . "\n");
+	        return array();
 	    }
 	}
 	
@@ -348,7 +356,8 @@ class AliyunOSS
 			}
 			return $parts;
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		    //print $e->getMessage();
+		    return array();
 		}
 	}
 	
@@ -364,7 +373,8 @@ class AliyunOSS
 			$response = $this->client->doesObjectExist($bucket, $object);
 			return $response;
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		    //print $e->getMessage();
+		    return false;
 		}
 	}
 	
