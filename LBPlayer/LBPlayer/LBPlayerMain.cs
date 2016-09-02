@@ -637,7 +637,7 @@ namespace LBPlayer
         private int _fileCount = 0;
         private bool _bDownloading = false;
         private int _completeCount = 0;
-        private Cmd _PlanCmdTemp = null;
+        private PlanCmdPar _PlanCmdParTemp = null;
         private void DownloadPlan(Cmd cmd)
         {
             if(cmd==null||cmd.CmdType!= CmdType.DownloadPlan|| _bDownloading==true)
@@ -645,12 +645,12 @@ namespace LBPlayer
                 return;
             }
             _bDownloading = true;
-            _PlanCmdTemp = cmd;
             PlanCmdPar planCmdPar=JsonConvert.DeserializeObject<PlanCmdPar>(DecodeBase64((Encoding.UTF8),cmd.CmdParam));
+            _PlanCmdParTemp = planCmdPar;
             _fileCount = planCmdPar.Medias.Count + 1;
 
             DownloadTransmit downloadTransmit = new DownloadTransmit();
-            downloadTransmit.Completed += DownloadTransmit_Completed;
+            downloadTransmit.Completed +=new Completed(DownloadTransmit_Completed);
             downloadTransmit.Download(planCmdPar.ProgramUrl, Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)));
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
