@@ -16,6 +16,11 @@ class PlayerController extends CommonController
 	public function _initialize(){
 		$request = file_get_contents('php://input');
 		$this->param = json_decode($request, true);
+		/*$this->param = array(
+			'Id' => 1,
+			'Key' => 'abcdefg',
+			'Mac' => 'aa-bb-cc-dd-ee-ff'
+		);*/
 		if(empty($this->param) === true){
 			$response = array('err_code'=>'010001', 'msg'=>"Protocol content error");
 			$this->ajaxReturn($response);exit;
@@ -64,7 +69,8 @@ class PlayerController extends CommonController
 					$plan = $plan_model->program_detail($param['program_id']);
 					if($plan){
 						$medias = array();
-						foreach($plan['info'] as $v){
+						$media_list = json_decode($plan['info'], true);
+						foreach($media_list as $v){
 							$media = $media_model->media_by_name_md5($v['MediaName'], $v['MediaMD5'], $screen['uid']);
 							$medias[] = array(
 								'MediaId'	=> $media['id'],
@@ -92,7 +98,7 @@ class PlayerController extends CommonController
 			}
 		}
 		//更改命令已下发
-		//$cmd_model->cmd_issued($cmd_ids);
+		$cmd_model->cmd_issued($cmd_ids);
 		$response = array(
 			"err_code"=>"000000",
 			"msg"=>"ok",
@@ -102,5 +108,28 @@ class PlayerController extends CommonController
 			"data"=>$cmds
 		);
 		$this->ajaxReturn($response);
+	}
+
+	public function screen(){
+		$screen_model = D("Screen");
+		$screen = $screen_model->screen_by_id(1);
+		$regions = D("Region")->all_region_name();
+		$province = $regions[$screen['province']];
+		$city = $regions[$screen['city']];
+		$district = $regions[$screen['district']];
+		$temp = array(
+			'id'		=> $screen['id'],
+			'name'		=> $screen['name'],
+			'size_x'	=> intval($screen['size_x']),
+			'size_y'	=> intval($screen['size_y']),
+			'resolu_x'	=> intval($screen['resolu_x']),
+			'resolu_y'	=> intval($screen['resolu_y']),
+			'type'		=> intval($screen['type']),
+			'operate'	=> intval($screen['operate']),
+			'longitude'	=> floatval($screen['longitude']),
+			'latitude'	=> floatval($screen['latitude']),
+			'address'	=> "{$province}{$city}{$district}{$screen['address']}",
+		);
+		$this->ajaxReturn($temp);
 	}
 }
