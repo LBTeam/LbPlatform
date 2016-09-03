@@ -16,6 +16,11 @@ class PlayerController extends CommonController
 	public function _initialize(){
 		$request = file_get_contents('php://input');
 		$this->param = json_decode($request, true);
+		/*$this->param = array(
+			'Id' => 1,
+			'Key' => 'abcdefg',
+			'Mac' => 'aa-bb-cc-dd-ee-ff'
+		);*/
 		if(empty($this->param) === true){
 			$response = array('err_code'=>'010001', 'msg'=>"Protocol content error");
 			$this->ajaxReturn($response);exit;
@@ -64,7 +69,8 @@ class PlayerController extends CommonController
 					$plan = $plan_model->program_detail($param['program_id']);
 					if($plan){
 						$medias = array();
-						foreach($plan['info'] as $v){
+						$media_list = json_decode($plan['info'], true);
+						foreach($media_list as $v){
 							$media = $media_model->media_by_name_md5($v['MediaName'], $v['MediaMD5'], $screen['uid']);
 							$medias[] = array(
 								'MediaId'	=> $media['id'],
