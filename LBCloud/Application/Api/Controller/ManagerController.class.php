@@ -140,6 +140,7 @@ class ManagerController extends CommonController
 			$filesubfix = end(explode('.', $filename));
 			$filetype = $val['Type'];   //0-播放方案,1-图片,2-视频,3-文字
 			if($filetype == 0){
+				//file_put_contents('./1.log', json_encode($val)."\r\n", FILE_APPEND);
 				//播放方案
 				$medias = $val['MediaList'];
 				foreach($medias as &$v){
@@ -160,7 +161,7 @@ class ManagerController extends CommonController
 				}
 			}
 		}
-		file_put_contents('./1.log', json_encode($result)."\r\n", FILE_APPEND);
+		//file_put_contents('./1.log', json_encode($result)."\r\n", FILE_APPEND);
 		$this->ajaxReturn($result);
 	}
 	
@@ -169,6 +170,7 @@ class ManagerController extends CommonController
 	 */
 	public function complete_upload(){
 		$obj = $this->param;
+		//file_put_contents('./1.log', json_encode($obj)."\r\n", FILE_APPEND);
 		//$filename = $obj['FileName'];
 		$filepath = $obj['FileName'];
 		$filename = end(explode('/', str_replace('\\', '/', $filepath)));
@@ -183,14 +185,14 @@ class ManagerController extends CommonController
 			$prog_info = $prog_model->program_by_name_md5($filename, $filemd5, $user_id);
 			$prog_map = array('id'=>$prog_info['id']);
 			$prog_res = $prog_model->where($prog_map)->setField('status', 1);
-			if($prog_info['size'] >= C("oss_100K_size")){
+			if($prog_info['size'] > C("oss_100K_size")){
 				$AliyunOSS = new AliyunOSS();
 				//合并文件
 				$object = $prog_info['object'];
 				$uploadId = $prog_info['upload_id'];
 				$parts = array();
 				foreach($fileparts as $val){
-					$parts[] = array('PartNumber'=>$val['partNumber'],'ETag'=>strtoupper($val['MD5']));
+					$parts[] = array('PartNumber'=>$val['PartNumber'],'ETag'=>strtoupper($val['MD5']));
 				}
 				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->program_bucket);
 			}
@@ -219,16 +221,18 @@ class ManagerController extends CommonController
 			$media_info = $media_model->media_by_name_md5($filename, $filemd5, $user_id);
 			$media_map = array('id'=>$media_info['id']);
 			$media_res = $media_model->where($media_map)->setField('status', 1);
-			if($media_info['size'] >= C("oss_100K_size")){
+			if($media_info['size'] > C("oss_100K_size")){
 				$AliyunOSS = new AliyunOSS();
 				//合并文件
 				$object = $media_info['object'];
 				$uploadId = $media_info['upload_id'];
 				$parts = array();
 				foreach($fileparts as $val){
-					$parts[] = array('PartNumber'=>$val['partNumber'],'ETag'=>strtoupper($val['MD5']));
+					$parts[] = array('PartNumber'=>$val['PartNumber'],'ETag'=>strtoupper($val['MD5']));
 				}
+				//file_put_contents('./1.log', json_encode($parts)."\r\n", FILE_APPEND);
 				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->media_bucket);
+				//file_put_contents('./1.log', json_encode($oss_res)."\r\n", FILE_APPEND);
 			}
 		}
 		$response = array("err_code"=>"000000","msg"=>"success");
