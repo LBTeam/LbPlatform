@@ -23,7 +23,7 @@ namespace LBManager
         private void AddMedia()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "JPEG|*.jpg|MP4|*.mp4";
+            openFileDialog.Filter = "JPEG|*.jpg|PNG|*.png|MP4|*.mp4";
             if (openFileDialog.ShowDialog() == true)
             {
                 FileInfo fileInfo = new FileInfo(openFileDialog.FileName);
@@ -32,7 +32,7 @@ namespace LBManager
                 MediaList.Add(new Media()
                 {
                     FilePath = fileInfo.FullName,
-                    FileType = fileInfo.Extension.Equals("jpg",StringComparison.CurrentCultureIgnoreCase)?FileType.Image:FileType.Video,
+                    FileType = fileInfo.Extension.Equals(".mp4",StringComparison.CurrentCultureIgnoreCase)?FileType.Video:FileType.Image,
                     FileSize = fileInfo.Length,
                     FileMD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
                 });

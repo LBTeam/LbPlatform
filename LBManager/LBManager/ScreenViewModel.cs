@@ -14,11 +14,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using LBManager.Infrastructure.Utils;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace LBManager
 {
     public class ScreenViewModel : BindableBase
     {
+
+        private LEDScreen _screen = null;
         public ScreenViewModel(Screen screen, ProgramScheduleListViewModel scheduleList)
         {
             _id = screen.Id;
@@ -117,7 +120,7 @@ namespace LBManager
                     uploadFileInfos.Add(uploadMediaFileInfo);
                 }
                 var uploadScheduleFileInfo = new UploadFileInfo(scheduleFilePath,
-                                                                new FileInfo(scheduleFilePath).Length, 
+                                                                new FileInfo(scheduleFilePath).Length,
                                                                 FileUtils.ComputeFileMd5(scheduleFilePath),
                                                                 FileType.Plan);
                 uploadScheduleFileInfo.MediaList = new List<MediaTempInfo>(scheduleFile.MediaList.Select(m => new MediaTempInfo(m.FilePath, m.MD5)));
@@ -131,16 +134,62 @@ namespace LBManager
                 {
                     continue;
                 }
-
+                
                 var uploadComplete = UploadFile(uploadPartInfo);
 
                 var result = await CompleteMultipartUpload(uploadComplete);
             }
 
             var schedulePartInfo = uploadPartInfos.FirstOrDefault(p => p.Type == FileType.Plan);
+            if (schedulePartInfo == null)
+                return;
             var scheduleUploadCompleted = UploadFile(schedulePartInfo);
             var scheduleUploadResult = await CompleteMultipartUpload(scheduleUploadCompleted);
         }
+
+
+
+        private void PreviewSchedule()
+        {
+            ThreadStart threadDelegate = new ThreadStart(Preview);
+            Thread showThread = new Thread(threadDelegate);
+            showThread.Start();
+        }
+
+        private void Preview()
+        {
+            if (_screen != null)
+            {
+                _screen.Free();
+                _screen = null;
+                return;
+            }
+            var scheduleFilePath = _selectedScheduleFile.FilePath;
+            using (FileStream fs = File.OpenRead(scheduleFilePath))
+            {
+
+                string content;
+                using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
+                {
+                    content = reader.ReadToEnd();
+                }
+                var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
+                foreach (var mediaItem in scheduleFile.MediaList)
+                {
+                    if (mediaItem.Type == FileType.Image)
+                    {
+                        _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
+                        _screen.PlayImage(mediaItem.FilePath);
+                    }
+                    else if (mediaItem.Type == FileType.Video)
+                    {
+                        _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
+                        _screen.PlayVideo(mediaItem.FilePath);
+                    }
+                }
+            }
+        }
+
 
         private UploadComplete UploadFile(UploadFileInfoForServer uploadPartInfo)
         {
@@ -150,7 +199,7 @@ namespace LBManager
             uploadComplete.FileType = uploadPartInfo.Type;
             if (uploadComplete.FileType == FileType.Plan)
             {
-                uploadComplete.Screens = new List<string>() {this.Id};
+                uploadComplete.Screens = new List<string>() { this.Id };
             }
 
             using (FileStream fs = File.OpenRead(uploadPartInfo.Name))
@@ -159,7 +208,7 @@ namespace LBManager
                 {
                     long partSize = part.Length;
                     fs.Seek(part.SeekTo, SeekOrigin.Begin);
-                    HttpWebRequest request = (HttpWebRequest) WebRequest.Create(part.Url);
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(part.Url);
                     request.ContentType = "application/octet-stream";
                     request.Method = "PUT";
 
@@ -179,7 +228,7 @@ namespace LBManager
 
                     fs.Seek(part.SeekTo, SeekOrigin.Begin);
 
-                    using (var response = (HttpWebResponse) request.GetResponse())
+                    using (var response = (HttpWebResponse)request.GetResponse())
                     {
                         if (response.StatusCode == HttpStatusCode.OK)
                         {
@@ -203,12 +252,6 @@ namespace LBManager
             }
             return uploadComplete;
         }
-
-        private void PreviewSchedule()
-        {
-
-        }
-
 
         private async Task<List<UploadFileInfoForServer>> GenerateUploadPartInfos(string url, List<UploadFileInfo> fileList)
         {

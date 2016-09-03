@@ -370,7 +370,7 @@ void LEDScreen::PlayVideo(System::String ^fileName)
 	av_dump_format(pFormatCtx, 0, filepath, 0);
 	printf("-------------------------------------------------\n");
 	img_convert_ctx = sws_getContext(pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt,
-		width_, height_, AV_PIX_FMT_YUV420P, SWS_BICUBIC, NULL, NULL, NULL);
+		width_, height_, AV_PIX_FMT_YUV420P, SWS_POINT, NULL, NULL, NULL);
 
 #if OUTPUT_YUV420P 
 	fp_yuv = fopen("output.yuv", "wb+");
@@ -454,9 +454,9 @@ void LEDScreen::PlayVideo(System::String ^fileName)
 		fwrite(pFrameYUV->data[2], 1, y_size / 4, fp_yuv);  //V
 #endif
 															//SDL---------------------------
-		SDL_UpdateTexture(texture_, &sdlRect, pFrameYUV->data[0], pFrameYUV->linesize[0]);
+		SDL_UpdateTexture(texture_, NULL, pFrameYUV->data[0], pFrameYUV->linesize[0]);
 		SDL_RenderClear(renderer_);
-		SDL_RenderCopy(renderer_, texture_, NULL, &sdlRect);
+		SDL_RenderCopy(renderer_, texture_, NULL, NULL);
 		SDL_RenderPresent(renderer_);
 		//SDL End-----------------------
 		//Delay 40ms
