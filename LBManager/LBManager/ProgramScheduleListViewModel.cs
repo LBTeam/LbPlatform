@@ -88,6 +88,8 @@ namespace LBManager
 
     public class ScheduleFileInfo : BindableBase
     {
+        public ScheduleFileInfo()
+        { }
         public ScheduleFileInfo(FileInfo fileInfo)
         {
             _fileName = fileInfo.Name;

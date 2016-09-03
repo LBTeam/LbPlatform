@@ -75,6 +75,7 @@ namespace LBPlayer
         /// <param name="hartBeatResponseObj"></param>
         private void HartBeatHandle(HartBeatResponseObj hartBeatResponseObj)
         {
+            _cmdList.Clear();
             if (hartBeatResponseObj == null || hartBeatResponseObj.Data == null || hartBeatResponseObj.Data.Count == 0)
             {
                 return;
