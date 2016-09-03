@@ -44,9 +44,8 @@ class IndexController extends Controller {
 		
     	$AliyunOSS = new AliyunOSS();
 		$bucket = C("aliyun_oss_bucket");
-		$object = "20160901/57c7bcbd72b88.rar";
-		//$object = "20160831/57c68c98d9826.playprog";
-		$upload_id = "54A7A19EF7964908840F6AB7F7DD2DFA";
+		$object = "20160903/57ca825f7502b.mp4";
+		$upload_id = "BE7AD774AA4D4CC6BBB9CB6CBD3C6C36";
 		$media_bucket = C("oss_media_bucket");
 		$program_bucket = C("oss_program_bucket");
 		
@@ -63,13 +62,46 @@ class IndexController extends Controller {
 		//exit;
 
 		//文件列表
-		/*$result = $AliyunOSS->object_list($media_bucket,  "20160831/");
+		/*$result = $AliyunOSS->object_list($media_bucket);
+		dump($result);
+		$objs = array();
+		foreach($result['prefixs'] as $val){
+			$result = $AliyunOSS->object_list($media_bucket, $val['prefix']);
+			foreach($result['objects'] as $val){
+				$objs[] = $val['key'];
+			}
+		}
+		dump($objs);
+		foreach($objs as $val){
+			$result = $AliyunOSS->delete_object($val, $media_bucket);
+			dump($result);
+		}*/
+		//exit;
+		
+		/*$result = $AliyunOSS->object_list($program_bucket);
+		dump($result);
+		foreach($result['prefixs'] as $val){
+			$result = $AliyunOSS->object_list($program_bucket, $val['prefix']);
+			foreach($result['objects'] as $val){
+				$objs[] = $val['key'];
+			}
+		}
+		dump($objs);
+		foreach($objs as $val){
+			$result = $AliyunOSS->delete_object($val, $program_bucket);
+			dump($result);
+		}*/
+		//exit;
+		
+		
+		/*
+		$result = $AliyunOSS->object_list($media_bucket,  "20160903/");
 		dump($result);
 		
 		
 		$result = $AliyunOSS->object_list($program_bucket, "20160831/");
-		dump($result);*/
-		
+		dump($result);
+		*/
 		/*$result = $AliyunOSS->object_list($media_bucket);
 		dump($result);
 		exit;*/
@@ -80,29 +112,29 @@ class IndexController extends Controller {
 		//uploadid列表
 		/*$result = $AliyunOSS->upload_part_list($media_bucket);
 		dump($result);
+		foreach($result as $val){
+			$AliyunOSS->abort_upload($val['key'], $val['uploadId'], $media_bucket);
+		}
+		$result = $AliyunOSS->upload_part_list($program_bucket);
+		dump($result);
+		foreach($result as $val){
+			$AliyunOSS->abort_upload($val['key'], $val['uploadId'], $program_bucket);
+		}
 		exit;*/
-		//foreach($result as $val){
-		//	$AliyunOSS->abort_upload($val['key'], $val['uploadId'], $media_bucket);
-		//}
-		//$result = $AliyunOSS->upload_part_list($program_bucket);
-		//dump($result);
-		//foreach($result as $val){
-		//	$AliyunOSS->abort_upload($val['key'], $val['uploadId'], $program_bucket);
-		//}
 		
 		//上传文件签名地址
 		//$result = $AliyunOSS->upload_sign_uri($object, $program_bucket);
 		//dump($result);
 		
 		//上传成功分片文件列表
-		/*$result = $AliyunOSS->part_list($object, $upload_id, $media_bucket);
-		dump($result);*/
+		//$result = $AliyunOSS->part_list($object, $upload_id, $media_bucket);
+		//dump($result);
 		//exit;
 		
 		//存储对象是否存在
-		//$result = $AliyunOSS->object_exists($object, $media_bucket);
-		//dump($result);
-		//exit;
+		/*$result = $AliyunOSS->object_exists($object, $media_bucket);
+		dump($result);
+		exit;*/
 		
 		//$result = $AliyunOSS->get_upload_id(".txt");
 		//dump($result);
@@ -113,7 +145,8 @@ class IndexController extends Controller {
 		
 		//bucket列表
 		/*$buckets = $AliyunOSS->bucket_list();
-		dump($buckets);*/
+		dump($buckets);
+		exit;*/
 		
 		//下载地址
 		//$result = $AliyunOSS->download_uri($program_bucket, $object, 3600);
