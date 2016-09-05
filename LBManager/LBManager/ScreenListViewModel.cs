@@ -12,9 +12,11 @@ namespace LBManager
     public class ScreenListViewModel:BindableBase
     {
         private IScreenService _screenService;
-        public ScreenListViewModel(IScreenService screenService)
+        private ProgramScheduleListViewModel _scheduleList;
+        public ScreenListViewModel(IScreenService screenService, ProgramScheduleListViewModel scheduleList)
         {
             _screenService = screenService;
+            _scheduleList = scheduleList;
             FetchScreens();
         }
 
@@ -23,7 +25,7 @@ namespace LBManager
             var screens = await _screenService.GetScreens();
             foreach (var item in screens)
             {
-                ScreenList.Add(new ScreenViewModel(item));
+                ScreenList.Add(new ScreenViewModel(item, _scheduleList));
             }
         }
 

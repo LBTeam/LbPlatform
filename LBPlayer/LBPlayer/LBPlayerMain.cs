@@ -16,6 +16,8 @@ using System.Management;
 using com.lbplayer;
 using Newtonsoft.Json;
 using Com.Net;
+using System.Threading;
+using LBManager.Infrastructure.Models;
 
 namespace LBPlayer
 {
@@ -45,7 +47,7 @@ namespace LBPlayer
         private List<Cmd> _cmdList;
         private string _cmdSavePath;
         private System.Windows.Forms.Timer _queryTimer;   
-        private const int QueryTimerInterval = 3000;
+        private const int QueryTimerInterval = 10000;
         #endregion
         #region 构造函数
         public LBPlayerMain()
@@ -75,6 +77,7 @@ namespace LBPlayer
         /// <param name="hartBeatResponseObj"></param>
         private void HartBeatHandle(HartBeatResponseObj hartBeatResponseObj)
         {
+            _cmdList.Clear();
             if (hartBeatResponseObj == null || hartBeatResponseObj.Data == null || hartBeatResponseObj.Data.Count == 0)
             {
                 return;
@@ -157,7 +160,7 @@ namespace LBPlayer
             skinTextBox_workPath.Text = _config.FileSavePath;
             //桌面截图
             Rectangle rect = new Rectangle();
-            rect = Screen.GetBounds(this);
+            rect = System.Windows.Forms.Screen.GetBounds(this);
             if (_config.ScreenCuptureW == 0 || _config.ScreenCuptureH == 0)
             {
                 _config.ScreenCuptureW = rect.Width;
@@ -666,7 +669,60 @@ namespace LBPlayer
                 _fileCount = 0;
                 _completeCount = 0;
                 _bDownloading = false;
+                ThreadStart threadDelegate = new ThreadStart(PlayMedia);
+                Thread showThread = new Thread(threadDelegate);
+                showThread.Start();
             }
+        }
+
+        private PlanCmdPar _cureentPlan = null;
+        private LEDScreen _screen = null;
+        private Object thisLock = new Object();
+        private void PlayMedia()
+        {
+            //lock (thisLock)
+            //{
+                if (_screen != null)
+                {
+                    if (_cureentPlan != null && _cureentPlan.ProgramName == _PlanCmdParTemp.ProgramName)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        _screen.Free();
+                        _screen = null;
+                    }
+                }
+                Thread.Sleep(1000);
+                var scheduleFilePath = Path.Combine(_lbPlanPath, Path.GetFileName(_PlanCmdParTemp.ProgramName));
+                using (FileStream fs = File.OpenRead(scheduleFilePath))
+                {
+
+                    string content;
+                    using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
+                    {
+                        content = reader.ReadToEnd();
+                    }
+                    var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
+                    foreach (var mediaItem in scheduleFile.MediaList)
+                    {
+                        if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Image)
+                        {
+                            _screen = new LEDScreen(0, 0, 1024, 768);
+                            _screen.PlayImage(Path.Combine(_mediaPath, Path.GetFileName(_PlanCmdParTemp.Medias[0].MediaName)));
+                            _cureentPlan = _PlanCmdParTemp;
+                        }
+                        else if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Video)
+                        {
+                            _screen = new LEDScreen(0, 0, 1024, 768);
+                            _screen.PlayVideo(Path.Combine(_mediaPath, Path.GetFileName(_PlanCmdParTemp.Medias[0].MediaName)));
+                            _cureentPlan = _PlanCmdParTemp;
+                        }
+                    }
+                }
+          //  }
+           
         }
 
         private void UnKnowCmd(Cmd cmd)

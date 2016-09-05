@@ -54,7 +54,7 @@ class AliyunOSS
 	 * @param $timeout 下载地址有效时间（秒）
 	 * @return string
 	 */
-	public function download_uri($bucket, $object, $timeout=600){
+	public function download_uri($bucket, $object, $timeout=1200){
 		try {
 			$uri = $this->client->signUrl($bucket, $object, $timeout);
 			return $uri;
@@ -201,7 +201,7 @@ class AliyunOSS
 	 * @param $timeout 签名过期时间
 	 * @return string
 	 */
-	public function upload_part_sign($object, $uploadId, $part=1, $bucket=false, $md5=false, $timeout=300){
+	public function upload_part_sign($object, $uploadId, $part=1, $bucket=false, $md5=false, $timeout=1200){
 		try {
 			$callback_uri	= ''; // "http://oss-demo.aliyuncs.com:23450";
 			$bucket = $bucket ? $bucket : $this->bucket;
@@ -250,7 +250,7 @@ class AliyunOSS
 	 * @param $bucket 存储空间
 	 * @param $timeout 签名过期时间
 	 */
-	public function upload_sign_uri($object, $bucket=false, $timeout=300){
+	public function upload_sign_uri($object, $bucket=false, $timeout=1200){
 		try {
 			$bucket = $bucket ? $bucket : $this->bucket;
 			$options = array(
@@ -378,24 +378,21 @@ class AliyunOSS
 		}
 	}
 	
-	public function demo($bucket, $object){
-	    try{
-	    	//$options = array();
-	        //$options['headers'] = ['range' => '0-100'];
-			//$timeout = time() + 300;
-	        //$options['preauth'] = $timeout;
-	        //$options['Date'] = $timeout;
-			//$sign_uri = $this->client->signUrl($bucket, $object, '300', "GET", $options);
-			//dump($sign_uri);
-			$options = array('range' => '0-100');
-			$content = $this->client->getObject($bucket, $object, $options);
-			dump($content);
-			
-	    } catch(OssException $e) {
-	        printf(__FUNCTION__ . ": FAILED\n");
-	        printf($e->getMessage() . "\n");
-	        return;
-	    }
-	    print(__FUNCTION__ . ": OK" . "\n");
+	/**
+	 * 删除存储文件
+	 * @param $object 存储对象
+	 * @param $bucket 存储空间
+	 * @return boolen
+	 */
+	public function delete_object($object, $bucket=false){
+		try {
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$response = $this->client->deleteObject($bucket, $object);
+			//return $response;
+			return true;
+		} catch (OssException $e) {
+		    print $e->getMessage();
+		    return false;
+		}
 	}
 }
