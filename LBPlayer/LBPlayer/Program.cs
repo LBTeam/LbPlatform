@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -16,7 +17,9 @@ namespace LBPlayer
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new LBPlayerMain());
+            Thread.Sleep(9000);
+            var mainWindow = new LBPlayerMain();
+            Application.Run(mainWindow);
         }
     }
 }

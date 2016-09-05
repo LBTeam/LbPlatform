@@ -102,6 +102,7 @@ namespace LBManager
             List<UploadFileInfo> uploadFileInfos = new List<UploadFileInfo>();
 
             var scheduleFilePath = _selectedScheduleFile.FilePath;
+            var scheduleFileMD5 = FileUtils.ComputeFileMd5(scheduleFilePath);
             using (FileStream fs = File.OpenRead(scheduleFilePath))
             {
 
@@ -111,6 +112,10 @@ namespace LBManager
                     content = reader.ReadToEnd();
                 }
                 var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
+                if (scheduleFile == null)
+                {
+                    throw new ArgumentNullException("播放方案文件已损坏！");
+                }
                 foreach (var mediaItem in scheduleFile.MediaList)
                 {
                     var uploadMediaFileInfo = new UploadFileInfo(mediaItem.FilePath,
@@ -121,7 +126,7 @@ namespace LBManager
                 }
                 var uploadScheduleFileInfo = new UploadFileInfo(scheduleFilePath,
                                                                 new FileInfo(scheduleFilePath).Length,
-                                                                FileUtils.ComputeFileMd5(scheduleFilePath),
+                                                                scheduleFileMD5,
                                                                 FileType.Plan);
                 uploadScheduleFileInfo.MediaList = new List<MediaTempInfo>(scheduleFile.MediaList.Select(m => new MediaTempInfo(m.FilePath, m.MD5)));
                 uploadFileInfos.Add(uploadScheduleFileInfo);
@@ -134,17 +139,30 @@ namespace LBManager
                 {
                     continue;
                 }
-                
+
                 var uploadComplete = UploadFile(uploadPartInfo);
 
                 var result = await CompleteMultipartUpload(uploadComplete);
             }
 
-            var schedulePartInfo = uploadPartInfos.FirstOrDefault(p => p.Type == FileType.Plan);
-            if (schedulePartInfo == null)
-                return;
-            var scheduleUploadCompleted = UploadFile(schedulePartInfo);
-            var scheduleUploadResult = await CompleteMultipartUpload(scheduleUploadCompleted);
+            UploadFileInfoForServer schedulePartInfo;
+
+            if (uploadPartInfos.Count == 0)
+            {
+                var scheduleUploadCompleted = new UploadComplete(scheduleFilePath, FileType.Plan, scheduleFileMD5, null, new List<string>() { this.Id });
+                var scheduleUploadResult = await CompleteMultipartUpload(scheduleUploadCompleted);
+            }
+            else
+            {
+                schedulePartInfo = uploadPartInfos.FirstOrDefault(p => p.Type == FileType.Plan);
+                if (schedulePartInfo == null)
+                {
+                    throw new ArgumentNullException("发布缺少播放方案！");
+                }
+                var scheduleUploadCompleted = UploadFile(schedulePartInfo);
+                var scheduleUploadResult = await CompleteMultipartUpload(scheduleUploadCompleted);
+            }
+
         }
 
 
@@ -197,10 +215,12 @@ namespace LBManager
             uploadComplete.FileName = uploadPartInfo.Name;
             uploadComplete.FileMD5 = uploadPartInfo.MD5;
             uploadComplete.FileType = uploadPartInfo.Type;
+
             if (uploadComplete.FileType == FileType.Plan)
             {
                 uploadComplete.Screens = new List<string>() { this.Id };
             }
+
 
             using (FileStream fs = File.OpenRead(uploadPartInfo.Name))
             {
