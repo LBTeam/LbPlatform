@@ -181,18 +181,20 @@ class ManagerController extends CommonController
 			$screens = $obj['Screens'];
 			$prog_model = D("Program");
 			$prog_info = $prog_model->program_by_name_md5($filename, $filemd5, $user_id);
-			$prog_map = array('id'=>$prog_info['id']);
-			$prog_res = $prog_model->where($prog_map)->setField('status', 1);
-			if($prog_info['size'] >= C("oss_100K_size")){
-				$AliyunOSS = new AliyunOSS();
-				//合并文件
-				$object = $prog_info['object'];
-				$uploadId = $prog_info['upload_id'];
-				$parts = array();
-				foreach($fileparts as $val){
-					$parts[] = array('PartNumber'=>$val['partNumber'],'ETag'=>strtoupper($val['MD5']));
+			if($prog_info['status'] == 0){
+				$prog_map = array('id'=>$prog_info['id']);
+				$prog_res = $prog_model->where($prog_map)->setField('status', 1);
+				if($prog_info['size'] >= C("oss_100K_size")){
+					$AliyunOSS = new AliyunOSS();
+					//合并文件
+					$object = $prog_info['object'];
+					$uploadId = $prog_info['upload_id'];
+					$parts = array();
+					foreach($fileparts as $val){
+						$parts[] = array('PartNumber'=>$val['partNumber'],'ETag'=>strtoupper($val['MD5']));
+					}
+					$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->program_bucket);
 				}
-				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->program_bucket);
 			}
 			//播放方案下发
 			$cmds = array();
