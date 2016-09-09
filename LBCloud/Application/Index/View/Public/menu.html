@@ -1,0 +1,20 @@
+<block name="side">	
+<nav class="navbar-default navbar-static-side" role="navigation">
+<div class="sidebar-collapse">
+<ul class="nav" id="side-menu">
+	<volist name="menus" id="vo">
+	<li <if condition="$vo.display eq 1">class="active"</if>> <!--  class="active"  -->
+		<a href="javascript:void(0);"><h4>&nbsp;&nbsp;&nbsp;{$vo.title}</h4><span class="fa arrow"></span></a>
+		<ul class="nav nav-second-level <if condition="$vo.display eq 1"> in<else /> collapse</if>">
+			<volist name="vo.children" id="v">
+			<li>											
+				<a href="{:U($v['name'])}">&nbsp;&nbsp;&nbsp;{$v.title}</a>
+			</li>
+			</volist>
+		</ul>
+	</li>
+	</volist>
+</ul>
+</div>
+</nav>
+</block>

@@ -12,6 +12,14 @@ function is_login(){
 }
 
 /**
+ * 是否管理员
+ */
+function is_administrator($uid = null){
+    $uid = is_null($uid) ? is_login() : $uid;
+    return $uid && (intval($uid) === C('USER_ADMINISTRATOR'));
+}
+
+/**
  * 验证码
  */
 function check_verify($code, $id = 1){

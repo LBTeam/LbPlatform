@@ -1,6 +1,24 @@
 <?php
 return array(
 	//'配置项'=>'配置值'
+	'USER_ADMINISTRATOR'		=>	1,		//超级管理员ID
+	'USER_AUTH_ON'              =>  true,
+	'USER_AUTH_TYPE'			=>  1,		// 默认认证类型 1 登录认证 2 实时认证
+	'USER_AUTH_KEY'             =>  'UID',	// 用户认证SESSION标记
+	'ADMIN_AUTH_KEY'			=>	'ADMIN_UID',
+	
+	'USER_AUTH_MODEL'           =>  'User',	// 默认验证数据表模型
+	'USER_AUTH_GATEWAY'         =>  '',// 默认认证网关
+	'NOT_AUTH_MODULE'           =>  '',		// 默认无需认证模块
+	'REQUIRE_AUTH_MODULE'       =>  '',		// 默认需要认证模块
+	'NOT_AUTH_ACTION'           =>  '',		// 默认无需认证操作
+	'REQUIRE_AUTH_ACTION'       =>  '',		// 默认需要认证操作
+	'RBAC_ROLE_TABLE'           =>  'player_role',
+	'RBAC_USER_TABLE'           =>  'player_role_user',
+	'RBAC_ACCESS_TABLE'         =>  'player_access',
+	'RBAC_NODE_TABLE'           =>  'player_node',
+	
+	
 	'VERIFY_ENABLE' => false,
 	
 	/* 模板相关配置 */

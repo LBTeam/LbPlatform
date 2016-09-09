@@ -43,6 +43,8 @@ class UserModel extends Model
      * @return void
      */
     public function logout(){
+    	session(C("USER_AUTH_KEY"), null);
+		session(C("ADMIN_AUTH_KEY"), null);
         session('user_auth', null);
         session('user_auth_sign', null);
     }
@@ -66,6 +68,10 @@ class UserModel extends Model
             'email'		=> $user['email'],
             'lasttime'	=> $user['lasttime'],
         );
+		if(is_administrator()){
+			session(C("ADMIN_AUTH_KEY"), $user['uid']);
+		}
+		session(C("USER_AUTH_KEY"), $user['uid']);
         session('user_auth', $auth);
         session('user_auth_sign', data_auth_sign($auth));
     }
