@@ -60,11 +60,11 @@ class NodeModel extends Model
 	/**
 	 * 节点详情
 	 */
-	public function node_by_id($id){
+	public function node_by_id($id, $field="*"){
 		if($id){
 			$map = array();
 			$map['id'] = $id;
-			return $this->where($map)->find();
+			return $this->field($field)->where($map)->find();
 		}
 		return array();
 	}

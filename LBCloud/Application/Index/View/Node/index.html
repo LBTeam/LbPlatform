@@ -53,11 +53,10 @@
 			                        <th>ID</th>
 			                        <th>名称</th>
 			                        <th>上级菜单</th>
-			                        <th>分组</th>
-			                        <th>URL</th>
+			                        <th>英文标识</th>
 			                        <th>排序</th>
-			                        <th>仅开发者模式显示</th>
-			                        <th>隐藏</th>
+			                        <th>类型</th>
+			                        <th>状态</th>
 			                        <th>操作</th>
 			                    </tr>
 			                </thead>
@@ -70,19 +69,19 @@
 			                            <a href="{:U('index?pid='.$menu['id'])}">{$menu.title}</a>
 			                        </td>
 			                        <td>{$menu.up_title|default='无'}</td>
-			                        <td>{$menu.group}</td>
-			                        <td>{$menu.url}</td>
+			                        <td>{$menu.name}</td>
 			                        <td>{$menu.sort}</td>
+			                        <td>{$menu.level_text}</td>
 			                        <td>
+			                        	<a href="{:U('status',array('id'=>$menu['id'],'value'=>abs($menu['status']-1)))}" class="ajax-get">
+			                            {$menu.status_text}
+			                            </a>
+			                        </td>
+			                        <!--<td>
 			                            <a href="{:U('toogleDev',array('id'=>$menu['id'],'value'=>abs($menu['is_dev']-1)))}" class="ajax-get">
 			                            {$menu.is_dev_text}
 			                            </a>
-			                        </td>
-			                        <td>
-			                            <a href="{:U('toogleHide',array('id'=>$menu['id'],'value'=>abs($menu['hide']-1)))}" class="ajax-get">
-			                            {$menu.hide_text}
-			                            </a>
-			                        </td>
+			                        </td>-->
 			                        <td>
 			                            <a title="编辑" href="{:U('edit?id='.$menu['id'])}">编辑</a>
 			                            <a class="confirm ajax-get" title="删除" href="{:U('del?id='.$menu['id'])}">删除</a>
