@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-08-26 19:19:18
+-- Date/time:                    2016-09-13 15:45:03
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -26,8 +26,13 @@ CREATE TABLE IF NOT EXISTS `player_access` (
   `module` varchar(64) DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限表';
 
--- Dumping data for table player.player_access: ~0 rows (approximately)
+-- Dumping data for table player.player_access: ~4 rows (approximately)
 /*!40000 ALTER TABLE `player_access` DISABLE KEYS */;
+INSERT INTO `player_access` (`role_id`, `node_id`, `level`, `module`) VALUES
+	(1, 2, 1, ''),
+	(1, 1, 1, ''),
+	(1, 3, 1, ''),
+	(1, 4, 1, '');
 /*!40000 ALTER TABLE `player_access` ENABLE KEYS */;
 
 
@@ -53,12 +58,12 @@ CREATE TABLE IF NOT EXISTS `player_command` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID，player_user表uid外键',
   `screen_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏ID，player_screen表id外键',
-  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '命令类型',
+  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '命令类型，0-发布播放方案，1-长连接重新注册',
   `param` text NOT NULL COMMENT '命令详情',
   `publish` int(11) NOT NULL DEFAULT '0' COMMENT '命令发布时间',
   `execute` int(11) NOT NULL DEFAULT '0' COMMENT '命令执行时间',
   `expired` int(11) NOT NULL DEFAULT '0' COMMENT '命令过期时间',
-  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '命令状态',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '命令状态，0-已发布（未下发），1-已下发',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='命令';
 
@@ -151,10 +156,18 @@ CREATE TABLE IF NOT EXISTS `player_node` (
   `pid` int(11) NOT NULL DEFAULT '1' COMMENT '父ID',
   `level` tinyint(2) NOT NULL DEFAULT '1' COMMENT '级别（类型）；1模块，2列表，3操作',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='节点表';
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='节点表';
 
--- Dumping data for table player.player_node: ~0 rows (approximately)
+-- Dumping data for table player.player_node: ~6 rows (approximately)
 /*!40000 ALTER TABLE `player_node` DISABLE KEYS */;
+INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `pid`, `level`) VALUES
+	(1, 'User', '用户管理', 0, '', 1, 0, 1),
+	(2, 'index', '用户列表', 0, '', 1, 1, 2),
+	(3, 'Group', '分组管理', 0, '', 2, 0, 1),
+	(4, 'index', '分组列表', 0, '', 1, 3, 2),
+	(5, 'Node', '节点管理', 0, '', 3, 0, 1),
+	(6, 'index', '节点列表', 0, '', 1, 5, 2),
+	(7, 'add', '添加节点', 0, '', 1, 6, 3);
 /*!40000 ALTER TABLE `player_node` ENABLE KEYS */;
 
 
@@ -3561,13 +3574,16 @@ DROP TABLE IF EXISTS `player_role`;
 CREATE TABLE IF NOT EXISTS `player_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL DEFAULT '' COMMENT '角色名称',
+  `pid` smallint(6) NOT NULL DEFAULT '0',
   `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '状态；0开启，1关闭',
   `remark` varchar(255) DEFAULT '' COMMENT '备注',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='角色表';
 
 -- Dumping data for table player.player_role: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_role` DISABLE KEYS */;
+INSERT INTO `player_role` (`id`, `name`, `pid`, `status`, `remark`) VALUES
+	(1, '超级管理员', 0, 0, '');
 /*!40000 ALTER TABLE `player_role` ENABLE KEYS */;
 
 
@@ -3580,6 +3596,8 @@ CREATE TABLE IF NOT EXISTS `player_role_user` (
 
 -- Dumping data for table player.player_role_user: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_role_user` DISABLE KEYS */;
+INSERT INTO `player_role_user` (`role_id`, `user_id`) VALUES
+	(1, 1);
 /*!40000 ALTER TABLE `player_role_user` ENABLE KEYS */;
 
 
@@ -3612,9 +3630,9 @@ CREATE TABLE IF NOT EXISTS `player_screen` (
 -- Dumping data for table player.player_screen: ~2 rows (approximately)
 /*!40000 ALTER TABLE `player_screen` DISABLE KEYS */;
 INSERT INTO `player_screen` (`id`, `name`, `remark`, `size_x`, `size_y`, `resolu_x`, `resolu_y`, `type`, `operate`, `longitude`, `latitude`, `uid`, `province`, `city`, `district`, `address`, `file`, `db_version`, `is_delete`, `addtime`) VALUES
-	(1, '测试screen', '', 0, 0, 0, 0, 0, 0, '', '', 1, 2, 0, 0, '', '', '', 0, 0),
-	(2, '测试screen1', '', 0, 0, 0, 0, 0, 0, '', '', 1, 3, 44, 455, '', '', '', 0, 0),
-	(3, '测试screen2', '', 0, 0, 0, 0, 0, 0, '', '', 1, 24, 311, 2599, '', '', '', 0, 0);
+	(1, '测试screen', '', 100, 100, 1024, 768, 0, 0, '', '', 1, 2, 0, 0, '', '', '', 0, 0),
+	(2, '测试screen1', '', 200, 200, 256, 256, 0, 0, '', '', 1, 3, 44, 455, '', '', '', 0, 0),
+	(3, '测试screen2', '', 128, 128, 512, 512, 0, 0, '', '', 1, 24, 311, 2599, '', '', '', 0, 0);
 /*!40000 ALTER TABLE `player_screen` ENABLE KEYS */;
 
 
@@ -3642,7 +3660,7 @@ CREATE TABLE IF NOT EXISTS `player_user` (
 -- Dumping data for table player.player_user: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `type`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 2, 1471852043, '127.0.0.1', 0, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243);
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 1473732584, '127.0.0.1', 0, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

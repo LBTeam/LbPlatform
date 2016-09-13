@@ -34,25 +34,36 @@ class NodeController extends CommonController
         $this->display();
 	}
 	
+	/**
+	 * 新增节点
+	 */
 	public function add(){
 		$node_model = D("Node");
 		$pid  = I('get.pid',0);
 		if(IS_POST){
-            $Menu = D('Menu');
-            $data = $Menu->create();
-            if($data){
-                $id = $Menu->add();
-                if($id){
-                    // S('DB_CONFIG_DATA',null);
-                    //记录行为
-                    action_log('update_menu', 'Menu', $id, UID);
-                    $this->success('新增成功', Cookie('__forward__'));
+			$rules = array(
+				array('title','require','标题不能为空！'),
+				array('title','','标题已经存在！',0,'unique',1),
+				array('name','require','英文标识不能为空！')
+			);
+            $data = array();
+			$data['name'] = I("post.name", "");
+			$data['title'] = I("post.title", "");
+			$data['status'] = I("post.status", 0);
+			$data['remark'] = I("post.remark", "");
+			$data['sort'] = I("post.sort", 1);
+			$data['pid'] = I("post.pid", 0);
+			$data['level'] = I("post.level", 0);
+			if($node_model->validate($rules)->create($data)){
+				$id = $node_model->add();
+				if($id){
+                    $this->success('新增成功', U('Index/Node/index', array('pid'=>$data['pid'])));
                 } else {
                     $this->error('新增失败');
                 }
-            } else {
-                $this->error($Menu->getError());
-            }
+			}else{
+				$this->error($node_model->getError());
+			}
         } else {
         	$TreeService = new TreeService();
 			if($pid){
@@ -64,7 +75,7 @@ class NodeController extends CommonController
             $menus = array_merge(array(0=>array('id'=>0,'title_show'=>'顶级菜单')), $menus);
             $this->assign('Menus', $menus);
 			$this->assign('pid', $pid);
-            $this->meta_title = '新增菜单';
+            $this->meta_title = '新增节点';
             $this->display();
         }
 	}
