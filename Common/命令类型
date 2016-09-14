@@ -1,25 +1,127 @@
 命令类型
 
 	屏幕设置命令  参数X、Y、W、H、ID、Name
+		参数：
+			{
+				"id": "1",			//屏幕ID
+				"key": "xxxxxxx",	//屏幕key
+				"name": "xxxxx",	//屏幕名称
+				"size_x": 100,		//int,偏移量x
+				"size_y": 100,		//int,偏移量y
+				"resolu_x": 100,	//int,屏幕宽
+				"resolu_y": 100		//int,屏幕高
+			}
 	屏幕工作时间变更  参数 开始时间、结束时间
+		参数：
+			{
+				"start": "xx:xx",	//开始时间
+				"end": "xx:xx"		//结束时间
+			}
 	关闭屏幕 参数 无 关闭电脑
 	锁定屏幕 参数 锁定密码、开启或关闭---------------
+		参数：
+			{
+				"password": "xxxxxx",	//密码
+				"enable": 0(1)			//0-关闭，1-开启
+			}
 	节目下发 参数 播放方案名称+路径、媒体路径
 	紧急插播 参数 紧急方案名称+路径、媒体路径
+		参数：
+			{
+				"ProgramId": "1",							//方案ID
+				"ProgramName": "xxxxxx",					//方案名称
+				"ProgramUrl": "http://xxxxxxxxxxxxxxxxx",	//方案下载地址
+				"Medias": [
+					{
+						"MediaId": "2",						//媒体ID
+						"MediaName": "xxxxxxxxxxx",			//媒体名称
+						"MediaUrl": "http://xxxxxxx"		//媒体下载地址
+					},
+					{
+						"MediaId": "3",
+						"MediaName": "xxxxxxxxxxx",
+						"MediaUrl": "http://xxxxxxx"
+					}
+				]
+			}
 	设置心跳周期 参数 心跳周期
+		参数：
+			{
+				"cycle": 30	//周期，单位：秒（s）
+			}
 	设置监控上传周期 参数 上传周期、上传路径--------------（截图、CPU使用率、硬盘使用率、内存使用率、CPU温度、风扇转速）
+		参数：
+			{
+				"cycle": 30,			//周期，单位：秒（s）
+				"url": "http://xxxxx"	//上传路径
+			}
 	离线策略下发 参数 播放方案名称+路径、媒体路径
 	离线策略开关 参数 启用或禁用
+		参数：
+			{
+				"enable": 0(1),	//0-禁用，1-启用
+				"plan": {		//离线策略，禁用时为null
+					"ProgramId": "1",							//方案ID
+					"ProgramName": "xxxxxx",					//方案名称
+					"ProgramUrl": "http://xxxxxxxxxxxxxxxxx",	//方案下载地址
+					"Medias": [
+						{
+							"MediaId": "2",						//媒体ID
+							"MediaName": "xxxxxxxxxxx",			//媒体名称
+							"MediaUrl": "http://xxxxxxx"		//媒体下载地址
+						},
+						{
+							"MediaId": "3",
+							"MediaName": "xxxxxxxxxxx",
+							"MediaUrl": "http://xxxxxxx"
+						}
+					]
+				}
+			}
 	定时开关 参数 开启软件时间、关闭软件时间
+		参数：
+			{
+				"enable": "xx:xx",	//开启
+				"disable": "xx:xx"	//关闭
+			}
 
 接口
 	绑定播放器 参数 ID、Key、MAC  
+		地址：
+			http://lbcloud.ddt123.cn/?s=api/Player/bind_player
+		入参：
+			{
+				"Id": "1",
+				"Key": "abcdefg",
+				"Mac": "AA-BB-CC-DD-EE-FF"
+			}
+		返回：
+			{
+				"err_code": "000000",
+				"msg": "ok"
+			}
 	心跳
 	上传播放记录
 	上传命令执行结果
 	上传监控数据
 
 	登录
+		地址：
+			http://lbcloud.ddt123.cn/?s=api/Manager/login
+		入参：
+			{
+				"user": "xxxx@xxxx.com",
+				"pwd": "xxxxxxxx"
+			}
+		返回：
+			{
+				"err_code": "000000",
+				"msg": "ok",
+				"data": {
+					"token": "xxxxxxxxxxxx",
+					"expire": 7200
+				}
+			}
 	token刷新
 	媒体上传
 	播放方案上传

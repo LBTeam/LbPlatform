@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-09-13 15:45:03
+-- Date/time:                    2016-09-14 18:49:42
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -161,11 +161,11 @@ CREATE TABLE IF NOT EXISTS `player_node` (
 -- Dumping data for table player.player_node: ~6 rows (approximately)
 /*!40000 ALTER TABLE `player_node` DISABLE KEYS */;
 INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `pid`, `level`) VALUES
-	(1, 'User', '用户管理', 0, '', 1, 0, 1),
-	(2, 'index', '用户列表', 0, '', 1, 1, 2),
-	(3, 'Group', '分组管理', 0, '', 2, 0, 1),
+	(1, 'User', '用户管理', 0, '', 2, 0, 1),
+	(2, 'index', '用户列表', 0, '', 1, 1, 1),
+	(3, 'Group', '分组管理', 0, '', 3, 0, 1),
 	(4, 'index', '分组列表', 0, '', 1, 3, 2),
-	(5, 'Node', '节点管理', 0, '', 3, 0, 1),
+	(5, 'Node', '节点管理', 0, '', 1, 0, 1),
 	(6, 'index', '节点列表', 0, '', 1, 5, 2),
 	(7, 'add', '添加节点', 0, '', 1, 6, 3);
 /*!40000 ALTER TABLE `player_node` ENABLE KEYS */;
@@ -3660,7 +3660,7 @@ CREATE TABLE IF NOT EXISTS `player_user` (
 -- Dumping data for table player.player_user: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `type`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 1473732584, '127.0.0.1', 0, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243);
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 1473832789, '127.0.0.1', 0, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
