@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-09-14 18:49:42
+-- Date/time:                    2016-09-18 19:03:35
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -156,18 +156,20 @@ CREATE TABLE IF NOT EXISTS `player_node` (
   `pid` int(11) NOT NULL DEFAULT '1' COMMENT '父ID',
   `level` tinyint(2) NOT NULL DEFAULT '1' COMMENT '级别（类型）；1模块，2列表，3操作',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='节点表';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='节点表';
 
 -- Dumping data for table player.player_node: ~6 rows (approximately)
 /*!40000 ALTER TABLE `player_node` DISABLE KEYS */;
 INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `pid`, `level`) VALUES
-	(1, 'User', '用户管理', 0, '', 2, 0, 1),
+	(1, 'User', '用户管理', 0, '', 1, 0, 1),
 	(2, 'index', '用户列表', 0, '', 1, 1, 1),
 	(3, 'Group', '分组管理', 0, '', 3, 0, 1),
 	(4, 'index', '分组列表', 0, '', 1, 3, 2),
-	(5, 'Node', '节点管理', 0, '', 1, 0, 1),
+	(5, 'Node', '节点管理', 0, '', 4, 0, 1),
 	(6, 'index', '节点列表', 0, '', 1, 5, 2),
-	(7, 'add', '添加节点', 0, '', 1, 6, 3);
+	(7, 'add', '添加节点', 0, '', 1, 6, 3),
+	(8, 'Role', '用户组管理', 0, '', 2, 0, 1),
+	(9, 'index', '用户组列表', 0, '', 1, 8, 2);
 /*!40000 ALTER TABLE `player_node` ENABLE KEYS */;
 
 
@@ -3578,12 +3580,13 @@ CREATE TABLE IF NOT EXISTS `player_role` (
   `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '状态；0开启，1关闭',
   `remark` varchar(255) DEFAULT '' COMMENT '备注',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='角色表';
 
 -- Dumping data for table player.player_role: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_role` DISABLE KEYS */;
 INSERT INTO `player_role` (`id`, `name`, `pid`, `status`, `remark`) VALUES
-	(1, '超级管理员', 0, 0, '');
+	(1, '超级管理员', 0, 0, ''),
+	(2, '代理用户', 0, 0, '代理用户');
 /*!40000 ALTER TABLE `player_role` ENABLE KEYS */;
 
 
@@ -3660,7 +3663,7 @@ CREATE TABLE IF NOT EXISTS `player_user` (
 -- Dumping data for table player.player_user: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `type`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 1473832789, '127.0.0.1', 0, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243);
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 1474165681, '127.0.0.1', 0, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
