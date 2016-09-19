@@ -2,7 +2,7 @@
 /**
  * 用户model
  * @author liangjian
- * @email 15934854815
+ * @email 15934854815@163.com
  */
 namespace Index\Model;
 use Think\Model;
@@ -18,6 +18,7 @@ class UserModel extends Model
 	public function login($username, $password){
 		$map = array();
 		$map['email'] = $username;  
+		$map['status'] = 0;
         
 		/* 获取用户数据 */
 		$user = $this->where($map)->find();
@@ -74,5 +75,73 @@ class UserModel extends Model
 		session(C("USER_AUTH_KEY"), $user['uid']);
         session('user_auth', $auth);
         session('user_auth_sign', data_auth_sign($auth));
+    }
+    
+    /**
+     * 用户列表
+     */
+    public function all_user_list(){
+    	$field = "uid,email,phone,realname,address,status";
+    	$field .= ",type,lasttime,lastip,addtime,reg_code";
+    	if(is_administrator()){
+    		$users = $this->field($field)->select();
+    	}else{
+    		$role_model = D("Role");
+    		$cfg_model = D("Config");
+    		$uid = session("user_auth.uid");
+    		$role_id = $role_model->role_id_by_user($uid);
+    		$roles = $cfg_model->roles();
+    		switch($role_id){
+    			case $roles['root']:
+    				//管理员
+    				$users = $this->field($field)->select();
+    				break;
+    			case $roles['agent']:
+    				//代理用户
+    				$map = array("puid"=>$uid);
+    				$users = $this->field($field)->where($map)->select();
+    				break;
+    			case $roles['normal']:
+    				//普通用户
+    				$users = array();
+    				break;
+    			default:
+    				$users = array();
+    				break;
+    		}
+    	}
+    	return $users;
+    }
+    
+    /**
+     * 管理员列表
+     */
+    public function root_list(){
+    	$map = array();
+    	$users = array();
+    	$field = "uid,email,phone,realname,address";
+    	$field .= ",status,lasttime,lastip,addtime";
+    	if(is_administrator()){
+    		$map['type'] = 0;
+    	}else{
+    		$map['type'] = 0;
+    		$map['uid'] = array("NEQ", C("USER_ADMINISTRATOR"));
+    	}
+    	$users = $this->field($field)->where($map)->select();
+    	return $users;
+    }
+    
+    /**
+     * 代理商列表
+     */
+	public function agent_lst(){
+		
+	}
+    
+    /**
+     * 普通用户列表
+     */
+    public function user_list(){
+    	
     }
 }

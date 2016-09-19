@@ -14,13 +14,13 @@
 		<block name="body">
 		<!-- 标题栏 -->
 		<div class="main-title">
-		    <h2>用户列表</h2>
+		    <h2>管理员列表</h2>
 		</div>
 		
 		<div class="panel panel-default">
 		    <div class="panel-heading">		
 				<div class="fl">
-		        <button  url="{:U('add')}" id="add-group" class="btn btn-default btn-add " >新 增</button>
+		        <button  url="{:U('add_root')}" id="add-group" class="btn btn-default btn-add " >新 增</button>
 		        <button  url="{:U('status',array('value'=>0))}" class="btn btn-default ajax-post" target-form="ids" >启 用</button>
 		        <button  url="{:U('status',array('value'=>1))}" class="btn btn-default ajax-post" target-form="ids" >禁 用</button>
 		        <button  url="{:U('del')}" class="btn btn-default ajax-post confirm" target-form="ids" >删 除</button>
@@ -37,11 +37,9 @@
 		                        <th class="">手机号</th>
 		                        <th class="">真实姓名</th>
 		                        <th class="">状态</th>
-		                        <th class="">类型</th>
 		                        <th class="">上次登录时间</th>
 		                        <th class="">上次登录IP</th>
 		                        <th class="">添加时间</th>
-		                        <th class="">注册码</th>
 		                        <th class="">操作</th>
 		                    </tr>
 		                </thead>
@@ -54,21 +52,19 @@
 		                        <td>{$vo.phone}</td>
 		                        <td>{$vo.realname}</td>
 		                        <td>{$vo.status_text}</td>
-		                        <td>{$vo.type_text}</td>
 		                        <td>{$vo.lasttime|date="Y-m-d H:i:s",###}</td>
 		                        <td>{$vo.lastip}</td>
 		                        <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
-		                        <td>{$vo.reg_code}</td>
 		                        <td><eq name="vo.status" value="0">
 		                            <a href="{:U('status', array('id'=>$vo['id'],'value'=>abs($vo['status']-1)))}" class="ajax-get">禁用</a>
 		                            <else/>
 		                            <a href="{:U('status', array('id'=>$vo['id'],'value'=>abs($vo['status']-1)))}" class="ajax-get">启用</a>
 		                            </eq>
-		                            <a href="{:U('edit',array('id'=>$vo['id']))}">编辑</a>
+		                            <a href="{:U('edit_root',array('id'=>$vo['id']))}">编辑</a>
 		                            <a href="{:U('del?id='.$vo['id'])}" class="confirm ajax-get">删除</a>
 		                        </td>
 		                    </tr>
-		                    </volist>                    
+		                    </volist>
 						</tbody>
 					</table>
 				</div><!-- /.table-responsive --> 

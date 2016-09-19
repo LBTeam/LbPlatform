@@ -15,5 +15,27 @@ class RoleModel extends Model
 	public function all_role_list(){
 		return $this->select();
 	}
+	
+	/**
+	 * 用户组详情
+	 */
+	public function role_by_id($id, $field="*"){
+		if($id){
+			return $this->field($field)->find($id);
+		}
+		return array();
+	}
+	
+	/**
+	 * 用户组ID
+	 */
+	public function role_id_by_user($uid){
+		if($uid){
+			return $this->table("player_role_user")
+						->where("user_id={$uid}")
+						->getField("role_id");
+		}
+		return 0;
+	}
 }
 ?>

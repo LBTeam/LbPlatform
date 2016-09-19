@@ -217,12 +217,13 @@ class ManagerController extends CommonController
 				$cmd_del = $cmd_model->remove_cmd($user_id, $screens, 0, 0);
 				$cmd_add = $cmd_model->release_cmd($cmds);
 			}
+			$response = array("err_code"=>"000000","msg"=>"success");
 		}else{
 			//媒体
 			$media_model = D("Media");
 			$media_info = $media_model->media_by_name_md5($filename, $filemd5, $user_id);
-			$media_map = array('id'=>$media_info['id']);
-			$media_res = $media_model->where($media_map)->setField('status', 1);
+			file_put_contents('./1.log', json_encode($media_info)."\r\n", FILE_APPEND);
+			$oss_res = true;
 			if($media_info['size'] > C("oss_100K_size")){
 				$AliyunOSS = new AliyunOSS();
 				//合并文件
@@ -232,12 +233,18 @@ class ManagerController extends CommonController
 				foreach($fileparts as $val){
 					$parts[] = array('PartNumber'=>$val['PartNumber'],'ETag'=>strtoupper($val['MD5']));
 				}
-				//file_put_contents('./1.log', json_encode($parts)."\r\n", FILE_APPEND);
+				file_put_contents('./1.log', json_encode($parts)."\r\n", FILE_APPEND);
 				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->media_bucket);
-				//file_put_contents('./1.log', json_encode($oss_res)."\r\n", FILE_APPEND);
+				file_put_contents('./1.log', json_encode($oss_res)."\r\n", FILE_APPEND);
+			}
+			if($oss_res){
+				$media_map = array('id'=>$media_info['id']);
+				$media_res = $media_model->where($media_map)->setField('status', 1);
+				$response = array("err_code"=>"000000","msg"=>"success");
+			}else{
+				$response = array("err_code"=>"010201","msg"=>"Merge split file failed");
 			}
 		}
-		$response = array("err_code"=>"000000","msg"=>"success");
 		$this->ajaxReturn($response);
 	}
 

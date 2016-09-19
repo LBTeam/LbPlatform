@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<include file="Public/head"/>
+</head>
+<body>
+<div id="wrapper">
+  <include file="Public/header" /> 
+  <include file="Public/menu" />
+  <div id="page-wrapper"> 
+	  <div class="row">  
+	    <div id="main" class="col-lg-12 main">
+<block name="body">
+<div class="main-title">
+    <h2>网站设置</h2>
+</div>
+<div class="panel panel-default">
+    <div class="tab-wrap  panel-body ">	    
+ 		<ul class="nav nav-tabs ">
+			<li class="active"><a href="{:U('?id=1')}">基本配置</a></li>
+			<li><a href="{:U('?id=2')}">开发配置</a></li>
+		</ul>
+        <div class="tab-content" style="padding-top: 25px;">
+            <form action="{:U('save')}" method="post" class="form col-lg-6" role="form" >
+                <div class="form-group">
+                    <label class="item-label ">网站标题<span class="check-tips">（管理系统显示标题）</span> </label> 
+                    <input type="text" class="form-control" name="config[WEB_SITE_TITLE]" value="{$cfgs.WEB_SITE_TITLE}">
+                </div>
+                <div class="form-group">
+                    <label class="item-label ">网站描述<span class="check-tips">（网站搜索引擎描述）</span> </label> 
+                    <input type="text" class="form-control" name="config[WEB_SITE_DESCRIPTION]" value="{$cfgs.WEB_SITE_DESCRIPTION}">
+                </div>
+                <div class="form-group">
+                    <label class="item-label ">网站关键字<span class="check-tips">（网站搜索引擎关键字）</span> </label> 
+                    <input type="text" class="form-control" name="config[WEB_SITE_KEYWORD]" value="{$cfgs.WEB_SITE_KEYWORD}">
+                </div>
+                <div class="form-group">
+                    <label class="item-label ">网站备案号<span class="check-tips">（设置在网站底部显示的备案号，如陕ICP备88888888号-8）</span> </label> 
+                    <input type="text" class="form-control" name="config[WEB_SITE_ICP]" value="{$cfgs.WEB_SITE_ICP}">
+                </div>
+                <div class="form-group">
+                    <label class="item-label"></label>
+                    <div class="controls">
+                          <button type="submit" class="btn btn-default submit-btn ajax-post" target-form="form">确 定</button>			
+                          <button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+</div>    
+</block>
+</div>  
+	  </div>
+	</div>	
+  <include file="Public/footer" />
+</div>    
+  <include file="Public/script" />
+</body>
+</html>

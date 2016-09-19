@@ -18,8 +18,10 @@ return array(
 	'RBAC_ACCESS_TABLE'         =>  'player_access',
 	'RBAC_NODE_TABLE'           =>  'player_node',
 	
-	
-	'VERIFY_ENABLE' => false,
+	'VERIFY_ENABLE' 	=> false,
+	'ROOT_ROLE_ID'		=> 1,
+	'AGENT_ROLE_ID'		=> 2,
+	'NORMAL_ROLE_ID'	=> 3,
 	
 	/* 模板相关配置 */
     'TMPL_PARSE_STRING' => array(

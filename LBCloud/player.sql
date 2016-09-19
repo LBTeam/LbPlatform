@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-09-18 19:03:35
+-- Date/time:                    2016-09-19 19:25:29
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -28,11 +28,6 @@ CREATE TABLE IF NOT EXISTS `player_access` (
 
 -- Dumping data for table player.player_access: ~4 rows (approximately)
 /*!40000 ALTER TABLE `player_access` DISABLE KEYS */;
-INSERT INTO `player_access` (`role_id`, `node_id`, `level`, `module`) VALUES
-	(1, 2, 1, ''),
-	(1, 1, 1, ''),
-	(1, 3, 1, ''),
-	(1, 4, 1, '');
 /*!40000 ALTER TABLE `player_access` ENABLE KEYS */;
 
 
@@ -79,8 +74,16 @@ CREATE TABLE IF NOT EXISTS `player_config` (
   `value` varchar(128) NOT NULL DEFAULT '' COMMENT '值'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统设置';
 
--- Dumping data for table player.player_config: ~0 rows (approximately)
+-- Dumping data for table player.player_config: ~7 rows (approximately)
 /*!40000 ALTER TABLE `player_config` DISABLE KEYS */;
+INSERT INTO `player_config` (`key`, `value`) VALUES
+	('ROOT_ROLE_ID', '1'),
+	('AGENT_ROLE_ID', '2'),
+	('NORMAL_ROLE_ID', '3'),
+	('WEB_SITE_TITLE', 'LbCloud后台管理系统'),
+	('WEB_SITE_DESCRIPTION', ''),
+	('WEB_SITE_KEYWORD', ''),
+	('WEB_SITE_ICP', '');
 /*!40000 ALTER TABLE `player_config` ENABLE KEYS */;
 
 
@@ -156,9 +159,9 @@ CREATE TABLE IF NOT EXISTS `player_node` (
   `pid` int(11) NOT NULL DEFAULT '1' COMMENT '父ID',
   `level` tinyint(2) NOT NULL DEFAULT '1' COMMENT '级别（类型）；1模块，2列表，3操作',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='节点表';
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='节点表';
 
--- Dumping data for table player.player_node: ~6 rows (approximately)
+-- Dumping data for table player.player_node: ~11 rows (approximately)
 /*!40000 ALTER TABLE `player_node` DISABLE KEYS */;
 INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `pid`, `level`) VALUES
 	(1, 'User', '用户管理', 0, '', 1, 0, 1),
@@ -169,7 +172,11 @@ INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `p
 	(6, 'index', '节点列表', 0, '', 1, 5, 2),
 	(7, 'add', '添加节点', 0, '', 1, 6, 3),
 	(8, 'Role', '用户组管理', 0, '', 2, 0, 1),
-	(9, 'index', '用户组列表', 0, '', 1, 8, 2);
+	(9, 'index', '用户组列表', 0, '', 1, 8, 2),
+	(10, 'System', '系统管理', 0, '系统管理', 5, 0, 1),
+	(11, 'index', '系统配置', 0, '系统配置', 1, 10, 2),
+	(12, 'root_list', '管理员列表', 0, '', 2, 1, 2),
+	(13, 'agent_list', '代理商列表', 0, '', 3, 1, 2);
 /*!40000 ALTER TABLE `player_node` ENABLE KEYS */;
 
 
@@ -3580,13 +3587,14 @@ CREATE TABLE IF NOT EXISTS `player_role` (
   `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '状态；0开启，1关闭',
   `remark` varchar(255) DEFAULT '' COMMENT '备注',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='角色表';
 
--- Dumping data for table player.player_role: ~0 rows (approximately)
+-- Dumping data for table player.player_role: ~3 rows (approximately)
 /*!40000 ALTER TABLE `player_role` DISABLE KEYS */;
 INSERT INTO `player_role` (`id`, `name`, `pid`, `status`, `remark`) VALUES
-	(1, '超级管理员', 0, 0, ''),
-	(2, '代理用户', 0, 0, '代理用户');
+	(1, '管理员', 0, 0, '管理员'),
+	(2, '代理用户', 0, 0, '代理用户'),
+	(3, '普通用户', 0, 0, '普通用户');
 /*!40000 ALTER TABLE `player_role` ENABLE KEYS */;
 
 
@@ -3599,8 +3607,6 @@ CREATE TABLE IF NOT EXISTS `player_role_user` (
 
 -- Dumping data for table player.player_role_user: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_role_user` DISABLE KEYS */;
-INSERT INTO `player_role_user` (`role_id`, `user_id`) VALUES
-	(1, 1);
 /*!40000 ALTER TABLE `player_role_user` ENABLE KEYS */;
 
 
@@ -3650,6 +3656,7 @@ CREATE TABLE IF NOT EXISTS `player_user` (
   `realname` varchar(64) DEFAULT '' COMMENT '手机',
   `address` varchar(128) DEFAULT '' COMMENT '地址',
   `puid` int(11) NOT NULL DEFAULT '0' COMMENT '父UID',
+  `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '用户状态，0-正常，1-禁用',
   `type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '用户类型，0-管理员，1-代理用户，2-普通用户',
   `lasttime` int(11) DEFAULT '0' COMMENT '上次登录时间',
   `lastip` varchar(16) DEFAULT '' COMMENT '上次登录地址',
@@ -3660,10 +3667,10 @@ CREATE TABLE IF NOT EXISTS `player_user` (
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户表';
 
--- Dumping data for table player.player_user: ~0 rows (approximately)
+-- Dumping data for table player.player_user: ~1 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
-INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `type`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 1474165681, '127.0.0.1', 0, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243);
+INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 0, 1474276977, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<include file="Public/head"/>
+</head>
+<body>
+<div id="wrapper">
+  <include file="Public/header" /> 
+  <include file="Public/menu" />
+  <div id="page-wrapper"> 
+	  <div class="row">  
+	    <div id="main" class="col-lg-12 main">
+<block name="body">
+<div class="main-title">
+    <h2>网站设置</h2>
+</div>
+<div class="panel panel-default">
+    <div class="tab-wrap  panel-body ">	    
+ 		<ul class="nav nav-tabs ">
+			<li><a href="{:U('?id=1')}">基本配置</a></li>
+			<li class="active"><a href="{:U('?id=2')}">开发配置</a></li>
+		</ul>
+        <div class="tab-content" style="padding-top: 25px;">
+            <form action="{:U('save')}" method="post" class="form col-lg-6" role="form" >
+                <div class="form-group">
+                    <label class="item-label ">超级管理员用户组ID<span class="check-tips">（<font color="red">*非开发人员勿动</font>）</span> </label> 
+                    <input type="text" class="form-control" name="config[ROOT_ROLE_ID]" value="{$cfgs.ROOT_ROLE_ID}">
+                </div>
+                <div class="form-group">
+                    <label class="item-label ">代理用户用户组ID<span class="check-tips">（<font color="red">*非开发人员勿动</font>）</span> </label> 
+                    <input type="text" class="form-control" name="config[AGENT_ROLE_ID]" value="{$cfgs.AGENT_ROLE_ID}">
+                </div>
+                <div class="form-group">
+                    <label class="item-label ">普通用户用户组ID<span class="check-tips">（<font color="red">*非开发人员勿动</font>）</span> </label> 
+                    <input type="text" class="form-control" name="config[NORMAL_ROLE_ID]" value="{$cfgs.NORMAL_ROLE_ID}">
+                </div>
+                <div class="form-group">
+                    <label class="item-label"></label>
+                    <div class="controls">
+                          <button type="submit" class="btn btn-default submit-btn ajax-post" target-form="form">确 定</button>			
+                          <button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+</div>    
+</block>
+</div>  
+	  </div>
+	</div>	
+  <include file="Public/footer" />
+</div>    
+  <include file="Public/script" />
+</body>
+</html>
