@@ -83,7 +83,7 @@ class RoleController extends CommonController
 	            $this->meta_title = '编辑用户组';
 	            $this->display();
 			}else{
-				$this->error('获取节点信息错误');
+				$this->error('获取用户组信息错误');
 			}
 		}
 	}

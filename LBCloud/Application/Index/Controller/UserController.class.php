@@ -53,10 +53,18 @@ class UserController extends CommonController {
 				$data['lasttime']	= 0;
 				$data['lastip']		= '0.0.0.0';
 				$data['addtime']	= NOW_TIME;
+				$cfg_model = D("Config");
+				$role_model = D("Role");
+				$roles = $cfg_model->roles();
+				$model = new \Think\Model();
+				$model->startTrans();
 				$user_id = $user_model->add($data);
-				if($user_id){
+				$bind_res = $role_model->bind_relation($user_id, $roles['root']);
+				if($user_id && $bind_res){
+					$model->commit();
 					$this->success('新增成功', U('root_list'));
 				}else{
+					$model->rollback();
 					$this->error('新增失败');
 				}
 			}else{
@@ -65,6 +73,174 @@ class UserController extends CommonController {
 		}else{
 			$this->meta_title = '新增管理员';
             $this->display();
+		}
+	}
+	
+	/**
+	 * 修改管理员信息
+	 */
+	public function edit_root($id = 0){
+		$user_model = D("User");
+		if(IS_POST){
+			$rules = array(
+				array('uid','require','用户ID不能为空！'),
+				array('email','require','邮箱不能为空！'),
+				array('email','email','邮箱格式错误！'),
+				array('email','','邮箱已经存在！',0,'unique',2),
+				array('phone','','手机号码已经存在！',2,'unique',2),
+				array('password', "/^[A-Za-z0-9]{6,16}$/",'密码格式错误！',2),
+				array('re_password','password','两次输入密码不一致！',0,'confirm'), 
+			);
+			if($user_model->validate($rules)->create()){
+				$data = array();
+				$data['uid']		= I("post.uid");
+				$data['email']		= I("post.email");
+				$data['phone']		= I("post.phone", "");
+				$data['realname']	= I("post.realname", "");
+				$data['address']	= I("post.address", "");
+				$data['status']		= I("post.status", 0);
+				$password = I("post.password", "");
+				if($password){
+					$data['password'] = sp_password($password);
+				}
+				$res = $user_model->save($data);
+				if($res !== false){
+					$this->success('修改成功', U('root_list'));
+				}else{
+					$this->error('修改失败');
+				}
+			}else{
+				$this->error($user_model->getError());
+			}
+		}else{
+			$field = "uid,email,phone,realname,address,status";
+			$info = $user_model->user_by_id($id, $field);
+			if($info){
+				$this->assign('info', $info);
+				$this->meta_title = '修改管理员';
+            	$this->display();
+			}else{
+				$this->error('获取管理员信息错误');
+			}
+		}
+	}
+	
+	/**
+	 * 代理商列表
+	 */
+	public function agent_list(){
+		$user_model = D("User");
+		$users = $user_model->agent_list();
+		$condition = array(
+    		"status" => array(
+    			0 => "正常",
+    			1 => "禁用"
+    		)
+    	);
+    	int_to_string($users, $condition);
+    	$this->assign("users", $users);
+    	$this->meta_title = '代理商列表';
+		$this->display();
+	}
+	
+	/**
+	 * 添加代理商
+	 */
+	public function add_agent(){
+		if(IS_POST){
+			$user_model = D("User");
+			$rules = array(
+				array('email','require','邮箱不能为空！'),
+				array('email','email','邮箱格式错误！'),
+				array('email','','邮箱已经存在！',0,'unique',1),
+				array('phone','','手机号码已经存在！',2,'unique',1),
+				array('password','require','密码不能为空'),
+				array('password', "/^[A-Za-z0-9]{6,16}$/", '密码格式错误'),
+				array('re_password','password','两次输入密码不一致',0,'confirm'), 
+			);
+			if($user_model->validate($rules)->create()){
+				$data = array();
+				$data['password']	= sp_password(I("post.password"));
+				$data['email']		= I("post.email");
+				$data['phone']		= I("post.phone", "");
+				$data['realname']	= I("post.realname", "");
+				$data['address']	= I("post.address", "");
+				$data['puid']		= 0;
+				$data['status']		= I("post.status", 0);
+				$data['type']		= 1;
+				$data['lasttime']	= 0;
+				$data['lastip']		= '0.0.0.0';
+				$data['addtime']	= NOW_TIME;
+				$data['reg_code']	= $user_model->agent_regcode();
+				$cfg_model = D("Config");
+				$role_model = D("Role");
+				$roles = $cfg_model->roles();
+				$model = new \Think\Model();
+				$model->startTrans();
+				$user_id = $user_model->add($data);
+				$bind_res = $role_model->bind_relation($user_id, $roles['agent']);
+				if($user_id && $bind_res){
+					$model->commit();
+					$this->success('新增成功', U('agent_list'));
+				}else{
+					$model->rollback();
+					$this->error('新增失败');
+				}
+			}else{
+				$this->error($user_model->getError());
+			}
+		}else{
+			$this->meta_title = '新增代理商';
+            $this->display();
+		}
+	}
+	
+	/**
+	 * 修改代理商
+	 */
+	public function edit_agent($id = 0){
+		$user_model = D("User");
+		if(IS_POST){
+			$rules = array(
+				array('uid','require','用户ID不能为空！'),
+				array('email','require','邮箱不能为空！'),
+				array('email','email','邮箱格式错误！'),
+				array('email','','邮箱已经存在！',0,'unique',2),
+				array('phone','','手机号码已经存在！',2,'unique',2),
+				array('password', "/^[A-Za-z0-9]{6,16}$/",'密码格式错误！',2),
+				array('re_password','password','两次输入密码不一致！',0,'confirm'), 
+			);
+			if($user_model->validate($rules)->create()){
+				$data = array();
+				$data['uid']		= I("post.uid");
+				$data['email']		= I("post.email");
+				$data['phone']		= I("post.phone", "");
+				$data['realname']	= I("post.realname", "");
+				$data['address']	= I("post.address", "");
+				$data['status']		= I("post.status", 0);
+				$password = I("post.password", "");
+				if($password){
+					$data['password'] = sp_password($password);
+				}
+				$res = $user_model->save($data);
+				if($res !== false){
+					$this->success('修改成功', U('agent_list'));
+				}else{
+					$this->error('修改失败');
+				}
+			}else{
+				$this->error($user_model->getError());
+			}
+		}else{
+			$field = "uid,email,phone,realname,address,status";
+			$info = $user_model->user_by_id($id, $field);
+			if($info){
+				$this->assign('info', $info);
+				$this->meta_title = '修改代理商';
+            	$this->display();
+			}else{
+				$this->error('获取代理商信息错误');
+			}
 		}
 	}
 	
@@ -111,14 +287,24 @@ class UserController extends CommonController {
         if ( empty($id) ) {
             $this->error('请选择要操作的数据!');
         }
-        if($id)
+        if($id == C("USER_ADMINISTRATOR") || in_array(C("USER_ADMINISTRATOR"), $id)){
+        	$this->error('超级管理员不可删除!');
+        }
 		$user_model = D('User');
 		$id = array_unique((array)$id);
         $map = array('uid' => array('in', $id) );
-        if($user_model->where($map)->delete()){
-            $this->success('删除成功');
-        } else {
-            $this->error('删除失败！');
+        $t_map = $map;
+        $t_map['type'] = 1;
+        $temps = $user_model->where($t_map)->count();
+        if($temps == 0){
+        	if($user_model->where($map)->delete()){
+        		D("Role")->unbind_relation($id);
+	            $this->success('删除成功');
+	        } else {
+	            $this->error('删除失败！');
+	        }
+        }else{
+        	$this->error('系统错误，删除失败！');
         }
 	}
     

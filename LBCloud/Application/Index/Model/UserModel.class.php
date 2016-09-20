@@ -134,14 +134,54 @@ class UserModel extends Model
     /**
      * 代理商列表
      */
-	public function agent_lst(){
-		
+	public function agent_list(){
+		$map = array();
+		$map['type'] = 1;
+    	$field = "uid,email,phone,realname,address,status";
+    	$field .= ",lasttime,lastip,addtime,reg_code";
+    	return $this->field($field)->where($map)->select();
+	}
+	
+	/**
+	 * 代理商注册码
+	 */
+	public function agent_regcode(){
+		$code = random_string(12);
+		$code_list = $this
+						->where('reg_code != ""')
+						->getField("reg_code", true);
+		while(in_array($code, $code_list)){
+			$code = random_string(12);
+		}
+		return $code;
 	}
     
     /**
      * 普通用户列表
      */
     public function user_list(){
-    	
+    	$map = array();
+    	$users = array();
+    	$field = "uid,email,phone,realname,address";
+    	$field .= ",status,lasttime,lastip,addtime";
+    	if(is_administrator()){
+    		$map['type'] = 2;
+    	}else{
+    		$uid = session("user_auth.uid");
+    		$map['type'] = 2;
+    		$map['puid'] = $uid;
+    	}
+    	$users = $this->field($field)->where($map)->select();
+    	return $users;
+    }
+    
+    /**
+     * 用户详情
+     */
+    public function user_by_id($uid, $field="*"){
+    	if($uid){
+    		return $this->field($field)->find($uid);
+    	}
+    	return array();
     }
 }

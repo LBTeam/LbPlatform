@@ -37,5 +37,31 @@ class RoleModel extends Model
 		}
 		return 0;
 	}
+	
+	/**
+	 * 绑定用户关系
+	 */
+	public function bind_relation($user_id, $role_id){
+		$this->table('player_role_user')
+			 ->where("user_id={$user_id}")
+			 ->delete();
+		$query = "INSERT INTO `player_role_user` ";
+		$query .= "VALUES ({$role_id}, {$user_id});";
+		return $this->execute($query);
+	}
+	
+	/**
+	 * 接触绑定
+	 */
+	public function unbind_relation($user_id=0, $role_id=0){
+		$map = array();
+		if($user_id){
+			$map['user_id'] = array("IN", $user_id);
+		}
+		if($role_id){
+			$map['role_id'] = array("IN", $role_id);
+		}
+		return $this->table('player_role_user')->where($map)->delete();
+	}
 }
 ?>
