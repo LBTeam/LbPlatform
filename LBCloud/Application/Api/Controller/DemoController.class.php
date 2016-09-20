@@ -23,7 +23,7 @@ class DemoController extends Controller
 		//获取upload_id
 		//$result = $AliyunOSS->get_upload_id("png", $media_bucket);
 		//dump($result);
-		$object = "20160919/57dfc5bcc0ca8.jpg";
+		$object = "20160919/57dfbaf27286e.jpg";
 		$upload_id = "4C6C734773D4429183711C8749BB8AF9";
 		
 		//生成分片文件
@@ -59,11 +59,11 @@ class DemoController extends Controller
 		dump($result);*/
 		
 		//下载地址
-		/*$download_uri = $AliyunOSS->download_uri($media_bucket, $object);
-		dump($download_uri);*/
+		$download_uri = $AliyunOSS->download_uri($media_bucket, $object);
+		dump($download_uri);
 		
-		$result = $AliyunOSS->object_list($media_bucket, "20160919/");
-		dump($result);
+		/*$result = $AliyunOSS->object_list($media_bucket, "20160919/");
+		dump($result);*/
 		
 		/*$result = $AliyunOSS->upload_part_list($media_bucket);
 		dump($result);

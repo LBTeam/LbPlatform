@@ -111,7 +111,7 @@ class RoleController extends CommonController
 	 */
 	public function status($id,$value = 0){
         $id    = is_array($id) ? implode(',',$id) : $id;
-        $where = array_merge( array('id' => array('in', $id )) ,array('id'=>$id) );
+        $where = array('id' => array('in', $id ));
         $msg   = array_merge( array( 'success'=>'操作成功！', 'error'=>'操作失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
 		$data  = array('status'=>$value);
 		$role_model = D("Role");

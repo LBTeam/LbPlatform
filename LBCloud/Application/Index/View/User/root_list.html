@@ -56,12 +56,12 @@
 		                        <td>{$vo.lastip}</td>
 		                        <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
 		                        <td><eq name="vo.status" value="0">
-		                            <a href="{:U('status', array('id'=>$vo['id'],'value'=>abs($vo['status']-1)))}" class="ajax-get">禁用</a>
+		                            <a href="{:U('status', array('id'=>$vo['uid'],'value'=>abs($vo['status']-1)))}" class="ajax-get">禁用</a>
 		                            <else/>
-		                            <a href="{:U('status', array('id'=>$vo['id'],'value'=>abs($vo['status']-1)))}" class="ajax-get">启用</a>
+		                            <a href="{:U('status', array('id'=>$vo['uid'],'value'=>abs($vo['status']-1)))}" class="ajax-get">启用</a>
 		                            </eq>
-		                            <a href="{:U('edit_root',array('id'=>$vo['id']))}">编辑</a>
-		                            <a href="{:U('del?id='.$vo['id'])}" class="confirm ajax-get">删除</a>
+		                            <a href="{:U('edit_root',array('id'=>$vo['uid']))}">编辑</a>
+		                            <a href="{:U('del?id='.$vo['uid'])}" class="confirm ajax-get">删除</a>
 		                        </td>
 		                    </tr>
 		                    </volist>
