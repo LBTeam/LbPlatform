@@ -19,6 +19,14 @@ class NodeModel extends Model
 	}
 	
 	/**
+	 * 获取所有节点列表
+	 */
+	public function get_all_nodes(){
+		$nodes = $this->order('sort')->select();
+		return $nodes;
+	}
+	
+	/**
 	 * 获取所有菜单节点列表
 	 */
 	public function get_all_menu_nodes(){

@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-09-19 19:25:29
+-- Date/time:                    2016-09-21 19:18:01
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,7 +12,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 -- Dumping database structure for player
-DROP DATABASE IF EXISTS `player`;
 CREATE DATABASE IF NOT EXISTS `player` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `player`;
 
@@ -26,8 +25,11 @@ CREATE TABLE IF NOT EXISTS `player_access` (
   `module` varchar(64) DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限表';
 
--- Dumping data for table player.player_access: ~4 rows (approximately)
+-- Dumping data for table player.player_access: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_access` DISABLE KEYS */;
+INSERT INTO `player_access` (`role_id`, `node_id`, `level`, `module`) VALUES
+	(2, 1, 1, ''),
+	(2, 2, 1, '');
 /*!40000 ALTER TABLE `player_access` ENABLE KEYS */;
 
 
@@ -45,26 +47,6 @@ CREATE TABLE IF NOT EXISTS `player_alarm` (
 -- Dumping data for table player.player_alarm: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_alarm` DISABLE KEYS */;
 /*!40000 ALTER TABLE `player_alarm` ENABLE KEYS */;
-
-
--- Dumping structure for table player.player_command
-DROP TABLE IF EXISTS `player_command`;
-CREATE TABLE IF NOT EXISTS `player_command` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID，player_user表uid外键',
-  `screen_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏ID，player_screen表id外键',
-  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '命令类型，0-发布播放方案，1-长连接重新注册',
-  `param` text NOT NULL COMMENT '命令详情',
-  `publish` int(11) NOT NULL DEFAULT '0' COMMENT '命令发布时间',
-  `execute` int(11) NOT NULL DEFAULT '0' COMMENT '命令执行时间',
-  `expired` int(11) NOT NULL DEFAULT '0' COMMENT '命令过期时间',
-  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '命令状态，0-已发布（未下发），1-已下发',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='命令';
-
--- Dumping data for table player.player_command: ~0 rows (approximately)
-/*!40000 ALTER TABLE `player_command` DISABLE KEYS */;
-/*!40000 ALTER TABLE `player_command` ENABLE KEYS */;
 
 
 -- Dumping structure for table player.player_config
@@ -124,29 +106,6 @@ INSERT INTO `player_group_screen` (`uid`, `screen_id`, `group_id`) VALUES
 /*!40000 ALTER TABLE `player_group_screen` ENABLE KEYS */;
 
 
--- Dumping structure for table player.player_media
-DROP TABLE IF EXISTS `player_media`;
-CREATE TABLE IF NOT EXISTS `player_media` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID，palyer_user表uid外键',
-  `name` varchar(128) NOT NULL DEFAULT '' COMMENT '媒体名字',
-  `md5` varchar(64) NOT NULL DEFAULT '' COMMENT '媒体文件md5',
-  `object` varchar(128) NOT NULL DEFAULT '' COMMENT '媒体文件oss存储对象名称',
-  `upload_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'oss存储uploadId',
-  `size` varchar(64) NOT NULL DEFAULT '' COMMENT '媒体文件大小',
-  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '上传状态，0-未上传完成，1-上传完成',
-  `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
-  `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='播放媒体';
-
--- Dumping data for table player.player_media: ~0 rows (approximately)
-/*!40000 ALTER TABLE `player_media` DISABLE KEYS */;
-INSERT INTO `player_media` (`id`, `user_id`, `name`, `md5`, `object`, `upload_id`, `size`, `status`, `publish`, `expired`) VALUES
-	(1, 1, 'aab\\\'bcc.avi', 'b3206b4529ba377b0fa9f4a3bd9261f2', '20160822/57ba998526ba9.avi', '064A0509F679494DBB2CE13D3A01726E', '20971520', 0, 1471846788, 0);
-/*!40000 ALTER TABLE `player_media` ENABLE KEYS */;
-
-
 -- Dumping structure for table player.player_node
 DROP TABLE IF EXISTS `player_node`;
 CREATE TABLE IF NOT EXISTS `player_node` (
@@ -159,9 +118,9 @@ CREATE TABLE IF NOT EXISTS `player_node` (
   `pid` int(11) NOT NULL DEFAULT '1' COMMENT '父ID',
   `level` tinyint(2) NOT NULL DEFAULT '1' COMMENT '级别（类型）；1模块，2列表，3操作',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='节点表';
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COMMENT='节点表';
 
--- Dumping data for table player.player_node: ~11 rows (approximately)
+-- Dumping data for table player.player_node: ~12 rows (approximately)
 /*!40000 ALTER TABLE `player_node` DISABLE KEYS */;
 INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `pid`, `level`) VALUES
 	(1, 'User', '用户管理', 0, '', 1, 0, 1),
@@ -176,7 +135,11 @@ INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `p
 	(10, 'System', '系统管理', 0, '系统管理', 5, 0, 1),
 	(11, 'index', '系统配置', 0, '系统配置', 1, 10, 2),
 	(12, 'root_list', '管理员列表', 0, '', 2, 1, 2),
-	(13, 'agent_list', '代理商列表', 0, '', 3, 1, 2);
+	(13, 'agent_list', '代理商列表', 0, '', 3, 1, 2),
+	(14, 'add_root', '新增', 0, '', 1, 12, 3),
+	(15, 'edit_root', '修改', 0, '', 2, 12, 3),
+	(16, 'status', '启用 / 禁用', 0, '', 3, 12, 3),
+	(17, 'del', '删除', 0, '', 4, 12, 3);
 /*!40000 ALTER TABLE `player_node` ENABLE KEYS */;
 
 
@@ -214,32 +177,6 @@ CREATE TABLE IF NOT EXISTS `player_price` (
 -- Dumping data for table player.player_price: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_price` DISABLE KEYS */;
 /*!40000 ALTER TABLE `player_price` ENABLE KEYS */;
-
-
--- Dumping structure for table player.player_program
-DROP TABLE IF EXISTS `player_program`;
-CREATE TABLE IF NOT EXISTS `player_program` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL DEFAULT '0' COMMENT 'palyer_user表uid外键',
-  `name` varchar(128) NOT NULL DEFAULT '' COMMENT '播放方案名称',
-  `object` varchar(128) NOT NULL DEFAULT '' COMMENT '播放方案oss存储对象名称',
-  `upload_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'oss存储uploadId',
-  `info` text NOT NULL,
-  `md5` varchar(64) NOT NULL DEFAULT '' COMMENT '播放方案文件md5',
-  `type` tinyint(4) NOT NULL DEFAULT '0',
-  `size` varchar(20) NOT NULL DEFAULT '',
-  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '上传状态，0-未上传完成，1-上传完成',
-  `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
-  `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='播放方案';
-
--- Dumping data for table player.player_program: ~2 rows (approximately)
-/*!40000 ALTER TABLE `player_program` DISABLE KEYS */;
-INSERT INTO `player_program` (`id`, `user_id`, `name`, `object`, `upload_id`, `info`, `md5`, `type`, `size`, `status`, `publish`, `expired`) VALUES
-	(1, 1, 'aabb\\\'cc.playprog', '20160822/57ba9984bb292.playprog', '', '', '586af24095a05643c3be4bb402dsdwqs', 0, '102400', 0, 1471846788, 0),
-	(2, 1, 'aabbccdd.playprog', '20160822/57ba9984ca8ae.playprog', '7CFA11C27EB94E2AB9B8C889AF81713B', '', '586af24095a05643c3be4bb402bfaee5', 0, '2097152', 0, 1471846788, 0);
-/*!40000 ALTER TABLE `player_program` ENABLE KEYS */;
 
 
 -- Dumping structure for table player.player_program_media
@@ -3587,9 +3524,9 @@ CREATE TABLE IF NOT EXISTS `player_role` (
   `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '状态；0开启，1关闭',
   `remark` varchar(255) DEFAULT '' COMMENT '备注',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='角色表';
 
--- Dumping data for table player.player_role: ~3 rows (approximately)
+-- Dumping data for table player.player_role: ~4 rows (approximately)
 /*!40000 ALTER TABLE `player_role` DISABLE KEYS */;
 INSERT INTO `player_role` (`id`, `name`, `pid`, `status`, `remark`) VALUES
 	(1, '管理员', 0, 0, '管理员'),
@@ -3605,8 +3542,13 @@ CREATE TABLE IF NOT EXISTS `player_role_user` (
   `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID，player_user表uid外键'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户角色对应表';
 
--- Dumping data for table player.player_role_user: ~0 rows (approximately)
+-- Dumping data for table player.player_role_user: ~2 rows (approximately)
 /*!40000 ALTER TABLE `player_role_user` DISABLE KEYS */;
+INSERT INTO `player_role_user` (`role_id`, `user_id`) VALUES
+	(1, 2),
+	(2, 10),
+	(2, 11),
+	(3, 13);
 /*!40000 ALTER TABLE `player_role_user` ENABLE KEYS */;
 
 
@@ -3653,11 +3595,12 @@ CREATE TABLE IF NOT EXISTS `player_user` (
   `password` varchar(64) NOT NULL DEFAULT '' COMMENT '密码',
   `email` varchar(128) NOT NULL DEFAULT '' COMMENT '邮箱',
   `phone` varchar(16) DEFAULT '' COMMENT '手机',
-  `realname` varchar(64) DEFAULT '' COMMENT '手机',
+  `realname` varchar(64) DEFAULT '' COMMENT '真实姓名',
   `address` varchar(128) DEFAULT '' COMMENT '地址',
   `puid` int(11) NOT NULL DEFAULT '0' COMMENT '父UID',
   `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '用户状态，0-正常，1-禁用',
   `type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '用户类型，0-管理员，1-代理用户，2-普通用户',
+  `is_del` tinyint(2) NOT NULL DEFAULT '0' COMMENT '是否删除，0-未删除，1-已删除',
   `lasttime` int(11) DEFAULT '0' COMMENT '上次登录时间',
   `lastip` varchar(16) DEFAULT '' COMMENT '上次登录地址',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
@@ -3665,12 +3608,16 @@ CREATE TABLE IF NOT EXISTS `player_user` (
   `token` varchar(64) DEFAULT '' COMMENT '登录令牌',
   `expire` int(11) DEFAULT '0' COMMENT '令牌过期时间',
   PRIMARY KEY (`uid`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户表';
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='用户表';
 
--- Dumping data for table player.player_user: ~1 rows (approximately)
+-- Dumping data for table player.player_user: ~3 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
-INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 0, 1474276977, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243);
+INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `is_del`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 0, 0, 1474420832, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
+	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15934854815', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 0, '0.0.0.0', 1474340261, '', '', 0),
+	(10, '', '###1b2967588713b658dd803ed0c94d726d', '136048524@qq.com', '15934854816', '梁健', '西安软件园', 0, 0, 1, 0, 0, '0.0.0.0', 1474361171, 'J6zAkThcdrkj', '', 0),
+	(11, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@bestfu.com', '15934854817', '', '', 0, 0, 1, 0, 0, '0.0.0.0', 1474425987, 'CF8teK5B2fyx', '', 0),
+	(13, '', '###1b2967588713b658dd803ed0c94d726d', 'nova_liangjian@126.com', '', '', '', 11, 1, 2, 0, 0, '0.0.0.0', 1474427588, '', '', 0);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

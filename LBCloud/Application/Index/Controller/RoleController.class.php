@@ -5,6 +5,7 @@
  * @email 15934854815@163.com
  */
 namespace Index\Controller;
+use Index\Service\TreeService;
 
 class RoleController extends CommonController
 {
@@ -120,5 +121,91 @@ class RoleController extends CommonController
         }else{
             $this->error($msg['error'],$msg['url'],$msg['ajax']);
         }
+	}
+	
+	/**
+	 * 用户列表
+	 */
+	public function user($group_id=0){
+		$role_model = D("Role");
+		$cfg_model = D("Config");
+		$roles = $cfg_model->roles();
+		$info = $role_model->role_by_id($group_id);
+		$users = $role_model->users_by_role($group_id);
+		$condition = array(
+    		"status" => array(
+    			0 => "正常",
+    			1 => "禁用"
+    		)
+    	);
+    	int_to_string($users, $condition);
+    	if($group_id == $roles["normal"]){
+			$user_model = D("User");
+			$agents = $user_model->all_agents();
+			foreach ($users as $key => &$value) {
+				$value['p_email'] = $agents[$value['puid']]['email'];
+    			$value['p_phone'] = $agents[$value['puid']]['phone'];
+			}
+		}
+    	$this->assign("info", $info);
+    	$this->assign("users", $users);
+    	$this->assign("roles", $roles);
+    	$this->assign("role_id", $group_id);
+    	$this->meta_title = "用户列表";
+    	$this->display();
+	}
+	
+	/**
+	 * 授权
+	 */
+	public function access($group_id=0){
+		if(IS_POST){
+			$role_id = I("post.role_id", 0);
+			$access = I("post.access");
+			if($role_id){
+				if(!is_array($access)){
+					$access = explode(',', $access);
+				}
+				$data = array();
+				foreach($access as $val){
+					$data[] = array(
+						'role_id' => $role_id,
+						'node_id' => $val
+					);
+				}
+				$model = new \Think\Model();
+				$access_model = D("Access");
+				$model->startTrans();
+				$del_res = $access_model->del_by_role($role_id);
+				$add_res = $access_model->add_multiples($data);
+				if($del_res !== false && $add_res !== false){
+					$this->success('授权成功！', U("access", array("group_id"=>$role_id)));
+				}else{
+					$this->error('授权失败！');
+				}
+			}else{
+				$this->error('授权失败，系统错误！');
+			}
+		}else{
+			$node_model = D("Node");
+			$access_model = D("Access");
+			$role_model = D("Role");
+			$treeService = new TreeService();
+			$nodes = $node_model->get_all_nodes();
+			$access = $access_model->access_by_role($group_id);
+			foreach($nodes as &$value){
+				if(in_array($value['id'], $access)){
+					$value['checked'] = "1";
+				}else{
+					$value['checked'] = "0";
+				}
+			}
+			$nodes = $treeService->create_menu($nodes);
+			$info = $role_model->role_by_id($group_id);
+			$this->meta_title = "用户组授权";
+			$this->assign("nodes", $nodes);
+			$this->assign("info", $info);
+			$this->display();
+		}
 	}
 }

@@ -63,5 +63,25 @@ class RoleModel extends Model
 		}
 		return $this->table('player_role_user')->where($map)->delete();
 	}
+	
+	/**
+	 * 用户组用户列表
+	 */
+	public function users_by_role($role_id){
+		if($role_id){
+			$map = array();
+			$map['role.role_id'] = $role_id;
+			$field = "role.role_id,user.uid,user.email,user.phone,user.realname,user.status";
+			$field .= ",user.puid,user.lasttime,user.lastip,user.addtime,user.reg_code";
+			$users = $this->table("player_role_user")
+						  ->alias("role")
+						  ->field($field)
+						  ->join("player_user AS user ON user.uid = role.user_id")
+						  ->where($map)
+						  ->select();
+			return $users;
+		}
+		return array();
+	}
 }
 ?>

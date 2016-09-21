@@ -137,6 +137,7 @@ class UserModel extends Model
 	public function agent_list(){
 		$map = array();
 		$map['type'] = 1;
+		$map['is_del'] = 0;
     	$field = "uid,email,phone,realname,address,status";
     	$field .= ",lasttime,lastip,addtime,reg_code";
     	return $this->field($field)->where($map)->select();
@@ -163,7 +164,7 @@ class UserModel extends Model
     	$map = array();
     	$users = array();
     	$field = "uid,email,phone,realname,address";
-    	$field .= ",status,lasttime,lastip,addtime";
+    	$field .= ",puid,status,lasttime,lastip,addtime";
     	if(is_administrator()){
     		$map['type'] = 2;
     	}else{
@@ -172,7 +173,19 @@ class UserModel extends Model
     		$map['puid'] = $uid;
     	}
     	$users = $this->field($field)->where($map)->select();
+    	$agents = $this->all_agents();
+    	foreach ($users as $key => &$value) {
+    		$value['p_email'] = $agents[$value['puid']]['email'];
+    		$value['p_phone'] = $agents[$value['puid']]['phone'];
+    	}
     	return $users;
+    }
+    
+    /**
+     * 所有代理商及邮件和电话
+     */
+    public function all_agents(){
+    	return $this->where("type=1")->getField("uid,email,phone");
     }
     
     /**
