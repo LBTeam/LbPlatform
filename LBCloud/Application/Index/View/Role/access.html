@@ -20,7 +20,7 @@
 			<div class="tab-wrap">            
 				<div class="tab-content panel-body">        
 					<div class="table-responsive">	
-						<form action="" method="POST" class="form-inline auth-form" role="form" >
+						<form action="{:U()}" method="POST" class="form-inline auth-form" role="form" >
 							<volist name="nodes" id="node" >
 								<dl class="checkmod ">
 									<div class="panel panel-default">
@@ -56,7 +56,7 @@
 							<div class="panel  panel-default">
 								<div class="panel-heading">
 									<input type="hidden" name="role_id" value="{$info.id}" />
-									<button class="btn btn-default submit-btn ajax-post" id="submit" type="submit" target-form="form">确 定</button>
+									<button class="btn btn-default submit-btn ajax-post" id="submit" type="submit" target-form="auth-form">确 定</button>
 									<button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
 								</div>
 							</div> 

@@ -6,7 +6,6 @@
  */
 namespace Index\Model;
 use Think\Model;
-use Index\Service\TreeService;
 
 class NodeModel extends Model
 {
@@ -33,13 +32,11 @@ class NodeModel extends Model
 		$map = array();
 		$map['status'] = 0;
 		$map['level'] = array("NEQ", 3);
-		$TreeService = new TreeService();
 		$nodes = $this
 					->field("id,name,title,pid")
 					->where($map)
 					->order('sort')
 					->select();
-		$nodes = $TreeService->create_menu($nodes);
 		return $nodes;
 	}
 	

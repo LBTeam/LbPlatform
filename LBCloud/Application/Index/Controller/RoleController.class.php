@@ -179,8 +179,10 @@ class RoleController extends CommonController
 				$del_res = $access_model->del_by_role($role_id);
 				$add_res = $access_model->add_multiples($data);
 				if($del_res !== false && $add_res !== false){
+					$model->commit();
 					$this->success('授权成功！', U("access", array("group_id"=>$role_id)));
 				}else{
+					$model->rollback();
 					$this->error('授权失败！');
 				}
 			}else{

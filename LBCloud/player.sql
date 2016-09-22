@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-09-21 19:18:01
+-- Date/time:                    2016-09-22 19:06:23
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -25,28 +25,23 @@ CREATE TABLE IF NOT EXISTS `player_access` (
   `module` varchar(64) DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限表';
 
--- Dumping data for table player.player_access: ~0 rows (approximately)
+-- Dumping data for table player.player_access: ~13 rows (approximately)
 /*!40000 ALTER TABLE `player_access` DISABLE KEYS */;
 INSERT INTO `player_access` (`role_id`, `node_id`, `level`, `module`) VALUES
 	(2, 1, 1, ''),
-	(2, 2, 1, '');
+	(2, 2, 1, ''),
+	(1, 1, 1, ''),
+	(1, 12, 1, ''),
+	(1, 14, 1, ''),
+	(1, 15, 1, ''),
+	(1, 16, 1, ''),
+	(1, 17, 1, ''),
+	(1, 13, 1, ''),
+	(1, 3, 1, ''),
+	(1, 4, 1, ''),
+	(1, 10, 1, ''),
+	(1, 11, 1, '');
 /*!40000 ALTER TABLE `player_access` ENABLE KEYS */;
-
-
--- Dumping structure for table player.player_alarm
-DROP TABLE IF EXISTS `player_alarm`;
-CREATE TABLE IF NOT EXISTS `player_alarm` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `screen_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏ID，player_screen表id外键',
-  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '监控数据类型',
-  `param` text NOT NULL COMMENT '监控数据',
-  `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '监控数据上报时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='监控数据';
-
--- Dumping data for table player.player_alarm: ~0 rows (approximately)
-/*!40000 ALTER TABLE `player_alarm` DISABLE KEYS */;
-/*!40000 ALTER TABLE `player_alarm` ENABLE KEYS */;
 
 
 -- Dumping structure for table player.player_config
@@ -75,14 +70,15 @@ CREATE TABLE IF NOT EXISTS `player_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID，player_user表uid外键',
   `name` varchar(64) NOT NULL DEFAULT '' COMMENT '分组名称',
+  `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '分组描述',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='屏幕组';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='屏幕组';
 
--- Dumping data for table player.player_group: ~0 rows (approximately)
+-- Dumping data for table player.player_group: ~1 rows (approximately)
 /*!40000 ALTER TABLE `player_group` DISABLE KEYS */;
-INSERT INTO `player_group` (`id`, `uid`, `name`, `addtime`) VALUES
-	(1, 1, '测试group', 0);
+INSERT INTO `player_group` (`id`, `uid`, `name`, `remark`, `addtime`) VALUES
+	(2, 1, '屏幕组1', '屏幕组1', 0);
 /*!40000 ALTER TABLE `player_group` ENABLE KEYS */;
 
 
@@ -96,13 +92,6 @@ CREATE TABLE IF NOT EXISTS `player_group_screen` (
 
 -- Dumping data for table player.player_group_screen: ~6 rows (approximately)
 /*!40000 ALTER TABLE `player_group_screen` DISABLE KEYS */;
-INSERT INTO `player_group_screen` (`uid`, `screen_id`, `group_id`) VALUES
-	(1, 1, 1),
-	(1, 3, 1),
-	(1, 8, 1),
-	(1, 8, 2),
-	(1, 4, 2),
-	(1, 4, 3);
 /*!40000 ALTER TABLE `player_group_screen` ENABLE KEYS */;
 
 
@@ -118,9 +107,9 @@ CREATE TABLE IF NOT EXISTS `player_node` (
   `pid` int(11) NOT NULL DEFAULT '1' COMMENT '父ID',
   `level` tinyint(2) NOT NULL DEFAULT '1' COMMENT '级别（类型）；1模块，2列表，3操作',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COMMENT='节点表';
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='节点表';
 
--- Dumping data for table player.player_node: ~12 rows (approximately)
+-- Dumping data for table player.player_node: ~16 rows (approximately)
 /*!40000 ALTER TABLE `player_node` DISABLE KEYS */;
 INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `pid`, `level`) VALUES
 	(1, 'User', '用户管理', 0, '', 1, 0, 1),
@@ -139,7 +128,9 @@ INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `p
 	(14, 'add_root', '新增', 0, '', 1, 12, 3),
 	(15, 'edit_root', '修改', 0, '', 2, 12, 3),
 	(16, 'status', '启用 / 禁用', 0, '', 3, 12, 3),
-	(17, 'del', '删除', 0, '', 4, 12, 3);
+	(17, 'del', '删除', 0, '', 4, 12, 3),
+	(18, 'Screen', '屏幕管理', 0, '', 6, 0, 1),
+	(19, 'index', '屏幕列表', 0, '', 1, 18, 2);
 /*!40000 ALTER TABLE `player_node` ENABLE KEYS */;
 
 
@@ -3542,7 +3533,7 @@ CREATE TABLE IF NOT EXISTS `player_role_user` (
   `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID，player_user表uid外键'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户角色对应表';
 
--- Dumping data for table player.player_role_user: ~2 rows (approximately)
+-- Dumping data for table player.player_role_user: ~4 rows (approximately)
 /*!40000 ALTER TABLE `player_role_user` DISABLE KEYS */;
 INSERT INTO `player_role_user` (`role_id`, `user_id`) VALUES
 	(1, 2),
@@ -3610,11 +3601,11 @@ CREATE TABLE IF NOT EXISTS `player_user` (
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='用户表';
 
--- Dumping data for table player.player_user: ~3 rows (approximately)
+-- Dumping data for table player.player_user: ~5 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `is_del`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 0, 0, 1474420832, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
-	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15934854815', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 0, '0.0.0.0', 1474340261, '', '', 0),
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 0, 0, 1474536480, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
+	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15934854815', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 1474526615, '127.0.0.1', 1474340261, '', '', 0),
 	(10, '', '###1b2967588713b658dd803ed0c94d726d', '136048524@qq.com', '15934854816', '梁健', '西安软件园', 0, 0, 1, 0, 0, '0.0.0.0', 1474361171, 'J6zAkThcdrkj', '', 0),
 	(11, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@bestfu.com', '15934854817', '', '', 0, 0, 1, 0, 0, '0.0.0.0', 1474425987, 'CF8teK5B2fyx', '', 0),
 	(13, '', '###1b2967588713b658dd803ed0c94d726d', 'nova_liangjian@126.com', '', '', '', 11, 1, 2, 0, 0, '0.0.0.0', 1474427588, '', '', 0);

@@ -32,6 +32,42 @@ class TreeService
 		return $menus;
 	}
 	
+	public function create_access($nodes, $pid=0){
+		$access = array();
+		foreach($nodes as $val){
+			if($val['pid'] == $pid){
+				$children = $this->create_access($nodes, $val['id']);
+				if($children){
+					foreach($children as $v){
+						if($val['level'] == 2){
+							$access[] = strtoupper($v);
+						}else{
+							$access[] = strtoupper("{$val['name']}/{$v}");
+						}
+					}
+				}
+				if($pid != 0){
+					$access[] = $val['name'];
+				}
+			}
+		}
+		return $access;
+	}
+	
+	public function create_access_demo($nodes, $pid=0){
+		$access = array();
+		foreach($nodes as $val){
+			if($val['pid'] == $pid){
+				$children = $this->create_access($nodes, $val['id']);
+				if($children){
+					$val['children'] = $children;
+				}
+				$access[] = $val;
+			}
+		}
+		return $access;
+	}
+	
 	/**
 	 * 将格式数组转换为树
 	 *

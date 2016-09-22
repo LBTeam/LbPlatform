@@ -6,10 +6,11 @@ return array(
 	'USER_AUTH_TYPE'			=>  1,		// 默认认证类型 1 登录认证 2 实时认证
 	'USER_AUTH_KEY'             =>  'UID',	// 用户认证SESSION标记
 	'ADMIN_AUTH_KEY'			=>	'ADMIN_UID',
+	'NOT_AUTH_MODULE'			=>	'PUBLIC,INDEX',
 	
 	'USER_AUTH_MODEL'           =>  'User',	// 默认验证数据表模型
 	'USER_AUTH_GATEWAY'         =>  '',// 默认认证网关
-	'NOT_AUTH_MODULE'           =>  '',		// 默认无需认证模块
+	//'NOT_AUTH_MODULE'           =>  '',		// 默认无需认证模块
 	'REQUIRE_AUTH_MODULE'       =>  '',		// 默认需要认证模块
 	'NOT_AUTH_ACTION'           =>  '',		// 默认无需认证操作
 	'REQUIRE_AUTH_ACTION'       =>  '',		// 默认需要认证操作

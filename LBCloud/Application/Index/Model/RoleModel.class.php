@@ -84,4 +84,3 @@ class RoleModel extends Model
 		return array();
 	}
 }
-?>
