@@ -197,4 +197,68 @@ class UserModel extends Model
     	}
     	return array();
     }
+    
+    /**
+     * 下级用户列表
+     */
+    public function users_by_puid($puid){
+    	$map = array();
+    	$map['type'] = 2;
+    	$map['is_del'] = 0;
+    	if(!is_administrator()){
+    		$cfg_model = D("Config");
+    		$roles = $cfg_model->roles();
+    		if($this->is_normal($puid, 0, $roles)){
+    			return array();
+    		}elseif($this->is_agent($puid, 0, $roles)){
+    			$map['puid'] = $puid;
+    		}
+    	}
+    	return $this->where($map)->getField("uid,email,phone");
+    }
+    
+    /**
+     * 是否是管理员
+     */
+    public function is_root($uid=0, $role_id=0, $roles=array()){
+    	if(!$roles){
+    		$cfg_model = D("Config");
+    		$roles = $cfg_model->roles();
+    	}
+    	if(!$role_id){
+    		$role_model = D("Role");
+    		$role_id = $role_model->role_id_by_user($uid);
+    	}
+    	return $role_id && ($role_id == $roles['root']);
+    }
+    
+    /**
+     * 是否是代理商
+     */
+    public function is_agent($uid=0, $role_id=0, $roles=array()){
+    	if(!$roles){
+    		$cfg_model = D("Config");
+    		$roles = $cfg_model->roles();
+    	}
+    	if(!$role_id){
+    		$role_model = D("Role");
+    		$role_id = $role_model->role_id_by_user($uid);
+    	}
+    	return $role_id && ($role_id == $roles['agent']);
+    }
+    
+    /**
+     * 是否是普通用户
+     */
+    public function is_normal($uid=0, $role_id=0, $roles=array()){
+    	if(!$roles){
+    		$cfg_model = D("Config");
+    		$roles = $cfg_model->roles();
+    	}
+    	if(!$role_id){
+    		$role_model = D("Role");
+    		$role_id = $role_model->role_id_by_user($uid);
+    	}
+    	return $role_id && ($role_id == $roles['normal']);
+    }
 }

@@ -13,7 +13,7 @@ class ScreenModel extends Model
 		return $this
 				->alias("s")
 				->field("s.*,g.id AS group_id,g.name AS group_name")
-				->join("player_group_screen AS rela ON rela.screen_id = s.id", 'LEFT')
+				->join("player_group_screen AS rela ON rela.screen_id = s.id AND rela.uid = {$user_id}", 'LEFT')
 				->join("player_group AS g ON rela.group_id = g.id", 'LEFT')
 				->where("s.uid = {$user_id} AND s.is_delete = 0")
 				->select();

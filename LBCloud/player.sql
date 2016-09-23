@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-09-22 19:06:23
+-- Date/time:                    2016-09-23 19:25:49
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -40,8 +40,28 @@ INSERT INTO `player_access` (`role_id`, `node_id`, `level`, `module`) VALUES
 	(1, 3, 1, ''),
 	(1, 4, 1, ''),
 	(1, 10, 1, ''),
-	(1, 11, 1, '');
+	(1, 11, 1, ''),
+	(3, 3, 1, ''),
+	(3, 4, 1, ''),
+	(3, 18, 1, ''),
+	(3, 19, 1, '');
 /*!40000 ALTER TABLE `player_access` ENABLE KEYS */;
+
+
+-- Dumping structure for table player.player_alarm
+DROP TABLE IF EXISTS `player_alarm`;
+CREATE TABLE IF NOT EXISTS `player_alarm` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `screen_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏ID，player_screen表id外键',
+  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '监控数据类型',
+  `param` text NOT NULL COMMENT '监控数据',
+  `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '监控数据上报时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='监控数据';
+
+-- Dumping data for table player.player_alarm: ~0 rows (approximately)
+/*!40000 ALTER TABLE `player_alarm` DISABLE KEYS */;
+/*!40000 ALTER TABLE `player_alarm` ENABLE KEYS */;
 
 
 -- Dumping structure for table player.player_config
@@ -73,12 +93,14 @@ CREATE TABLE IF NOT EXISTS `player_group` (
   `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '分组描述',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='屏幕组';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='屏幕组';
 
 -- Dumping data for table player.player_group: ~1 rows (approximately)
 /*!40000 ALTER TABLE `player_group` DISABLE KEYS */;
 INSERT INTO `player_group` (`id`, `uid`, `name`, `remark`, `addtime`) VALUES
-	(2, 1, '屏幕组1', '屏幕组1', 0);
+	(2, 1, '屏幕组1', '屏幕组1', 0),
+	(3, 2, '分组1', '分组1', 0),
+	(4, 1, '屏幕组2', '屏幕组2', 1474617509);
 /*!40000 ALTER TABLE `player_group` ENABLE KEYS */;
 
 
@@ -90,8 +112,12 @@ CREATE TABLE IF NOT EXISTS `player_group_screen` (
   `group_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏幕组ID，player_group表id外键'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='屏幕分组及屏幕对应表';
 
--- Dumping data for table player.player_group_screen: ~6 rows (approximately)
+-- Dumping data for table player.player_group_screen: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_group_screen` DISABLE KEYS */;
+INSERT INTO `player_group_screen` (`uid`, `screen_id`, `group_id`) VALUES
+	(2, 1, 3),
+	(1, 1, 2),
+	(2, 2, 3);
 /*!40000 ALTER TABLE `player_group_screen` ENABLE KEYS */;
 
 
@@ -168,18 +194,6 @@ CREATE TABLE IF NOT EXISTS `player_price` (
 -- Dumping data for table player.player_price: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_price` DISABLE KEYS */;
 /*!40000 ALTER TABLE `player_price` ENABLE KEYS */;
-
-
--- Dumping structure for table player.player_program_media
-DROP TABLE IF EXISTS `player_program_media`;
-CREATE TABLE IF NOT EXISTS `player_program_media` (
-  `program_id` int(11) NOT NULL DEFAULT '0' COMMENT '播放方案ID',
-  `media_id` int(11) NOT NULL DEFAULT '0' COMMENT '媒体ID'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放方案与媒体对应表';
-
--- Dumping data for table player.player_program_media: ~0 rows (approximately)
-/*!40000 ALTER TABLE `player_program_media` DISABLE KEYS */;
-/*!40000 ALTER TABLE `player_program_media` ENABLE KEYS */;
 
 
 -- Dumping structure for table player.player_record
@@ -3574,7 +3588,7 @@ CREATE TABLE IF NOT EXISTS `player_screen` (
 INSERT INTO `player_screen` (`id`, `name`, `remark`, `size_x`, `size_y`, `resolu_x`, `resolu_y`, `type`, `operate`, `longitude`, `latitude`, `uid`, `province`, `city`, `district`, `address`, `file`, `db_version`, `is_delete`, `addtime`) VALUES
 	(1, '测试screen', '', 100, 100, 1024, 768, 0, 0, '', '', 1, 2, 0, 0, '', '', '', 0, 0),
 	(2, '测试screen1', '', 200, 200, 256, 256, 0, 0, '', '', 1, 3, 44, 455, '', '', '', 0, 0),
-	(3, '测试screen2', '', 128, 128, 512, 512, 0, 0, '', '', 1, 24, 311, 2599, '', '', '', 0, 0);
+	(3, '测试screen2', '', 128, 128, 512, 512, 0, 0, '', '', 13, 24, 311, 2599, '', '', '', 0, 0);
 /*!40000 ALTER TABLE `player_screen` ENABLE KEYS */;
 
 
@@ -3604,11 +3618,11 @@ CREATE TABLE IF NOT EXISTS `player_user` (
 -- Dumping data for table player.player_user: ~5 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `is_del`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 0, 0, 1474536480, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 0, 0, 1474614705, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
 	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15934854815', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 1474526615, '127.0.0.1', 1474340261, '', '', 0),
 	(10, '', '###1b2967588713b658dd803ed0c94d726d', '136048524@qq.com', '15934854816', '梁健', '西安软件园', 0, 0, 1, 0, 0, '0.0.0.0', 1474361171, 'J6zAkThcdrkj', '', 0),
 	(11, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@bestfu.com', '15934854817', '', '', 0, 0, 1, 0, 0, '0.0.0.0', 1474425987, 'CF8teK5B2fyx', '', 0),
-	(13, '', '###1b2967588713b658dd803ed0c94d726d', 'nova_liangjian@126.com', '', '', '', 11, 1, 2, 0, 0, '0.0.0.0', 1474427588, '', '', 0);
+	(13, '', '###1b2967588713b658dd803ed0c94d726d', 'nova_liangjian@126.com', '', '', '', 11, 0, 2, 0, 1474614681, '127.0.0.1', 1474427588, '', '', 0);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
