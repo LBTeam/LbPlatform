@@ -12,12 +12,12 @@
 	    <div id="main" class="col-lg-12 main">
 <block name="body">
     <div class="main-title">
-        <h2>添加屏幕</h2>
+        <h2>修改屏幕</h2>
     </div>
     
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			新增
+			修改
 		</div>
 		<div class="panel-body">
 			<div class="row">
@@ -25,23 +25,23 @@
 			    <form action="{:U()}" method="post" class="form" role="form" >
 			    	<div class="form-group">
 	                    <label class="item-label">屏幕名称</label>
-	                    <input type="text" name="name" class="form-control" value=""/>
+	                    <input type="text" name="name" class="form-control" value="{$info.name}"/>
 	                </div>
 	                <div class="form-group">
 	                    <label class="item-label">屏幕尺寸X<span class="check-tips">（X轴偏移量）</span></label>
-	                    <input type="text" name="size_x" class="form-control" value=""/>
+	                    <input type="text" name="size_x" class="form-control" value="{$info.size_x}"/>
 	                </div>
 	                <div class="form-group">
 	                    <label class="item-label">屏幕尺寸Y<span class="check-tips">（Y轴偏移量）</span></label>
-	                    <input type="text" name="size_y" class="form-control" value=""/>
+	                    <input type="text" name="size_y" class="form-control" value="{$info.size_y}"/>
 	                </div>
 	                <div class="form-group">
 	                    <label class="item-label">分辨率X<span class="check-tips">（单位：像素[px]）</span></label>
-	                    <input type="text" name="resolu_x" class="form-control" value=""/>
+	                    <input type="text" name="resolu_x" class="form-control" value="{$info.resolu_x}"/>
 	                </div>
 	                <div class="form-group">
 	                    <label class="item-label">分辨率Y<span class="check-tips">（单位：像素[px]）</span></label>
-	                    <input type="text" name="resolu_y" class="form-control" value=""/>
+	                    <input type="text" name="resolu_y" class="form-control" value="{$info.resolu_y}"/>
 	                </div>
 	                <div class="form-group">
 	                    <label class="item-label ">屏幕类型</label> 
@@ -59,11 +59,11 @@
 	                </div>
 	                <div class="form-group">
 	                    <label class="item-label">经度</label>
-	                    <input type="text" name="longitude" class="form-control" value=""/>
+	                    <input type="text" name="longitude" class="form-control" value="{$info.longitude}"/>
 	                </div>
 	                <div class="form-group">
 	                    <label class="item-label">纬度</label>
-	                    <input type="text" name="latitude" class="form-control" value=""/>
+	                    <input type="text" name="latitude" class="form-control" value="{$info.latitude}"/>
 	                </div>
 	                <if condition="$is_normal eq 0">
 	                <div class="form-group">
@@ -87,15 +87,21 @@
 	                    </select>
 	                    <select name="city" id="city" class="form-control" style="width:33%;float: left;margin-left: 1px;margin-right: 1px;">
 	                    	<option value="">--请选择市--</option>
+	                    	<volist name="citys" id="vo">
+	                    	<option value="{$key}">{$vo}</option>
+	                    	</volist>
 	                    </select>
 	                    <select name="district" id="district" class="form-control" style="width:33%;">
-	                    	<option value="">--请选择地区--</option>
+	                    	<option value="0">--请选择地区--</option>
+	                    	<volist name="districts" id="vo">
+	                    	<option value="{$key}">{$vo}</option>
+	                    	</volist>
 	                    </select>
 	                    </div>
 	                </div>
 	                <div class="form-group">
 	                    <label class="item-label">街道</label>
-	                    <input type="text" name="address" class="form-control" value=""/>
+	                    <input type="text" name="address" class="form-control" value="{$info.address}"/>
 	                </div>
 	                <div class="form-group">
 	                    <label class="item-label">分组</label>
@@ -108,17 +114,18 @@
 	                </div>
 	                <div class="form-group">
 	                    <label class="item-label">描述</label>         
-	                    <textarea type="text" name="remark" class="form-control"></textarea>         
+	                    <textarea type="text" name="remark" class="form-control">{$info.remark}</textarea>
 	                </div>
 	                <div class="form-group">
-	                    <label class="item-label">附件</label>         
-	                    <input type="text" name="file" class="form-control" value=""/>
+	                    <label class="item-label">附件</label>
+	                    <input type="text" name="file" class="form-control" value="{$info.file}"/>
 	                </div>
 	                <div class="form-group">
 	                    <label class="item-label">数据库版本</label>         
-	                    <input type="text" name="db_version" class="form-control" value=""/>
+	                    <input type="text" name="db_version" class="form-control" value="{$info.db_version}"/>
 	                </div>
 			        <div class="form-group">
+			        	<input type="hidden" name="id" value="{$info.id|default=''}">
 			            <button class="btn btn-default submit-btn ajax-post" id="submit" type="submit" target-form="form">确 定</button>
 			            <button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
 			        </div>
@@ -142,8 +149,17 @@
 </html>
 <block name="script">
 <script type="text/javascript">
-    Think.setValue("type", 0);
-    Think.setValue("operate", 0);
+    Think.setValue("type", {$info.type|default = 0});
+    Think.setValue("operate", {$info.operate|default = 0});
+    <if condition="$is_normal eq 0">
+    Think.setValue("uid", {$info.uid|default = '""'});
+    </if>
+    Think.setValue("province", {$info.province|default = ''});
+    Think.setValue("city", {$info.city|default = ''});
+    Think.setValue("district", {$info.district|default = 0});
+    Think.setValue("group_id", {$info.group_id|default = '""'});
+    
+    
     $("#province").change(function(){
     	var _dom = $("#province");
     	var _pid = _dom.val();
@@ -155,7 +171,7 @@
     			var _district_dom = $("#district");
     			var _html = "";
     			_html += '<option value="">--请选择市--</option>';
-    			var _district_html = '<option value="">--请选择地区--</option>';
+    			var _district_html = '<option value="0">--请选择地区--</option>';
     			$.each(_data, function(_key, _val) {
     				_html += '<option value="'+_key+'">'+_val+'</option>';
     			});
@@ -175,7 +191,7 @@
     			var _data = resp.info;
     			var _district_dom = $("#district");
     			var _html = "";
-    			_html += '<option value="">--请选择地区--</option>';
+    			_html += '<option value="0">--请选择地区--</option>';
     			$.each(_data, function(_key, _val) {
     				_html += '<option value="'+_key+'">'+_val+'</option>';
     			});

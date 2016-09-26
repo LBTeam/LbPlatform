@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-09-23 19:25:49
+-- Date/time:                    2016-09-26 18:55:37
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,6 +12,7 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 -- Dumping database structure for player
+DROP DATABASE IF EXISTS `player`;
 CREATE DATABASE IF NOT EXISTS `player` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `player`;
 
@@ -25,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `player_access` (
   `module` varchar(64) DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限表';
 
--- Dumping data for table player.player_access: ~13 rows (approximately)
+-- Dumping data for table player.player_access: ~17 rows (approximately)
 /*!40000 ALTER TABLE `player_access` DISABLE KEYS */;
 INSERT INTO `player_access` (`role_id`, `node_id`, `level`, `module`) VALUES
 	(2, 1, 1, ''),
@@ -64,6 +65,26 @@ CREATE TABLE IF NOT EXISTS `player_alarm` (
 /*!40000 ALTER TABLE `player_alarm` ENABLE KEYS */;
 
 
+-- Dumping structure for table player.player_command
+DROP TABLE IF EXISTS `player_command`;
+CREATE TABLE IF NOT EXISTS `player_command` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID，player_user表uid外键',
+  `screen_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏ID，player_screen表id外键',
+  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '命令类型，0-发布播放方案，1-长连接重新注册',
+  `param` text NOT NULL COMMENT '命令详情',
+  `publish` int(11) NOT NULL DEFAULT '0' COMMENT '命令发布时间',
+  `execute` int(11) NOT NULL DEFAULT '0' COMMENT '命令执行时间',
+  `expired` int(11) NOT NULL DEFAULT '0' COMMENT '命令过期时间',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '命令状态，0-已发布（未下发），1-已下发',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='命令';
+
+-- Dumping data for table player.player_command: ~0 rows (approximately)
+/*!40000 ALTER TABLE `player_command` DISABLE KEYS */;
+/*!40000 ALTER TABLE `player_command` ENABLE KEYS */;
+
+
 -- Dumping structure for table player.player_config
 DROP TABLE IF EXISTS `player_config`;
 CREATE TABLE IF NOT EXISTS `player_config` (
@@ -95,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `player_group` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='屏幕组';
 
--- Dumping data for table player.player_group: ~1 rows (approximately)
+-- Dumping data for table player.player_group: ~3 rows (approximately)
 /*!40000 ALTER TABLE `player_group` DISABLE KEYS */;
 INSERT INTO `player_group` (`id`, `uid`, `name`, `remark`, `addtime`) VALUES
 	(2, 1, '屏幕组1', '屏幕组1', 0),
@@ -112,13 +133,37 @@ CREATE TABLE IF NOT EXISTS `player_group_screen` (
   `group_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏幕组ID，player_group表id外键'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='屏幕分组及屏幕对应表';
 
--- Dumping data for table player.player_group_screen: ~0 rows (approximately)
+-- Dumping data for table player.player_group_screen: ~2 rows (approximately)
 /*!40000 ALTER TABLE `player_group_screen` DISABLE KEYS */;
 INSERT INTO `player_group_screen` (`uid`, `screen_id`, `group_id`) VALUES
 	(2, 1, 3),
 	(1, 1, 2),
-	(2, 2, 3);
+	(2, 2, 3),
+	(1, 5, 2);
 /*!40000 ALTER TABLE `player_group_screen` ENABLE KEYS */;
+
+
+-- Dumping structure for table player.player_media
+DROP TABLE IF EXISTS `player_media`;
+CREATE TABLE IF NOT EXISTS `player_media` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID，palyer_user表uid外键',
+  `name` varchar(128) NOT NULL DEFAULT '' COMMENT '媒体名字',
+  `md5` varchar(64) NOT NULL DEFAULT '' COMMENT '媒体文件md5',
+  `object` varchar(128) NOT NULL DEFAULT '' COMMENT '媒体文件oss存储对象名称',
+  `upload_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'oss存储uploadId',
+  `size` varchar(64) NOT NULL DEFAULT '' COMMENT '媒体文件大小',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '上传状态，0-未上传完成，1-上传完成',
+  `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='播放媒体';
+
+-- Dumping data for table player.player_media: ~0 rows (approximately)
+/*!40000 ALTER TABLE `player_media` DISABLE KEYS */;
+INSERT INTO `player_media` (`id`, `user_id`, `name`, `md5`, `object`, `upload_id`, `size`, `status`, `publish`, `expired`) VALUES
+	(1, 1, 'aab\\\'bcc.avi', 'b3206b4529ba377b0fa9f4a3bd9261f2', '20160822/57ba998526ba9.avi', '064A0509F679494DBB2CE13D3A01726E', '20971520', 0, 1471846788, 0);
+/*!40000 ALTER TABLE `player_media` ENABLE KEYS */;
 
 
 -- Dumping structure for table player.player_node
@@ -177,6 +222,10 @@ CREATE TABLE IF NOT EXISTS `player_player` (
 
 -- Dumping data for table player.player_player: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_player` DISABLE KEYS */;
+INSERT INTO `player_player` (`id`, `bind_key`, `name`, `remark`, `mode`, `start`, `end`, `mac`, `heartbeat_interval`, `next_heartbeat`) VALUES
+	(4, 'sU3PjNesZ3f4KqXg', '', '', '', 0, 0, '', 0, 0),
+	(5, 'aYtjYY2QC5bQt84g', '', '', '', 0, 0, '', 0, 0),
+	(11, 'TQYuvpASB25R9JtU', '', '', '', 0, 0, '', 0, 0);
 /*!40000 ALTER TABLE `player_player` ENABLE KEYS */;
 
 
@@ -194,6 +243,44 @@ CREATE TABLE IF NOT EXISTS `player_price` (
 -- Dumping data for table player.player_price: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_price` DISABLE KEYS */;
 /*!40000 ALTER TABLE `player_price` ENABLE KEYS */;
+
+
+-- Dumping structure for table player.player_program
+DROP TABLE IF EXISTS `player_program`;
+CREATE TABLE IF NOT EXISTS `player_program` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL DEFAULT '0' COMMENT 'palyer_user表uid外键',
+  `name` varchar(128) NOT NULL DEFAULT '' COMMENT '播放方案名称',
+  `object` varchar(128) NOT NULL DEFAULT '' COMMENT '播放方案oss存储对象名称',
+  `upload_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'oss存储uploadId',
+  `info` text NOT NULL,
+  `md5` varchar(64) NOT NULL DEFAULT '' COMMENT '播放方案文件md5',
+  `type` tinyint(4) NOT NULL DEFAULT '0',
+  `size` varchar(20) NOT NULL DEFAULT '',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '上传状态，0-未上传完成，1-上传完成',
+  `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='播放方案';
+
+-- Dumping data for table player.player_program: ~2 rows (approximately)
+/*!40000 ALTER TABLE `player_program` DISABLE KEYS */;
+INSERT INTO `player_program` (`id`, `user_id`, `name`, `object`, `upload_id`, `info`, `md5`, `type`, `size`, `status`, `publish`, `expired`) VALUES
+	(1, 1, 'aabb\\\'cc.playprog', '20160822/57ba9984bb292.playprog', '', '', '586af24095a05643c3be4bb402dsdwqs', 0, '102400', 0, 1471846788, 0),
+	(2, 1, 'aabbccdd.playprog', '20160822/57ba9984ca8ae.playprog', '7CFA11C27EB94E2AB9B8C889AF81713B', '', '586af24095a05643c3be4bb402bfaee5', 0, '2097152', 0, 1471846788, 0);
+/*!40000 ALTER TABLE `player_program` ENABLE KEYS */;
+
+
+-- Dumping structure for table player.player_program_media
+DROP TABLE IF EXISTS `player_program_media`;
+CREATE TABLE IF NOT EXISTS `player_program_media` (
+  `program_id` int(11) NOT NULL DEFAULT '0' COMMENT '播放方案ID',
+  `media_id` int(11) NOT NULL DEFAULT '0' COMMENT '媒体ID'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放方案与媒体对应表';
+
+-- Dumping data for table player.player_program_media: ~0 rows (approximately)
+/*!40000 ALTER TABLE `player_program_media` DISABLE KEYS */;
+/*!40000 ALTER TABLE `player_program_media` ENABLE KEYS */;
 
 
 -- Dumping structure for table player.player_record
@@ -3581,14 +3668,16 @@ CREATE TABLE IF NOT EXISTS `player_screen` (
   `is_delete` tinyint(2) DEFAULT '0' COMMENT '是否删除，0-未删除，1-已删除',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='屏幕表';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='屏幕表';
 
 -- Dumping data for table player.player_screen: ~2 rows (approximately)
 /*!40000 ALTER TABLE `player_screen` DISABLE KEYS */;
 INSERT INTO `player_screen` (`id`, `name`, `remark`, `size_x`, `size_y`, `resolu_x`, `resolu_y`, `type`, `operate`, `longitude`, `latitude`, `uid`, `province`, `city`, `district`, `address`, `file`, `db_version`, `is_delete`, `addtime`) VALUES
 	(1, '测试screen', '', 100, 100, 1024, 768, 0, 0, '', '', 1, 2, 0, 0, '', '', '', 0, 0),
 	(2, '测试screen1', '', 200, 200, 256, 256, 0, 0, '', '', 1, 3, 44, 455, '', '', '', 0, 0),
-	(3, '测试screen2', '', 128, 128, 512, 512, 0, 0, '', '', 13, 24, 311, 2599, '', '', '', 0, 0);
+	(3, '测试screen2', '', 128, 128, 512, 512, 0, 0, '', '', 13, 24, 311, 2599, '', '', '', 0, 0),
+	(4, '高新路大屏', '高新路广告大屏', 0, 0, 256, 256, 0, 1, '108.9091860000', '34.2376840000', 13, 24, 311, 0, '高新路科技路十字西200米', '', '', 0, 1474877545),
+	(5, '光华路大屏', '光华路led电子大屏', 100, 100, 1024, 1024, 0, 0, '108.9125450000', '34.2401460000', 13, 24, 311, 2599, '高新路与光华路十字西南角', '', '', 0, 1474881091);
 /*!40000 ALTER TABLE `player_screen` ENABLE KEYS */;
 
 
@@ -3618,7 +3707,7 @@ CREATE TABLE IF NOT EXISTS `player_user` (
 -- Dumping data for table player.player_user: ~5 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `is_del`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 0, 0, 1474614705, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 0, 0, 1474860213, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
 	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15934854815', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 1474526615, '127.0.0.1', 1474340261, '', '', 0),
 	(10, '', '###1b2967588713b658dd803ed0c94d726d', '136048524@qq.com', '15934854816', '梁健', '西安软件园', 0, 0, 1, 0, 0, '0.0.0.0', 1474361171, 'J6zAkThcdrkj', '', 0),
 	(11, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@bestfu.com', '15934854817', '', '', 0, 0, 1, 0, 0, '0.0.0.0', 1474425987, 'CF8teK5B2fyx', '', 0),

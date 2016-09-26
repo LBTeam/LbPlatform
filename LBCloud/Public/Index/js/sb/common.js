@@ -7,7 +7,7 @@
     //加载正确的工具条窗口
     //在窗口大小改变时调整侧边栏
     $(window).bind("load resize", function() {
-        console.log($(this).width())
+        //console.log($(this).width())
         if ($(this).width() < 768) {
             $('div.sidebar-collapse').addClass('collapse')
         } else {
