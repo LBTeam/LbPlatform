@@ -232,8 +232,174 @@ class ScreenController extends CommonController
 		$led_model = D('Screen');
 		$id = array_unique((array)$id);
         $map = array('id' => array('in', $id) );
-        if($led_model->where($map)->delete()){
+        if($led_model->where($map)->setField("is_delete", 1)){
         	$led_model->unbind_group(0, $id);
+            $this->success('删除成功');
+        } else {
+            $this->error('删除失败！');
+        }
+	}
+	
+	/**
+	 * 播放器
+	 */
+	public function player($id = 0){
+		if(IS_POST){
+			$player_model = D("Player");
+			$rules = array(
+				array('id','require','屏幕Id不能为空！'),
+				array('name','require','播放器名称不能为空！'),
+				array('mode','require','播放器模式不能为空！'),
+				array('start','require','请选择工作开始时间！'),
+				array('end','require','请选择工作结束时间！'),
+				array('start','check_work_time','开始时间不得大于结束时间！',1,'function')
+			);
+			if($player_model->validate($rules)->create()){
+				$map = array();
+				$map['id'] = I("post.id", 0);
+				$data = array();
+				$data['name'] = I("post.name", "");
+				$data['remark'] = I("post.remark", "");
+				$data['mode'] = I("post.mode", "");
+				$data['start'] = I("post.start");
+				$data['end'] = I("post.end");
+				$player_res = $player_model->where($map)->save($data);
+				if($player_res !== false){
+					$this->success('操作成功', U('index'));
+				}else{
+					$this->error('操作失败');
+				}
+			}else{
+				$this->error($player_model->getError());
+			}
+		}else{
+			$player_model = D("Player");
+			$info = $player_model->player_by_id($id);
+			if($info !== false){
+				$this->assign('info', $info);
+				$this->meta_title = '修改播放器';
+            	$this->display();
+			}else{
+				$this->error('获取播放器信息错误');
+			}
+		}
+	}
+	
+	/**
+	 * 时段价格
+	 */
+	public function price($id=0){
+		$price_model = D("Price");
+		$prices = $price_model->price_by_screen($id);
+		if($prices !== false){
+			$led_model = D("Screen");
+			$info = $led_model->screen_by_id($id, 's.name');
+			$this->assign('prices', $prices);
+			$this->assign('l_id', $id);
+			$this->assign('l_name', $info['name']);
+			$this->meta_title = '时段价格列表';
+        	$this->display();
+		}else{
+			$this->error('获取屏幕价格失败');
+		}
+	}
+	
+	/**
+	 * 添加时段价格
+	 */
+	public function add_price($sid=0){
+		if(IS_POST){
+			$price_model = D("Price");
+			$rules = array(
+				array('screen_id','require','屏幕Id不能为空！'),
+				array('start','require','请选择开始时间！'),
+				array('end','require','请选择结束时间！'),
+				array('start','check_work_time','开始时间不得大于结束时间！',1,'function'),
+				array('start','check_price_cross','与现有时间段重复！',1,'function'),
+				array('price','require','价格不能为空！'),
+				array('price','currency','价格格式错误！'),
+			);
+			if($price_model->validate($rules)->create()){
+				$data = array();
+				$data['screen_id'] = I("post.screen_id");
+				$data['start'] = I("post.start");
+				$data['end'] = I("post.end");
+				$data['price'] = I("post.price");
+				$price_id = $price_model->add($data);
+				if($price_id){
+					$this->success('添加成功', U('price?id='.$data['screen_id']));
+				}else{
+					$this->error('添加失败');
+				}
+			}else{
+				$this->error($price_model->getError());
+			}
+		}else{
+			if($sid){
+				$this->assign("sid", $sid);
+				$this->meta_title = "添加时段价格";
+				$this->display();
+			}else{
+				$this->error("添加失败，系统错误！");
+			}
+		}
+	}
+	
+	/**
+	 * 修改时段价格
+	 */
+	public function edit_price($id=0){
+		if(IS_POST){
+			$price_model = D("Price");
+			$rules = array(
+				array('id','require','价格Id不能为空！'),
+				array('start','require','请选择开始时间！'),
+				array('end','require','请选择结束时间！'),
+				array('start','check_work_time','开始时间不得大于结束时间！',1,'function'),
+				array('start','check_price_cross','与现有时间段重复！',1,'function'),
+				array('price','require','价格不能为空！'),
+				array('price','currency','价格格式错误！'),
+			);
+			if($price_model->validate($rules)->create()){
+				$data = array();
+				$data['id'] = I("post.id");
+				$data['start'] = I("post.start");
+				$data['end'] = I("post.end");
+				$data['price'] = I("post.price");
+				$save_res = $price_model->save($data);
+				if($save_res !== false){
+					$this->success('修改成功', U('price?id='.I("post.screen_id")));
+				}else{
+					$this->error('修改失败');
+				}
+			}else{
+				$this->error($price_model->getError());
+			}
+		}else{
+			$price_model = D("Price");
+			$info = $price_model->price_by_id($id);
+			if($info){
+				$this->assign('info', $info);
+				$this->meta_title = "修改时段价格";
+				$this->display();
+			}else{
+				$this->error("获取价格信息错误！");
+			}
+		}
+	}
+	
+	/**
+	 * 删除时段价格
+	 */
+	public function del_price(){
+		$id = I('request.id', 0);
+        if ( empty($id) ) {
+            $this->error('请选择要操作的数据!');
+        }
+		$price_model = D("Price");
+		$id = array_unique((array)$id);
+        $map = array('id' => array('in', $id) );
+        if($price_model->where($map)->delete()){
             $this->success('删除成功');
         } else {
             $this->error('删除失败！');

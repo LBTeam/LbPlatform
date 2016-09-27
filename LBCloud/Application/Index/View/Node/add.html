@@ -97,9 +97,13 @@
 </body>
 </html>
 <block name="script">
-    <script type="text/javascript">
-    	Think.setValue("pid", {$pid|default = 0});
-        Think.setValue("status", 0);
-        Think.setValue("level", {$level|default = 1});
-    </script>
+<script type="text/javascript">
+	Think.setValue("pid", {$pid|default = 0});
+    Think.setValue("status", 0);
+    <if condition="$level egt 3">
+    Think.setValue("level", 3);
+    <else />
+    Think.setValue("level", {$level|default = 1});
+    </if>
+</script>
 </block>

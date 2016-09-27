@@ -43,7 +43,7 @@ class NodeController extends CommonController
 		if(IS_POST){
 			$rules = array(
 				array('title','require','标题不能为空！'),
-				array('title','','标题已经存在！',0,'unique',1),
+				//array('title','','标题已经存在！',0,'unique',1),
 				array('name','require','英文标识不能为空！')
 			);
             $data = array();
@@ -71,6 +71,7 @@ class NodeController extends CommonController
 				$this->assign('level', $level['level']+1);
 			}
             $menus = $node_model->get_all_menu_nodes();
+            $menus = $TreeService->create_menu($menus);
             $menus = $TreeService->toFormatTree($menus);
             $menus = array_merge(array(0=>array('id'=>0,'title_show'=>'顶级菜单')), $menus);
             $this->assign('Menus', $menus);
@@ -115,6 +116,7 @@ class NodeController extends CommonController
 			if($info){
 				$TreeService = new TreeService();
 				$menus = $node_model->get_all_menu_nodes();
+				$menus = $TreeService->create_menu($menus);
             	$menus = $TreeService->toFormatTree($menus);
 				$menus = array_merge(array(0=>array('id'=>0,'title_show'=>'顶级菜单')), $menus);
 				$this->assign('info', $info);

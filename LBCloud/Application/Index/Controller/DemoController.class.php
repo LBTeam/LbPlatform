@@ -22,4 +22,42 @@ class DemoController extends Controller
 		}
 		dump($code);
 	}
+	
+	function time2boolen(){
+		$b1 = strtotime("08:00");
+		$e1 = strtotime("09:00");
+		$b2 = strtotime("08:59");
+		$e2 = strtotime("10:00");
+		$res = $this->is_time_cross($b1, $e1, $b2, $e2);
+		dump($res);
+	}
+	
+	function is_time_cross($beginTime1 = '', $endTime1 = '', $beginTime2 = '', $endTime2 = '')
+	{
+		$status = $beginTime2 - $beginTime1;
+		if ($status > 0)
+		{
+			$status2 = $beginTime2 - $endTime1;
+			if ($status2 >= 0)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			$status2 = $endTime2 - $beginTime1;
+			if ($status2 > 0)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
 }

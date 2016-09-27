@@ -122,4 +122,43 @@ class GroupController extends CommonController
         	$this->error('系统错误，删除失败！');
         }
 	}
+	
+	/**
+	 * 屏幕列表
+	 */
+	public function screens($id=0){
+		$group_model = D("Group");
+		$info = $group_model->group_by_id($id);
+		if($info){
+			$user_model = D("User");
+			$region_model = D("Region");
+			$screens = $group_model->screens_by_gid($id);
+			$regions = $region_model->all_region();
+			if($user_model->is_normal(ADMIN_UID)){
+				$this->assign("is_normal", 1);
+			}else{
+				$this->assign("is_normal", 0);
+			}
+			$condition = array(
+	    		"type" => array(
+	    			0 => "室外",
+	    			1 => "室内"
+	    		),
+	    		"operate" => array(
+	    			0 => "全包",
+	    			1 => "分时"
+	    		),
+	    		"province" => $regions,
+	    		"city" => $regions,
+	    		"district" => $regions
+	    	);
+	    	int_to_string($screens, $condition);
+			$this->assign("info", $info);
+			$this->assign("screens", $screens);
+			$this->meta_title = "屏幕列表";
+			$this->display();
+		}else{
+			$this->error("获取屏幕列表失败！");
+		}
+	}
 }

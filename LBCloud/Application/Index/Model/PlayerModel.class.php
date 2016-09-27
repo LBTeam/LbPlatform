@@ -22,4 +22,14 @@ class PlayerModel extends Model
 		}
 		return $key;
 	}
+	
+	/**
+	 * 播放器信息
+	 */
+	public function player_by_id($id){
+		if($id){
+			return $this->where("id={$id}")->find();
+		}
+		return false;
+	}
 }

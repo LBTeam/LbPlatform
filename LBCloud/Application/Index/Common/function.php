@@ -60,3 +60,73 @@ function int_to_string(&$data,$map=array('status'=>array(1=>'正常',-1=>'删除
     }
     return $data;
 }
+
+/**
+ * 检查开始结束时间是否冲突
+ */
+function check_work_time(){
+	$start = strtotime(I("post.start"));
+	$end = strtotime(I("post.end"));
+	if($start > $end){
+		return false;
+	}else{
+		return true;
+	}
+}
+
+/**
+ * 检查价格时段是否冲突
+ */
+function check_price_cross(){
+	$id = I("post.id", 0);
+	$sid = I("post.screen_id");
+	$start = I("post.start");
+	$end = I("post.end");
+	$price_model = D("Price");
+	$prices = $price_model->price_by_screen($sid, $id);
+	if($prices){
+		$cross = true;
+		foreach($prices as $val){
+			$s1 = strtotime($val['start']);
+			$e1 = strtotime($val['end']);
+			$s2 = strtotime($start);
+			$e2 = strtotime($end);
+			$temp = time_is_cross($s1, $e1, $s2, $e2);
+			if(!$temp){
+				$cross = false;
+				break;
+			}
+		}
+		return $cross;
+	}else{
+		return true;
+	}
+}
+
+/**
+ * 判断俩个时间段是否交叉
+ * @param $s1 第一个时间段开始时间戳
+ * @param $e1 第一个时间段结束时间戳
+ * @param $s2 第二个时间段开始时间戳
+ * @param $e2 第二个时间段结束时间戳
+ * @return boolen  false-有交叉,true-无交叉
+ */
+function time_is_cross($s1, $e1, $s2, $e2)
+{
+	$t1 = $s2 - $s1;
+	if ($t1 > 0){
+		$t2 = $s2 - $e1;
+		if ($t2 >= 0){
+			return true;
+		}else{
+			return false;
+		}
+	}else{
+		$t2 = $e2 - $s1;
+		if ($t2 > 0){
+			return false;
+		}else{
+			return true;
+		}
+	}
+}

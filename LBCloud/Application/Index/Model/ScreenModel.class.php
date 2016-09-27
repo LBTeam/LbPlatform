@@ -39,10 +39,9 @@ class ScreenModel extends Model
 	/**
 	 * 屏幕详情
 	 */
-	public function screen_by_id($id){
+	public function screen_by_id($id, $field = "s.*,g.group_id"){
 		if($id){
 			$uid = ADMIN_UID;
-			$field = "s.*,g.group_id";
 			return $this
 					->alias("s")
 					->field($field)

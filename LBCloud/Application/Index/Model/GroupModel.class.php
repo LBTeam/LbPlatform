@@ -64,4 +64,21 @@ class GroupModel extends Model
 			return false;
 		}
 	}
+	
+	/**
+	 * 屏幕列表
+	 */
+	public function screens_by_gid($group_id){
+		if($group_id){
+			return $this
+					->table("player_group_screen")
+					->alias("g")
+					->field("g.group_id,s.*,u.email AS u_email,u.phone AS u_phone")
+					->join("player_screen AS s ON s.id = g.screen_id")
+					->join("player_user AS u ON u.uid = s.uid")
+					->where("g.group_id={$group_id}")
+					->select();
+		}
+		return array();
+	}
 }
