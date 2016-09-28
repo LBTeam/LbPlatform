@@ -17,8 +17,10 @@
 <div class="panel panel-default">
     <div class="tab-wrap  panel-body ">	    
  		<ul class="nav nav-tabs ">
+ 			<if condition="in_array('SYSTEM/INDEX', $_SESSION['_ACCESS_LIST'])">
 			<li><a href="{:U('?id=1')}">基本配置</a></li>
 			<li class="active"><a href="{:U('?id=2')}">开发配置</a></li>
+			</if>
 		</ul>
         <div class="tab-content" style="padding-top: 25px;">
             <form action="{:U('save')}" method="post" class="form col-lg-6" role="form" >
@@ -37,7 +39,9 @@
                 <div class="form-group">
                     <label class="item-label"></label>
                     <div class="controls">
-                          <button type="submit" class="btn btn-default submit-btn ajax-post" target-form="form">确 定</button>			
+                    	  <if condition="in_array('SYSTEM/INDEX', $_SESSION['_ACCESS_LIST'])">
+                          <button type="submit" class="btn btn-default submit-btn ajax-post" target-form="form">确 定</button>		
+                          </if>
                           <button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
                     </div>
                 </div>

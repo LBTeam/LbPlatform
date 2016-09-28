@@ -34,10 +34,15 @@
 			<div class="panel panel-default">
 			    <div class="panel-heading">		
 					<div class="fl">
+					<if condition="in_array('NODE/ADD', $_SESSION['_ACCESS_LIST'])">
 			        <button class="btn btn-default btn-add " url="{:U('add',array('pid'=>I('get.pid',0)))}" id="add-menu">新 增</button>
+			    	</if>
+			        <if condition="in_array('NODE/DEL', $_SESSION['_ACCESS_LIST'])">
 			        <button class="btn btn-default ajax-post confirm" url="{:U('del')}" target-form="ids">删 除</button>
-			        <!--<button class="btn btn-default btn-add " url="{:U('import',array('pid'=>I('get.pid',0)))}" id="import">导 入</button>-->
+			        </if>
+			        <if condition="in_array('NODE/SORT', $_SESSION['_ACCESS_LIST'])">
 			        <button class="btn btn-default list_sort" url="{:U('sort',array('pid'=>I('get.pid',0)),'')}">排序</button>
+			        </if>
 					<!-- 高级搜索 -->
 			        </div>	
 				</div>
@@ -73,9 +78,13 @@
 			                        <td>{$menu.sort}</td>
 			                        <td>{$menu.level_text}</td>
 			                        <td>
+			                        	<if condition="in_array('NODE/STATUS', $_SESSION['_ACCESS_LIST'])">
 			                        	<a href="{:U('status',array('id'=>$menu['id'],'value'=>abs($menu['status']-1)))}" class="ajax-get">
 			                            {$menu.status_text}
 			                            </a>
+			                            <else />
+			                            {$menu.status_text}
+			                            </if>
 			                        </td>
 			                        <!--<td>
 			                            <a href="{:U('toogleDev',array('id'=>$menu['id'],'value'=>abs($menu['is_dev']-1)))}" class="ajax-get">
@@ -83,8 +92,12 @@
 			                            </a>
 			                        </td>-->
 			                        <td>
+			                        	<if condition="in_array('NODE/EDIT', $_SESSION['_ACCESS_LIST'])">
 			                            <a title="编辑" href="{:U('edit?id='.$menu['id'])}">编辑</a>
+			                            </if>
+			                            <if condition="in_array('NODE/DEL', $_SESSION['_ACCESS_LIST'])">
 			                            <a class="confirm ajax-get" title="删除" href="{:U('del?id='.$menu['id'])}">删除</a>
+			                            </if>
 			                        </td>
 			                    </tr>
 			                </volist>

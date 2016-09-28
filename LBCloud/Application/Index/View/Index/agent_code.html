@@ -14,28 +14,20 @@
 	<div class="tab-wrap">
 		<ul class="nav nav-tabs">
 			<li ><a href="{:U('Index/Index/information')}">修改资料</a></li>
-			<li class="active"><a href="{:U('Index/Index/reset_pwd')}">修改密码</a></li>
+			<li><a href="{:U('Index/Index/reset_pwd')}">修改密码</a></li>
 			<if condition="$header_is_agent eq 1">
-			<li><a href="{:U('Index/Index/agent_code')}">注册码</a></li>
+			<li class="active"><a href="{:U('Index/Index/agent_code')}">注册码</a></li>
 			</if>
 		</ul>
 		<div class="tab-content" style="padding-top: 25px;">
 			<!-- 修改密码表单 -->
-			<form action="{:U('Index/Index/reset_pwd')}" method="post" role="form" class="form col-lg-6">
+			<form action="{:U('Index/Index/agent_code')}" method="post" role="form" class="form col-lg-6">
 				<div class="form-group">
-					<label class="item-label">原密码：</label> 
-					<input type="password" name="old" class="form-control"/> 
+					<label class="item-label">注册码：</label> 
+					<input type="text" name="reg_code" class="form-control" value="{$reg_code}" placeholder="12位字母数字组合"/> 
 				</div>
 				<div class="form-group">
-					<label class="item-label">新密码：</label> 
-					<input type="password" name="password" class="form-control"/> 
-				</div>
-				<div class="form-group">
-					<label class="item-label">确认密码：</label> 
-					<input type="password" name="repassword" class="form-control" /> 
-				</div>
-				<div class="form-group">
-					<button type="submit" class="btn btn-default submit-btn ajax-post" target-form="form">确 认</button>
+					<button type="submit" class="btn btn-default submit-btn ajax-post" target-form="form">修 改</button>
 					<button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
 				</div>
 			</form>

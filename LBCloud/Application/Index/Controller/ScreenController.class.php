@@ -91,6 +91,7 @@ class ScreenController extends CommonController
 				$group_id = I("post.group_id", 0);
 				$player_data = array();
 				$player_data['id'] = $led_id;
+				$player_data['bind_id'] = $player_model->bind_id();
 				$player_data['bind_key'] = $player_model->bind_key();
 				$player_res = $player_model->add($player_data);
 				$bind_res = true;

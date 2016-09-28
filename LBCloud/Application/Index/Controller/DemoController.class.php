@@ -5,7 +5,7 @@ use Think\Controller;
 class DemoController extends Controller
 {
 	public function index(){
-		echo random_string(32);
+		echo random_string(16);
 	}
 	
 	public function demo(){

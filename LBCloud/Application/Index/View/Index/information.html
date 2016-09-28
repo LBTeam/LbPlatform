@@ -15,6 +15,9 @@
 		<ul class="nav nav-tabs">
 			<li class="active"><a href="{:U('Index/Index/information')}">修改资料</a></li>
 			<li><a href="{:U('Index/Index/reset_pwd')}">修改密码</a></li>
+			<if condition="$header_is_agent eq 1">
+			<li><a href="{:U('Index/Index/agent_code')}">注册码</a></li>
+			</if>
 		</ul>
 		<div class="tab-content" style="padding-top: 25px;">
 			<!-- 修改密码表单 -->

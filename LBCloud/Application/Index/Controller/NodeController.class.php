@@ -89,7 +89,7 @@ class NodeController extends CommonController
 		if(IS_POST){
 			$rules = array(
 				array('title','require','标题不能为空！'),
-				array('title','','标题已经存在！',0,'unique',2),
+				//array('title','','标题已经存在！',0,'unique',2),
 				array('name','require','英文标识不能为空！')
 			);
 			$data = array();
@@ -133,7 +133,7 @@ class NodeController extends CommonController
 	 * 删除节点
 	 */
 	public function del(){
-		$id = I('id', 0);
+		$id = I('request.id', 0);
         if ( empty($id) ) {
             $this->error('请选择要操作的数据!');
         }

@@ -10,7 +10,21 @@ use Think\Model;
 class PlayerModel extends Model
 {
 	/**
-	 * 屏幕唯一key
+	 * 屏幕绑定id
+	 */
+	public function bind_id(){
+		$id = random_string(8);
+		$id_list = $this
+					->where('bind_id != ""')
+					->getField("bind_id", true);
+		while(in_array($id, $id_list)){
+			$id = random_string(8);
+		}
+		return $id;
+	}
+	
+	/**
+	 * 屏幕绑定key
 	 */
 	public function bind_key(){
 		$key = random_string(16);

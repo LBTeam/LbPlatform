@@ -20,11 +20,17 @@
 		<div class="panel panel-default">
 		    <div class="panel-heading">		
 				<div class="fl">
+				<if condition="in_array('USER/ADD', $_SESSION['_ACCESS_LIST'])">
 		        <button  url="{:U('add')}" id="add-group" class="btn btn-default btn-add " >新 增</button>
+		        </if>
+		        <if condition="in_array('USER/STATUS', $_SESSION['_ACCESS_LIST'])">
 		        <button  url="{:U('status',array('value'=>0))}" class="btn btn-default ajax-post" target-form="ids" >启 用</button>
 		        <button  url="{:U('status',array('value'=>1))}" class="btn btn-default ajax-post" target-form="ids" >禁 用</button>
+		        </if>
+		        <if condition="in_array('USER/DEL', $_SESSION['_ACCESS_LIST'])">
 		        <button  url="{:U('del')}" class="btn btn-default ajax-post confirm" target-form="ids" >删 除</button>
-		        </div>	
+		        </if>
+		        </div>
 			</div><!-- /.panel-heading -->    
 			<div class="panel-body">
 				<div class="table-responsive">		
@@ -65,13 +71,20 @@
 		                        <td>{$vo.lasttime|date="Y-m-d H:i:s",###}</td>
 		                        <td>{$vo.lastip}</td>
 		                        <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
-		                        <td><eq name="vo.status" value="0">
+		                        <td>
+		                        	<if condition="in_array('USER/STATUS', $_SESSION['_ACCESS_LIST'])">
+		                        	<eq name="vo.status" value="0">
 		                            <a href="{:U('status', array('id'=>$vo['uid'],'value'=>abs($vo['status']-1)))}" class="ajax-get">禁用</a>
 		                            <else/>
 		                            <a href="{:U('status', array('id'=>$vo['uid'],'value'=>abs($vo['status']-1)))}" class="ajax-get">启用</a>
 		                            </eq>
+		                            </if>
+		                            <if condition="in_array('USER/EDIT', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('edit',array('id'=>$vo['uid']))}">编辑</a>
+		                            </if>
+		                            <if condition="in_array('USER/DEL', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('del?id='.$vo['uid'])}" class="confirm ajax-get">删除</a>
+		                            </if>
 		                        </td>
 		                    </tr>
 		                    </volist>                    

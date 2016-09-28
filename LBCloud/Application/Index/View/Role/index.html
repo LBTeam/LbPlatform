@@ -20,10 +20,18 @@
 		<div class="panel panel-default">
 		    <div class="panel-heading">		
 				<div class="fl">
+				<if condition="in_array('ROLE/ADD', $_SESSION['_ACCESS_LIST'])">
 		        <button  url="{:U('add')}" id="add-group" class="btn btn-default btn-add " >新 增</button>
+		    	</if>
+		    	<if condition="in_array('ROLE/STATUS', $_SESSION['_ACCESS_LIST'])">
 		        <button  url="{:U('status',array('value'=>0))}" class="btn btn-default ajax-post" target-form="ids" >启 用</button>
+		        </if>
+		    	<if condition="in_array('ROLE/STATUS', $_SESSION['_ACCESS_LIST'])">
 		        <button  url="{:U('status',array('value'=>1))}" class="btn btn-default ajax-post" target-form="ids" >禁 用</button>
+		        </if>
+		    	<if condition="in_array('ROLE/DEL', $_SESSION['_ACCESS_LIST'])">
 		        <button  url="{:U('del')}" class="btn btn-default ajax-post confirm" target-form="ids" >删 除</button>
+		    	</if>
 		        </div>	
 			</div><!-- /.panel-heading -->    
 			<div class="panel-body">
@@ -47,15 +55,26 @@
 		                        <td>{$vo.name}</td>
 		                        <td>{$vo.remark}</td>
 		                        <td>{$vo.status_text}</td>
-		                        <td><eq name="vo.status" value="0">
+		                        <td>
+		                        	<if condition="in_array('ROLE/STATUS', $_SESSION['_ACCESS_LIST'])">
+		                        	<eq name="vo.status" value="0">
 		                            <a href="{:U('status', array('id'=>$vo['id'],'value'=>abs($vo['status']-1)))}" class="ajax-get">禁用</a>
 		                            <else/>
 		                            <a href="{:U('status', array('id'=>$vo['id'],'value'=>abs($vo['status']-1)))}" class="ajax-get">启用</a>
 		                            </eq>
+		                        	</if>
+		                        	<if condition="in_array('ROLE/EDIT', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('edit',array('id'=>$vo['id']))}">编辑</a>
+		                        	</if>
+		                        	<if condition="in_array('ROLE/ACCESS', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('Role/access?group_name='.$vo['title'].'&group_id='.$vo['id'])}" >授权</a>
+		                            </if>
+		                        	<if condition="in_array('ROLE/USER', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('Role/user?group_name='.$vo['title'].'&group_id='.$vo['id'])}" >成员列表</a>
+		                            </if>
+		                        	<if condition="in_array('ROLE/DEL', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('del?id='.$vo['id'])}" class="confirm ajax-get">删除</a>
+		                        	</if>
 		                        </td>
 		                    </tr>
 		                    </volist>                    

@@ -31,6 +31,12 @@ class CommonController extends Controller
 			}
 		}
 		$this->assign('menus', $menus);
+		
+		if(D("User")->is_agent(ADMIN_UID)){
+			$this->assign("header_is_agent", 1);
+		}else{
+			$this->assign("header_is_agent", 0);
+		}
 	}
 	
 	/**
@@ -89,11 +95,6 @@ class CommonController extends Controller
 				}
 			}
 		}*/
-		//testing start
-		if(is_administrator()){
-			return true;
-		}
-		//testing end
 		$controller = strtoupper(CONTROLLER_NAME);
 		$action = strtoupper(ACTION_NAME);
 		$exec_name = "{$controller}/{$action}";

@@ -73,9 +73,10 @@ class GroupModel extends Model
 			return $this
 					->table("player_group_screen")
 					->alias("g")
-					->field("g.group_id,s.*,u.email AS u_email,u.phone AS u_phone")
+					->field("g.group_id,s.*,p.bind_id,p.bind_key,u.email AS u_email,u.phone AS u_phone")
 					->join("player_screen AS s ON s.id = g.screen_id")
 					->join("player_user AS u ON u.uid = s.uid")
+					->join("player_player AS p ON p.id = s.id")
 					->where("g.group_id={$group_id}")
 					->select();
 		}

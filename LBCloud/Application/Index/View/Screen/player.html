@@ -45,7 +45,9 @@
 	                </div>
 			        <div class="form-group">
 			        	<input type="hidden" name="id" value="{$info.id|default=''}">
+			        	<if condition="in_array('SCREEN/PLAYER', $_SESSION['_ACCESS_LIST'])">
 			            <button class="btn btn-default submit-btn ajax-post" id="submit" type="submit" target-form="form">确 定</button>
+			        	</if>
 			            <button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
 			        </div>
 				</form>	

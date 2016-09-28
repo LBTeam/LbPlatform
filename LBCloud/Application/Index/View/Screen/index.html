@@ -20,8 +20,12 @@
 		<div class="panel panel-default">
 		    <div class="panel-heading">		
 				<div class="fl">
+				<if condition="in_array('SCREEN/ADD', $_SESSION['_ACCESS_LIST'])">
 		        <button  url="{:U('add')}" id="add-group" class="btn btn-default btn-add " >新 增</button>
+		    	</if>
+		    	<if condition="in_array('SCREEN/DEL', $_SESSION['_ACCESS_LIST'])">
 		        <button  url="{:U('del')}" class="btn btn-default ajax-post confirm" target-form="ids" >删 除</button>
+		        </if>
 		        </div>	
 			</div><!-- /.panel-heading -->    
 			<div class="panel-body">
@@ -32,16 +36,17 @@
 		                        <th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
 		                        <th class="">ID</th>
 		                        <th class="">屏幕名称</th>
+		                        <th class="">绑定Id</th>
 		                        <th class="">绑定Key</th>
-		                        <th class="">分辨率X</th>
-		                        <th class="">分辨率Y</th>
+		                        <!--<th class="">分辨率X</th>
+		                        <th class="">分辨率Y</th>-->
 		                        <if condition="$is_normal eq 0">
 		                        	<th class="">所有者</th>
 		                        </if>
 		                        <!--<th class="">屏幕类型</th>
-		                        <th class="">运作方式</th>-->
+		                        <th class="">运作方式</th>
 		                        <th class="">地区</th>
-		                        <!--<th class="">屏幕组</th>-->
+		                        <th class="">屏幕组</th>-->
 		                        <th class="">添加时间</th>
 		                        <th class="">运营</th>
 		                        <th class="">操作</th>
@@ -53,9 +58,10 @@
 		                        <td><input class="ids" type="checkbox" name="id[]" value="{$vo.id}" /></td>
 		                        <td>{$vo.id}</td>
 		                        <td>{$vo.name}</td>
+		                        <td>{$vo.bind_id}</td>
 		                        <td>{$vo.bind_key}</td>
-		                        <td>{$vo.resolu_x}</td>
-		                        <td>{$vo.resolu_y}</td>
+		                        <!--<td>{$vo.resolu_x}</td>
+		                        <td>{$vo.resolu_y}</td>-->
 		                        <if condition="$is_normal eq 0">
 		                        	<if condition="empty($vo['u_email'])">
 		                        		<td>{$vo.u_phone}</td>
@@ -64,9 +70,9 @@
 		                        	</if>
 		                        </if>
 		                        <!--<td>{$vo.type_text}</td>
-		                        <td>{$vo.operate_text}</td>-->
+		                        <td>{$vo.operate_text}</td>
 		                        <td>{$vo.province_text}{$vo.city_text}{$vo.district_text}</td>
-		                        <!--<td>
+		                        <td>
 		                        	<if condition="$vo['group_name'] eq null">
 		                        		未分组
 		                        	<else />
@@ -75,15 +81,23 @@
 		                        </td>-->
 		                        <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
 		                        <td>
+		                        	<if condition="in_array('SCREEN/PLAYER', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('player',array('id'=>$vo['id']))}">播放器</a>
+		                            </if>
+		                            <if condition="in_array('SCREEN/PRICE', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('price',array('id'=>$vo['id']))}">时段价格</a>
+		                            </if>
 		                            <a href="javascript:void(0);">播放记录</a>
 		                            <a href="javascript:void(0);">一键关屏</a>
 		                            <a href="javascript:void(0);">紧急通知</a>
 		                        </td>
 		                        <td>
+		                        	<if condition="in_array('SCREEN/EDIT', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('edit',array('id'=>$vo['id']))}">编辑</a>
+		                            </if>
+		                            <if condition="in_array('SCREEN/DEL', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('del?id='.$vo['id'])}" class="confirm ajax-get">删除</a>
+		                            </if>
 		                        </td>
 		                    </tr>
 		                    </volist>                    

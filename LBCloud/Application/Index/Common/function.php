@@ -130,3 +130,24 @@ function time_is_cross($s1, $e1, $s2, $e2)
 		}
 	}
 }
+
+/**
+ * 检查注册码是否存在
+ */
+function check_regcode(){
+	$code = I("post.reg_code", "");
+	if($code){
+		$user_model = D("User");
+		$map = array();
+		$map['reg_code'] = $code;
+		$map['uid'] = array("NEQ", ADMIN_UID);
+		$count = $user_model->where($map)->count();
+		if($count == 0){
+			return true;
+		}else{
+			return false;
+		}
+	}else{
+		return false;
+	}
+}

@@ -18,8 +18,12 @@
 			<div class="panel panel-default">
 			    <div class="panel-heading">		
 					<div class="fl">
+					<if condition="in_array('SCREEN/ADD_PRICE', $_SESSION['_ACCESS_LIST'])">
 			        <button class="btn btn-default btn-add " url="{:U('add_price', array('sid'=>$l_id))}">新 增</button>
+			    	</if>
+			        <if condition="in_array('SCREEN/DEL_PRICE', $_SESSION['_ACCESS_LIST'])">
 			        <button class="btn btn-default ajax-post confirm" url="{:U('del_price')}" target-form="ids">删 除</button>
+			        </if>
 			        <button class="btn btn-default btn-add " url="{:U('index')}">返 回</button>
 			        </div>	
 				</div>
@@ -48,8 +52,12 @@
 			                        <td>{$vo.end}</td>
 			                        <td>{$vo.price}</td>
 			                        <td>
+			                        	<if condition="in_array('SCREEN/EDIT_PRICE', $_SESSION['_ACCESS_LIST'])">
 			                            <a title="编辑" href="{:U('edit_price?id='.$vo['id'])}">编辑</a>
+			                            </if>
+			                            <if condition="in_array('SCREEN/DEL_PRICE', $_SESSION['_ACCESS_LIST'])">
 			                            <a class="confirm ajax-get" title="删除" href="{:U('del_price?id='.$vo['id'])}">删除</a>
+			                            </if>
 			                        </td>
 			                    </tr>
 			                </volist>

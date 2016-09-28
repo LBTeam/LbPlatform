@@ -18,8 +18,12 @@
 			<div class="panel panel-default">
 			    <div class="panel-heading">		
 					<div class="fl">
+					<if condition="in_array('GROUP/ADD', $_SESSION['_ACCESS_LIST'])">
 			        <button class="btn btn-default btn-add " url="{:U('add')}" id="add-menu">新 增</button>
+			        </if>
+			        <if condition="in_array('GROUP/DEL', $_SESSION['_ACCESS_LIST'])">
 			        <button class="btn btn-default ajax-post confirm" url="{:U('del')}" target-form="ids">删 除</button>
+			        </if>
 			        </div>	
 				</div>
 				<!-- /.panel-heading -->
@@ -48,13 +52,19 @@
 			                        <td>{$vo.addtime|date="Y-m-d H:i:s", ###}</td>
 			                        <td>{$vo.remark}</td>
 			                        <td>
+			                        	<if condition="in_array('GROUP/SCREENS', $_SESSION['_ACCESS_LIST'])">
 			                        	<a href="{:U('screens?id='.$vo['id'])}">屏幕列表</a>
+			                        	</if>
 			                        	<a href="">发送短信</a>
 			                        	<a href="">发送邮件</a>
 			                        </td>
 			                        <td>
+			                        	<if condition="in_array('GROUP/EDIT', $_SESSION['_ACCESS_LIST'])">
 			                            <a title="编辑" href="{:U('edit?id='.$vo['id'])}">编辑</a>
+			                            </if>
+			                            <if condition="in_array('GROUP/DEL', $_SESSION['_ACCESS_LIST'])">
 			                            <a class="confirm ajax-get" title="删除" href="{:U('del?id='.$vo['id'])}">删除</a>
+			                            </if>
 			                        </td>
 			                    </tr>
 			                </volist>

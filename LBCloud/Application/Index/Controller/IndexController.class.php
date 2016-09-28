@@ -48,6 +48,7 @@ class IndexController extends CommonController {
 				$this->error($user_model->getError());
 			}
 		}else{
+			$this->meta_title = "修改密码";
 			$this->display();
 		}
 	}
@@ -89,7 +90,45 @@ class IndexController extends CommonController {
 			$user_model = D("User");
 			$info = $user_model->user_by_id(ADMIN_UID);
 			$this->assign("info", $info);
+			$this->meta_title = "修改个人资料";
 			$this->display();
+		}
+	}
+	
+	/**
+	 * 代理商注册码
+	 */
+	public function agent_code(){
+		if(IS_POST){
+			$user_model = D("User");
+			$rules = array(
+				array('reg_code','require','注册码不能为空！'),
+				array('reg_code', "/^[A-Za-z0-9]{12}$/",'格式错误：注册码为12位字母数字组合！'),
+				array('reg_code','check_regcode','注册码已存在！',1,'function')
+			);
+			if($user_model->validate($rules)->create()){
+				$data = array();
+				$data['uid'] = ADMIN_UID;
+				$data['reg_code'] = I("post.reg_code");
+				$res = $user_model->save($data);
+				if($res !== false){
+					$this->success('修改成功');
+				}else{
+					$this->error('修改失败');
+				}
+			}else{
+				$this->error($user_model->getError());
+			}
+		}else{
+			$user_model = D("User");
+			if($user_model->is_agent(ADMIN_UID)){
+				$info = $user_model->user_by_id(ADMIN_UID, "reg_code");
+				$this->assign("reg_code", $info['reg_code']);
+				$this->meta_title = "代理商注册码";
+				$this->display();
+			}else{
+				$this->error("系统错误：不是代理商！");
+			}
 		}
 	}
 }

@@ -25,8 +25,10 @@
 							<tr>
 		                        <th class="">ID</th>
 		                        <th class="">屏幕名称</th>
-		                        <th class="">分辨率X</th>
-		                        <th class="">分辨率Y</th>
+		                        <th class="">绑定Id</th>
+		                        <th class="">绑定Key</th>
+		                        <!--<th class="">分辨率X</th>
+		                        <th class="">分辨率Y</th>-->
 		                        <if condition="$is_normal eq 0">
 		                        	<th class="">所有者</th>
 		                        </if>
@@ -41,8 +43,10 @@
 		                    <tr>
 		                        <td>{$vo.id}</td>
 		                        <td>{$vo.name}</td>
-		                        <td>{$vo.resolu_x}</td>
-		                        <td>{$vo.resolu_y}</td>
+		                        <td>{$vo.bind_id}</td>
+		                        <td>{$vo.bind_key}</td>
+		                        <!--<td>{$vo.resolu_x}</td>
+		                        <td>{$vo.resolu_y}</td>-->
 		                        <if condition="$is_normal eq 0">
 		                        	<if condition="empty($vo['u_email'])">
 		                        		<td>{$vo.u_phone}</td>

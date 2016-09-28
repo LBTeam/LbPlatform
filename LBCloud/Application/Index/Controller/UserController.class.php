@@ -243,6 +243,7 @@ class UserController extends CommonController {
 			}
 		}
 	}
+
 	
 	/**
 	 * 用户列表
@@ -389,9 +390,38 @@ class UserController extends CommonController {
     }
     
     /**
-	 * 删除管理员和用户
+	 * 删除用户
 	 */
 	public function del(){
+		$id = I('request.id', 0);
+        if ( empty($id) ) {
+            $this->error('请选择要操作的数据!');
+        }
+        if($id == C("USER_ADMINISTRATOR") || in_array(C("USER_ADMINISTRATOR"), $id)){
+        	$this->error('超级管理员不可删除!');
+        }
+		$user_model = D('User');
+		$id = array_unique((array)$id);
+        $map = array('uid' => array('in', $id) );
+        $t_map = $map;
+        $t_map['type'] = 1;
+        $temps = $user_model->where($t_map)->count();
+        if($temps == 0){
+        	if($user_model->where($map)->delete()){
+        		D("Role")->unbind_relation($id);
+	            $this->success('删除成功');
+	        } else {
+	            $this->error('删除失败！');
+	        }
+        }else{
+        	$this->error('系统错误，删除失败！');
+        }
+	}
+	
+	/**
+	 * 删除管理员
+	 */
+	public function del_root(){
 		$id = I('request.id', 0);
         if ( empty($id) ) {
             $this->error('请选择要操作的数据!');
@@ -456,6 +486,38 @@ class UserController extends CommonController {
 	 * 更改状态
 	 */
 	public function status($id,$value = 0){
+        $id    = is_array($id) ? implode(',',$id) : $id;
+        $where = array('uid' => array('in', $id ));
+        $msg   = array_merge( array( 'success'=>'操作成功！', 'error'=>'操作失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
+		$data  = array('status'=>$value);
+		$user_model = D("User");
+        if( $user_model->where($where)->save($data)!==false ) {
+            $this->success($msg['success'],$msg['url'],$msg['ajax']);
+        }else{
+            $this->error($msg['error'],$msg['url'],$msg['ajax']);
+        }
+	}
+	
+	/**
+	 * 更改状态
+	 */
+	public function agent_status($id,$value = 0){
+        $id    = is_array($id) ? implode(',',$id) : $id;
+        $where = array('uid' => array('in', $id ));
+        $msg   = array_merge( array( 'success'=>'操作成功！', 'error'=>'操作失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
+		$data  = array('status'=>$value);
+		$user_model = D("User");
+        if( $user_model->where($where)->save($data)!==false ) {
+            $this->success($msg['success'],$msg['url'],$msg['ajax']);
+        }else{
+            $this->error($msg['error'],$msg['url'],$msg['ajax']);
+        }
+	}
+	
+	/**
+	 * 更改状态
+	 */
+	public function root_status($id,$value = 0){
         $id    = is_array($id) ? implode(',',$id) : $id;
         $where = array('uid' => array('in', $id ));
         $msg   = array_merge( array( 'success'=>'操作成功！', 'error'=>'操作失败！', 'url'=>'' ,'ajax'=>IS_AJAX) , (array)$msg );
