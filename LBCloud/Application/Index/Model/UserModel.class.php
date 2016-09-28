@@ -17,7 +17,7 @@ class UserModel extends Model
 	 */
 	public function login($username, $password){
 		$map = array();
-		$map['email'] = $username;  
+		$map['email|phone'] = $username;  
 		$map['status'] = 0;
         
 		/* 获取用户数据 */

@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-09-27 19:38:16
+-- Date/time:                    2016-09-28 18:45:38
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -26,11 +26,9 @@ CREATE TABLE IF NOT EXISTS `player_access` (
   `module` varchar(64) DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限表';
 
--- Dumping data for table player.player_access: ~35 rows (approximately)
+-- Dumping data for table player.player_access: ~59 rows (approximately)
 /*!40000 ALTER TABLE `player_access` DISABLE KEYS */;
 INSERT INTO `player_access` (`role_id`, `node_id`, `level`, `module`) VALUES
-	(2, 1, 1, ''),
-	(2, 2, 1, ''),
 	(1, 1, 1, ''),
 	(1, 12, 1, ''),
 	(1, 14, 1, ''),
@@ -57,13 +55,39 @@ INSERT INTO `player_access` (`role_id`, `node_id`, `level`, `module`) VALUES
 	(1, 44, 1, ''),
 	(1, 45, 1, ''),
 	(1, 46, 1, ''),
+	(2, 1, 1, ''),
+	(2, 2, 1, ''),
+	(2, 20, 1, ''),
+	(2, 21, 1, ''),
+	(2, 22, 1, ''),
+	(2, 23, 1, ''),
+	(2, 3, 1, ''),
+	(2, 4, 1, ''),
+	(2, 35, 1, ''),
+	(2, 36, 1, ''),
+	(2, 51, 1, ''),
+	(2, 18, 1, ''),
+	(2, 19, 1, ''),
+	(2, 42, 1, ''),
+	(2, 43, 1, ''),
+	(2, 44, 1, ''),
+	(2, 45, 1, ''),
+	(2, 46, 1, ''),
+	(2, 47, 1, ''),
+	(2, 48, 1, ''),
+	(2, 49, 1, ''),
 	(3, 3, 1, ''),
 	(3, 4, 1, ''),
 	(3, 34, 1, ''),
 	(3, 35, 1, ''),
 	(3, 36, 1, ''),
+	(3, 51, 1, ''),
 	(3, 18, 1, ''),
-	(3, 19, 1, '');
+	(3, 19, 1, ''),
+	(3, 42, 1, ''),
+	(3, 43, 1, ''),
+	(3, 44, 1, ''),
+	(3, 45, 1, '');
 /*!40000 ALTER TABLE `player_access` ENABLE KEYS */;
 
 
@@ -72,9 +96,9 @@ DROP TABLE IF EXISTS `player_alarm`;
 CREATE TABLE IF NOT EXISTS `player_alarm` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `screen_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏ID，player_screen表id外键',
-  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '监控数据类型',
+  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '监控数据类型，0-播放机参数信息',
   `param` text NOT NULL COMMENT '监控数据',
-  `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '监控数据上报时间',
+  `up_time` int(11) NOT NULL DEFAULT '0' COMMENT '监控数据上报时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='监控数据';
 
@@ -132,14 +156,15 @@ CREATE TABLE IF NOT EXISTS `player_group` (
   `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '分组描述',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='屏幕组';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='屏幕组';
 
--- Dumping data for table player.player_group: ~3 rows (approximately)
+-- Dumping data for table player.player_group: ~4 rows (approximately)
 /*!40000 ALTER TABLE `player_group` DISABLE KEYS */;
 INSERT INTO `player_group` (`id`, `uid`, `name`, `remark`, `addtime`) VALUES
 	(2, 1, '屏幕组1', '屏幕组1', 0),
 	(3, 2, '分组1', '分组1', 0),
-	(4, 1, '屏幕组2', '屏幕组2', 1474617509);
+	(4, 1, '屏幕组2', '屏幕组2', 1474617509),
+	(5, 13, '西安雁塔区屏幕组', '西安雁塔区屏幕组', 1475049472);
 /*!40000 ALTER TABLE `player_group` ENABLE KEYS */;
 
 
@@ -151,14 +176,17 @@ CREATE TABLE IF NOT EXISTS `player_group_screen` (
   `group_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏幕组ID，player_group表id外键'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='屏幕分组及屏幕对应表';
 
--- Dumping data for table player.player_group_screen: ~5 rows (approximately)
+-- Dumping data for table player.player_group_screen: ~8 rows (approximately)
 /*!40000 ALTER TABLE `player_group_screen` DISABLE KEYS */;
 INSERT INTO `player_group_screen` (`uid`, `screen_id`, `group_id`) VALUES
 	(2, 1, 3),
 	(1, 1, 2),
 	(2, 2, 3),
 	(1, 5, 2),
-	(1, 4, 4);
+	(1, 4, 4),
+	(1, 6, 2),
+	(13, 4, 5),
+	(13, 5, 5);
 /*!40000 ALTER TABLE `player_group_screen` ENABLE KEYS */;
 
 
@@ -197,9 +225,9 @@ CREATE TABLE IF NOT EXISTS `player_node` (
   `pid` int(11) NOT NULL DEFAULT '1' COMMENT '父ID',
   `level` tinyint(2) NOT NULL DEFAULT '1' COMMENT '级别（类型）；1模块，2列表，3操作',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8 COMMENT='节点表';
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 COMMENT='节点表';
 
--- Dumping data for table player.player_node: ~49 rows (approximately)
+-- Dumping data for table player.player_node: ~50 rows (approximately)
 /*!40000 ALTER TABLE `player_node` DISABLE KEYS */;
 INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `pid`, `level`) VALUES
 	(1, 'User', '用户管理', 0, '', 1, 0, 1),
@@ -217,8 +245,8 @@ INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `p
 	(13, 'agent_list', '代理商列表', 0, '', 3, 1, 2),
 	(14, 'add_root', '新增', 0, '', 1, 12, 3),
 	(15, 'edit_root', '修改', 0, '', 2, 12, 3),
-	(16, 'status', '启用 / 禁用', 0, '', 3, 12, 3),
-	(17, 'del', '删除', 0, '', 4, 12, 3),
+	(16, 'root_status', '启用 / 禁用', 0, '', 3, 12, 3),
+	(17, 'del_root', '删除', 0, '', 4, 12, 3),
 	(18, 'Screen', '屏幕管理', 0, '', 6, 0, 1),
 	(19, 'index', '屏幕列表', 0, '', 1, 18, 2),
 	(20, 'add', '添加用户', 0, '', 1, 2, 3),
@@ -227,7 +255,7 @@ INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `p
 	(23, 'status', '启用 / 禁用', 0, '', 4, 2, 3),
 	(24, 'add_agent', '新增', 0, '', 1, 13, 3),
 	(25, 'edit_agent', '修改', 0, '', 2, 13, 3),
-	(26, 'status', '启用 / 禁用', 0, '', 3, 13, 3),
+	(26, 'agent_status', '启用 / 禁用', 0, '', 3, 13, 3),
 	(27, 'del_agent', '删除', 0, '', 4, 13, 3),
 	(28, 'add', '添加', 0, '', 1, 9, 3),
 	(29, 'edit', '修改', 0, '', 2, 9, 3),
@@ -259,7 +287,8 @@ INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `p
 DROP TABLE IF EXISTS `player_player`;
 CREATE TABLE IF NOT EXISTS `player_player` (
   `id` int(11) NOT NULL DEFAULT '0' COMMENT '屏ID，和player_screen表id一一对应',
-  `bind_key` varchar(64) NOT NULL DEFAULT '' COMMENT '屏标识，播放器绑定使用',
+  `bind_id` varchar(64) NOT NULL DEFAULT '' COMMENT '屏绑定ID，播放器绑定使用',
+  `bind_key` varchar(64) NOT NULL DEFAULT '' COMMENT '屏绑定Key，播放器绑定使用',
   `name` varchar(64) NOT NULL DEFAULT '' COMMENT '播放器名称',
   `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '播放器描述',
   `mode` varchar(64) NOT NULL DEFAULT '' COMMENT '播放器模式',
@@ -270,12 +299,15 @@ CREATE TABLE IF NOT EXISTS `player_player` (
   `next_heartbeat` int(11) DEFAULT '0' COMMENT '下次心跳时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放器';
 
--- Dumping data for table player.player_player: ~3 rows (approximately)
+-- Dumping data for table player.player_player: ~6 rows (approximately)
 /*!40000 ALTER TABLE `player_player` DISABLE KEYS */;
-INSERT INTO `player_player` (`id`, `bind_key`, `name`, `remark`, `mode`, `start`, `end`, `mac`, `heartbeat_interval`, `next_heartbeat`) VALUES
-	(4, 'sU3PjNesZ3f4KqXg', '高新路大屏播放器', '高新路大屏播放器', '轮播', '09:00', '18:45', '', 0, 0),
-	(5, 'aYtjYY2QC5bQt84g', '', '', '', '', '', '', 0, 0),
-	(11, 'TQYuvpASB25R9JtU', '', '', '', '', '', '', 0, 0);
+INSERT INTO `player_player` (`id`, `bind_id`, `bind_key`, `name`, `remark`, `mode`, `start`, `end`, `mac`, `heartbeat_interval`, `next_heartbeat`) VALUES
+	(4, 'deMkPdrk', 'sU3PjNesZ3f4KqXg', '高新路大屏播放器', '高新路大屏播放器', '轮播', '09:00', '18:45', '', 0, 0),
+	(5, 'AsGcKfjN', 'aYtjYY2QC5bQt84g', '', '', '', '', '', '', 0, 0),
+	(1, 'nZuYWCX5', 'cSPd6PtdYsakmxW8', '', '', '', '', '', '', 0, 0),
+	(2, '4hH7mUr8', 'qFNEbPew4Gnbegn7', '', '', '', '', '', '', 0, 0),
+	(3, 'RahCN7rm', 'KQqgCmGHVJ5wPu59', '', '', '', '', '', '', 0, 0),
+	(6, 'R3dAUyFk', 'nKpYrjsx5UdPuMS4', '', '', '', '', '', '4C-CC-6A-05-70-7B', 0, 0);
 /*!40000 ALTER TABLE `player_player` ENABLE KEYS */;
 
 
@@ -290,7 +322,7 @@ CREATE TABLE IF NOT EXISTS `player_price` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='时段价格表';
 
--- Dumping data for table player.player_price: ~0 rows (approximately)
+-- Dumping data for table player.player_price: ~2 rows (approximately)
 /*!40000 ALTER TABLE `player_price` DISABLE KEYS */;
 INSERT INTO `player_price` (`id`, `screen_id`, `start`, `end`, `price`) VALUES
 	(1, 4, '8:00', '9:00', 18.00),
@@ -3671,7 +3703,7 @@ CREATE TABLE IF NOT EXISTS `player_role` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='角色表';
 
--- Dumping data for table player.player_role: ~4 rows (approximately)
+-- Dumping data for table player.player_role: ~3 rows (approximately)
 /*!40000 ALTER TABLE `player_role` DISABLE KEYS */;
 INSERT INTO `player_role` (`id`, `name`, `pid`, `status`, `remark`) VALUES
 	(1, '管理员', 0, 0, '管理员'),
@@ -3721,7 +3753,7 @@ CREATE TABLE IF NOT EXISTS `player_screen` (
   `is_delete` tinyint(2) DEFAULT '0' COMMENT '是否删除，0-未删除，1-已删除',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='屏幕表';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='屏幕表';
 
 -- Dumping data for table player.player_screen: ~6 rows (approximately)
 /*!40000 ALTER TABLE `player_screen` DISABLE KEYS */;
@@ -3730,7 +3762,8 @@ INSERT INTO `player_screen` (`id`, `name`, `remark`, `size_x`, `size_y`, `resolu
 	(2, '测试screen1', '', 200, 200, 256, 256, 0, 0, '', '', 1, 3, 44, 455, '', '', '', 0, 0),
 	(3, '测试screen2', '', 128, 128, 512, 512, 0, 0, '', '', 13, 24, 311, 2599, '', '', '', 0, 0),
 	(4, '高新路大屏', '高新路广告大屏', 0, 0, 256, 256, 0, 1, '108.9091860000', '34.2376840000', 13, 24, 311, 0, '高新路科技路十字西200米', '', '', 0, 1474877545),
-	(5, '光华路大屏', '光华路led电子大屏', 100, 100, 1024, 1024, 0, 0, '108.9125450000', '34.2401460000', 13, 24, 311, 2599, '高新路与光华路十字西南角', '', '', 0, 1474881091);
+	(5, '光华路大屏', '光华路led电子大屏', 100, 100, 1024, 1024, 0, 0, '108.9125450000', '34.2401460000', 13, 24, 311, 2599, '高新路与光华路十字西南角', '', '', 0, 1474881091),
+	(6, '陕西省体育场东门大屏', '体育场大屏', 100, 100, 1024, 1024, 0, 0, '108.9499910000', '34.2386350000', 13, 24, 311, 2598, '长安路立交', '', '', 0, 1475031889);
 /*!40000 ALTER TABLE `player_screen` ENABLE KEYS */;
 
 
@@ -3745,7 +3778,7 @@ CREATE TABLE IF NOT EXISTS `player_user` (
   `realname` varchar(64) DEFAULT '' COMMENT '真实姓名',
   `address` varchar(128) DEFAULT '' COMMENT '地址',
   `puid` int(11) NOT NULL DEFAULT '0' COMMENT '父UID',
-  `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '用户状态，0-正常，1-禁用',
+  `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '用户状态，0-正常，1-禁用，2-未认证',
   `type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '用户类型，0-管理员，1-代理用户，2-普通用户',
   `is_del` tinyint(2) NOT NULL DEFAULT '0' COMMENT '是否删除，0-未删除，1-已删除',
   `lasttime` int(11) DEFAULT '0' COMMENT '上次登录时间',
@@ -3760,11 +3793,11 @@ CREATE TABLE IF NOT EXISTS `player_user` (
 -- Dumping data for table player.player_user: ~5 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `is_del`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '', '', '', 0, 0, 0, 0, 1474943372, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
-	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15934854815', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 1474526615, '127.0.0.1', 1474340261, '', '', 0),
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '15934854815', '梁健', '西安软件园', 0, 0, 0, 0, 1475049676, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
+	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15999999999', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 1474526615, '127.0.0.1', 1474340261, '', '', 0),
 	(10, '', '###1b2967588713b658dd803ed0c94d726d', '136048524@qq.com', '15934854816', '梁健', '西安软件园', 0, 0, 1, 0, 0, '0.0.0.0', 1474361171, 'J6zAkThcdrkj', '', 0),
-	(11, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@bestfu.com', '15934854817', '', '', 0, 0, 1, 0, 0, '0.0.0.0', 1474425987, 'CF8teK5B2fyx', '', 0),
-	(13, '', '###1b2967588713b658dd803ed0c94d726d', 'nova_liangjian@126.com', '', '', '', 11, 0, 2, 0, 1474614681, '127.0.0.1', 1474427588, '', '', 0);
+	(11, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@bestfu.com', '15934854817', '', '', 0, 0, 1, 0, 1475032479, '127.0.0.1', 1474425987, 'CF8teK5B2fyx', '', 0),
+	(13, '', '###1b2967588713b658dd803ed0c94d726d', 'nova_liangjian@126.com', '', '', '', 11, 0, 2, 0, 1475049629, '127.0.0.1', 1474427588, '', 'a5cb0891759937e15ad9c79d72ecdfdcc1f18552', 1475054081);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

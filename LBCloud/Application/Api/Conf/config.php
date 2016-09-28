@@ -22,9 +22,11 @@ return array(
 	//未登录可访问模块
 	'manager_not_logged' => array(
 		'login',
+		'refresh_token',
 	),
 	//空数据可访问模块
 	'manager_param_empty' => array(
+		'refresh_token',
 		'configuration',
 		'screens',
 		'programs'

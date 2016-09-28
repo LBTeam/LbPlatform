@@ -17,9 +17,9 @@ class ManagerController extends CommonController
 	public function _initialize(){
 		$request = file_get_contents('php://input');
 		/*登录令牌（token）检测开始*/
-		/*$token = I("request.token");
+		$token = I("request.token");
 		$this->user_model = D("User");
-		if(in_array(ACTION_NAME, C("manager_not_logged"))){
+		/*if(in_array(ACTION_NAME, C("manager_not_logged"))){
 			//未登录可访问模块
 			//不检查登录令牌
 			
@@ -28,20 +28,20 @@ class ManagerController extends CommonController
 			if($token){
 				$this->user_id = $this->user_model->check_token($token);
 				if($this->user_id === false){
-					$response = array('err_code'=>'010002', 'msg'=>"Token error");
-					$this->ajaxReturn($response);exit;
+					$respones = array('err_code'=>'010002', 'msg'=>"Token error");
+					$this->ajaxReturn($respones);exit;
 				}else{
 					if(!$this->user_id){
-						$response = array('err_code'=>'010003', 'msg'=>"Token timeout");
-						$this->ajaxReturn($response);exit;
+						$respones = array('err_code'=>'010003', 'msg'=>"Token timeout");
+						$this->ajaxReturn($respones);exit;
 					}
 				}
 			}else{
-				$response = array('err_code'=>'010002', 'msg'=>"Token error");
-				$this->ajaxReturn($response);exit;
+				$respones = array('err_code'=>'010002', 'msg'=>"Token error");
+				$this->ajaxReturn($respones);exit;
 			}
 		}*/
-		$this->user_id = 1;
+		$this->user_id = 13;
 		/*登录令牌（token）检测结束*/
 		$this->param = json_decode($request, true);
 		/*请求数据检测开始*/
@@ -51,8 +51,8 @@ class ManagerController extends CommonController
 		}else{
 			//检查请求数据
 			if(empty($this->param) === true){
-				$response = array('err_code'=>'010001', 'msg'=>"Protocol content error");
-				$this->ajaxReturn($response);exit;
+				$respones = array('err_code'=>'010001', 'msg'=>"Protocol content error");
+				$this->ajaxReturn($respones);exit;
 			}
 		}
 		//file_put_contents('./1.log', json_encode($this->param)."\r\n", FILE_APPEND);
@@ -73,8 +73,8 @@ class ManagerController extends CommonController
 		$configure['mediaBucket']		= C("oss_media_bucket");
 		$configure['programBucket']		= C("oss_program_bucket");
 		//$configure = encrypt(json_encode($configure));
-		$response = array("err_code"=>"000000", "msg"=>"ok", 'data'=>$configure);
-		$this->ajaxReturn($response);
+		$respones = array("err_code"=>"000000", "msg"=>"ok", 'data'=>$configure);
+		$this->ajaxReturn($respones);
 	}
 
 	/**
@@ -84,7 +84,7 @@ class ManagerController extends CommonController
 		$obj = $this->param;
 		$username = $obj['user'];
 		$password = $obj['pwd'];
-		$response = array();
+		$respones = array();
 		$user_info = $this->user_model->user_by_email($username);
 		if($user_info){
 			$db_pwd = $user_info['password'];
@@ -102,24 +102,56 @@ class ManagerController extends CommonController
 				$res = $this->user_model->save($data);
 				if($res){
 					$return = array('token'=>$token, 'expire'=>7200);
-					$response = array('err_code'=>'000000', 'msg'=>"ok", 'data'=>$return);
+					$respones = array('err_code'=>'000000', 'msg'=>"ok", 'data'=>$return);
 				}else{
-					$response = array('err_code'=>'010103', 'msg'=>"Login failed");
+					$respones = array('err_code'=>'010103', 'msg'=>"Login failed");
 				}
 			}else{
-				$response = array('err_code'=>'010102', 'msg'=>"Password error");
+				$respones = array('err_code'=>'010102', 'msg'=>"Password error");
 			}
 		}else{
-			$response = array('err_code'=>'010101', 'msg'=>"User does not exist");
+			$respones = array('err_code'=>'010101', 'msg'=>"User does not exist");
 		}
-		$this->ajaxReturn($response);
+		$this->ajaxReturn($respones);
 	}
 	
 	/**
 	 * 刷新token
 	 */
 	public function refresh_token(){
-		
+		$token = I("request.token", "");
+		if($token){
+			$user_id = $this->user_model->check_token($token);
+			if($user_id === false){
+				$respones = array('err_code'=>'010002', 'msg'=>"Token not found");
+			}else{
+				if($user_id){
+					//token未过期
+					$respones = array('err_code'=>'010005', 'msg'=>"Token not expired");
+				}else{
+					$user_info = $this->user_model->user_by_token($token, "uid,email,phone");
+					$username = $user_info['email'] ? trim($user_info['email']) : trim($user_info['phone']);
+					$access_token = create_access_token($username);
+					$token = $access_token['token'];
+					$expire = $access_token['expire'];
+					
+					$data = array();
+					$data['uid'] = $user_info['uid'];
+					$data['token'] = $token;
+					$data['expire'] = $expire;
+					$res = $this->user_model->save($data);
+					if($res){
+						$return = array('token'=>$token, 'expire'=>7200);
+						$respones = array('err_code'=>'000000', 'msg'=>"ok", 'data'=>$return);
+					}else{
+						$respones = array('err_code'=>'010006', 'msg'=>"Token refresh failed");
+					}
+				}
+			}
+		}else{
+			$respones = array('err_code'=>'010004', 'msg'=>"Token empty");
+		}
+		$this->ajaxReturn($respones);
 	}
 	
 	/**
@@ -217,12 +249,12 @@ class ManagerController extends CommonController
 				$cmd_del = $cmd_model->remove_cmd($user_id, $screens, 0, 0);
 				$cmd_add = $cmd_model->release_cmd($cmds);
 			}
-			$response = array("err_code"=>"000000","msg"=>"success");
+			$respones = array("err_code"=>"000000","msg"=>"success");
 		}else{
 			//媒体
 			$media_model = D("Media");
 			$media_info = $media_model->media_by_name_md5($filename, $filemd5, $user_id);
-			file_put_contents('./1.log', json_encode($media_info)."\r\n", FILE_APPEND);
+			//file_put_contents('./1.log', json_encode($media_info)."\r\n", FILE_APPEND);
 			$oss_res = true;
 			if($media_info['size'] > C("oss_100K_size")){
 				$AliyunOSS = new AliyunOSS();
@@ -233,19 +265,19 @@ class ManagerController extends CommonController
 				foreach($fileparts as $val){
 					$parts[] = array('PartNumber'=>$val['PartNumber'],'ETag'=>strtoupper($val['MD5']));
 				}
-				file_put_contents('./1.log', json_encode($parts)."\r\n", FILE_APPEND);
+				//file_put_contents('./1.log', json_encode($parts)."\r\n", FILE_APPEND);
 				$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->media_bucket);
-				file_put_contents('./1.log', json_encode($oss_res)."\r\n", FILE_APPEND);
+				//file_put_contents('./1.log', json_encode($oss_res)."\r\n", FILE_APPEND);
 			}
 			if($oss_res){
 				$media_map = array('id'=>$media_info['id']);
 				$media_res = $media_model->where($media_map)->setField('status', 1);
-				$response = array("err_code"=>"000000","msg"=>"success");
+				$respones = array("err_code"=>"000000","msg"=>"success");
 			}else{
-				$response = array("err_code"=>"010201","msg"=>"Merge split file failed");
+				$respones = array("err_code"=>"010201","msg"=>"Merge split file failed");
 			}
 		}
-		$this->ajaxReturn($response);
+		$this->ajaxReturn($respones);
 	}
 
 	/**
@@ -319,33 +351,17 @@ class ManagerController extends CommonController
 				);
 			}
 		}
-		$response = array();
-		$response['groups'] = array_values($groups);
-		$response['screens'] = $screens;
-		$this->ajaxReturn($response);
+		$respones = array();
+		$respones['groups'] = array_values($groups);
+		$respones['screens'] = $screens;
+		$this->ajaxReturn($respones);
 	}
 
 	/**
 	 * 发布方案
 	 */
 	public function publish(){
-		$obj = $this->param;
-		$groups = $obj['groups'];
-		$screens = $obj['screens'];
-		$program = $obj['program'];
-		$user_id = $this->user_id;
-		$program_model = D("Program");
-		$release = $program_model->program_can_release($program, $user_id);
-		if($release){
-			$group_model = D("Group");
-			$g_screens = $group_model->group_screens($groups, $user_id);
-			$all_screen = array_unique(array_merge($g_screens, $screens));
-			
-			
-		}else{
-			$response = array('err_code'=>'010110', 'msg'=>"Program is not complete, can not be released");
-		}
-		$this->ajaxReturn($response);
+		
 	}
 	
 	/**

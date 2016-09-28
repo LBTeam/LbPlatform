@@ -5,6 +5,11 @@ use Api\Service\AliyunOSS;
 
 class DemoController extends Controller
 {
+	public function demo(){
+		$response = array('err_code'=>'010101', 'msg'=>"User does not exist");
+		$this->ajaxReturn($response);
+	}
+	
 	public function index(){
 		$AliyunOSS = new AliyunOSS();
 		/*$file = "./test.png";
