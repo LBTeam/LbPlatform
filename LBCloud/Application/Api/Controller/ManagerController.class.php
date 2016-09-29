@@ -234,7 +234,6 @@ class ManagerController extends CommonController
 			$cmds = array();
 			foreach($screens as $val){
 				$cmds[] = array(
-					'user_id'	=> $user_id,
 					'screen_id'	=> $val,
 					'type'		=> 0,
 					'param'		=> json_encode(array('program_id'=>$prog_info['id'])),
@@ -246,7 +245,7 @@ class ManagerController extends CommonController
 			}
 			if($cmds){
 				$cmd_model = D("Command");
-				$cmd_del = $cmd_model->remove_cmd($user_id, $screens, 0, 0);
+				$cmd_del = $cmd_model->remove_cmd($screens, 0, 0);
 				$cmd_add = $cmd_model->release_cmd($cmds);
 			}
 			$respones = array("err_code"=>"000000","msg"=>"success");

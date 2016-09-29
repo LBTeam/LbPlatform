@@ -15,11 +15,11 @@ class PlayerController extends CommonController
 	public function _initialize(){
 		$request = file_get_contents('php://input');
 		$this->param = json_decode($request, true);
-		$this->param = array(
+		/*$this->param = array(
 			'Id' => "R3dAUyFk",
 			'Key' => 'nKpYrjsx5UdPuMS4',
 			'Mac' => '4C-CC-6A-05-70-7B'
-		);
+		);*/
 		if(empty($this->param) === true){
 			$respones = array('err_code'=>'010001', 'msg'=>"Protocol content error");
 			$this->ajaxReturn($respones);exit;
@@ -63,6 +63,16 @@ class PlayerController extends CommonController
 	
 	/**
 	 * 心跳
+	 * CmdType	0-发布播放方案
+	 * 		  	1-锁定屏幕参数更新
+	 * 			2-心跳周期更新
+	 * 			3-监控数据上传参数更新
+	 * 			4-软件定时开关时间更新
+	 * 			5-屏幕参数更新
+	 * 			6-屏幕工作时间更新
+	 * 			7-播放方案紧急插播
+	 * 			8-离线策略
+	 * 			9-终端长连接重连
 	 */
 	public function heartbeat(){
 		$obj = $this->param;
@@ -80,17 +90,17 @@ class PlayerController extends CommonController
 			
 			$screen_model = D("Screen");
 			$cmd_model = D("Command");
-			$plan_model = D("Program");
-			$media_model = D("Media");
-			$AliyunOSS = new AliyunOSS();
 			$screen = $screen_model->screen_by_id($led_id);
-			$cmds_list = $cmd_model->cmds_list($screen['uid'], $led_id);
+			$cmds_list = $cmd_model->cmds_list($led_id);
 			$cmds = array();
 			$cmd_ids = array();
 			foreach($cmds_list as $val){
 				$cmd_ids[] = $val['id'];
 				switch($val['type']){
 					case "0":
+						$plan_model = D("Program");
+						$media_model = D("Media");
+						$AliyunOSS = new AliyunOSS();
 						$param = json_decode($val['param'], true);
 						$plan = $plan_model->program_detail($param['program_id']);
 						if($plan){
@@ -147,7 +157,7 @@ class PlayerController extends CommonController
 	 * CPU温度		cpu temperature
 	 * 风扇转速		fan speed
 	 */
-	public function alarm(){
+	public function monitor(){
 		$obj = $this->param;
 		$bind_id	= $obj['Id'];
 		$bind_key	= $obj['Key'];
@@ -155,9 +165,47 @@ class PlayerController extends CommonController
 		$player_model = D("Player");
 		$player = $player_model->player_by_bind($id, $key, "id,mac");
 		if($mac == $player['mac']){
-			$screen_id = $player['id'];
-			$alarm_model = D("Alarm");
-			$alarm = $alarm_model->alarm_by_sid($screen_id);
+			$monitor = $obj['Monitor'];
+			if($monitor){
+				$params = array(
+					"Cpu_usage"			=> $monitor['cpu_usage'],
+					"Disk_ueage"		=> $monitor['disk_usage'],
+					"Memory_usage"		=> $monitor['memory_usage'],
+					"Cpu_temperature"	=> $monitor['cpu_temperature'],
+					"Fan_speed"			=> $monitor['fan_speed']
+				);
+				$screen_id = $player['id'];
+				$alarm_model = D("Alarm");
+				$alram = $alarm_model->alarm_by_sid($screen_id, 0, "id");
+				if($alram){
+					$data = array();
+					$data['id'] = $alram['id'];
+					$data['screen_id'] = $screen_id;
+					$data['type'] = 0;
+					$data['param'] = json_encode($params);
+					$data['up_time'] = NOW_TIME;
+					$res = $alarm_model->save($data);
+					if($res){
+						$respones = array("err_code"=>"000000","msg"=>"ok");
+					}else{
+						$respones = array("err_code"=>"020302","msg"=>"Monitor data reported failure");
+					}
+				}else{
+					$data = array();
+					$data['screen_id'] = $screen_id;
+					$data['type'] = 0;
+					$data['param'] = json_encode($params);
+					$data['up_time'] = NOW_TIME;
+					$res = $alarm_model->add($data);
+					if($res){
+						$respones = array("err_code"=>"000000","msg"=>"ok");
+					}else{
+						$respones = array("err_code"=>"020302","msg"=>"Monitor data reported failure");
+					}
+				}
+			}else{
+				$respones = array("err_code"=>"020301","msg"=>"Monitor data empty");
+			}
 		}else{
 			$respones = array("err_code"=>"020201","msg"=>"Player MAC error");
 		}

@@ -19,4 +19,3 @@ class AlarmModel extends Model
 		return $this->field($field)->where($map)->find();
 	}
 }
-?>

@@ -31,20 +31,30 @@ class SystemController extends CommonController
         if($config && is_array($config)){
             $cfg_model = D("Config");
             $cfg_param = array();
+            $cfg_keys = array_keys($config);
+            $map = array('key' => array('IN', $cfg_keys));
             foreach ($config as $key => $value) {
-                $map = array('key' => $key);
-                $cfg = $cfg_model->where($map)->setField('value', $value);
-                if(!$cfg){
-                	$cfg_param[] = array(
-                		'key' => $key,
-                		'value'	=> $value
-                	);
-                }
+            	$cfg_param[] = array(
+            		'key' => $key,
+            		'value'	=> $value
+            	);
             }
+            $model = new \Think\Model();
+            $model->startTrans();
+            $del_res = $cfg_model->where($map)->delete();
+            $add_res = true;
             if($cfg_param){
-            	$cfg_model->addAll($cfg_param);
+            	$add_res = $cfg_model->addAll($cfg_param);
             }
+            if($del_res !== false && $add_res){
+            	$model->commit();
+            	$this->success('保存成功！');
+            }else{
+            	$modle->rollback();
+            	$this->error("保存失败！");
+            }
+        }else{
+        	$this->error("参数错误，保存失败！");
         }
-        $this->success('保存成功！');
     }
 }

@@ -406,4 +406,115 @@ class ScreenController extends CommonController
             $this->error('删除失败！');
         }
 	}
+	
+	/**
+	 * 播放器参数配置
+	 * @param $item 配置项目
+	 * 			1-设置锁定屏幕密码
+	 * 			2-设置心跳周期
+	 * 			3-设置监控数据上传周期
+	 * 			4-设置定时开关
+	 */
+	public function setting($id=0,$item=1){
+		if(IS_POST){
+			if($id){
+				switch($item){
+					case 1:
+						$rules = array();
+						$rules[] = array('clock','require','请选择锁定开关！');
+						$rules[] = array('clock_password','require','锁定密码不能为空！');
+						$rules[] = array('clock_password', "/^[A-Za-z0-9]{6,16}$/", '锁定密码格式错误，6-16位字母数字组合！');
+						break;
+					case 2:
+						$rules = array();
+						$rules[] = array('heartbeat_cycle','require','心跳周期不能为空！');
+						$rules[] = array('heartbeat_cycle','number','心跳周期为数字！');
+						break;
+					case 3:
+						$rules = array();
+						$rules[] = array('alarm_cycle','require','上传周期不能为空！');
+						$rules[] = array('alarm_cycle','number','上传周期为数字！');
+						$rules[] = array('alarm_url','require','上传路径不能为空！');
+						break;
+					case 4:
+						$rules = array();
+						$rules[] = array('soft_enable','require','开启软件时间不能为空！');
+						$rules[] = array('soft_disable','require','关闭软件时间不能为空！');
+						break;
+					default:
+						$rules = array();
+						$rules[] = array('clock','require','请选择锁定开关！');
+						$rules[] = array('clock_password','require','锁定密码不能为空！');
+						break;
+				}
+				$set_model = D("Setting");
+				if($set_model->validate($rules)->create()){
+					$settings = $set_model->set_by_sid($id, "id");
+					if($settings){
+						$map = array("id"=>$id);
+						$data = array();
+						if(isset($_POST['clock'])){
+							$data['clock'] = I("post.clock");
+						}
+						if(isset($_POST['clock_password'])){
+							$data['clock_password'] = I("post.clock_password");
+						}
+						if(isset($_POST['heartbeat_cycle'])){
+							$data['heartbeat_cycle'] = I("post.heartbeat_cycle");
+						}
+						if(isset($_POST['alarm_cycle'])){
+							$data['alarm_cycle'] = I("post.alarm_cycle");
+						}
+						if(isset($_POST['alarm_url'])){
+							$data['alarm_url'] = I("post.alarm_url");
+						}
+						if(isset($_POST['soft_enable'])){
+							$data['soft_enable'] = I("post.soft_enable");
+						}
+						if(isset($_POST['soft_disable'])){
+							$data['soft_disable'] = I("post.soft_disable");
+						}
+						$res = $set_model->where($map)->save($data);
+						if($res !== false){
+							$this->success("修改成功！");
+						}else{
+							$this->error("修改失败！");
+						}
+					}else{
+						$data = array();
+						$data['id'] = $id;
+						$data['clock'] = I("post.clock", 1);
+						$data['clock_password'] = I("post.clock_password", "");
+						$data['heartbeat_cycle'] = I("post.heartbeat_cycle", "");
+						$data['alarm_cycle'] = I("post.alarm_cycle", "");
+						$data['alarm_url'] = I("post.alarm_url", "");
+						$data['soft_enable'] = I("post.soft_enable", "");
+						$data['soft_disable'] = I("post.soft_disable", "");
+						$res = $set_model->add($data);
+						if($res){
+							$this->success("修改成功！");
+						}else{
+							$this->error("修改失败！");
+						}
+					}
+				}else{
+					$this->error($set_model->getError());
+				}
+			}else{
+				$this->error("系统错误，非法访问！");
+			}
+		}else{
+			if($id){
+				$set_model = D("Setting");
+				$settings = $set_model->set_by_sid($id);
+				$template = "setting_{$item}";
+				$this->assign("screen_id", $id);
+				$this->assign("info", $settings);
+				$this->meta_title = "播放器参数配置";
+				$this->display($template);
+			}else{
+				$this->error("系统错误，非法访问！");
+			}
+		}
+	}
 }

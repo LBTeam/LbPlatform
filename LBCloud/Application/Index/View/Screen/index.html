@@ -88,6 +88,9 @@
 		                            <a href="{:U('price',array('id'=>$vo['id']))}">时段价格</a>
 		                            </if>
 		                            <a href="javascript:void(0);">播放记录</a>
+		                            <if condition="in_array('SCREEN/SETTING', $_SESSION['_ACCESS_LIST'])">
+		                            <a href="{:U('setting',array('id'=>$vo['id']))}">参数配置</a>
+		                            </if>
 		                            <a href="javascript:void(0);">一键关屏</a>
 		                            <a href="javascript:void(0);">紧急通知</a>
 		                        </td>
