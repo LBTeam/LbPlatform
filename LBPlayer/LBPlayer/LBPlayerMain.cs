@@ -223,6 +223,7 @@ namespace LBPlayer
                     case CmdType.DownloadPlan:
                         DownloadPlan(_cmdList[i]);
                         break;
+
                     default:
                         UnKnowCmd(_cmdList[i]);
                         break;
@@ -671,7 +672,7 @@ namespace LBPlayer
 
         private void UnKnowCmd(Cmd cmd)
         {
-
+            return;
         }
         #endregion
 
