@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<include file="Public/head"/>
+</head>
+<body>
+<div id="wrapper">
+  <include file="Public/header" /> 
+  <include file="Public/menu" />
+  <div id="page-wrapper"> 
+	  <div class="row">  
+	    <div id="main" class="col-lg-12 main">
+
+<block name="body">
+	<div class="main-title">
+	    <h2>用户组 [{$info.name}] 授权</h2>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div class="tab-wrap">            
+				<div class="tab-content panel-body">        
+					<div class="table-responsive">	
+						<form action="{:U()}" method="POST" class="form-inline auth-form" role="form" >
+							<volist name="nodes" id="node" >
+								<dl class="checkmod ">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<dt class="hd">              
+												<label class="checkbox"><input type="checkbox" name="access[]" value="{$node.id}" <if condition="$node['checked'] eq 1">checked="checked"</if> />&nbsp;&nbsp;{$node.title}</label>
+											</dt>
+										</div>
+										<div class="panel-body">
+											<notempty name="node['children']">
+											<dd class="bd">
+												<volist name="node['children']" id="child" >
+												<div class="rule_check" style="margin-bottom: 10px;">
+													<div style="padding-bottom: 10px;">
+														<label class="checkbox">&nbsp;&nbsp;<input type="checkbox" name="access[]" value="{$child.id}" <if condition="$child['checked'] eq 1">checked="checked"</if> />&nbsp;&nbsp;{$child.title}</label>
+													</div>
+													<notempty name="child['children']">
+													<span class="divsion">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+													<span class="child_row">
+														<volist name="child['children']" id="op">
+															<label class="checkbox">&nbsp;&nbsp;<input type="checkbox" name="access[]" value="{$op.id}" <if condition="$op['checked'] eq 1">checked="checked"</if> />&nbsp;&nbsp;{$op.title}&nbsp;&nbsp;</label>
+														</volist>
+													</span>
+													</notempty>
+												</div>
+												</volist>
+											</dd>
+											</notempty>
+										</div>
+									</div>
+								</dl>
+							</volist>
+							<div class="panel  panel-default">
+								<div class="panel-heading">
+									<input type="hidden" name="role_id" value="{$info.id}" />
+									<button class="btn btn-default submit-btn ajax-post" id="submit" type="submit" target-form="auth-form">确 定</button>
+									<button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+								</div>
+							</div> 
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</block>
+</div>  
+	  </div>
+	</div>	
+  <include file="Public/footer" />
+</div>    
+  <include file="Public/script" />
+</body>
+</html>
+<block name="script">
+    <script type="text/javascript">
+    </script>
+</block>

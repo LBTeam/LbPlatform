@@ -1,8 +1,11 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using LBManager.Infrastructure.Models;
+using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,16 +14,19 @@ namespace LBManager
 {
     public class ShellViewModel : BindableBase
     {
+        private ProgramScheduleListViewModel _scheduleListViewModel;
         public ShellViewModel()
         {
             ScheduleDetailViewModel = new ProgramScheduleDetailViewModel();
-            ScreenList = new ScreenListViewModel(new ScreenService());
-            
+            _scheduleListViewModel = new ProgramScheduleListViewModel();
+
+            ScreenList = new ScreenListViewModel(new ScreenService(), _scheduleListViewModel);
+
             LoginCommand = new DelegateCommand(() => { OpenLoginDialog(); });
             NewScheduleCommand = new DelegateCommand(() => { NewSchedule(); });
         }
 
-       
+
 
         private async void OpenLoginDialog()
         {
@@ -35,10 +41,56 @@ namespace LBManager
 
         private async void NewSchedule()
         {
-            var view = new EditScheduleView();
-            var result = await DialogHost.Show(view, "RootDialog", null, null);
+            var view = new EditScheduleView()
+            {
+                DataContext = new EditScheduleViewModel()
+            };
+
+            var result = await DialogHost.Show(view, "RootDialog", null, EditScheduleViewClosingEventHandler);
         }
 
+        private void EditScheduleViewClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
+        {
+            if ((bool)eventArgs.Parameter == false) return;
+            eventArgs.Cancel();
+
+            
+
+            DialogHost dialog = sender as DialogHost;
+            var view = dialog.DialogContent as EditScheduleView;
+            var viewModel = view.DataContext as EditScheduleViewModel;
+            string scheduleFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media", viewModel.ScheduleName+".playprog");
+
+            eventArgs.Session.UpdateContent(new SampleProgressDialog());
+
+            if (!File.Exists(scheduleFilePath))
+            {
+                // Create a file to write to.
+                using (StreamWriter sw = File.CreateText(scheduleFilePath))
+                {
+                    ScheduleFile scheduleFile = new ScheduleFile();
+                    scheduleFile.Id = Guid.NewGuid().ToString();
+                    scheduleFile.Name = string.Format("{0}.{1}", viewModel.ScheduleName, "playprog");
+                    scheduleFile.MediaList = new List<MediaFile>();
+                    foreach (var item in viewModel.MediaList)
+                    {
+                        var mediaFile = new MediaFile();
+                        mediaFile.FilePath = item.FilePath;
+                        mediaFile.Type = item.FileType;
+                        mediaFile.MD5 = item.FileMD5;
+                        scheduleFile.MediaList.Add(mediaFile);
+                    }
+                    sw.WriteLine(JsonConvert.SerializeObject(scheduleFile));
+                }
+            }
+
+            Task.Delay(TimeSpan.FromSeconds(1))
+                .ContinueWith((t, _) =>
+                    eventArgs.Session.Close(false), 
+                    null,
+                    TaskScheduler.FromCurrentSynchronizationContext());
+
+        }
 
         private ProgramScheduleDetailViewModel _scheduleDetailViewModel;
         public ProgramScheduleDetailViewModel ScheduleDetailViewModel
@@ -56,7 +108,7 @@ namespace LBManager
 
         public DelegateCommand LoginCommand { get; private set; }
 
-        public DelegateCommand NewScheduleCommand { get; private set; } 
+        public DelegateCommand NewScheduleCommand { get; private set; }
 
         private void ExtendedOpenedEventHandler(object sender, DialogOpenedEventArgs eventargs)
         {

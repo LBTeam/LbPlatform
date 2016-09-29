@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Threading;
 
 namespace LBManager
 {
@@ -33,12 +34,6 @@ namespace LBManager
             set { SetProperty(ref _scheduleFileInfoList, value); }
         }
 
-        private ScheduleFileInfo _selectedScheduleFile;
-        public ScheduleFileInfo SelectedScheduleFile
-        {
-            get { return _selectedScheduleFile; }
-            set { SetProperty(ref _selectedScheduleFile, value); }
-        }
 
         private void FetchProgramSchedules(string directoryPath)
         {
@@ -72,22 +67,29 @@ namespace LBManager
 
         private void _fileWatcher_Renamed(object sender, RenamedEventArgs e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void _fileWatcher_Changed(object sender, FileSystemEventArgs e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void _fileWatcher_Created(object sender, FileSystemEventArgs e)
         {
-            throw new NotImplementedException();
+            System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                ScheduleFileInfoList.Add(new ScheduleFileInfo(new FileInfo(e.FullPath)));
+            }), null);
+
+            //throw new NotImplementedException();
         }
     }
 
     public class ScheduleFileInfo : BindableBase
     {
+        public ScheduleFileInfo()
+        { }
         public ScheduleFileInfo(FileInfo fileInfo)
         {
             _fileName = fileInfo.Name;

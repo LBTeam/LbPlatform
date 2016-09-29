@@ -16,7 +16,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -94,6 +94,7 @@
     <Compile Include="EditScheduleView.xaml.cs">
       <DependentUpon>EditScheduleView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EditScheduleViewModel.cs" />
     <Compile Include="LoginDialog.xaml.cs">
       <DependentUpon>LoginDialog.xaml</DependentUpon>
     </Compile>
@@ -103,6 +104,7 @@
     <Compile Include="SampleProgressDialog.xaml.cs">
       <DependentUpon>SampleProgressDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ScheduleViewModel.cs" />
     <Compile Include="ScreenListView.xaml.cs">
       <DependentUpon>ScreenListView.xaml</DependentUpon>
     </Compile>
@@ -181,6 +183,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\LEDScreenSDK\LEDScreenSDK.vcxproj">
+      <Project>{546ef49c-2654-4b15-bff2-18f32a8d7f31}</Project>
+      <Name>LEDScreenSDK</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\MahAppsMetro\MahApps.Metro\MahApps.Metro.NET45.csproj">
       <Project>{942d11c4-29f5-46c4-8c14-4b976d56c637}</Project>
       <Name>MahApps.Metro.NET45</Name>

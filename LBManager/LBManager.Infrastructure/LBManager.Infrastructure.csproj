@@ -11,6 +11,7 @@
     <AssemblyName>LBManager.Infrastructure</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -47,17 +50,28 @@
     <Compile Include="Interfaces\ICheckService.cs" />
     <Compile Include="Interfaces\IChecksumProvider.cs" />
     <Compile Include="Interfaces\IScreenService.cs" />
+    <Compile Include="Models\CompleteMultipartUploadResult.cs" />
+    <Compile Include="Models\FileType.cs" />
     <Compile Include="Models\ImageMedia.cs" />
     <Compile Include="Models\Media.cs" />
+    <Compile Include="Models\MediaFile.cs" />
     <Compile Include="Models\MediaSchedule.cs" />
+    <Compile Include="Models\MediaTempInfo.cs" />
+    <Compile Include="Models\Schedule.cs" />
     <Compile Include="Models\Screen.cs" />
+    <Compile Include="Models\ScheduleFile.cs" />
     <Compile Include="Models\TextMedia.cs" />
+    <Compile Include="Models\UploadComplete.cs" />
+    <Compile Include="Models\UploadFileInfo.cs" />
+    <Compile Include="Models\UploadFileInfoForServer.cs" />
     <Compile Include="Models\VideoMedia.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\FileUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

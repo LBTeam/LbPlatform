@@ -9,64 +9,54 @@
              xmlns:params="http://schemas.codeplex.com/elysium/params"
              xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
-             mc:Ignorable="d" Width="450" Height="300"
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300" Width="500" Height="350">
+    <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition />
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <ToolBarTray Grid.Row="0">
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <Label Content="­播放方案名称"/>
+            <TextBox Width="200" Text="{Binding ScheduleName}"/>
+        </StackPanel>
+        <ToolBarTray Grid.Row="1">
             <ToolBar Style="{DynamicResource MaterialDesignToolBar}">
-                <Button ToolTip="新建播放方案" >
+                <Button ToolTip="新建播放方案" Command="{Binding AddMediaCommand}">
                     <materialDesign:PackIcon Kind="PlaylistPlus" Width="24" Height="24"/>
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <DataGrid Grid.Row="1"
-                  ItemsSource="{Binding ScreenList}" 
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding MediaList}" 
                    AutoGenerateColumns="False"
                    VerticalContentAlignment="Center"
                    Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}">
             <!--materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                    materialDesign:DataGridAssist.ColumnHeaderPadding="8"-->
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Name}" Width="*"
-                                            Header="名称"
+                <DataGridTextColumn Binding="{Binding FilePath}" Width="*"
+                                            Header="FilePath"
                                            />
                 <!--EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"-->
                 <!-- if you want to use the pop up style (MaterialDesignDataGridTextColumnPopupEditingStyle), you must use MaterialDataGridTextColumn -->
-                <materialDesign:MaterialDataGridTextColumn Binding="{Binding Width}" Width="*"
-                                                        Header="Width"   
+                <materialDesign:MaterialDataGridTextColumn Binding="{Binding FileSize}" Width="*"
+                                                        Header="Size"   
                                                         />
                 <!-- set a max length to get an indicator in the editor -->
-                <materialDesign:MaterialDataGridTextColumn Binding="{Binding PixelsWidth}" Width="*"
-                                                        Header="PixelsWidth" 
+                <materialDesign:MaterialDataGridTextColumn Binding="{Binding FileType}" Width="*"
+                                                        Header="Type" 
                                                         />
-                <materialDesign:MaterialDataGridComboBoxColumn Header="­Plan" 
-                                                               DisplayMemberPath="FileName"
-                                                               SelectedValueBinding="{Binding ScheduleList.SelectedScheduleFile}"
-                                                               ItemsSourceBinding="{Binding ScheduleList.ScheduleFileInfoList}" />
-
-                <DataGridTemplateColumn Header=""
-                                        Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <mycontrol:ExpanderMenu IsExpanded="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}">
-                                    <mycontrol:ExpanderMenuItem Style="{StaticResource PublishExpanderMenuItemStyle}" Command="{Binding PublishScheduleCommand}"/>
-                                    <mycontrol:ExpanderMenuItem Style="{StaticResource PreviewExpanderMenuItemStyle}" Command="{Binding PreviewScheduleCommand}"/>
-                                </mycontrol:ExpanderMenu>
-
-                            </Grid>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                <materialDesign:MaterialDataGridTextColumn Binding="{Binding FileMD5}" Width="*"
+                                                        Header="MD5" 
+                                                        />
+                
 
             </DataGrid.Columns>
         </DataGrid>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center"
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"
                     Margin="0 0 0 10">
             <Button IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}"
                     Command="{x:Static wpf:DialogHost.CloseDialogCommand}">
