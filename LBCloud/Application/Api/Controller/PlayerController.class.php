@@ -15,11 +15,11 @@ class PlayerController extends CommonController
 	public function _initialize(){
 		$request = file_get_contents('php://input');
 		$this->param = json_decode($request, true);
-		/*$this->param = array(
-			'Id' => "R3dAUyFk",
-			'Key' => 'nKpYrjsx5UdPuMS4',
+		$this->param = array(
+			'Id' => "deMkPdrk",
+			'Key' => 'sU3PjNesZ3f4KqXg',
 			'Mac' => '4C-CC-6A-05-70-7B'
-		);*/
+		);
 		if(empty($this->param) === true){
 			$respones = array('err_code'=>'010001', 'msg'=>"Protocol content error");
 			$this->ajaxReturn($respones);exit;
@@ -83,26 +83,23 @@ class PlayerController extends CommonController
 		$player = $player_model->player_by_bind($id, $key, "id,mac");
 		if($mac == $player['mac']){
 			$led_id = $player['id'];
-		
-			//testing start
-			$led_id = 1;
-			//testing end
-			
-			$screen_model = D("Screen");
 			$cmd_model = D("Command");
-			$screen = $screen_model->screen_by_id($led_id);
 			$cmds_list = $cmd_model->cmds_list($led_id);
 			$cmds = array();
 			$cmd_ids = array();
 			foreach($cmds_list as $val){
+				$cmdParam = array();
 				$cmd_ids[] = $val['id'];
+				$param = json_decode($val['param'], true);
 				switch($val['type']){
+					/*0-发布播放方案*/
 					case "0":
+						$screen_model = D("Screen");
 						$plan_model = D("Program");
 						$media_model = D("Media");
 						$AliyunOSS = new AliyunOSS();
-						$param = json_decode($val['param'], true);
 						$plan = $plan_model->program_detail($param['program_id']);
+						$screen = $screen_model->screen_by_id($led_id);
 						if($plan){
 							$medias = array();
 							$media_list = json_decode($plan['info'], true);
@@ -120,17 +117,75 @@ class PlayerController extends CommonController
 								'ProgramUrl'	=> $AliyunOSS->download_uri($this->program_bucket, $plan['object']),
 								'Medias'		=> $medias
 							);
-							$cmds[] = array(
-								"CmdId"		=>	$val['id'],
-								"CmdType"	=>	intval($val['type']),
-								"CmdParam"	=>	base64_encode(json_encode($cmdParam))
+						}
+						break;
+					/*1-锁定屏幕参数更新*/
+					case "1":
+						if($param){
+							$cmdParam = array(
+								"enable" => $param['clock'],
+								"password" => $param['clock_password']
 							);
 						}
 						break;
-					case "1":
+					/*2-心跳周期更新*/
+					case "2":
+						if($param){
+							$cmdParam = array(
+								"cycle" => intval($param['heartbeat_cycle'])
+							);
+						}
+						break;
+					/*3-监控数据上传参数更新*/
+					case "3":
+						if($param){
+							$cmdParam = array(
+								"cycle" => intval($param['alarm_cycle']),
+								"url" => $param['alarm_url']
+							);
+						}
+						break;
+					/*4-软件定时开关时间更新*/
+					case "4":
+						if($param){
+							$cmdParam = array(
+								"enable" => $param['soft_enable'],
+								"disable" => $param['soft_disable']
+							);
+						}
+						break;
+					/*5-屏幕参数更新*/
+					case "5":
+						if($param){
+							$cmdParam = array(
+								"id"		=> $id,
+								"key"		=> $key,
+								"name"		=> $param['name'],
+								"size_x"	=> intval($param['size_x']),
+								"size_y"	=> intval($param['size_y']),
+								"resolu_x"	=> intval($param['resolu_x']),
+								"resolu_y"	=> intval($param['resolu_y'])
+							);
+						}
+						break;
+					/*6-屏幕工作时间更新*/
+					case "6":
+						if($param){
+							$cmdParam = array(
+								"start" => $param['start'],
+								"end" => $param['end']
+							);
+						}
 						break;
 					default:
 						break;
+				}
+				if($cmdParam){
+					$cmds[] = array(
+						"CmdId"		=>	$val['id'],
+						"CmdType"	=>	intval($val['type']),
+						"CmdParam"	=>	base64_encode(json_encode($cmdParam))
+					);
 				}
 			}
 			//更改命令已下发
@@ -163,7 +218,7 @@ class PlayerController extends CommonController
 		$bind_key	= $obj['Key'];
 		$mac		= strtoupper(str_replace(':', '-', $obj['Mac']));
 		$player_model = D("Player");
-		$player = $player_model->player_by_bind($id, $key, "id,mac");
+		$player = $player_model->player_by_bind($bind_id, $bind_key, "id,mac");
 		if($mac == $player['mac']){
 			$monitor = $obj['Monitor'];
 			if($monitor){
@@ -212,6 +267,63 @@ class PlayerController extends CommonController
 		$this->ajaxReturn($respones);
 	}
 	
+	/**
+	 * 命令执行结果
+	 */
+	public function cmd_result(){
+		$obj = $this->param;
+		$bind_id	= $obj['Id'];
+		$bind_key	= $obj['Key'];
+		$mac		= strtoupper(str_replace(':', '-', $obj['Mac']));
+		$player_model = D("Player");
+		$player = $player_model->player_by_bind($bind_id, $bind_key, "id,mac");
+		if($mac == $player['mac']){
+			$cmd_id = $obj['CmdId'];
+			$cmd_res = $obj['CmdRes'];
+			if($cmd_id){
+				$cmd_model = D("Command");
+				$map = array("id" => $cmd_id);
+				$status = $cmd_res ? 2 : 3;
+				$res = $cmd_model->where($map)->setField("status", $status);
+				if($res !== false){
+					$respones = array("err_code"=>"000000","msg"=>"ok");
+				}else{
+					$respones = array("err_code"=>"020402","msg"=>"failure");
+				}
+			}else{
+				$respones = array("err_code"=>"020401","msg"=>"Command id error");
+			}
+		}else{
+			$respones = array("err_code"=>"020201","msg"=>"Player MAC error");
+		}
+		$this->ajaxReturn($respones);
+	}
+	
+	/**
+	 * 上传播放记录
+	 */
+	public function record(){
+		$obj = $this->param;
+		$bind_id	= $obj['Id'];
+		$bind_key	= $obj['Key'];
+		$mac		= strtoupper(str_replace(':', '-', $obj['Mac']));
+		$player_model = D("Player");
+		$player = $player_model->player_by_bind($bind_id, $bind_key, "id,mac");
+		if($mac == $player['mac']){
+			$plan_id = $obj['ProgramId'];
+			if($plan_id){
+				$plan_model = D("Program");
+				$plan = $plan_model->program_detail($plan_id);
+				
+				
+			}else{
+				$respones = array("err_code"=>"020501","msg"=>"Program id error");
+			}
+		}else{
+			$respones = array("err_code"=>"020201","msg"=>"Player MAC error");
+		}
+		$this->ajaxReturn($respones);
+	}
 
 	public function screen(){
 		$screen_model = D("Screen");

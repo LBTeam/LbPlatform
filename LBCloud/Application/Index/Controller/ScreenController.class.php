@@ -100,6 +100,24 @@ class ScreenController extends CommonController
 				}
 				if($led_id && $player_res && $bind_res){
 					$model->commit();
+					/*命令下发开始*/
+					$param = array(
+						"name"		=> $led_data['name'],
+						"size_x"	=> $led_data['size_x'],
+						"size_y"	=> $led_data['size_y'],
+						"resolu_x"	=> $led_data['resolu_x'],
+						"resolu_y"	=> $led_data['resolu_y']
+					);
+					$cmd_data = array();
+					$cmd_data['screen_id'] = $led_id;
+					$cmd_data['type'] = 5;
+					$cmd_data['param'] = json_encode($param);
+					$cmd_data['publish'] = NOW_TIME;
+					$cmd_data['execute'] = NOW_TIME;
+					$cmd_data['expired'] = NOW_TIME;
+					$cmd_model = D("Command");
+					$cmd_model->add($cmd_data);
+					/*命令下发结束*/
 					$this->success('新增成功', U('index'));
 				}else{
 					$model->rollback();
@@ -183,6 +201,27 @@ class ScreenController extends CommonController
 				}
 				if($save_res !== false && $unbind_res !== false && $bind_res){
 					$model->commit();
+					if($save_res){
+						/*命令下发开始*/
+						$param = array(
+							"name"		=> $led_data['name'],
+							"size_x"	=> $led_data['size_x'],
+							"size_y"	=> $led_data['size_y'],
+							"resolu_x"	=> $led_data['resolu_x'],
+							"resolu_y"	=> $led_data['resolu_y']
+						);
+						$cmd_data = array();
+						$cmd_data['screen_id'] = $id;
+						$cmd_data['type'] = 5;
+						$cmd_data['param'] = json_encode($param);
+						$cmd_data['publish'] = NOW_TIME;
+						$cmd_data['execute'] = NOW_TIME;
+						$cmd_data['expired'] = NOW_TIME;
+						$cmd_model = D("Command");
+						$cmd_model->rm_cmd_by_sid($id, 5);
+						$cmd_model->add($cmd_data);
+						/*命令下发结束*/
+					}
 					$this->success('修改成功', U('index'));
 				}else{
 					$model->rollback();
@@ -266,6 +305,24 @@ class ScreenController extends CommonController
 				$data['end'] = I("post.end");
 				$player_res = $player_model->where($map)->save($data);
 				if($player_res !== false){
+					if($player_res){
+						/*命令下发开始*/
+						$param = array(
+							"start"=>$data['start'],
+							"end"=>$data['end']
+						);
+						$cmd_data = array();
+						$cmd_data['screen_id'] = $id;
+						$cmd_data['type'] = 6;
+						$cmd_data['param'] = json_encode($param);
+						$cmd_data['publish'] = NOW_TIME;
+						$cmd_data['execute'] = NOW_TIME;
+						$cmd_data['expired'] = NOW_TIME;
+						$cmd_model = D("Command");
+						$cmd_model->rm_cmd_by_sid($id, 6);
+						$cmd_model->add($cmd_data);
+						/*命令下发结束*/
+					}
 					$this->success('操作成功', U('index'));
 				}else{
 					$this->error('操作失败');
@@ -442,6 +499,7 @@ class ScreenController extends CommonController
 						$rules[] = array('soft_disable','require','关闭软件时间不能为空！');
 						break;
 					default:
+						$item = 1;
 						$rules = array();
 						$rules[] = array('clock','require','请选择锁定开关！');
 						$rules[] = array('clock_password','require','锁定密码不能为空！');
@@ -449,49 +507,67 @@ class ScreenController extends CommonController
 				}
 				$set_model = D("Setting");
 				if($set_model->validate($rules)->create()){
+					$data = array();
+					if(isset($_POST['clock'])){
+						$data['clock'] = I("post.clock");
+					}
+					if(isset($_POST['clock_password'])){
+						$data['clock_password'] = I("post.clock_password");
+					}
+					if(isset($_POST['heartbeat_cycle'])){
+						$data['heartbeat_cycle'] = I("post.heartbeat_cycle");
+					}
+					if(isset($_POST['alarm_cycle'])){
+						$data['alarm_cycle'] = I("post.alarm_cycle");
+					}
+					if(isset($_POST['alarm_url'])){
+						$data['alarm_url'] = I("post.alarm_url");
+					}
+					if(isset($_POST['soft_enable'])){
+						$data['soft_enable'] = I("post.soft_enable");
+					}
+					if(isset($_POST['soft_disable'])){
+						$data['soft_disable'] = I("post.soft_disable");
+					}
 					$settings = $set_model->set_by_sid($id, "id");
 					if($settings){
 						$map = array("id"=>$id);
-						$data = array();
-						if(isset($_POST['clock'])){
-							$data['clock'] = I("post.clock");
-						}
-						if(isset($_POST['clock_password'])){
-							$data['clock_password'] = I("post.clock_password");
-						}
-						if(isset($_POST['heartbeat_cycle'])){
-							$data['heartbeat_cycle'] = I("post.heartbeat_cycle");
-						}
-						if(isset($_POST['alarm_cycle'])){
-							$data['alarm_cycle'] = I("post.alarm_cycle");
-						}
-						if(isset($_POST['alarm_url'])){
-							$data['alarm_url'] = I("post.alarm_url");
-						}
-						if(isset($_POST['soft_enable'])){
-							$data['soft_enable'] = I("post.soft_enable");
-						}
-						if(isset($_POST['soft_disable'])){
-							$data['soft_disable'] = I("post.soft_disable");
-						}
 						$res = $set_model->where($map)->save($data);
 						if($res !== false){
+							if($res){
+								/*命令下发开始*/
+								$cmd_data = array();
+								$cmd_data['screen_id'] = $id;
+								$cmd_data['type'] = $item;
+								$cmd_data['param'] = json_encode($data);
+								$cmd_data['publish'] = NOW_TIME;
+								$cmd_data['execute'] = NOW_TIME;
+								$cmd_data['expired'] = NOW_TIME;
+								$cmd_model = D("Command");
+								$cmd_model->rm_cmd_by_sid($id, $item);
+								$cmd_model->add($cmd_data);
+								/*命令下发结束*/
+							}
 							$this->success("修改成功！");
 						}else{
 							$this->error("修改失败！");
 						}
 					}else{
-						$data = array();
 						$data['id'] = $id;
-						$data['clock'] = I("post.clock", 1);
-						$data['clock_password'] = I("post.clock_password", "");
-						$data['heartbeat_cycle'] = I("post.heartbeat_cycle", "");
-						$data['alarm_cycle'] = I("post.alarm_cycle", "");
-						$data['alarm_url'] = I("post.alarm_url", "");
-						$data['soft_enable'] = I("post.soft_enable", "");
-						$data['soft_disable'] = I("post.soft_disable", "");
 						$res = $set_model->add($data);
 						if($res){
+							/*命令下发开始*/
+							$cmd_data = array();
+							$cmd_data['screen_id'] = $id;
+							$cmd_data['type'] = $item;
+							$cmd_data['param'] = json_encode($data);
+							$cmd_data['publish'] = NOW_TIME;
+							$cmd_data['execute'] = NOW_TIME;
+							$cmd_data['expired'] = NOW_TIME;
+							$cmd_model = D("Command");
+							$cmd_model->rm_cmd_by_sid($id, $item);
+							$cmd_model->add($cmd_data);
+							/*命令下发结束*/
 							$this->success("修改成功！");
 						}else{
 							$this->error("修改失败！");

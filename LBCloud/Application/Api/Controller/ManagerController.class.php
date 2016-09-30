@@ -357,13 +357,6 @@ class ManagerController extends CommonController
 	}
 
 	/**
-	 * 发布方案
-	 */
-	public function publish(){
-		
-	}
-	
-	/**
 	 * 播放方案列表
 	 */
 	public function programs(){
@@ -395,13 +388,6 @@ class ManagerController extends CommonController
 			}
 		}
 		$this->ajaxReturn($programs);
-	}
-	
-	/**
-	 * 媒体列表
-	 */
-	public function medias(){
-		
 	}
 	
 	/**

@@ -61,7 +61,9 @@ class IndexController extends CommonController {
 				array('email','require','邮箱不能为空！'),
 				array('email','email','邮箱格式错误！'),
 				array('email','','邮箱已经存在！',0,'unique',2),
+				array('phone', "/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/", '手机号码格式错误！'),
 				array('phone','','手机号码已经存在！',2,'unique',2)
+				
 			);
 			if($user_model->validate($rules)->create()){
 				$data = array();
