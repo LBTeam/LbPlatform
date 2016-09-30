@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-09-30 17:39:56
+-- Date/time:                    2016-09-30 17:51:33
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `player_command` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='命令';
 
--- Dumping data for table player.player_command: ~5 rows (approximately)
+-- Dumping data for table player.player_command: ~7 rows (approximately)
 /*!40000 ALTER TABLE `player_command` DISABLE KEYS */;
 INSERT INTO `player_command` (`id`, `screen_id`, `type`, `param`, `publish`, `execute`, `expired`, `status`) VALUES
 	(6, 4, 1, '{"clock":"1","clock_password":"liangjian123","id":"4"}', 1475218043, 1475218043, 1475218043, 1),
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS `player_group` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='屏幕组';
 
--- Dumping data for table player.player_group: ~3 rows (approximately)
+-- Dumping data for table player.player_group: ~4 rows (approximately)
 /*!40000 ALTER TABLE `player_group` DISABLE KEYS */;
 INSERT INTO `player_group` (`id`, `uid`, `name`, `remark`, `addtime`) VALUES
 	(2, 1, '屏幕组1', '屏幕组1', 0),
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `player_group_screen` (
   `group_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏幕组ID，player_group表id外键'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='屏幕分组及屏幕对应表';
 
--- Dumping data for table player.player_group_screen: ~7 rows (approximately)
+-- Dumping data for table player.player_group_screen: ~8 rows (approximately)
 /*!40000 ALTER TABLE `player_group_screen` DISABLE KEYS */;
 INSERT INTO `player_group_screen` (`uid`, `screen_id`, `group_id`) VALUES
 	(2, 1, 3),
@@ -214,7 +214,7 @@ CREATE TABLE IF NOT EXISTS `player_media` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='播放媒体';
 
--- Dumping data for table player.player_media: ~0 rows (approximately)
+-- Dumping data for table player.player_media: ~1 rows (approximately)
 /*!40000 ALTER TABLE `player_media` DISABLE KEYS */;
 INSERT INTO `player_media` (`id`, `user_id`, `name`, `md5`, `object`, `upload_id`, `size`, `status`, `publish`, `expired`) VALUES
 	(1, 1, 'aab\\\'bcc.avi', 'b3206b4529ba377b0fa9f4a3bd9261f2', '20160822/57ba998526ba9.avi', '064A0509F679494DBB2CE13D3A01726E', '20971520', 0, 1471846788, 0);
@@ -235,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `player_node` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8 COMMENT='节点表';
 
--- Dumping data for table player.player_node: ~50 rows (approximately)
+-- Dumping data for table player.player_node: ~51 rows (approximately)
 /*!40000 ALTER TABLE `player_node` DISABLE KEYS */;
 INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `pid`, `level`) VALUES
 	(1, 'User', '用户管理', 0, '', 1, 0, 1),
@@ -308,7 +308,7 @@ CREATE TABLE IF NOT EXISTS `player_player` (
   `next_heartbeat` int(11) DEFAULT '0' COMMENT '下次心跳时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放器';
 
--- Dumping data for table player.player_player: ~5 rows (approximately)
+-- Dumping data for table player.player_player: ~6 rows (approximately)
 /*!40000 ALTER TABLE `player_player` DISABLE KEYS */;
 INSERT INTO `player_player` (`id`, `bind_id`, `bind_key`, `name`, `remark`, `mode`, `start`, `end`, `mac`, `heartbeat_interval`, `next_heartbeat`) VALUES
 	(4, 'deMkPdrk', 'sU3PjNesZ3f4KqXg', '高新路大屏播放器', '高新路大屏播放器', '轮播', '09:00', '19:00', '4C-CC-6A-05-70-7B', 0, 0),
@@ -333,7 +333,7 @@ CREATE TABLE IF NOT EXISTS `player_player_setting` (
   `soft_disable` varchar(16) NOT NULL DEFAULT '' COMMENT '定时关闭时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放器配置参数';
 
--- Dumping data for table player.player_player_setting: ~0 rows (approximately)
+-- Dumping data for table player.player_player_setting: ~1 rows (approximately)
 /*!40000 ALTER TABLE `player_player_setting` DISABLE KEYS */;
 INSERT INTO `player_player_setting` (`id`, `clock`, `clock_password`, `heartbeat_cycle`, `alarm_cycle`, `alarm_url`, `soft_enable`, `soft_disable`) VALUES
 	(4, 1, 'liangjian123', '45', '30', 'http://lbcloud.ddt123.cn', '00:00', '11:00');
@@ -3784,11 +3784,11 @@ CREATE TABLE IF NOT EXISTS `player_screen` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='屏幕表';
 
--- Dumping data for table player.player_screen: ~5 rows (approximately)
+-- Dumping data for table player.player_screen: ~6 rows (approximately)
 /*!40000 ALTER TABLE `player_screen` DISABLE KEYS */;
 INSERT INTO `player_screen` (`id`, `name`, `remark`, `size_x`, `size_y`, `resolu_x`, `resolu_y`, `type`, `operate`, `longitude`, `latitude`, `uid`, `province`, `city`, `district`, `address`, `file`, `db_version`, `is_delete`, `addtime`) VALUES
-	(1, '测试screen', '', 100, 100, 1024, 768, 0, 0, '', '', 1, 2, 0, 0, '', '', '', 0, 0),
-	(2, '测试screen1', '', 200, 200, 256, 256, 0, 0, '', '', 1, 3, 44, 455, '', '', '', 0, 0),
+	(1, '测试screen', '', 100, 100, 1024, 768, 0, 0, '', '', 13, 2, 0, 0, '', '', '', 0, 0),
+	(2, '测试screen1', '', 200, 200, 256, 256, 0, 0, '', '', 13, 3, 44, 455, '', '', '', 0, 0),
 	(3, '测试screen2', '', 128, 128, 512, 512, 0, 0, '', '', 13, 24, 311, 2599, '', '', '', 0, 0),
 	(4, '高新路大屏', '高新路广告大屏', 128, 128, 256, 256, 0, 1, '108.9091860000', '34.2376840000', 13, 24, 311, 0, '高新路科技路十字西200米', '', '', 0, 1474877545),
 	(5, '光华路大屏', '光华路led电子大屏', 100, 100, 1024, 1024, 0, 0, '108.9125450000', '34.2401460000', 13, 24, 311, 2599, '高新路与光华路十字西南角', '', '', 0, 1474881091),
