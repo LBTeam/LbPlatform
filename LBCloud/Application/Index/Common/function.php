@@ -151,3 +151,46 @@ function check_regcode(){
 		return false;
 	}
 }
+
+/**
+ * 检查代理商注册码
+ */
+function check_agent_code(){
+	$code = I("post.reg_code");
+	$user_model = D("User");
+	$map = array("reg_code" => $code);
+	$count = $user_model->where($map)->count();
+	if($count > 0){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+/**
+ * 检查手机短信码
+ */
+function check_smscode(){
+	$phone = I("post.phone", "");
+	$code = I("post.code", "");
+	if($phone && $code){
+		$smscode = session("{$phone}_code");
+		session("{$phone}_code", null);
+		return $smscode && $smscode == $code;
+	}else{
+		return false;
+	}
+}
+
+/**
+ * 生成数据防篡改签名
+ * @return string
+ */
+function create_data_sign($data, $key=''){
+	if(empty($key)){
+        $key = C("DATA_SIGN_KEY");
+    }
+	$data = http_build_query($data);
+	$sign = sha1(md5("{$data}{$key}"));
+	return $sign;
+}

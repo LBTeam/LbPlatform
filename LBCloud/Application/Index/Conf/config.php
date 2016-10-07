@@ -23,9 +23,10 @@ return array(
 	'ROOT_ROLE_ID'		=> 1,
 	'AGENT_ROLE_ID'		=> 2,
 	'NORMAL_ROLE_ID'	=> 3,
+	'DATA_SIGN_KEY'		=> 'J6zAkThc',
 	/*发送验证码*/
-   	"SMS_SERVER"	=>	"http://msg.ddt123.cn/api.php/Api/sendmsg/sendMobMsg?phones=15129095680&msg=验证码是123456",
-   	"EMAIL_SERVER"	=>	"http://123.56.240.172:8084/index.php?m=home&c=index&a=Mailto&adder=136048524@qq.com&title=信息来了&content=啊哈哈哈",
+   	"SMS_SERVER"	=>	"http://msg.ddt123.cn/api.php/Api/sendmsg/sendMobMsg?",
+   	"EMAIL_SERVER"	=>	"http://123.56.240.172:8084/index.php?m=home&c=index&a=Mailto&",
 	
 	/* 模板相关配置 */
     'TMPL_PARSE_STRING' => array(

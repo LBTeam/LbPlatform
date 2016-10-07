@@ -22,7 +22,11 @@
         <!-- 用户栏 -->
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);">
-                <i class="fa fa-user fa-fw"></i>{$Think.session.user_auth.email}  <i class="fa fa-caret-down"></i>
+            	<if condition="$_SESSION['user_auth']['email']">
+            		<i class="fa fa-user fa-fw"></i>{$Think.session.user_auth.email}  <i class="fa fa-caret-down"></i>
+            	<else />
+            		<i class="fa fa-user fa-fw"></i>{$Think.session.user_auth.phone}  <i class="fa fa-caret-down"></i>
+            	</if>
             </a>
             <ul class="dropdown-menu dropdown-user">
             	<if condition="$header_is_agent eq 1">

@@ -16,6 +16,10 @@ class CommonController extends Controller
             $this->redirect('Public/login');
        	}
         
+        if(strtoupper(CONTROLLER_NAME) != 'INDEX' && session('is_full') == 1){
+        	$this->error("请完善个人信息", U('Index/Index/information'));
+        }
+        
         if(!$this->_check_access()){
         	$this->error("访问失败，权限拒绝！");
         	exit;

@@ -74,6 +74,9 @@ class IndexController extends CommonController {
 				$data['address']	= I("post.address", "");
 				$res = $user_model->save($data);
 				if($res !== false){
+					if(session('is_full') == 1){
+						session('is_full', 0);
+					}
 					$auth = array(
 			            'uid'		=> $data['uid'],
 			            'email'		=> $data['email'],

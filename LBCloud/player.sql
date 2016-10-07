@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-09-30 17:51:33
+-- Date/time:                    2016-10-08 00:03:18
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -214,7 +214,7 @@ CREATE TABLE IF NOT EXISTS `player_media` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='播放媒体';
 
--- Dumping data for table player.player_media: ~1 rows (approximately)
+-- Dumping data for table player.player_media: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_media` DISABLE KEYS */;
 INSERT INTO `player_media` (`id`, `user_id`, `name`, `md5`, `object`, `upload_id`, `size`, `status`, `publish`, `expired`) VALUES
 	(1, 1, 'aab\\\'bcc.avi', 'b3206b4529ba377b0fa9f4a3bd9261f2', '20160822/57ba998526ba9.avi', '064A0509F679494DBB2CE13D3A01726E', '20971520', 0, 1471846788, 0);
@@ -333,7 +333,7 @@ CREATE TABLE IF NOT EXISTS `player_player_setting` (
   `soft_disable` varchar(16) NOT NULL DEFAULT '' COMMENT '定时关闭时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放器配置参数';
 
--- Dumping data for table player.player_player_setting: ~1 rows (approximately)
+-- Dumping data for table player.player_player_setting: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_player_setting` DISABLE KEYS */;
 INSERT INTO `player_player_setting` (`id`, `clock`, `clock_password`, `heartbeat_cycle`, `alarm_cycle`, `alarm_url`, `soft_enable`, `soft_disable`) VALUES
 	(4, 1, 'liangjian123', '45', '30', 'http://lbcloud.ddt123.cn', '00:00', '11:00');
@@ -3748,13 +3748,15 @@ CREATE TABLE IF NOT EXISTS `player_role_user` (
   `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID，player_user表uid外键'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户角色对应表';
 
--- Dumping data for table player.player_role_user: ~4 rows (approximately)
+-- Dumping data for table player.player_role_user: ~5 rows (approximately)
 /*!40000 ALTER TABLE `player_role_user` DISABLE KEYS */;
 INSERT INTO `player_role_user` (`role_id`, `user_id`) VALUES
 	(1, 2),
 	(2, 10),
 	(2, 11),
-	(3, 13);
+	(3, 13),
+	(3, 17),
+	(3, 19);
 /*!40000 ALTER TABLE `player_role_user` ENABLE KEYS */;
 
 
@@ -3810,6 +3812,7 @@ CREATE TABLE IF NOT EXISTS `player_user` (
   `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '用户状态，0-正常，1-禁用，2-未认证',
   `type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '用户类型，0-管理员，1-代理用户，2-普通用户',
   `is_del` tinyint(2) NOT NULL DEFAULT '0' COMMENT '是否删除，0-未删除，1-已删除',
+  `is_full` tinyint(2) NOT NULL DEFAULT '0' COMMENT '是否完善，0-已完善，1-未完善',
   `lasttime` int(11) DEFAULT '0' COMMENT '上次登录时间',
   `lastip` varchar(16) DEFAULT '' COMMENT '上次登录地址',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
@@ -3817,16 +3820,18 @@ CREATE TABLE IF NOT EXISTS `player_user` (
   `token` varchar(64) DEFAULT '' COMMENT '登录令牌',
   `expire` int(11) DEFAULT '0' COMMENT '令牌过期时间',
   PRIMARY KEY (`uid`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='用户表';
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='用户表';
 
--- Dumping data for table player.player_user: ~5 rows (approximately)
+-- Dumping data for table player.player_user: ~6 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
-INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `is_del`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '15934854815', '梁健', '西安软件园', 0, 0, 0, 0, 1475217470, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
-	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15999999999', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 1475134032, '127.0.0.1', 1474340261, '', '', 0),
-	(10, '', '###1b2967588713b658dd803ed0c94d726d', '136048524@qq.com', '15934854816', '梁健', '西安软件园', 0, 0, 1, 0, 0, '0.0.0.0', 1474361171, 'J6zAkThcdrkj', '', 0),
-	(11, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@bestfu.com', '15934854817', '', '', 0, 0, 1, 0, 1475032479, '127.0.0.1', 1474425987, 'CF8teK5B2fyx', '', 0),
-	(13, '', '###1b2967588713b658dd803ed0c94d726d', 'nova_liangjian@126.com', '', '', '', 11, 0, 2, 0, 1475049629, '127.0.0.1', 1474427588, '', 'a5cb0891759937e15ad9c79d72ecdfdcc1f18552', 1475054081);
+INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `is_del`, `is_full`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
+	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '15934854815', '梁健', '西安软件园', 0, 0, 0, 0, 0, 1475670107, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
+	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15999999999', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 0, 1475134032, '127.0.0.1', 1474340261, '', '', 0),
+	(10, '', '###1b2967588713b658dd803ed0c94d726d', '136048525@qq.com', '15934854816', '梁健', '西安软件园', 0, 0, 1, 0, 0, 0, '0.0.0.0', 1474361171, 'J6zAkThcdrkj', '', 0),
+	(11, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@bestfu.com', '15934854817', '', '', 0, 0, 1, 0, 0, 1475032479, '127.0.0.1', 1474425987, 'CF8teK5B2fyx', '', 0),
+	(13, '', '###1b2967588713b658dd803ed0c94d726d', 'nova_liangjian@126.com', '', '', '', 11, 0, 2, 0, 0, 1475049629, '127.0.0.1', 1474427588, '', 'a5cb0891759937e15ad9c79d72ecdfdcc1f18552', 1475054081),
+	(17, '', '###1b2967588713b658dd803ed0c94d726d', '779302139@qq.com', '15129249923', '刘刘刘刘刘刘', '西安', 10, 0, 2, 0, 1, 1475413529, '127.0.0.1', 1475412720, '', '', 0),
+	(19, '', '###1b2967588713b658dd803ed0c94d726d', '136048524@qq.com', '15934854822', 'liangjian', 'xian', 11, 0, 2, 0, 2, 1475684095, '127.0.0.1', 1475684095, '', '', 0);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
