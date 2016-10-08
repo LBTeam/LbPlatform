@@ -1,10 +1,33 @@
 <?php
 namespace Index\Controller;
 use Think\Controller;
+use Think\Cache;
 
 class DemoController extends Controller
 {
+	public function redis(){
+		$redis_serv = Cache::getInstance('Redis', array('host'=>"10.171.126.247"));
+		$cache_key = md5("test_key");
+		$res = $redis_serv->get($cache_key);
+		dump($res);
+		$res = $redis_serv->set($cache_key, "test");
+		dump($res);
+		$res = $redis_serv->get($cache_key);
+		dump($res);
+		unset($redis_serv);
+	}
+	
+	public function redis2(){
+		$redis_serv = Cache::getInstance('Redis', array('host'=>"10.171.126.247"));
+		$cache_key = md5("test_key");
+		$res = $redis_serv->get($cache_key);
+		dump($res);
+		unset($redis_serv);
+	}
+	
 	public function index(){
+		echo session("15934854815_code");
+		exit;
 		echo random_string(16);
 	}
 	

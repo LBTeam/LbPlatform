@@ -289,6 +289,8 @@ class PublicController extends Controller
 			            'email'		=> $data['email'],
 			            'lasttime'	=> NOW_TIME,
 			        );
+			        session("send_email", null);
+			        
 			        session(C("USER_AUTH_KEY"), $uid);
 			        session('is_full', 2);
 			        session('user_auth', $auth);
@@ -316,7 +318,6 @@ class PublicController extends Controller
 				if($user){
 					$this->error("确认邮箱链接已失效！", U('Index/Index/index'));
 				}else{
-					session("send_email", null);
 					$this->meta_title = "资料完善";
 					$this->assign("data", $data);
 					$this->display();
@@ -332,11 +333,147 @@ class PublicController extends Controller
             $this->redirect('Index/Index/index');
         }else{
 			if(IS_POST){
-				
+				if($mode == 1){
+					//手机找回
+					$rules = array(
+		    			array('phone','require','手机号码不能为空！',1),
+		    			array('phone', "/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/", '手机号码格式错误！',1),
+		    			array('phone','check_phone','手机号码！',1,'function'),
+						array('code','require','短信验证码不能为空！',1),
+						array('code','check_smscode','短信验证码错误！',1,'function'),
+						array('verify','check_verify','验证码输入错误！',0,'function')
+					);
+					$user_model = D("User");
+					if($user_model->validate($rules)->create()){
+						session("find_mobile", I("post.phone"));
+						$this->success("验证通过", U("Index/Public/reset"));
+					}else{
+						$this->error($user_model->getError());
+					}
+				}else{
+					//邮箱找回
+					$rules = array(
+		    			array('email','require','邮箱不能为空！',1),
+		    			array('email', "email", '邮箱格式错误！',1),
+		    			array('email', "check_email", '邮箱不存在！',1,'function'),
+		    			array('verify','check_verify','验证码输入错误！',0,'function')
+		    		);
+		    		$user_model = D("User");
+		    		if($user_model->validate($rules)->create()){
+		    			$data = array();
+						$data['email'] = I("post.email", "");
+						$data['timestamp'] = NOW_TIME + 600;
+						$data['sign'] = create_data_sign($data);
+						$back_uri = "http://".$_SERVER['HTTP_HOST'].U("Index/Public/reset")."?".http_build_query($data);
+						$email_content = "";
+						$email_content .= "尊敬的用户，你好：<br>";
+						$email_content .= "&nbsp;&nbsp;请点击<a href='{$back_uri}'>{$back_uri}</a>重置密码！";
+						$m_info = array();
+						$m_info['adder'] = $data['email'];
+						$m_info['title'] = "重置密码";
+						$m_info['content'] = $email_content;
+						$request_uri = C("EMAIL_SERVER").http_build_query($m_info);
+						$resp = file_get_contents($request_uri);
+						if($resp === ''){
+							session("reset_email", $data['email']);
+							$this->success("发送成功", U('Index/Public/email_ok'));
+						}else{
+							$this->error("邮件发送失败");
+						}
+		    		}else{
+						$this->error($user_model->getError());
+					}
+				}
 			}else{
 				$template = "find_{$mode}";
 				$this->display($template);
 			}
+		}
+	}
+	
+	public function reset(){
+		if(IS_POST){
+			$rules = array(
+				array('password','require','新密码不能为空！'),
+				array('password', "/^[A-Za-z0-9]{6,16}$/", '密码格式错误！'),
+				array('repassword','password','两次输入密码不一致！',0,'confirm')
+			);
+			$user_model = D("User");
+			if($user_model->validate($rules)->create()){
+				$mobile = session("find_mobile");
+				if($mobile){
+					$map = array("phone" => $mobile);
+					$data = array(
+						"password" => sp_password(I("post.password"))
+					);
+					$res = $user_model->where($map)->save($data);
+					if($res !== false){
+						session("find_mobile", null);
+						$this->success("密码修改成功！", U("Index/Public/login"));
+					}else{
+						$this->error("密码修改失败！");
+					}
+				}else{
+					$email = session("reset_email");
+					if($email){
+						$map = array("email" => $email);
+						$data = array(
+							"password" => sp_password(I("post.password"))
+						);
+						$res = $user_model->where($map)->save($data);
+						if($res !== false){
+							session("reset_email", null);
+							$this->success("密码修改成功！", U("Index/Public/login"));
+						}else{
+							$this->error("密码修改失败！");
+						}
+					}else{
+						$this->error("系统错误：非法操作！");
+					}
+				}
+			}else{
+				$this->error($user_model->getError());
+			}
+		}else{
+			$mobile = session("find_mobile");
+			if($mobile){
+				$this->display();
+			}else{
+				$email = I("get.email", "");
+				$timestamp = I("get.timestamp", "");
+				if($email && $timestamp){
+					if($timestamp >= NOW_TIME){
+						$data = array();
+						$data['email'] = $email;
+						$data['timestamp'] = $timestamp;
+						$sign = I("get.sign", "");
+						$d_sign = create_data_sign($data);
+						if($sign == $d_sign){
+							session("reset_email", $email);
+							$this->display();
+						}else{
+							$this->error("系统错误：非法操作！", U('Index/Index/index'));
+						}
+					}else{
+						$this->error("重置密码链接已失效！", U('Index/Index/index'));
+					}
+				}else{
+					$this->error("系统错误：非法操作！", U('Index/Index/index'));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 重置密码邮件发送成功
+	 */
+	public function email_ok(){
+		$email = session("reset_email");
+		if($email){
+			$this->assign("mail", $email);
+			$this->display();
+		}else{
+			$this->error("系统错误：非法操作！", U('Index/Index/index'));
 		}
 	}
 }

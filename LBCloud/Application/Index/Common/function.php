@@ -183,6 +183,44 @@ function check_smscode(){
 }
 
 /**
+ * 检查手机号是否存在
+ */
+function check_phone(){
+	$phone = I("post.phone", "");
+	if($phone){
+		$user_model = D("User");
+		$map = array("phone" => $phone);
+		$count = $user_model->where($map)->count();
+		if($count > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}else{
+		return false;
+	}
+}
+
+/**
+ * 检查邮箱是否存在
+ */
+function check_email(){
+	$email = I("post.email", "");
+	if($email){
+		$user_model = D("User");
+		$map = array("email" => $email);
+		$count = $user_model->where($map)->count();
+		if($count > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}else{
+		return false;
+	}
+}
+
+/**
  * 生成数据防篡改签名
  * @return string
  */
@@ -193,4 +231,19 @@ function create_data_sign($data, $key=''){
 	$data = http_build_query($data);
 	$sign = sha1(md5("{$data}{$key}"));
 	return $sign;
+}
+
+/**
+ * 生成参数请求字符串
+ */
+function http_param_query($data=array()){
+	if($data){
+		$array = array();
+		foreach($data as $key => $val){
+			$array[] = "{$key}={$val}";
+		}
+		$string = implode("&", $array);
+		return $string;
+	}
+	return "";
 }

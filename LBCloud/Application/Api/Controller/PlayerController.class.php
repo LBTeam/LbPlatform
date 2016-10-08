@@ -310,14 +310,29 @@ class PlayerController extends CommonController
 		$player_model = D("Player");
 		$player = $player_model->player_by_bind($bind_id, $bind_key, "id,mac");
 		if($mac == $player['mac']){
-			$plan_id = $obj['ProgramId'];
-			if($plan_id){
-				$plan_model = D("Program");
-				$plan = $plan_model->program_detail($plan_id);
-				
-				
+			$media_id = $obj['MediaId'];
+			if($media_id){
+				$media_model = D("Media");
+				$media = $media_model->media_detail($media_id);
+				if($media){
+					$data = array();
+					$data['screen_id'] = $player['id'];
+					$data['media_id'] = $media_id;
+					$data['start'] = $obj['StartTime'];
+					$data['end'] = $obj['EndTime'];
+					$data['addtime'] = NOW_TIME;
+					$record_model = D("Record");
+					$res = $record_model->add($data);
+					if($res){
+						$respones = array("err_code"=>"000000","msg"=>"ok");
+					}else{
+						$respones = array("err_code"=>"020503","msg"=>"Report record failed");
+					}
+				}else{
+					$respones = array("err_code"=>"020502","msg"=>"Media not found");
+				}
 			}else{
-				$respones = array("err_code"=>"020501","msg"=>"Program id error");
+				$respones = array("err_code"=>"020501","msg"=>"Media id error");
 			}
 		}else{
 			$respones = array("err_code"=>"020201","msg"=>"Player MAC error");

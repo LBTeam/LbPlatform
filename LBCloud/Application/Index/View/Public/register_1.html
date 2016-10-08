@@ -237,10 +237,30 @@
 			            }, 1000);
 	    			} else {
 	    				$(".check-tips").text(resp.info);
+			            var count = 3;
+			            var interval = setInterval(function(){
+			                count--;
+			                if (count > 0){
+			                }else {
+			                	var _text = '';
+			                	$(".check-tips").text(_text);
+			                	clearInterval(interval);
+			                }
+			            }, 1000);
 	    			}
 				}, "json");
 			}else{
 				$(".check-tips").text("手机号码不能为空！");
+				var count = 3;
+	            var interval = setInterval(function(){
+	                count--;
+	                if (count > 0){
+	                }else {
+	                	var _text = '';
+	                	$(".check-tips").text(_text);
+	                	clearInterval(interval);
+	                }
+	            }, 1000);
 			}
         }
 
