@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-10-08 00:03:18
+-- Date/time:                    2016-10-08 18:39:26
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -401,6 +401,11 @@ CREATE TABLE IF NOT EXISTS `player_program_media` (
 DROP TABLE IF EXISTS `player_record`;
 CREATE TABLE IF NOT EXISTS `player_record` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `screen_id` int(11) NOT NULL DEFAULT '0' COMMENT '屏幕ID',
+  `media_id` int(11) NOT NULL DEFAULT '0' COMMENT '媒体ID',
+  `start` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '播放开始时间',
+  `end` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '播放结束时间',
+  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '上报时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放记录';
 
@@ -3748,7 +3753,7 @@ CREATE TABLE IF NOT EXISTS `player_role_user` (
   `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID，player_user表uid外键'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户角色对应表';
 
--- Dumping data for table player.player_role_user: ~5 rows (approximately)
+-- Dumping data for table player.player_role_user: ~6 rows (approximately)
 /*!40000 ALTER TABLE `player_role_user` DISABLE KEYS */;
 INSERT INTO `player_role_user` (`role_id`, `user_id`) VALUES
 	(1, 2),
@@ -3822,14 +3827,14 @@ CREATE TABLE IF NOT EXISTS `player_user` (
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='用户表';
 
--- Dumping data for table player.player_user: ~6 rows (approximately)
+-- Dumping data for table player.player_user: ~7 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `is_del`, `is_full`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###156c1ab27f7bed454199240cc53f5077', '15934854815@163.com', '15934854815', '梁健', '西安软件园', 0, 0, 0, 0, 0, 1475670107, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
+	(1, '', '###1b2967588713b658dd803ed0c94d726d', '15934854815@163.com', '15934854815', '梁健', '西安软件园', 0, 0, 0, 0, 0, 1475670107, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
 	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15999999999', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 0, 1475134032, '127.0.0.1', 1474340261, '', '', 0),
 	(10, '', '###1b2967588713b658dd803ed0c94d726d', '136048525@qq.com', '15934854816', '梁健', '西安软件园', 0, 0, 1, 0, 0, 0, '0.0.0.0', 1474361171, 'J6zAkThcdrkj', '', 0),
 	(11, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@bestfu.com', '15934854817', '', '', 0, 0, 1, 0, 0, 1475032479, '127.0.0.1', 1474425987, 'CF8teK5B2fyx', '', 0),
-	(13, '', '###1b2967588713b658dd803ed0c94d726d', 'nova_liangjian@126.com', '', '', '', 11, 0, 2, 0, 0, 1475049629, '127.0.0.1', 1474427588, '', 'a5cb0891759937e15ad9c79d72ecdfdcc1f18552', 1475054081),
+	(13, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@126.com', '', '', '', 11, 0, 2, 0, 0, 1475891221, '127.0.0.1', 1474427588, '', 'a5cb0891759937e15ad9c79d72ecdfdcc1f18552', 1475054081),
 	(17, '', '###1b2967588713b658dd803ed0c94d726d', '779302139@qq.com', '15129249923', '刘刘刘刘刘刘', '西安', 10, 0, 2, 0, 1, 1475413529, '127.0.0.1', 1475412720, '', '', 0),
 	(19, '', '###1b2967588713b658dd803ed0c94d726d', '136048524@qq.com', '15934854822', 'liangjian', 'xian', 11, 0, 2, 0, 2, 1475684095, '127.0.0.1', 1475684095, '', '', 0);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
