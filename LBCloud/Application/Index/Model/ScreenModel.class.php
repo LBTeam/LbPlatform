@@ -27,7 +27,7 @@ class ScreenModel extends Model
 		}
 		return $this
 				->alias("s")
-				->field("s.*,p.bind_id,p.bind_key,g.id AS group_id,g.name AS group_name,u.email AS u_email,u.phone AS u_phone")
+				->field("s.*,p.bind_id,p.bind_key,p.mac,g.id AS group_id,g.name AS group_name,u.email AS u_email,u.phone AS u_phone")
 				->join("player_group_screen AS rela ON rela.screen_id = s.id AND rela.uid = {$user_id}", 'LEFT')
 				->join("player_group AS g ON rela.group_id = g.id", 'LEFT')
 				->join("player_player AS p ON p.id = s.id", 'LEFT')

@@ -24,6 +24,11 @@
 		</ul>
         <div class="tab-content" style="padding-top: 25px;">
             <form action="{:U()}" method="post" class="form col-lg-6" role="form" >
+            	<div class="form-group">
+                    <label class="item-label ">定时开关</label> 
+                    <label class="radio"><input type="radio" name="time_switch" value="1" />启用</label>
+                    <label class="radio"><input type="radio" name="time_switch" value="0" />禁用</label>
+                </div>
                 <div class="form-group">
                     <label class="item-label ">开启软件时间</label> 
                     <input type="text" class="form-control" name="soft_enable" value="{$info.soft_enable}" style="width: 50%;" readonly />
@@ -62,6 +67,7 @@
 <script src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
 <script src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
 <script type="text/javascript">
+Think.setValue("time_switch", {$info.time_switch|default = 1});
 $(window).load(function()
 {
     $("input[name='soft_enable']").datetimepicker({		

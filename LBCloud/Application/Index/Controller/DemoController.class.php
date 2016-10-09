@@ -5,6 +5,23 @@ use Think\Cache;
 
 class DemoController extends Controller
 {
+	public function socket(){
+		import("@.Service.WebsocketClient", '', ".php");
+		$client = new \WebSocketClient();
+		$client->connect("123.56.240.172", 9501, '/');
+		//$in   = '{"Act": "notice","Id": "R3dAUyFk","Key": "nKpYrjsx5UdPuMS4","Mac": "4C-CC-6A-05-70-7B", "Content": "hello client"}';
+		$in   = '{"Act": "shutdown","Id": "R3dAUyFk","Key": "nKpYrjsx5UdPuMS4","Mac": "4C-CC-6A-05-70-7B"}';
+		$rs = $client->sendData($in);
+	
+		if( $rs !== true ){
+			echo "sendData error...\n";
+		}else{
+			echo "ok\n";
+		}
+		unset($client);
+	}
+	
+	
 	public function redis(){
 		$redis_serv = Cache::getInstance('Redis', array('host'=>"10.171.126.247"));
 		$cache_key = md5("test_key");
@@ -19,7 +36,7 @@ class DemoController extends Controller
 	
 	public function redis2(){
 		$redis_serv = Cache::getInstance('Redis', array('host'=>"10.171.126.247"));
-		$cache_key = md5("test_key");
+		$cache_key = "86d7c78a4b524eb06eb2186ddeb4188a";
 		$res = $redis_serv->get($cache_key);
 		dump($res);
 		unset($redis_serv);

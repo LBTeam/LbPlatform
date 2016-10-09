@@ -153,6 +153,14 @@ class ManagerController extends CommonController
 		}
 		$this->ajaxReturn($respones);
 	}
+
+	/**
+	 * 心跳
+	 */
+	public function heartbeat(){
+		$respones = array('err_code'=>'000000', 'msg'=>"ok");
+		$this->ajaxReturn($respones);
+	}
 	
 	/**
 	 * 上传

@@ -123,7 +123,7 @@ class PlayerController extends CommonController
 					case "1":
 						if($param){
 							$cmdParam = array(
-								"enable" => $param['clock'],
+								"enable" => intval($param['clock']),
 								"password" => $param['clock_password']
 							);
 						}
@@ -149,6 +149,7 @@ class PlayerController extends CommonController
 					case "4":
 						if($param){
 							$cmdParam = array(
+								"switch" => intval($param['time_switch']),
 								"enable" => $param['soft_enable'],
 								"disable" => $param['soft_disable']
 							);

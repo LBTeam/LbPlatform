@@ -29,6 +29,7 @@ return array(
 		'refresh_token',
 		'configuration',
 		'screens',
-		'programs'
+		'programs',
+		'heartbeat'
 	),
 );

@@ -38,6 +38,7 @@
 		                        <th class="">屏幕名称</th>
 		                        <th class="">绑定Id</th>
 		                        <th class="">绑定Key</th>
+		                        <th class="">播放器状态</th>
 		                        <!--<th class="">分辨率X</th>
 		                        <th class="">分辨率Y</th>-->
 		                        <if condition="$is_normal eq 0">
@@ -60,6 +61,7 @@
 		                        <td>{$vo.name}</td>
 		                        <td>{$vo.bind_id}</td>
 		                        <td>{$vo.bind_key}</td>
+		                        <td>{$vo.online_text}</td>
 		                        <!--<td>{$vo.resolu_x}</td>
 		                        <td>{$vo.resolu_y}</td>-->
 		                        <if condition="$is_normal eq 0">
@@ -91,8 +93,14 @@
 		                            <if condition="in_array('SCREEN/SETTING', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('setting',array('id'=>$vo['id']))}">参数配置</a>
 		                            </if>
-		                            <a href="javascript:void(0);">一键关屏</a>
-		                            <a href="javascript:void(0);">紧急通知</a>
+		                            <if condition="$vo['online'] eq 1">
+			                            <if condition="in_array('SCREEN/SHUTDOWN', $_SESSION['_ACCESS_LIST'])">
+			                            <a href="{:U('shutdown?id='.$vo['id'])}" class="confirm ajax-get">一键关屏</a>
+			                            </if>
+			                            <if condition="in_array('SCREEN/NOTIFY', $_SESSION['_ACCESS_LIST'])">
+			                            <a href="{:U('notify?id='.$vo['id'])}">紧急通知</a>
+			                            </if>
+			                        </if>
 		                        </td>
 		                        <td>
 		                        	<if condition="in_array('SCREEN/EDIT', $_SESSION['_ACCESS_LIST'])">

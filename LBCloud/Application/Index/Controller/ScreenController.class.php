@@ -17,19 +17,27 @@ class ScreenController extends CommonController
 		$leds = $led_model->screen_by_uid(ADMIN_UID);
 		$regions = $region_model->all_region();
 		$condition = array(
-    		"type" => array(
-    			0 => "室外",
-    			1 => "室内"
-    		),
-    		"operate" => array(
-    			0 => "全包",
-    			1 => "分时"
-    		),
+    		"type" => array(0=>"室外",1=>"室内"),
+    		"operate" => array(0=>"全包",1=>"分时"),
+    		"online" => array(0=>"离线",1=>"在线",2=>"未绑定"),
     		"province" => $regions,
     		"city" => $regions,
     		"district" => $regions
     	);
-    	int_to_string($leds, $condition);
+		$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("REDIS_SERVER")));
+		foreach($leds as &$val){
+			$pl_mac = strtoupper(str_replace(':', '-', $val['mac']));
+			if($pl_mac){
+				$pl_id = $val["bind_id"];
+				$pl_key = $val["bind_key"];
+				$cache_key = md5("{$pl_id}_{$pl_key}_{$pl_mac}_fd");
+				$pl_online = $redis_serv->get($cache_key);
+				$val['online'] = $pl_online ? 1 : 0;
+			}else{
+				$val['online'] = 2;
+			}
+		}
+		int_to_string($leds, $condition);
     	$user_model = D("User");
 		if($user_model->is_normal(ADMIN_UID)){
 			$this->assign("is_normal", 1);
@@ -495,6 +503,7 @@ class ScreenController extends CommonController
 						break;
 					case 4:
 						$rules = array();
+						$rules[] = array('time_switch','require','请选择定时开关！');
 						$rules[] = array('soft_enable','require','开启软件时间不能为空！');
 						$rules[] = array('soft_disable','require','关闭软件时间不能为空！');
 						break;
@@ -522,6 +531,9 @@ class ScreenController extends CommonController
 					}
 					if(isset($_POST['alarm_url'])){
 						$data['alarm_url'] = I("post.alarm_url");
+					}
+					if(isset($_POST['time_switch'])){
+						$data['time_switch'] = I("post.time_switch");
 					}
 					if(isset($_POST['soft_enable'])){
 						$data['soft_enable'] = I("post.soft_enable");
@@ -591,6 +603,85 @@ class ScreenController extends CommonController
 			}else{
 				$this->error("系统错误，非法访问！");
 			}
+		}
+	}
+
+	/**
+	 * 一键关屏
+	 */
+	public function shutdown(){
+		$id = I('request.id', 0);
+        if ( empty($id) ) {
+            $this->error('请选择要操作的数据!');
+        }
+		$player_model = D("Player");
+		$player = $player_model->player_by_id($id);
+		if($player && $player['mac']){
+			$ws_in = array();
+			$ws_in['Act'] = "shutdown";
+			$ws_in['Id'] = $player['bind_id'];
+			$ws_in['Key'] = $player['bind_key'];
+			$ws_in['Mac'] = strtoupper(str_replace(':', '-', $player['mac']));
+			$cfg_model = D("Config");
+			$ws = $cfg_model->websocket();
+			$ws_ip = $ws['ip'];
+			$ws_port = $ws['port'];
+			import("@.Service.WebsocketClient", '', ".php");
+			$client = new \WebSocketClient();
+			$client->connect($ws_ip, $ws_port, '/');
+			$resp = $client->sendData(json_encode($ws_in));
+			unset($client);
+			if( $resp !== true ){
+				$this->error("发送失败");
+			}else{
+				$this->success("屏幕关闭成功");
+			}
+		}else{
+			$this->error("屏幕未绑定播放器");
+		}
+	}
+	
+	/**
+	 * 紧急通知
+	 */
+	public function notify($id=0){
+        if ( empty($id) ) {
+            $this->error('请选择要操作的数据!');
+        }
+		if(IS_POST){
+			$content = I("post.content", "");
+			if($content){
+				$player_model = D("Player");
+				$player = $player_model->player_by_id($id);
+				if($player && $player['mac']){
+					$ws_in = array();
+					$ws_in['Act'] = "notice";
+					$ws_in['Id'] = $player['bind_id'];
+					$ws_in['Key'] = $player['bind_key'];
+					$ws_in['Mac'] = strtoupper(str_replace(':', '-', $player['mac']));
+					$ws_in['Content'] = trim($content);
+					$cfg_model = D("Config");
+					$ws = $cfg_model->websocket();
+					import("@.Service.WebsocketClient", '', ".php");
+					$client = new \WebSocketClient();
+					$client->connect($ws['ip'], $ws['port'], '/');
+					$resp = $client->sendData(json_encode($ws_in));
+					unset($client);
+					if( $resp !== true ){
+						$this->error("紧急通知发步失败！");
+					}else{
+						$this->success("紧急通知发步成功！");
+					}
+				}else{
+					$this->error("屏幕未绑定播放器！");
+				}
+			}else{
+				$this->error("通知内容不能为空！");
+			}
+		}else{
+			$this->assign("id", $id);
+			$this->meta_title = "发布紧急通知";
+			$this->display();
 		}
 	}
 }
