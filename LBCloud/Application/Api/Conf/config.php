@@ -19,6 +19,10 @@ return array(
 	
 	'player_program_subfix'	=>	'playprog',	//播放方案文件后缀名
 	
+	'redis_server'		=>	'10.171.126.247',
+	'websocket_ip'		=>	'123.56.240.172',
+	'websocket_port'	=>	'9501',
+	
 	//未登录可访问模块
 	'manager_not_logged' => array(
 		'login',

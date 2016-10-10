@@ -189,6 +189,24 @@ class PlayerController extends CommonController
 					);
 				}
 			}
+			/*9-终端长连接重连*/
+			$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("redis_server")));
+			$cache_key = md5("{$id}_{$key}_{$mac}_fd");
+			$pl_online = $redis_serv->get($cache_key);
+			unset($redis_serv);
+			if(!$pl_online){
+				$cfg_model = D("Config");
+				$ws = $cfg_model->ws_config();
+				$cmdParam = array(
+					'ws_ip'	=> $ws['ip'],
+					'ws_port' => $ws['port']
+				);
+				$cmds[] = array(
+					"CmdId"		=>	"0",
+					"CmdType"	=>	9,
+					"CmdParam"	=>	base64_encode(json_encode($cmdParam))
+				);
+			}
 			//更改命令已下发
 			$cmd_model->cmd_issued($cmd_ids);
 			$respones = array(
