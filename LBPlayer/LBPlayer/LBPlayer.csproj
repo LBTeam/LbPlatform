@@ -81,6 +81,9 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="websocket-sharp">
+      <HintPath>..\..\Common\Lib\websocket-sharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Encryption.cs">
@@ -104,6 +107,7 @@
     <Compile Include="ToolTipWindow.Designer.cs">
       <DependentUpon>ToolTipWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="WinSysOperate.cs" />
     <Compile Include="XmlUtil.cs" />
     <EmbeddedResource Include="Encryption.resx">
       <DependentUpon>Encryption.cs</DependentUpon>

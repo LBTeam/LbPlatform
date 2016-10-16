@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using Com.Net;
 using System.Threading;
 using LBManager.Infrastructure.Models;
+using WebSocketSharp;
 
 namespace LBPlayer
 {
@@ -48,6 +49,12 @@ namespace LBPlayer
         private string _cmdSavePath;
         private System.Windows.Forms.Timer _queryTimer;   
         private const int QueryTimerInterval = 10000;
+        private string BindingURL = "http://lbcloud.ddt123.cn/?s=api/Player/bind_player";
+        private string PlayBackURL = "http://lbcloud.ddt123.cn/?s=api/Player/record";
+        private string PollURL = "http://lbcloud.ddt123.cn/?s=api/Player/heartbeat";
+        private string CmdBackURL = "http://lbcloud.ddt123.cn/?s=api/Player/cmd_result";
+        private string MonitorInfoURL = "http://lbcloud.ddt123.cn/?s=api/Player/monitor";
+        private WebSocket _webSocket;
         #endregion
         #region 构造函数
         public LBPlayerMain()
@@ -77,7 +84,7 @@ namespace LBPlayer
         /// <param name="hartBeatResponseObj"></param>
         private void HartBeatHandle(HartBeatResponseObj hartBeatResponseObj)
         {
-            _cmdList.Clear();
+            //_cmdList.Clear();
             if (hartBeatResponseObj == null || hartBeatResponseObj.Data == null || hartBeatResponseObj.Data.Count == 0)
             {
                 return;
@@ -96,14 +103,47 @@ namespace LBPlayer
         private void _poll_SendPollEvent(object sender, PollEventArgs args)
         {
             HartBeatRequestObj obj = new HartBeatRequestObj();
-            obj.Id = "1";
-            obj.Key = "1";
-            obj.Mac = "1";
-            args.Url = "http://lbcloud.ddt123.cn/?s=api/Player/heartbeat";
+            obj.Id = _config.ID;
+            obj.Key = _config.Key;
+            obj.Mac = _config.Mac;
+            args.Url = PollURL;
             args.PollData = JsonConvert.SerializeObject(obj);
+            //SetControlText(skinLabel8, "开始心跳");
+        }
+        #endregion
+        #region 长连接
+        private void initialWebSocket()
+        {
+            using (_webSocket = new WebSocket("123.56.240.172:9501"))
+            {
+                _webSocket.OnClose +=new EventHandler<CloseEventArgs>(_webSocket_OnClose);
+                _webSocket.OnError += new EventHandler<WebSocketSharp.ErrorEventArgs>(_webSocket_OnError);
+                _webSocket.OnOpen +=new EventHandler(_webSocket_OnOpen);
+                _webSocket.OnMessage += new EventHandler<MessageEventArgs>(_webSocket_OnMessage);
+                _webSocket.ConnectAsync();
+            }
 
-            //throw new NotImplementedException();
-            SetControlText(skinLabel8, "开始心跳");
+
+        }
+
+        private void _webSocket_OnMessage(object sender, MessageEventArgs e)
+        {
+            
+        }
+
+        private void _webSocket_OnOpen(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void _webSocket_OnError(object sender, WebSocketSharp.ErrorEventArgs e)
+        {
+            
+        }
+
+        private void _webSocket_OnClose(object sender, CloseEventArgs e)
+        {
+            
         }
         #endregion
         #region 初始化
@@ -352,8 +392,8 @@ namespace LBPlayer
             }
             _hook.KeyboardHookStop();
             _hook.MouseHookStop();
-            RegistryKey keyLocalMachine = Registry.LocalMachine;
-            RegistryKey key;
+            //RegistryKey keyLocalMachine = Registry.LocalMachine;
+            //RegistryKey key;
             //key = keyLocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\USBSTOR", true);
             //key.SetValue("Start", 3);
 
@@ -556,8 +596,8 @@ namespace LBPlayer
                 
                 _hook.KeyboardHookStart();
                 _hook.MouseHookStart();
-                RegistryKey keyLocalMachine = Registry.LocalMachine;
-                RegistryKey key;
+               // RegistryKey keyLocalMachine = Registry.LocalMachine;
+                //RegistryKey key;
                 //key = keyLocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\USBSTOR", true);
                 //key.SetValue("Start", 4);
 
@@ -623,6 +663,23 @@ namespace LBPlayer
         /// <param name="e"></param>
         private void skinButton_Ok_Click(object sender, EventArgs e)
         {
+            Bind bind = new Bind(skinTextBox_Id.Text.Trim(), skinTextBox_Key.Text.Trim(), skinComboBox_Mac.SelectedItem.ToString());
+            HttpClient httpClient = new HttpClient();
+            string json = JsonConvert.SerializeObject(bind);
+            string replaydata, errordata;
+            bool bSuc=httpClient.Post(BindingURL, JsonConvert.SerializeObject(bind), out replaydata, out errordata);
+            if (!bSuc)
+            {
+                MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            SystemResult sr;
+            sr = JsonConvert.DeserializeObject<SystemResult>(replaydata);
+            if(sr.Err_code!= SystemCode.OK)
+            {
+                MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             _config.ID = skinTextBox_Id.Text.Trim();
             _config.Key = skinTextBox_Key.Text.Trim();
             _config.Mac = skinComboBox_Mac.SelectedItem.ToString();
@@ -630,14 +687,10 @@ namespace LBPlayer
             {
                 MessageBoxEx.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            else
-            {
-                MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
+            
         }
         #endregion
-        #region 执行命令
+        #region 下载方案
         private int _fileCount = 0;
         private bool _bDownloading = false;
         private int _completeCount = 0;
@@ -661,7 +714,6 @@ namespace LBPlayer
                 downloadTransmit.Download(planCmdPar.Medias[i].MediaUrl, Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)));
             }
         }
-        
         private void DownloadTransmit_Completed(object obj)
         {
             _completeCount++;
@@ -675,7 +727,6 @@ namespace LBPlayer
                 showThread.Start();
             }
         }
-
         private PlanCmdPar _cureentPlan = null;
         private LEDScreen _screen = null;
         private Object thisLock = new Object();
@@ -726,12 +777,179 @@ namespace LBPlayer
            
         }
 
+        #endregion
+        #region 未知命令处理
         private void UnKnowCmd(Cmd cmd)
         {
             return;
         }
         #endregion
+        #region 上传播放记录
+        private bool UploadPlayBack(PlayBack playBack)
+        {
+            string data= JsonConvert.SerializeObject(playBack);
+            HttpClient httpClient = new HttpClient();
+            string replaydata, errordata;
+            bool bSuc=httpClient.Post(PlayBackURL, data, out replaydata, out errordata);
+            if(!bSuc)
+            {
+                return false;
+            }
+            SystemResult sr;
+            sr = JsonConvert.DeserializeObject<SystemResult>(replaydata);
+            if(sr.Err_code!= SystemCode.OK)
+            {
+                return false;
+            }
+            return true;
+        }
+        #endregion
+        #region 回复命令结果
+        private bool UploadCmdResult(CmdResult cmdRes)
+        {
+            string data = JsonConvert.SerializeObject(cmdRes);
+            HttpClient httpClient = new HttpClient();
+            string replaydata, errordata;
+            bool bSuc = httpClient.Post(CmdBackURL, data, out replaydata, out errordata);
+            if (!bSuc)
+            {
+                return false;
+            }
+            SystemResult sr;
+            sr = JsonConvert.DeserializeObject<SystemResult>(replaydata);
+            if (sr.Err_code != SystemCode.OK)
+            {
+                return false;
+            }
+            return true;
+        }
+        #endregion
+        #region 上传监控数据
+        private bool UploadMonitorInfo(MonitorResult monitor)
+        {
+            string data = JsonConvert.SerializeObject(monitor);
+            HttpClient httpClient = new HttpClient();
+            string replaydata, errordata;
+            bool bSuc = httpClient.Post(MonitorInfoURL, data, out replaydata, out errordata);
+            if (!bSuc)
+            {
+                return false;
+            }
+            SystemResult sr;
+            sr = JsonConvert.DeserializeObject<SystemResult>(replaydata);
+            if (sr.Err_code != SystemCode.OK)
+            {
+                return false;
+            }
+            return true;
+        }
+        #endregion
+        #region 删除命令
+        private bool DeleteCmd(Cmd cmd)
+        {
+            try
+            {
+                _cmdList.Remove(cmd);
+                XmlUtil.XmlSerializeToFile(_cmdList, _cmdSavePath, Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+        #endregion
+        #region 屏幕参数设置
+        private void SetScreenInfo(Cmd cmd)
+        {
+            ScreenSet screenSet=JsonConvert.DeserializeObject<ScreenSet>(cmd.CmdParam);
+            _config.Size_X = screenSet.Size_x;
+            _config.Size_Y = screenSet.Size_y;
+            _config.Resoul_X = screenSet.Resolu_x;
+            _config.Resoul_Y = screenSet.Resolu_y;
+            ConfigTool.SaveConfigData(_config);
 
-        
+            CmdResult cr = new CmdResult(_config.ID, _config.Key,_config.Mac, cmd.CmdId, true.ToString());
+            UploadCmdResult(cr);
+            DeleteCmd(cmd);
+        }
+        #endregion
+
+        #region 设置工作时间
+        private void SetWorkTime(Cmd cmd)
+        {
+            WorkTime workTime = JsonConvert.DeserializeObject<WorkTime>(cmd.CmdParam);
+            _config.StartWorkTime = workTime.Start;
+            _config.EndWorkTime = workTime.End;
+            ConfigTool.SaveConfigData(_config);
+            CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
+            UploadCmdResult(cr);
+            DeleteCmd(cmd);
+        }
+        #endregion
+
+        #region 设置软件开关时间
+        private void SetSoftWareRunTime(Cmd cmd)
+        {
+            RunTime runTime = JsonConvert.DeserializeObject<RunTime>(cmd.CmdParam);
+            _config.OpenTime = runTime.Enable;
+            _config.CloseTime = runTime.Disable;
+            ConfigTool.SaveConfigData(_config);
+            CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
+            UploadCmdResult(cr);
+            DeleteCmd(cmd);
+        }
+        #endregion
+
+        #region 设置电脑锁定
+        private void SetComputerLock(Cmd cmd)
+        {
+            LockSystem lockSystem = JsonConvert.DeserializeObject<LockSystem>(cmd.CmdParam);
+            _config.LockUnLockPlayer = lockSystem.Enable;
+            _config.LockPwd = lockSystem.Password;
+            ConfigTool.SaveConfigData(_config);
+            if(lockSystem.Enable)
+            {
+                InitialLock();
+            }
+            else
+            {
+                if (_TaskMgrStream != null)
+                {
+                    _TaskMgrStream.Close();
+                }
+                if (_toolTip_Mouse != null)
+                {
+                    _toolTip_Mouse.Hide();
+                }
+                _hook.KeyboardHookStop();
+                _hook.MouseHookStop();
+            }
+            CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
+            UploadCmdResult(cr);
+            DeleteCmd(cmd);
+        }
+        #endregion
+
+        #region 设置交互周期
+        private void SetPollInterval(Cmd cmd)
+        {
+            PollInterval pollInterval = JsonConvert.DeserializeObject<PollInterval>(cmd.CmdParam);
+            _config.HeartBeatInterval = pollInterval.Cycle;
+            ConfigTool.SaveConfigData(_config);
+            _poll.PollInterval = _config.HeartBeatInterval;
+            CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
+            UploadCmdResult(cr);
+            DeleteCmd(cmd);
+        }
+        #endregion
+
+        #region 设置监控数据上传周期
+        private void SetMonitorInterval()
+        {
+
+        }
+        #endregion
+
     }
 }
