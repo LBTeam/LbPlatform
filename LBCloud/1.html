@@ -1,0 +1,15 @@
+<meta charset="utf-8" />
+<script type="text/javascript">
+var ws = new WebSocket("ws://123.56.240.172:9501");
+ws.onopen = function(){
+    console.log("握手成功");
+	var _data = '{"Act": "bind","Id": "R3dAUyFk","Key": "nKpYrjsx5UdPuMS4","Mac": "4C-CC-6A-05-70-7B"}';
+	ws.send(_data);
+};
+ws.onmessage = function(e){
+    console.log("message:" + e.data);
+};
+ws.onerror = function(){
+    console.log("error");
+};
+</script>

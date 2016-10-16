@@ -17,19 +17,27 @@ class ScreenController extends CommonController
 		$leds = $led_model->screen_by_uid(ADMIN_UID);
 		$regions = $region_model->all_region();
 		$condition = array(
-    		"type" => array(
-    			0 => "室外",
-    			1 => "室内"
-    		),
-    		"operate" => array(
-    			0 => "全包",
-    			1 => "分时"
-    		),
+    		"type" => array(0=>"室外",1=>"室内"),
+    		"operate" => array(0=>"全包",1=>"分时"),
+    		"online" => array(0=>"离线",1=>"在线",2=>"未绑定"),
     		"province" => $regions,
     		"city" => $regions,
     		"district" => $regions
     	);
-    	int_to_string($leds, $condition);
+		$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("REDIS_SERVER")));
+		foreach($leds as &$val){
+			$pl_mac = strtoupper(str_replace(':', '-', $val['mac']));
+			if($pl_mac){
+				$pl_id = $val["bind_id"];
+				$pl_key = $val["bind_key"];
+				$cache_key = md5("{$pl_id}_{$pl_key}_{$pl_mac}_fd");
+				$pl_online = $redis_serv->get($cache_key);
+				$val['online'] = $pl_online ? 1 : 0;
+			}else{
+				$val['online'] = 2;
+			}
+		}
+		int_to_string($leds, $condition);
     	$user_model = D("User");
 		if($user_model->is_normal(ADMIN_UID)){
 			$this->assign("is_normal", 1);
@@ -100,6 +108,24 @@ class ScreenController extends CommonController
 				}
 				if($led_id && $player_res && $bind_res){
 					$model->commit();
+					/*命令下发开始*/
+					$param = array(
+						"name"		=> $led_data['name'],
+						"size_x"	=> $led_data['size_x'],
+						"size_y"	=> $led_data['size_y'],
+						"resolu_x"	=> $led_data['resolu_x'],
+						"resolu_y"	=> $led_data['resolu_y']
+					);
+					$cmd_data = array();
+					$cmd_data['screen_id'] = $led_id;
+					$cmd_data['type'] = 5;
+					$cmd_data['param'] = json_encode($param);
+					$cmd_data['publish'] = NOW_TIME;
+					$cmd_data['execute'] = NOW_TIME;
+					$cmd_data['expired'] = NOW_TIME;
+					$cmd_model = D("Command");
+					$cmd_model->add($cmd_data);
+					/*命令下发结束*/
 					$this->success('新增成功', U('index'));
 				}else{
 					$model->rollback();
@@ -183,6 +209,27 @@ class ScreenController extends CommonController
 				}
 				if($save_res !== false && $unbind_res !== false && $bind_res){
 					$model->commit();
+					if($save_res){
+						/*命令下发开始*/
+						$param = array(
+							"name"		=> $led_data['name'],
+							"size_x"	=> $led_data['size_x'],
+							"size_y"	=> $led_data['size_y'],
+							"resolu_x"	=> $led_data['resolu_x'],
+							"resolu_y"	=> $led_data['resolu_y']
+						);
+						$cmd_data = array();
+						$cmd_data['screen_id'] = $id;
+						$cmd_data['type'] = 5;
+						$cmd_data['param'] = json_encode($param);
+						$cmd_data['publish'] = NOW_TIME;
+						$cmd_data['execute'] = NOW_TIME;
+						$cmd_data['expired'] = NOW_TIME;
+						$cmd_model = D("Command");
+						$cmd_model->rm_cmd_by_sid($id, 5);
+						$cmd_model->add($cmd_data);
+						/*命令下发结束*/
+					}
 					$this->success('修改成功', U('index'));
 				}else{
 					$model->rollback();
@@ -266,6 +313,24 @@ class ScreenController extends CommonController
 				$data['end'] = I("post.end");
 				$player_res = $player_model->where($map)->save($data);
 				if($player_res !== false){
+					if($player_res){
+						/*命令下发开始*/
+						$param = array(
+							"start"=>$data['start'],
+							"end"=>$data['end']
+						);
+						$cmd_data = array();
+						$cmd_data['screen_id'] = $id;
+						$cmd_data['type'] = 6;
+						$cmd_data['param'] = json_encode($param);
+						$cmd_data['publish'] = NOW_TIME;
+						$cmd_data['execute'] = NOW_TIME;
+						$cmd_data['expired'] = NOW_TIME;
+						$cmd_model = D("Command");
+						$cmd_model->rm_cmd_by_sid($id, 6);
+						$cmd_model->add($cmd_data);
+						/*命令下发结束*/
+					}
 					$this->success('操作成功', U('index'));
 				}else{
 					$this->error('操作失败');
@@ -405,5 +470,218 @@ class ScreenController extends CommonController
         } else {
             $this->error('删除失败！');
         }
+	}
+	
+	/**
+	 * 播放器参数配置
+	 * @param $item 配置项目
+	 * 			1-设置锁定屏幕密码
+	 * 			2-设置心跳周期
+	 * 			3-设置监控数据上传周期
+	 * 			4-设置定时开关
+	 */
+	public function setting($id=0,$item=1){
+		if(IS_POST){
+			if($id){
+				switch($item){
+					case 1:
+						$rules = array();
+						$rules[] = array('clock','require','请选择锁定开关！');
+						$rules[] = array('clock_password','require','锁定密码不能为空！');
+						$rules[] = array('clock_password', "/^[A-Za-z0-9]{6,16}$/", '锁定密码格式错误，6-16位字母数字组合！');
+						break;
+					case 2:
+						$rules = array();
+						$rules[] = array('heartbeat_cycle','require','心跳周期不能为空！');
+						$rules[] = array('heartbeat_cycle','number','心跳周期为数字！');
+						break;
+					case 3:
+						$rules = array();
+						$rules[] = array('alarm_cycle','require','上传周期不能为空！');
+						$rules[] = array('alarm_cycle','number','上传周期为数字！');
+						$rules[] = array('alarm_url','require','上传路径不能为空！');
+						break;
+					case 4:
+						$rules = array();
+						$rules[] = array('time_switch','require','请选择定时开关！');
+						$rules[] = array('soft_enable','require','开启软件时间不能为空！');
+						$rules[] = array('soft_disable','require','关闭软件时间不能为空！');
+						break;
+					default:
+						$item = 1;
+						$rules = array();
+						$rules[] = array('clock','require','请选择锁定开关！');
+						$rules[] = array('clock_password','require','锁定密码不能为空！');
+						break;
+				}
+				$set_model = D("Setting");
+				if($set_model->validate($rules)->create()){
+					$data = array();
+					if(isset($_POST['clock'])){
+						$data['clock'] = I("post.clock");
+					}
+					if(isset($_POST['clock_password'])){
+						$data['clock_password'] = I("post.clock_password");
+					}
+					if(isset($_POST['heartbeat_cycle'])){
+						$data['heartbeat_cycle'] = I("post.heartbeat_cycle");
+					}
+					if(isset($_POST['alarm_cycle'])){
+						$data['alarm_cycle'] = I("post.alarm_cycle");
+					}
+					if(isset($_POST['alarm_url'])){
+						$data['alarm_url'] = I("post.alarm_url");
+					}
+					if(isset($_POST['time_switch'])){
+						$data['time_switch'] = I("post.time_switch");
+					}
+					if(isset($_POST['soft_enable'])){
+						$data['soft_enable'] = I("post.soft_enable");
+					}
+					if(isset($_POST['soft_disable'])){
+						$data['soft_disable'] = I("post.soft_disable");
+					}
+					$settings = $set_model->set_by_sid($id, "id");
+					if($settings){
+						$map = array("id"=>$id);
+						$res = $set_model->where($map)->save($data);
+						if($res !== false){
+							if($res){
+								/*命令下发开始*/
+								$cmd_data = array();
+								$cmd_data['screen_id'] = $id;
+								$cmd_data['type'] = $item;
+								$cmd_data['param'] = json_encode($data);
+								$cmd_data['publish'] = NOW_TIME;
+								$cmd_data['execute'] = NOW_TIME;
+								$cmd_data['expired'] = NOW_TIME;
+								$cmd_model = D("Command");
+								$cmd_model->rm_cmd_by_sid($id, $item);
+								$cmd_model->add($cmd_data);
+								/*命令下发结束*/
+							}
+							$this->success("修改成功！");
+						}else{
+							$this->error("修改失败！");
+						}
+					}else{
+						$data['id'] = $id;
+						$res = $set_model->add($data);
+						if($res){
+							/*命令下发开始*/
+							$cmd_data = array();
+							$cmd_data['screen_id'] = $id;
+							$cmd_data['type'] = $item;
+							$cmd_data['param'] = json_encode($data);
+							$cmd_data['publish'] = NOW_TIME;
+							$cmd_data['execute'] = NOW_TIME;
+							$cmd_data['expired'] = NOW_TIME;
+							$cmd_model = D("Command");
+							$cmd_model->rm_cmd_by_sid($id, $item);
+							$cmd_model->add($cmd_data);
+							/*命令下发结束*/
+							$this->success("修改成功！");
+						}else{
+							$this->error("修改失败！");
+						}
+					}
+				}else{
+					$this->error($set_model->getError());
+				}
+			}else{
+				$this->error("系统错误，非法访问！");
+			}
+		}else{
+			if($id){
+				$set_model = D("Setting");
+				$settings = $set_model->set_by_sid($id);
+				$template = "setting_{$item}";
+				$this->assign("screen_id", $id);
+				$this->assign("info", $settings);
+				$this->meta_title = "播放器参数配置";
+				$this->display($template);
+			}else{
+				$this->error("系统错误，非法访问！");
+			}
+		}
+	}
+
+	/**
+	 * 一键关屏
+	 */
+	public function shutdown(){
+		$id = I('request.id', 0);
+        if ( empty($id) ) {
+            $this->error('请选择要操作的数据!');
+        }
+		$player_model = D("Player");
+		$player = $player_model->player_by_id($id);
+		if($player && $player['mac']){
+			$ws_in = array();
+			$ws_in['Act'] = "shutdown";
+			$ws_in['Id'] = $player['bind_id'];
+			$ws_in['Key'] = $player['bind_key'];
+			$ws_in['Mac'] = strtoupper(str_replace(':', '-', $player['mac']));
+			$cfg_model = D("Config");
+			$ws = $cfg_model->websocket();
+			$ws_ip = $ws['ip'];
+			$ws_port = $ws['port'];
+			import("@.Service.WebsocketClient", '', ".php");
+			$client = new \WebSocketClient();
+			$client->connect($ws_ip, $ws_port, '/');
+			$resp = $client->sendData(json_encode($ws_in));
+			unset($client);
+			if( $resp !== true ){
+				$this->error("发送失败");
+			}else{
+				$this->success("屏幕关闭成功");
+			}
+		}else{
+			$this->error("屏幕未绑定播放器");
+		}
+	}
+	
+	/**
+	 * 紧急通知
+	 */
+	public function notify($id=0){
+        if ( empty($id) ) {
+            $this->error('请选择要操作的数据!');
+        }
+		if(IS_POST){
+			$content = I("post.content", "");
+			if($content){
+				$player_model = D("Player");
+				$player = $player_model->player_by_id($id);
+				if($player && $player['mac']){
+					$ws_in = array();
+					$ws_in['Act'] = "notice";
+					$ws_in['Id'] = $player['bind_id'];
+					$ws_in['Key'] = $player['bind_key'];
+					$ws_in['Mac'] = strtoupper(str_replace(':', '-', $player['mac']));
+					$ws_in['Content'] = trim($content);
+					$cfg_model = D("Config");
+					$ws = $cfg_model->websocket();
+					import("@.Service.WebsocketClient", '', ".php");
+					$client = new \WebSocketClient();
+					$client->connect($ws['ip'], $ws['port'], '/');
+					$resp = $client->sendData(json_encode($ws_in));
+					unset($client);
+					if( $resp !== true ){
+						$this->error("紧急通知发步失败！");
+					}else{
+						$this->success("紧急通知发步成功！");
+					}
+				}else{
+					$this->error("屏幕未绑定播放器！");
+				}
+			}else{
+				$this->error("通知内容不能为空！");
+			}
+		}else{
+			$this->assign("id", $id);
+			$this->meta_title = "发布紧急通知";
+			$this->display();
+		}
 	}
 }

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<include file="Public/head"/>
+</head>
+<body>
+<div id="wrapper">
+  <include file="Public/header" /> 
+  <include file="Public/menu" />
+  <div id="page-wrapper"> 
+	  <div class="row">  
+	    <div id="main" class="col-lg-12 main">
+<block name="body">
+<div class="main-title">
+    <h2>播放器参数配置</h2>
+</div>
+<div class="panel panel-default">
+    <div class="tab-wrap  panel-body ">	    
+ 		<ul class="nav nav-tabs ">
+			<li><a href="{:U('?id='.$screen_id.'&item=1')}">屏幕锁定配置</a></li>
+			<li><a href="{:U('?id='.$screen_id.'&item=2')}">心跳周期配置</a></li>
+			<li><a href="{:U('?id='.$screen_id.'&item=3')}">监控数据配置</a></li>
+			<li class="active"><a href="{:U('?id='.$screen_id.'&item=4')}">定时开关配置</a></li>
+		</ul>
+        <div class="tab-content" style="padding-top: 25px;">
+            <form action="{:U()}" method="post" class="form col-lg-6" role="form" >
+            	<div class="form-group">
+                    <label class="item-label ">定时开关</label> 
+                    <label class="radio"><input type="radio" name="time_switch" value="1" />启用</label>
+                    <label class="radio"><input type="radio" name="time_switch" value="0" />禁用</label>
+                </div>
+                <div class="form-group">
+                    <label class="item-label ">开启软件时间</label> 
+                    <input type="text" class="form-control" name="soft_enable" value="{$info.soft_enable}" style="width: 50%;" readonly />
+                </div>
+                <div class="form-group">
+                    <label class="item-label ">关闭软件时间</label> 
+                    <input type="text" class="form-control" name="soft_disable" value="{$info.soft_disable}" style="width: 50%;" readonly />
+                </div>
+                <div class="form-group">
+                    <label class="item-label"></label>
+                    <div class="controls">
+                		<if condition="in_array('SCREEN/SETTING', $_SESSION['_ACCESS_LIST'])">
+                	  	<input type="hidden" name="id" value="{$screen_id}" />
+                	  	<input type="hidden" name="item" value="4" />
+                    	<button type="submit" class="btn btn-default submit-btn ajax-post" target-form="form">确 定</button>	
+                    	</if>
+                    	<button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+</div>    
+</block>
+</div>  
+	  </div>
+	</div>	
+  <include file="Public/footer" />
+</div>    
+  <include file="Public/script" />
+</body>
+</html>
+<block name="script">
+<link href="__STATIC__/datetimepicker/css/bootstrap.css" rel="stylesheet" media="screen">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" media="screen">
+<script src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+<script src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script type="text/javascript">
+Think.setValue("time_switch", {$info.time_switch|default = 1});
+$(window).load(function()
+{
+    $("input[name='soft_enable']").datetimepicker({		
+		//时分
+		language: 'zh-CN',
+		format: "hh:ii",
+		weekStart: 0,
+        todayBtn:  false,
+		autoclose: true,
+		todayHighlight: true,
+		startView: 1,
+		minView: 0,
+		maxView: 1,
+		forceParse: false
+    });
+    $("input[name='soft_disable']").datetimepicker({
+    	language: 'zh-CN',
+		format: "hh:ii",
+		weekStart: 0,
+        todayBtn:  false,
+		autoclose: true,
+		todayHighlight: true,
+		startView: 1,
+		minView: 0,
+		maxView: 1,
+		forceParse: false
+    });
+});
+</script>
+</block>

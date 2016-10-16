@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>重置密码|Lbcloud管理系统</title>
+        <link rel="stylesheet" type="text/css" href="__CSS__/register-admin.css" media="all">
+        <style type="text/css">
+        	.nav {
+			  padding-left: 0;
+			  margin-bottom: 0;
+			  list-style: none;
+			}
+			
+			.nav:before,
+			.nav:after {
+			  display: table;
+			  content: " ";
+			}
+			
+			.nav:after {
+			  clear: both;
+			}
+			
+			.nav:before,
+			.nav:after {
+			  display: table;
+			  content: " ";
+			}
+			
+			.nav:after {
+			  clear: both;
+			}
+			
+			.nav > li {
+			  position: relative;
+			  display: block;
+			}
+			
+			.nav > li > a {
+			  position: relative;
+			  display: block;
+			  padding: 10px 15px;
+			}
+			
+			.nav > li > a:hover,
+			.nav > li > a:focus {
+			  text-decoration: none;
+			  background-color: #eeeeee;
+			}
+			
+			.nav > li.disabled > a {
+			  color: #999999;
+			}
+			
+			.nav > li.disabled > a:hover,
+			.nav > li.disabled > a:focus {
+			  color: #999999;
+			  text-decoration: none;
+			  cursor: not-allowed;
+			  background-color: transparent;
+			}
+			.nav-tabs {
+			  border-bottom: 1px solid #dddddd;
+			}
+			
+			.nav-tabs > li {
+			  float: left;
+			  margin-bottom: -1px;
+			}
+			
+			.nav-tabs > li > a {
+				color: #555555;
+			  margin-right: 2px;
+			  line-height: 1.428571429;
+			  text-decoration:none;
+			  border: 1px solid transparent;
+			  border-radius: 4px 4px 0 0;
+			}
+			
+			.nav-tabs > li > a:hover {
+			  border-color: #eeeeee #eeeeee #dddddd;
+			}
+			
+			.nav-tabs > li.active > a,
+			.nav-tabs > li.active > a:hover,
+			.nav-tabs > li.active > a:focus {
+			  color: #555555;
+			  cursor: default;
+			  background-color: #ffffff;
+			  border: 1px solid #dddddd;
+			  text-decoration:none;
+			  border-bottom-color: transparent;
+			}
+			
+			.nav-tabs.nav-justified {
+			  width: 100%;
+			  border-bottom: 0;
+			}
+			
+			.nav-tabs.nav-justified > li {
+			  float: none;
+			}
+			
+			.nav-tabs.nav-justified > li > a {
+			  margin-bottom: 5px;
+			  text-align: center;
+			}
+			
+			.nav-tabs.nav-justified > .dropdown .dropdown-menu {
+			  top: auto;
+			  left: auto;
+			}
+        </style>
+    </head>
+    <body id="login-page">
+        <div id="main-content">
+			
+            <!-- 主体 -->
+            <div class="login-body">
+            	
+                <div class="login-main pr">
+                    <form action="" method="post" class="login-form">
+                    	<h3 class="welcome">重置密码</h3>
+                        <div id="itemBox" class="item-box">
+                            <div class="item">
+                                <input type="password" name="password" placeholder="新密码：6-16位字母数字组合" autocomplete="off" />
+                            </div>
+                            <span class="placeholder_copy placeholder_un">请填写新密码</span>
+                            <div class="item">
+                                <input type="password" name="repassword" placeholder="重复密码" autocomplete="off" />
+                            </div>
+                            <span class="placeholder_copy placeholder_pwd">请重复密码</span>
+                        </div>
+                        <div class="login_btn_panel">
+                            <button class="login-btn" type="submit">
+                                <span class="on">重置密码</span>
+                            </button>
+                            <div class="check-tips" style="width: 55%; float: left;"></div>
+                            <div style="text-align: right; margin-top: 10px;">
+	                        	<input type="hidden" name="mode" value="1" />
+	                            <a href="{:U('login')}" style="text-decoration:none;color: #555555;">登录</a>&nbsp;
+	                            <a href="{:U('register')}" style="text-decoration:none;color: #555555;">注册</a>
+	                        </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+	<!--[if lt IE 9]>
+    <script type="text/javascript" src="__STATIC__/jquery-1.10.2.min.js"></script>
+    <![endif]-->
+    <!--[if gte IE 9]><!-->
+    <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+    <!--<![endif]-->
+    <script type="text/javascript">
+    	/* 登陆表单获取焦点变色 */
+    	$(".login-form").on("focus", "input", function(){
+            $(this).closest('.item').addClass('focus');
+        }).on("blur","input",function(){
+            $(this).closest('.item').removeClass('focus');
+        });
+
+    	//表单提交
+    	/*$(document)
+	    	.ajaxStart(function(){
+	    		$("button:submit").addClass("log-in").attr("disabled", true);
+	    	})
+	    	.ajaxStop(function(){
+	    		$("button:submit").removeClass("log-in").attr("disabled", false);
+	    	});*/
+
+    	$("form").submit(function(){
+    		var self = $(this);
+    		$.post(self.attr("action"), self.serialize(), success, "json");
+    		return false;
+
+    		function success(data){
+    			if(data.status){
+    				alert("密码修改成功");
+    				window.location.href = data.url;
+    			} else {
+    				self.find(".check-tips").text(data.info);
+    			}
+    		}
+    	});
+    	
+		$(function(){
+			//初始化选中用户名输入框
+			$("#itemBox").find("input[name=password]").focus();
+			
+            //placeholder兼容性
+                //如果支持 
+            function isPlaceholer(){
+                var input = document.createElement('input');
+                return "placeholder" in input;
+            }
+                //如果不支持
+            if(!isPlaceholer()){
+                $(".placeholder_copy").css({
+                    display:'block'
+                })
+                $("#itemBox input").keydown(function(){
+                    $(this).parents(".item").next(".placeholder_copy").css({
+                        display:'none'
+                    })                    
+                })
+                $("#itemBox input").blur(function(){
+                    if($(this).val()==""){
+                        $(this).parents(".item").next(".placeholder_copy").css({
+                            display:'block'
+                        })                      
+                    }
+                })
+            }
+		});
+    </script>
+</body>
+</html>

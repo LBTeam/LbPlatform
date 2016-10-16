@@ -4,14 +4,14 @@
  * @author liangjian
  * @email 15934854815@163.com
  */
-namespace Api\Model;
+namespace Index\Model;
 use Think\Model;
 
 class CommandModel extends Model
 {
 	/**
 	 * 删除命令
-	 * @param array	$screens 屏幕ID
+	 * @param array	$screen_id 屏幕ID
 	 * @param int	$type 命令类型
 	 * 					  |0-发布播放方案
 	 * 					  |1-锁定屏幕参数更新
@@ -28,43 +28,11 @@ class CommandModel extends Model
 	 * 						|1-已下发
 	 * @return int
 	 */
-	public function remove_cmd($screens, $type=0, $status=0){
+	public function rm_cmd_by_sid($screen_id, $type=0, $status=0){
 		$map = array();
-		$map['screen_id'] = array("IN", $screens);
+		$map['screen_id'] = $screen_id;
 		$map['type'] = $type;
 		$map['status'] = $status;
 		return $this->where($map)->delete();
-	}
-	
-	/**
-	 * 发布命令
-	 */
-	public function release_cmd($cmds){
-		return $this->addAll($cmds);
-	}
-	
-	/**
-	 * 命令列表
-	 */
-	public function cmds_list($screen_id){
-		$map = array();
-		$map['screen_id'] = $screen_id;
-		$map['status'] = 0;
-		return $this->where($map)->select();
-	}
-	
-	/**
-	 * 更改命令为已下发
-	 */
-	public function cmd_issued($cmd_ids){
-		if($cmd_ids){
-			if(!is_array($cmd_ids)){
-				$cmd_ids = explode(',', $cmd_ids);
-			}
-			$map = array();
-			$map['id'] = array('IN', $cmd_ids);
-			return $this->where($map)->setField("status", 1);
-		}
-		return true;
 	}
 }

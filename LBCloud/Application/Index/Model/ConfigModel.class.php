@@ -21,4 +21,12 @@ class ConfigModel extends Model{
 		$roles['normal'] = $cfgs['NORMAL_ROLE_ID'] ? $cfgs['NORMAL_ROLE_ID'] : C("NORMAL_ROLE_ID");
 		return $roles;
 	}
+	
+	public function websocket(){
+		$websocket = array();
+		$cfgs = $this->getField("key,value");
+		$websocket['ip'] = $cfgs['WEB_SOCKET_IP'] ? $cfgs['WEB_SOCKET_IP'] : C("WEBSOCKET_IP");
+		$websocket['port'] = $cfgs['WEB_SOCKET_PORT'] ? $cfgs['WEB_SOCKET_PORT'] : C("WEBSOCKET_PORT");
+		return $websocket;
+	}
 }

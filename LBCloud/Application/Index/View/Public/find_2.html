@@ -2,29 +2,133 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>欢迎您登录管理系统</title>
-        <link rel="stylesheet" type="text/css" href="__CSS__/login-admin.css" media="all">
- 
+        <title>找回密码|Lbcloud管理系统</title>
+        <link rel="stylesheet" type="text/css" href="__CSS__/register-admin.css" media="all">
+        <style type="text/css">
+        	.nav {
+			  padding-left: 0;
+			  margin-bottom: 0;
+			  list-style: none;
+			}
+			
+			.nav:before,
+			.nav:after {
+			  display: table;
+			  content: " ";
+			}
+			
+			.nav:after {
+			  clear: both;
+			}
+			
+			.nav:before,
+			.nav:after {
+			  display: table;
+			  content: " ";
+			}
+			
+			.nav:after {
+			  clear: both;
+			}
+			
+			.nav > li {
+			  position: relative;
+			  display: block;
+			}
+			
+			.nav > li > a {
+			  position: relative;
+			  display: block;
+			  padding: 10px 15px;
+			}
+			
+			.nav > li > a:hover,
+			.nav > li > a:focus {
+			  text-decoration: none;
+			  background-color: #eeeeee;
+			}
+			
+			.nav > li.disabled > a {
+			  color: #999999;
+			}
+			
+			.nav > li.disabled > a:hover,
+			.nav > li.disabled > a:focus {
+			  color: #999999;
+			  text-decoration: none;
+			  cursor: not-allowed;
+			  background-color: transparent;
+			}
+			.nav-tabs {
+			  border-bottom: 1px solid #dddddd;
+			}
+			
+			.nav-tabs > li {
+			  float: left;
+			  margin-bottom: -1px;
+			}
+			
+			.nav-tabs > li > a {
+				color: #555555;
+			  margin-right: 2px;
+			  line-height: 1.428571429;
+			  text-decoration:none;
+			  border: 1px solid transparent;
+			  border-radius: 4px 4px 0 0;
+			}
+			
+			.nav-tabs > li > a:hover {
+			  border-color: #eeeeee #eeeeee #dddddd;
+			}
+			
+			.nav-tabs > li.active > a,
+			.nav-tabs > li.active > a:hover,
+			.nav-tabs > li.active > a:focus {
+			  color: #555555;
+			  cursor: default;
+			  background-color: #ffffff;
+			  border: 1px solid #dddddd;
+			  text-decoration:none;
+			  border-bottom-color: transparent;
+			}
+			
+			.nav-tabs.nav-justified {
+			  width: 100%;
+			  border-bottom: 0;
+			}
+			
+			.nav-tabs.nav-justified > li {
+			  float: none;
+			}
+			
+			.nav-tabs.nav-justified > li > a {
+			  margin-bottom: 5px;
+			  text-align: center;
+			}
+			
+			.nav-tabs.nav-justified > .dropdown .dropdown-menu {
+			  top: auto;
+			  left: auto;
+			}
+        </style>
     </head>
     <body id="login-page">
         <div id="main-content">
-
+			
             <!-- 主体 -->
             <div class="login-body">
+            	
                 <div class="login-main pr">
                     <form action="" method="post" class="login-form">
-                        <h3 class="welcome">Lbcloud管理平台</h3>
+                    	<ul class="nav nav-tabs " style="margin-top: 0px;margin-bottom: 20px;">
+							<li style="width: 50%;text-align: center;"><a href="{:U('?mode=1')}">通过手机找回</a></li>
+							<li class="active" style="width: 50%;text-align: center;"><a href="javascript:void(0);">通过邮箱找回</a></li>
+						</ul>
                         <div id="itemBox" class="item-box">
                             <div class="item">
-                                <i class="icon-login-user"></i>
-                                <input type="text" name="username" placeholder="请填写用户名" autocomplete="off" />
+                                <input type="text" name="email" placeholder="邮箱地址" autocomplete="off" />
                             </div>
-                            <span class="placeholder_copy placeholder_un">请填写用户名</span>
-                            <div class="item b0">
-                                <i class="icon-login-pwd"></i>
-                                <input type="password" name="password" placeholder="请填写密码" autocomplete="off" />
-                            </div>
-                            <span class="placeholder_copy placeholder_pwd">请填写密码</span>
+                            <span class="placeholder_copy placeholder_un">请填写邮箱地址</span>
                             <if condition="$Think.config.VERIFY_ENABLE eq true">
                             <div class="item verifycode">
                                 <i class="icon-login-verifycode"></i>
@@ -39,14 +143,15 @@
                         </div>
                         <div class="login_btn_panel">
                             <button class="login-btn" type="submit">
-                                <span class="in"><i class="icon-loading"></i>登 录 中 ...</span>
-                                <span class="on">登 录</span>
+                                <span class="in"><i class="icon-loading"></i></span>
+                                <span class="on">找回密码</span>
                             </button>
-                            <div class="check-tips"></div>
-                        </div>
-                        <div class="item-box" style="text-align: right;">
-                            <a href="{:U('register')}" style="text-decoration:none;color: #555555;">注册</a>
-                            <a href="{:U('find')}" style="text-decoration:none;color: #555555;">忘记密码？</a>
+                            <div class="check-tips" style="width: 55%; float: left;"></div>
+                            <div style="text-align: right; margin-top: 10px;">
+	                        	<input type="hidden" name="mode" value="2" />
+	                            <a href="{:U('login')}" style="text-decoration:none;color: #555555;">登录</a>&nbsp;
+	                            <a href="{:U('register')}" style="text-decoration:none;color: #555555;">注册</a>
+	                        </div>
                         </div>
                     </form>
                 </div>
@@ -67,13 +172,13 @@
         });
 
     	//表单提交
-    	$(document)
+    	/*$(document)
 	    	.ajaxStart(function(){
 	    		$("button:submit").addClass("log-in").attr("disabled", true);
 	    	})
 	    	.ajaxStop(function(){
 	    		$("button:submit").removeClass("log-in").attr("disabled", false);
-	    	});
+	    	});*/
 
     	$("form").submit(function(){
     		var self = $(this);
@@ -92,10 +197,10 @@
     			}
     		}
     	});
-
+    	
 		$(function(){
 			//初始化选中用户名输入框
-			$("#itemBox").find("input[name=username]").focus();
+			$("#itemBox").find("input[name=email]").focus();
 			//刷新验证码
 			<if condition="$Think.config.VERIFY_ENABLE eq true">
 			var verifyimg = $(".verifyimg").attr("src");

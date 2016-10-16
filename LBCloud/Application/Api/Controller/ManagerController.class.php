@@ -153,6 +153,14 @@ class ManagerController extends CommonController
 		}
 		$this->ajaxReturn($respones);
 	}
+
+	/**
+	 * 心跳
+	 */
+	public function heartbeat(){
+		$respones = array('err_code'=>'000000', 'msg'=>"ok");
+		$this->ajaxReturn($respones);
+	}
 	
 	/**
 	 * 上传
@@ -234,7 +242,6 @@ class ManagerController extends CommonController
 			$cmds = array();
 			foreach($screens as $val){
 				$cmds[] = array(
-					'user_id'	=> $user_id,
 					'screen_id'	=> $val,
 					'type'		=> 0,
 					'param'		=> json_encode(array('program_id'=>$prog_info['id'])),
@@ -246,7 +253,7 @@ class ManagerController extends CommonController
 			}
 			if($cmds){
 				$cmd_model = D("Command");
-				$cmd_del = $cmd_model->remove_cmd($user_id, $screens, 0, 0);
+				$cmd_del = $cmd_model->remove_cmd($screens, 0, 0);
 				$cmd_add = $cmd_model->release_cmd($cmds);
 			}
 			$respones = array("err_code"=>"000000","msg"=>"success");
@@ -358,13 +365,6 @@ class ManagerController extends CommonController
 	}
 
 	/**
-	 * 发布方案
-	 */
-	public function publish(){
-		
-	}
-	
-	/**
 	 * 播放方案列表
 	 */
 	public function programs(){
@@ -396,13 +396,6 @@ class ManagerController extends CommonController
 			}
 		}
 		$this->ajaxReturn($programs);
-	}
-	
-	/**
-	 * 媒体列表
-	 */
-	public function medias(){
-		
 	}
 	
 	/**

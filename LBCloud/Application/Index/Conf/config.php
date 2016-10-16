@@ -23,6 +23,15 @@ return array(
 	'ROOT_ROLE_ID'		=> 1,
 	'AGENT_ROLE_ID'		=> 2,
 	'NORMAL_ROLE_ID'	=> 3,
+	'DATA_SIGN_KEY'		=> 'J6zAkThc',
+	/*发送验证码*/
+   	"SMS_SERVER"	=>	"http://msg.ddt123.cn/api.php/Api/sendmsg/sendMobMsg?",
+   	"EMAIL_SERVER"	=>	"http://123.56.240.172:8084/index.php?m=home&c=index&a=Mailto&",
+   	
+	'REDIS_SERVER'	=>	"10.171.126.247",
+	
+	'WEBSOCKET_IP'		=>	"123.56.240.172",
+	'WEBSOCKET_PORT'	=>	"9501",
 	
 	/* 模板相关配置 */
     'TMPL_PARSE_STRING' => array(

@@ -46,6 +46,7 @@ class UserModel extends Model
     public function logout(){
     	session(C("USER_AUTH_KEY"), null);
 		session(C("ADMIN_AUTH_KEY"), null);
+		session('is_full', null);
         session('user_auth', null);
         session('user_auth_sign', null);
     }
@@ -73,6 +74,7 @@ class UserModel extends Model
 			session(C("ADMIN_AUTH_KEY"), $user['uid']);
 		}
 		session(C("USER_AUTH_KEY"), $user['uid']);
+		session('is_full', $user['is_full']);
         session('user_auth', $auth);
         session('user_auth_sign', data_auth_sign($auth));
     }
@@ -261,4 +263,20 @@ class UserModel extends Model
     	}
     	return $role_id && ($role_id == $roles['normal']);
     }
+    
+    /**
+     * 根据注册码获取代理商数据
+     */
+    public function agent_by_regcode($reg_code, $field="*"){
+    	$map = array("reg_code" => $reg_code);
+    	return $this->field($field)->where($map)->find();
+    }
+	
+	/**
+     * 根据邮箱获取用户数据
+     */
+	public function user_by_email($email, $field="*"){
+		$map = array("email" => $email);
+    	return $this->field($field)->where($map)->find();
+	}
 }

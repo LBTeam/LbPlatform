@@ -37,6 +37,14 @@
                     <input type="text" class="form-control" name="config[NORMAL_ROLE_ID]" value="{$cfgs.NORMAL_ROLE_ID}">
                 </div>
                 <div class="form-group">
+                    <label class="item-label ">WebSocket地址<span class="check-tips">（<font color="red">*非开发人员勿动</font>）</span> </label> 
+                    <input type="text" class="form-control" name="config[WEB_SOCKET_IP]" value="{$cfgs.WEB_SOCKET_IP}">
+                </div>
+                <div class="form-group">
+                    <label class="item-label ">WebSocket端口<span class="check-tips">（<font color="red">*非开发人员勿动</font>）</span> </label> 
+                    <input type="text" class="form-control" name="config[WEB_SOCKET_PORT]" value="{$cfgs.WEB_SOCKET_PORT}">
+                </div>
+                <div class="form-group">
                     <label class="item-label"></label>
                     <div class="controls">
                     	  <if condition="in_array('SYSTEM/INDEX', $_SESSION['_ACCESS_LIST'])">
