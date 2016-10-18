@@ -1,4 +1,5 @@
-﻿using Prism.Mvvm;
+﻿using Prism.Commands;
+using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,15 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
     {
         private static double Megabytes = 1024.0 * 1024.0;
         public ScheduleViewModel()
-        { }
+        {
+            PreviewScreenScheduleCommand = new DelegateCommand(() => { PreviewScreenSchedule(); });
+        }
+
+        private void PreviewScreenSchedule()
+        {
+           
+        }
+
         public ScheduleViewModel(FileInfo fileInfo)
         {
             _fileName = fileInfo.Name;
@@ -48,5 +57,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             get { return _filePath; }
             set { SetProperty(ref _filePath, value); }
         }
+
+        public DelegateCommand PreviewScreenScheduleCommand { get; private set; }
     }
 }
