@@ -10,23 +10,23 @@
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" >
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                <Button Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
+                <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
                                 ToolTip="预览排期">
                     <materialDesign:PackIcon Kind="PlaylistPlay" Height="20" Width="20"/>
                 </Button>
             </StackPanel>
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
                 <!--<Button Content="+" Width="25" Height="25" Margin="2"/>-->
-                <Button Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
+                <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
                                 ToolTip="新建排期">
                     <materialDesign:PackIcon Kind="PlaylistPlus" Height="20" Width="20"/>
                 </Button>
 
-                <Button Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
+                <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
                                 ToolTip="删除排期">
                     <materialDesign:PackIcon Kind="PlaylistRemove" Height="20" Width="20"/>
                 </Button>
-                <Button Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Width="25" Height="25"
+                <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Width="25" Height="25"
                                 ToolTip="编辑排期">
                     <materialDesign:PackIcon Kind="PlaylistCheck" Height="20" Width="20"/>
                 </Button>
