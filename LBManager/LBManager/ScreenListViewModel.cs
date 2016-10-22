@@ -1,4 +1,6 @@
-﻿using LBManager.Infrastructure.Interfaces;
+﻿using LBManager.Infrastructure.Common.Event;
+using LBManager.Infrastructure.Common.Utility;
+using LBManager.Infrastructure.Interfaces;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -17,7 +19,17 @@ namespace LBManager
         {
             _screenService = screenService;
             _scheduleList = scheduleList;
-            FetchScreens();
+            Messager.Default.EventAggregator.GetEvent<OnLoginEvent>().Subscribe(state => 
+            {
+                if (state.Status)
+                {
+                    FetchScreens();
+                }
+                else
+                {
+                    ScreenList.Clear();
+                }
+            });
         }
 
         private async void FetchScreens()

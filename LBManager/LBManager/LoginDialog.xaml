@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LBManager"
              xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+             xmlns:utility="clr-namespace:LBManager.Utility"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" Width="320"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -30,7 +31,15 @@
         <PasswordBox wpf:HintAssist.Hint="密码" Style="{DynamicResource MaterialDesignFloatingHintPasswordBox}"
                  Margin="0 16 0 0"
                  FontSize="16" Grid.Row="2"
-                 />
+                     utility:PasswordHelper.Attach="True">
+            <utility:PasswordHelper.Password>
+                <Binding Path="Password" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                    </Binding.ValidationRules>
+                </Binding>
+            </utility:PasswordHelper.Password>
+        </PasswordBox>
         <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Center"
                     Margin="0 16 0 0">
             <Button IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}"

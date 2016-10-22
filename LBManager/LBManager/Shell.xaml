@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:LBManager"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:scheduleModule="clr-namespace:LBManager.Modules.ScheduleManage.Views;assembly=LBManager.Modules.ScheduleManage"
+        xmlns:converter="clr-namespace:LBManager.Converter"
         xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="800"
@@ -13,6 +14,8 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto">
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converter:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
         <!--  Link Button  -->
         <SolidColorBrush x:Key="LinkButtonForeground" options:Freeze="True" Color="#1297FB" />
         <SolidColorBrush x:Key="LinkButtonForegroundHighlighted" options:Freeze="True" Color="#55AAFF" />
@@ -45,9 +48,14 @@
                                       x:Name="MenuToggleButton"/>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">LED Media Manager</TextBlock>
                     <Button DockPanel.Dock="Right" Margin="0,0,10,0" Content="登录" FontSize="12" 
-                                HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" 
-                                Style="{StaticResource LinkButton}" 
-                                Command="{Binding LoginCommand}"/>
+                            HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" 
+                            Style="{StaticResource LinkButton}" 
+                            Command="{Binding LoginCommand}"
+                            Visibility="{Binding LoginStatus,Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                    <Button DockPanel.Dock="Right" Margin="0,0,10,0" Content="{Binding LoginAccount}" FontSize="12" 
+                            HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" 
+                            Style="{StaticResource LinkButton}"
+                            Visibility="{Binding LoginStatus,Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </DockPanel>
             </materialDesign:ColorZone>
             <!--<ContentControl Margin="16" Content="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.Content}" />-->

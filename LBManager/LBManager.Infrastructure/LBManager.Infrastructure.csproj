@@ -52,12 +52,14 @@
     <Compile Include="Interfaces\IScreenService.cs" />
     <Compile Include="Models\CompleteMultipartUploadResult.cs" />
     <Compile Include="Models\FileType.cs" />
+    <Compile Include="Models\HeartbeatResponse.cs" />
     <Compile Include="Models\ImageMedia.cs" />
     <Compile Include="Models\LoginResponse.cs" />
     <Compile Include="Models\Media.cs" />
     <Compile Include="Models\MediaFile.cs" />
     <Compile Include="Models\MediaSchedule.cs" />
     <Compile Include="Models\MediaTempInfo.cs" />
+    <Compile Include="Models\RefreshTokenResponse.cs" />
     <Compile Include="Models\Schedule.cs" />
     <Compile Include="Models\Screen.cs" />
     <Compile Include="Models\ScheduleFile.cs" />

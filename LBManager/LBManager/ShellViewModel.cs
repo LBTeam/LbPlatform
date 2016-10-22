@@ -1,12 +1,19 @@
-﻿using LBManager.Infrastructure.Models;
+﻿using Common.Logging;
+using LBManager.Infrastructure.Common.Event;
+using LBManager.Infrastructure.Common.Utility;
+using LBManager.Infrastructure.Models;
+using LBManager.Job;
 using MaterialDesignThemes.Wpf;
 using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Mvvm;
+using Quartz;
+using Quartz.Impl;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,9 +21,10 @@ namespace LBManager
 {
     public class ShellViewModel : BindableBase
     {
-       
+
 
         private ProgramScheduleListViewModel _scheduleListViewModel;
+        private System.Threading.Timer _heartbeatTimer;
         public ShellViewModel()
         {
             ScheduleDetailViewModel = new ProgramScheduleDetailViewModel();
@@ -26,9 +34,142 @@ namespace LBManager
 
             LoginCommand = new DelegateCommand(() => { OpenLoginDialog(); });
             NewScheduleCommand = new DelegateCommand(() => { NewSchedule(); });
+
+            Messager.Default.EventAggregator.GetEvent<OnLoginEvent>().Subscribe(state =>
+            {
+                this.LoginStatus = state.Status;
+                if (LoginStatus)
+                {
+                    LoginAccount = state.Account;
+                    _heartbeatTimer = new System.Threading.Timer(StartHeartbeat,null,100,10000);
+                    //StartHeartbeat();
+                }
+                else
+                {
+                    LoginAccount = string.Empty;
+                }
+            });
+
+            Messager.Default.EventAggregator.GetEvent<OnHeartbeatEvent>().Subscribe(arg => { HeartbeatEventHandle(arg.Status); });
+        }
+
+        private async void StartHeartbeat(object state)
+        {
+            if (HeartbeatState == HeartbeatStatus.OK || HeartbeatState == HeartbeatStatus.STOP)
+            {
+
+                var response = await Heartbeat();
+
+                if (response.Code == "000000")
+                {
+                    Messager.Default.EventAggregator.GetEvent<OnHeartbeatEvent>().Publish(new OnHeartbeatEventArg(HeartbeatStatus.OK));
+                }
+                else if (response.Code == "010002")
+                {
+                    Messager.Default.EventAggregator.GetEvent<OnHeartbeatEvent>().Publish(new OnHeartbeatEventArg(HeartbeatStatus.TokenInvalid));
+                }
+                else if (response.Code == "010003")
+                {
+                    Messager.Default.EventAggregator.GetEvent<OnHeartbeatEvent>().Publish(new OnHeartbeatEventArg(HeartbeatStatus.TokenExpired));
+                }
+            }
+        }
+
+        private async Task<HeartbeatResponse> Heartbeat()
+        {
+            HttpClient httpClient = new HttpClient();
+            HttpResponseMessage response = await httpClient.GetAsync(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/heartbeat&token={0}", App.SessionToken));
+
+            response.EnsureSuccessStatusCode();
+
+            string content = await response.Content.ReadAsStringAsync();
+            return await Task.Run(() => JsonConvert.DeserializeObject<HeartbeatResponse>(content));
+        }
+
+        private async void HeartbeatEventHandle(HeartbeatStatus status)
+        {
+            if (status == HeartbeatStatus.TokenExpired)
+            {
+                var response = await RefreshToken();
+                if (response.Code == "00000")
+                {
+                    HeartbeatState = HeartbeatStatus.OK;
+                }
+                else
+                {
+                    HeartbeatState = HeartbeatStatus.TokenExpired;
+                }
+            }
+            else if (status == HeartbeatStatus.TokenInvalid)
+            {
+                HeartbeatState = HeartbeatStatus.TokenInvalid;
+               await System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(async() =>
+                {
+                    var view = new TokenInvalidPromptDialog();
+
+                    //show the dialog
+                    var result = await DialogHost.Show(view, "RootDialog", TokenInvalidPromptDialogOpenedEventHandler, TokenInvalidPromptDialogClosingEventHandler);
+                }), null);
+               
+            }
+        }
+
+        private void TokenInvalidPromptDialogOpenedEventHandler(object sender, DialogOpenedEventArgs eventArgs)
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void TokenInvalidPromptDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
+        {
+            if ((bool)eventArgs.Parameter == false) return;
+            eventArgs.Cancel();
+
+            Messager.Default.EventAggregator.GetEvent<OnLoginEvent>().Publish(new OnLoginEventArgs(false, string.Empty));
+
+            Task.Delay(TimeSpan.FromMilliseconds(50))
+                 .ContinueWith((t, _) => eventArgs.Session.Close(false), null,
+                     TaskScheduler.FromCurrentSynchronizationContext());
         }
 
 
+        public async Task<RefreshTokenResponse> RefreshToken()
+        {
+            HttpClient httpClient = new HttpClient();
+
+            HttpResponseMessage response = await httpClient.GetAsync(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/refresh_token&token={0}", App.SessionToken));
+
+            response.EnsureSuccessStatusCode();
+
+            string content = await response.Content.ReadAsStringAsync();
+            return await Task.Run(() => JsonConvert.DeserializeObject<RefreshTokenResponse>(content));
+        }
+
+        private ISchedulerFactory sf = new StdSchedulerFactory();
+        private IScheduler sched;
+        private IJobDetail heartbeatJob;
+        private ISimpleTrigger heartbeatTrigger;
+        private void StartHeartbeat()
+        {
+
+
+            ILog log = LogManager.GetLogger(typeof(ShellViewModel));
+            sched = sf.GetScheduler();
+
+            //DateTimeOffset startTime = DateBuilder.NextGivenSecondDate(null, 1);
+
+            heartbeatJob = JobBuilder.Create<HeartbeatJob>()
+               .WithIdentity("HeartbeatJob", "group1")
+               .Build();
+            heartbeatTrigger = (ISimpleTrigger)TriggerBuilder.Create()
+                                                       .WithIdentity("HeartbeatTrigger", "group1")
+                                                       .StartAt(DateTime.Now)
+                                                       .WithSimpleSchedule(x => x.WithIntervalInSeconds(10))
+                                                       .Build();
+
+            heartbeatJob.JobDataMap.Put(HeartbeatJob.HeartbeatState, this.HeartbeatState);
+            sched.ScheduleJob(heartbeatJob, heartbeatTrigger);
+            sched.Start();
+        }
 
         private async void OpenLoginDialog()
         {
@@ -56,12 +197,12 @@ namespace LBManager
             if ((bool)eventArgs.Parameter == false) return;
             eventArgs.Cancel();
 
-            
+
 
             DialogHost dialog = sender as DialogHost;
             var view = dialog.DialogContent as EditScheduleView;
             var viewModel = view.DataContext as EditScheduleViewModel;
-            string scheduleFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media", viewModel.ScheduleName+".playprog");
+            string scheduleFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media", viewModel.ScheduleName + ".playprog");
 
             eventArgs.Session.UpdateContent(new SampleProgressDialog());
 
@@ -88,7 +229,7 @@ namespace LBManager
 
             Task.Delay(TimeSpan.FromSeconds(1))
                 .ContinueWith((t, _) =>
-                    eventArgs.Session.Close(false), 
+                    eventArgs.Session.Close(false),
                     null,
                     TaskScheduler.FromCurrentSynchronizationContext());
 
@@ -108,6 +249,27 @@ namespace LBManager
             set { SetProperty(ref _screenList, value); }
         }
 
+        private bool _loginStatus = false;
+        public bool LoginStatus
+        {
+            get { return _loginStatus; }
+            set { SetProperty(ref _loginStatus, value); }
+        }
+
+        private string _loginAccount = string.Empty;
+        public string LoginAccount
+        {
+            get { return _loginAccount; }
+            set { SetProperty(ref _loginAccount, value); }
+        }
+
+        private HeartbeatStatus _heartbeatState = HeartbeatStatus.STOP;
+        public HeartbeatStatus HeartbeatState
+        {
+            get { return _heartbeatState; }
+            set { SetProperty(ref _heartbeatState, value); }
+        }
+
         public DelegateCommand LoginCommand { get; private set; }
 
         public DelegateCommand NewScheduleCommand { get; private set; }
@@ -125,20 +287,25 @@ namespace LBManager
             DialogHost dialog = sender as DialogHost;
             var view = dialog.DialogContent as LoginDialog;
             var viewModel = view.DataContext as LoginDialogViewModel;
-                 
+
             //...now, lets update the "session" with some new content!
             eventArgs.Session.UpdateContent(new SampleProgressDialog());
             //note, you can also grab the session when the dialog opens via the DialogOpenedEventHandler
-            
+
             var loginResponse = await viewModel.Login();
 
             if (loginResponse.Code == "000000")
             {
                 App.SessionToken = loginResponse.TokenInfo.Value;
+                Messager.Default.EventAggregator.GetEvent<OnLoginEvent>().Publish(new OnLoginEventArgs(true, viewModel.Name));
             }
-            
-            //lets run a fake operation for 3 seconds then close this baby.
-            Task.Delay(TimeSpan.FromSeconds(3))
+            else
+            {
+                Messager.Default.EventAggregator.GetEvent<OnLoginEvent>().Publish(new OnLoginEventArgs(false, string.Empty));
+            }
+
+            ////lets run a fake operation for 3 seconds then close this baby.
+            Task.Delay(TimeSpan.FromMilliseconds(50))
                 .ContinueWith((t, _) => eventArgs.Session.Close(false), null,
                     TaskScheduler.FromCurrentSynchronizationContext());
         }
