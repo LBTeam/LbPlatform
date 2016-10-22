@@ -51,5 +51,9 @@ namespace LBManager
         {
             throw new NotImplementedException();
         }
+
+        #region 待重构
+        public static string SessionToken = string.Empty;
+        #endregion
     }
 }

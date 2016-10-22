@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LBManager"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:scheduleModule="clr-namespace:LBManager.Modules.ScheduleManage.Views;assembly=LBManager.Modules.ScheduleManage"
         xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="800"
@@ -65,6 +66,7 @@
                     <ColumnDefinition Width="4"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
+                <!--<scheduleModule:ScheduleListView Grid.Column="0"/>-->
                 <DockPanel Grid.Column="0">
                     <materialDesign:ColorZone DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Stretch"
                                               Mode="Accent" materialDesign:ShadowAssist.ShadowDepth="Depth2">
@@ -75,7 +77,8 @@
 
 
                     </materialDesign:ColorZone>
-                    <DockPanel DockPanel.Dock="Top" >
+                    <scheduleModule:ScheduleListView DockPanel.Dock="Top"/>
+                    <!--<DockPanel DockPanel.Dock="Top" >
                         <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                             <Button Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
                                 ToolTip="预览排期">
@@ -83,7 +86,7 @@
                             </Button>
                         </StackPanel>
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                            <!--<Button Content="+" Width="25" Height="25" Margin="2"/>-->
+                            <Button Content="+" Width="25" Height="25" Margin="2"/>
                             <Button Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
                                 ToolTip="新建排期">
                                 <materialDesign:PackIcon Kind="PlaylistPlus" Height="20" Width="20"/>
@@ -104,7 +107,7 @@
                                  ItemsSource="{Binding ScheduleListViewModel.ScheduleFileInfoList}"
                                  DisplayMemberPath="FileName">
 
-                    </ListBox>
+                    </ListBox>-->
 
                 </DockPanel>
                 <DockPanel Grid.Column="2">

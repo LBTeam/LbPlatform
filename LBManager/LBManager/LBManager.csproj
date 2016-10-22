@@ -207,6 +207,10 @@
       <Project>{AE40C0E5-6C31-4364-874D-6A0A6C028367}</Project>
       <Name>LBManager.Infrastructure</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LBManager.Modules.ScheduleManage\LBManager.Modules.ScheduleManage.csproj">
+      <Project>{ab8b448c-dd74-4d60-a041-3e5d03a32180}</Project>
+      <Name>LBManager.Modules.ScheduleManage</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

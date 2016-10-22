@@ -16,7 +16,7 @@ namespace LBManager
         public Task<IList<Screen>> GetScreens()
         {
             var tcs = new TaskCompletionSource<IList<Screen>>();
-            Http.Get("http://lbcloud.ddt123.cn/?s=api/Manager/screens")
+            Http.Get(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/screens&token={0}",App.SessionToken))
                 .OnSuccess((result) =>
                 {
                     Debug.WriteLine(result);

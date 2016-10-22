@@ -4,9 +4,87 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LBManager.Modules.ScheduleManage.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="ScheduleView" Height="300" Width="300">
-    <Grid>
-        
-    </Grid>
+        Title="ScheduleView" Height="600" Width="800"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto">
+    <materialDesign:DialogHost Identifier="RootDialog">
+        <DockPanel>
+            <materialDesign:ColorZone Padding="2" materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                                          Mode="Accent" DockPanel.Dock="Top">
+                <DockPanel>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">Schedule</TextBlock>
+                </DockPanel>
+            </materialDesign:ColorZone>
+            <Grid DockPanel.Dock="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="60"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="4"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ListBox Grid.Column="0">
+
+                    </ListBox>
+                    <Grid Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="100"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid x:Name="BaseInfoGrid" Grid.Row="0" Grid.ColumnSpan="3">
+                            <StackPanel Orientation="Vertical">
+                                <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Name" Text="{Binding Name}" Margin="8 0 0 0" VerticalAlignment="Bottom" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Width" Text="{Binding Name}" Margin="8 0 0 0" VerticalAlignment="Bottom" />
+                                    <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Heigh" Text="{Binding Name}" Margin="8 0 0 0" VerticalAlignment="Bottom" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                        <Grid x:Name="ScheduleInfoGrid" Grid.Row="1" Grid.Column="0">
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+                                    <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Name" Text="{Binding Name}" Margin="8 0 0 0" VerticalAlignment="Bottom" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="X" Text="{Binding Name}" Margin="8 0 0 0" VerticalAlignment="Bottom" />
+                                        <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Y" Text="{Binding Name}" Margin="8 0 0 0" VerticalAlignment="Bottom" />
+                                        <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Width" Text="{Binding Name}" Margin="8 0 0 0" VerticalAlignment="Bottom" />
+                                        <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Heigh" Text="{Binding Name}" Margin="8 0 0 0" VerticalAlignment="Bottom" />
+                                    </StackPanel>
+                                </StackPanel>
+                                <Grid DockPanel.Dock="Top">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
+                                                ToolTip="预览排期">
+                                            <materialDesign:PackIcon Kind="Plus" Height="20" Width="20"/>
+                                        </Button>
+                                    </StackPanel>
+                                    <ListBox Grid.Row="1">
+
+                                    </ListBox>
+                                </Grid>
+                            </DockPanel>
+                        </Grid>
+                        <Grid x:Name="DisplayLayoutGrid" Grid.Row="1" Grid.Column="2">
+
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </DockPanel>
+    </materialDesign:DialogHost>
 </Window>
