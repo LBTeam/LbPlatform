@@ -19,6 +19,7 @@ using Com.Net;
 using System.Threading;
 using LBManager.Infrastructure.Models;
 using WebSocketSharp;
+using System.Diagnostics;
 
 namespace LBPlayer
 {
@@ -54,12 +55,17 @@ namespace LBPlayer
         private string PollURL = "http://lbcloud.ddt123.cn/?s=api/Player/heartbeat";
         private string CmdBackURL = "http://lbcloud.ddt123.cn/?s=api/Player/cmd_result";
         private string MonitorInfoURL = "http://lbcloud.ddt123.cn/?s=api/Player/monitor";
+        private string WebSocketURL = "ws://123.56.240.172:9501";
         private WebSocket _webSocket;
+        private MonitorDataPoll _monitorDataPoll;
+        private ComputerStatus _computerStatus;
+        
         #endregion
         #region 构造函数
         public LBPlayerMain()
         {
             InitializeComponent();
+           
         }
         #endregion
         #region 心跳
@@ -70,9 +76,9 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _poll_GetPollResponseEvent(object sender, GetPollResponseEventArgs args)
         {
+            Debug.WriteLine("心跳完成："+DateTime.Now);
             HartBeatResponseObj hartBeatResponseObj;
             //throw new NotImplementedException();
-            SetControlText(skinLabel8, "心跳完成");
             hartBeatResponseObj = JsonConvert.DeserializeObject<HartBeatResponseObj>(args.Replydata);
 
             HartBeatHandle(hartBeatResponseObj);
@@ -102,6 +108,7 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _poll_SendPollEvent(object sender, PollEventArgs args)
         {
+            Debug.WriteLine("开始心跳："+DateTime.Now);
             HartBeatRequestObj obj = new HartBeatRequestObj();
             obj.Id = _config.ID;
             obj.Key = _config.Key;
@@ -112,28 +119,39 @@ namespace LBPlayer
         }
         #endregion
         #region 长连接
-        private void initialWebSocket()
+        private void initialWebSocket(string url)
         {
-            using (_webSocket = new WebSocket("123.56.240.172:9501"))
-            {
-                _webSocket.OnClose +=new EventHandler<CloseEventArgs>(_webSocket_OnClose);
-                _webSocket.OnError += new EventHandler<WebSocketSharp.ErrorEventArgs>(_webSocket_OnError);
-                _webSocket.OnOpen +=new EventHandler(_webSocket_OnOpen);
-                _webSocket.OnMessage += new EventHandler<MessageEventArgs>(_webSocket_OnMessage);
-                _webSocket.ConnectAsync();
-            }
-
-
+            _webSocket = new WebSocket(url);
+            _webSocket.OnClose +=new EventHandler<CloseEventArgs>(_webSocket_OnClose);
+            _webSocket.OnError += new EventHandler<WebSocketSharp.ErrorEventArgs>(_webSocket_OnError);
+            _webSocket.OnOpen +=new EventHandler(_webSocket_OnOpen);
+            _webSocket.OnMessage += new EventHandler<MessageEventArgs>(_webSocket_OnMessage);
+            _webSocket.Connect();
         }
 
         private void _webSocket_OnMessage(object sender, MessageEventArgs e)
         {
-            
+            WebSocketMsg wsm = JsonConvert.DeserializeObject<WebSocketMsg>(e.Data);
+            switch (wsm.Act)
+            {
+                case Accept.notice:
+                    Debug.WriteLine("收到紧急通知，通知内容："+wsm.Msg);
+                    break;
+                case Accept.studow:
+                    Debug.WriteLine("收到关机通知");
+                    WinSysOperate.SHUTDOWN();
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void _webSocket_OnOpen(object sender, EventArgs e)
         {
+            WebSocketAccept wsa = new WebSocketAccept("bind", _config.ID, _config.Key, _config.Mac);
             
+            _webSocket.Send(JsonConvert.SerializeObject(wsa));
+
         }
 
         private void _webSocket_OnError(object sender, WebSocketSharp.ErrorEventArgs e)
@@ -266,7 +284,31 @@ namespace LBPlayer
                     case CmdType.DownloadPlan:
                         DownloadPlan(_cmdList[i]);
                         break;
-
+                    case CmdType.Lock:
+                        SetComputerLock(_cmdList[i]);
+                        break;
+                    case CmdType.SetHartBeatPeriod:
+                        SetPollInterval(_cmdList[i]);
+                        break;
+                    case CmdType.UploadMonitor:
+                        SetMonitorInterval(_cmdList[i]);
+                        break;
+                    case CmdType.SoftWareRunTime:
+                        SetSoftWareRunTime(_cmdList[i]);
+                        break;
+                    case CmdType.SetScreenLocation:
+                        SetScreenInfo(_cmdList[i]);
+                        break;
+                    case CmdType.SetScreenWorkTime:
+                        SetWorkTime(_cmdList[i]);
+                        break;
+                    case CmdType.EmergencyPlan:
+                        break;
+                    case CmdType.OfflinePlan:
+                        break;
+                    case CmdType.WebSocketReConnection:
+                        SetWebSocketReConnection(_cmdList[i]);
+                        break;
                     default:
                         UnKnowCmd(_cmdList[i]);
                         break;
@@ -284,7 +326,67 @@ namespace LBPlayer
                 _cmdList = new List<Cmd>();
                 return;
             }
-            _cmdList = XmlUtil.XmlDeserializeFromFile<List<Cmd>>(_cmdSavePath, Encoding.UTF8);
+            try
+            {
+                _cmdList = XmlUtil.XmlDeserializeFromFile<List<Cmd>>(_cmdSavePath, Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                File.Delete(_cmdSavePath);
+                _cmdList = new List<Cmd>();
+                return;
+            }
+        }
+
+        private void InitialMonitorDataUpload()
+        {
+            _computerStatus = new ComputerStatus();
+            _monitorDataPoll = new MonitorDataPoll();
+            _monitorDataPoll.MonitorDatePollInterval = _config.MonitorDateInterval;
+
+            _monitorDataPoll.SendMonitorDatePollEvent += new SendMonitorDatePollEventHandler(_monitorDataPoll_SendMonitorDatePollEvent);
+            _monitorDataPoll.GetMonitorDatePollResponseEvent += new GetMonitorDatePollResponseEventHandler(_monitorDataPoll_GetMonitorDatePollResponseEvent);
+            _monitorDataPoll.Initializer();
+            _monitorDataPoll.Start();
+            
+        }
+
+        private void _monitorDataPoll_GetMonitorDatePollResponseEvent(object sender, GetMonitorDatePollResponseEventArgs args)
+        {
+            Debug.WriteLine("上传监控完成：" + DateTime.Now);
+           
+        }
+
+        private void _monitorDataPoll_SendMonitorDatePollEvent(object sender, MonitorDatePollEventArgs args)
+        {
+            Debug.WriteLine("上传监控开始：" + DateTime.Now);
+            try
+            {
+                float cupUtilization;
+                long freeBytes, totalBytes;
+                string fanSpeed;
+
+                _computerStatus.GetCpuUtilization(out cupUtilization);
+                _computerStatus.GetDriveSpace(Path.GetPathRoot(_config.FileSavePath), out freeBytes, out totalBytes);
+
+                MEMORY_INFO memoryInfo = new MEMORY_INFO();
+                _computerStatus.GetMemoryStatus(ref memoryInfo);
+                List<CPUModel> cpuList = _computerStatus.GetCPUTemperature();
+                _computerStatus.GetFanSpeed(out fanSpeed);
+                string CPUUusage = cupUtilization.ToString();
+                string diskUsage = ((float)freeBytes / (float)totalBytes * 100).ToString();
+                string memoryUsage = memoryInfo.dwMemoryLoad.ToString();
+                string CPUTem = cpuList[0].Temperature;
+                MonitorInfo m = new MonitorInfo(CPUUusage, diskUsage, memoryUsage, CPUTem, fanSpeed);
+                MonitorResult obj = new MonitorResult(_config.ID, _config.Key, _config.Mac, m);
+
+                args.Url = MonitorInfoURL;
+                args.PollData = JsonConvert.SerializeObject(obj);
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
         }
         #endregion
         #region 私有函数
@@ -457,7 +559,7 @@ namespace LBPlayer
                 }
                 else if (e.KeyCode == Keys.Escape)
                 {
-                    _keyPasswordWindow.Password = "123456";
+                    _keyPasswordWindow.Password = _config.LockPwd;
                     _keyPasswordWindow.StartPosition = FormStartPosition.Manual;
                     int x;
                     int y;
@@ -630,6 +732,9 @@ namespace LBPlayer
             InitialCmdList();
             StartCmdTimer();
             initialPoll();
+            initialWebSocket(WebSocketURL);
+            InitialLock();
+            InitialMonitorDataUpload();
         }
         /// <summary>
         /// 桌面截屏预览
@@ -859,10 +964,20 @@ namespace LBPlayer
             return true;
         }
         #endregion
+        #region 重连WebSocket命令
+        private void SetWebSocketReConnection(Cmd cmd)
+        {
+            ReConnectionWebSocket rcws = JsonConvert.DeserializeObject<ReConnectionWebSocket>(DecodeBase64(Encoding.UTF8, cmd.CmdParam));
+            initialWebSocket(rcws.Host);
+            CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
+            UploadCmdResult(cr);
+            DeleteCmd(cmd);
+        }
+        #endregion
         #region 屏幕参数设置
         private void SetScreenInfo(Cmd cmd)
         {
-            ScreenSet screenSet=JsonConvert.DeserializeObject<ScreenSet>(cmd.CmdParam);
+            ScreenSet screenSet=JsonConvert.DeserializeObject<ScreenSet>(DecodeBase64(Encoding.UTF8,cmd.CmdParam));
             _config.Size_X = screenSet.Size_x;
             _config.Size_Y = screenSet.Size_y;
             _config.Resoul_X = screenSet.Resolu_x;
@@ -874,11 +989,10 @@ namespace LBPlayer
             DeleteCmd(cmd);
         }
         #endregion
-
         #region 设置工作时间
         private void SetWorkTime(Cmd cmd)
         {
-            WorkTime workTime = JsonConvert.DeserializeObject<WorkTime>(cmd.CmdParam);
+            WorkTime workTime = JsonConvert.DeserializeObject<WorkTime>(DecodeBase64(Encoding.UTF8, cmd.CmdParam));
             _config.StartWorkTime = workTime.Start;
             _config.EndWorkTime = workTime.End;
             ConfigTool.SaveConfigData(_config);
@@ -887,11 +1001,11 @@ namespace LBPlayer
             DeleteCmd(cmd);
         }
         #endregion
-
         #region 设置软件开关时间
         private void SetSoftWareRunTime(Cmd cmd)
         {
-            RunTime runTime = JsonConvert.DeserializeObject<RunTime>(cmd.CmdParam);
+            RunTime runTime = JsonConvert.DeserializeObject<RunTime>(DecodeBase64(Encoding.UTF8, cmd.CmdParam));
+            _config.IsEnableAutoOpenOrClose = runTime.Switch;
             _config.OpenTime = runTime.Enable;
             _config.CloseTime = runTime.Disable;
             ConfigTool.SaveConfigData(_config);
@@ -900,11 +1014,10 @@ namespace LBPlayer
             DeleteCmd(cmd);
         }
         #endregion
-
         #region 设置电脑锁定
         private void SetComputerLock(Cmd cmd)
         {
-            LockSystem lockSystem = JsonConvert.DeserializeObject<LockSystem>(cmd.CmdParam);
+            LockSystem lockSystem = JsonConvert.DeserializeObject<LockSystem>(DecodeBase64((Encoding.UTF8), cmd.CmdParam));
             _config.LockUnLockPlayer = lockSystem.Enable;
             _config.LockPwd = lockSystem.Password;
             ConfigTool.SaveConfigData(_config);
@@ -930,12 +1043,11 @@ namespace LBPlayer
             DeleteCmd(cmd);
         }
         #endregion
-
         #region 设置交互周期
         private void SetPollInterval(Cmd cmd)
         {
-            PollInterval pollInterval = JsonConvert.DeserializeObject<PollInterval>(cmd.CmdParam);
-            _config.HeartBeatInterval = pollInterval.Cycle;
+            PollInterval pollInterval = JsonConvert.DeserializeObject<PollInterval>(DecodeBase64((Encoding.UTF8), cmd.CmdParam));
+            _config.HeartBeatInterval = pollInterval.Cycle*1000;
             ConfigTool.SaveConfigData(_config);
             _poll.PollInterval = _config.HeartBeatInterval;
             CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
@@ -943,13 +1055,21 @@ namespace LBPlayer
             DeleteCmd(cmd);
         }
         #endregion
-
         #region 设置监控数据上传周期
-        private void SetMonitorInterval()
+        private void SetMonitorInterval(Cmd cmd)
         {
-
+            MonitorPollInterval pollInterval = JsonConvert.DeserializeObject<MonitorPollInterval>(DecodeBase64((Encoding.UTF8), cmd.CmdParam));
+            _config.MonitorDateInterval = pollInterval.Cycle * 1000;
+            ConfigTool.SaveConfigData(_config);
+            _monitorDataPoll.MonitorDatePollInterval = _config.MonitorDateInterval;
+            CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
+            UploadCmdResult(cr);
+            DeleteCmd(cmd);
         }
-        #endregion
 
+        #endregion
+        
+        
     }
 }
+

@@ -132,7 +132,7 @@ namespace Com.Utility
             //如果是监听键盘消息的线程钩子，根据lParam值的正负确定按键是按下还是抬起,lParam.ToInt32() > 0时，键盘按下；lParam.ToInt32() < 0时，键盘抬起。
             KeyBoardHookStruct kbh = (KeyBoardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyBoardHookStruct));
 
-            if ((nCode >= 0) && (lParam.ToInt32() > 0))
+             if ((nCode >= 0) && (lParam.ToInt32() > 0))
             {
 
                 Keys keyData = (Keys)kbh.vkCode;

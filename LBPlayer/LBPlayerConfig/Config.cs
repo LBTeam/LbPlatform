@@ -21,6 +21,7 @@ namespace LBPlayerConfig
         public string LockPwd = "123456";
         public string WebUrl = "";
         public int HeartBeatInterval = 30000;
+        public int MonitorDateInterval = 30000;
         public bool IsEnableAutoOpenOrClose = false;
         public TimeSpan OpenTime=new TimeSpan(00,00,00);
         public TimeSpan CloseTime = new TimeSpan(00,00,00);

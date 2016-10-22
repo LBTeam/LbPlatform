@@ -42,10 +42,8 @@
             this.skinTextBox_Key = new CCWin.SkinControl.SkinTextBox();
             this.skinTabPage2 = new CCWin.SkinControl.SkinTabPage();
             this.skinButton5 = new CCWin.SkinControl.SkinButton();
-            this.skinLabel3 = new CCWin.SkinControl.SkinLabel();
             this.skinLabel2 = new CCWin.SkinControl.SkinLabel();
             this.skinButton2 = new CCWin.SkinControl.SkinButton();
-            this.skinButton_lock = new CCWin.SkinControl.SkinButton();
             this.skinTextBox_workPath = new CCWin.SkinControl.SkinTextBox();
             this.skinTabPage3 = new CCWin.SkinControl.SkinTabPage();
             this.skinButton4 = new CCWin.SkinControl.SkinButton();
@@ -276,10 +274,8 @@
             // 
             this.skinTabPage2.BackColor = System.Drawing.Color.White;
             this.skinTabPage2.Controls.Add(this.skinButton5);
-            this.skinTabPage2.Controls.Add(this.skinLabel3);
             this.skinTabPage2.Controls.Add(this.skinLabel2);
             this.skinTabPage2.Controls.Add(this.skinButton2);
-            this.skinTabPage2.Controls.Add(this.skinButton_lock);
             this.skinTabPage2.Controls.Add(this.skinTextBox_workPath);
             this.skinTabPage2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.skinTabPage2.Location = new System.Drawing.Point(0, 36);
@@ -302,17 +298,6 @@
             this.skinButton5.TabIndex = 8;
             this.skinButton5.Text = "保存";
             this.skinButton5.UseVisualStyleBackColor = false;
-            // 
-            // skinLabel3
-            // 
-            this.skinLabel3.BackColor = System.Drawing.Color.Gray;
-            this.skinLabel3.BorderColor = System.Drawing.Color.White;
-            this.skinLabel3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.skinLabel3.ForeColor = System.Drawing.Color.Gray;
-            this.skinLabel3.Location = new System.Drawing.Point(2, 133);
-            this.skinLabel3.Name = "skinLabel3";
-            this.skinLabel3.Size = new System.Drawing.Size(441, 1);
-            this.skinLabel3.TabIndex = 7;
             // 
             // skinLabel2
             // 
@@ -339,20 +324,6 @@
             this.skinButton2.TabIndex = 6;
             this.skinButton2.Text = "...";
             this.skinButton2.UseVisualStyleBackColor = false;
-            // 
-            // skinButton_lock
-            // 
-            this.skinButton_lock.BackColor = System.Drawing.Color.Transparent;
-            this.skinButton_lock.ControlState = CCWin.SkinClass.ControlState.Normal;
-            this.skinButton_lock.DownBack = null;
-            this.skinButton_lock.Location = new System.Drawing.Point(5, 150);
-            this.skinButton_lock.MouseBack = null;
-            this.skinButton_lock.Name = "skinButton_lock";
-            this.skinButton_lock.NormlBack = null;
-            this.skinButton_lock.Size = new System.Drawing.Size(75, 23);
-            this.skinButton_lock.TabIndex = 6;
-            this.skinButton_lock.Text = "锁定";
-            this.skinButton_lock.UseVisualStyleBackColor = false;
             // 
             // skinTextBox_workPath
             // 
@@ -584,10 +555,8 @@
         private CCWin.SkinControl.SkinTabPage skinTabPage1;
         private CCWin.SkinControl.SkinTabPage skinTabPage2;
         private CCWin.SkinControl.SkinTabPage skinTabPage3;
-        private CCWin.SkinControl.SkinLabel skinLabel3;
         private CCWin.SkinControl.SkinLabel skinLabel2;
         private CCWin.SkinControl.SkinButton skinButton2;
-        private CCWin.SkinControl.SkinButton skinButton_lock;
         private CCWin.SkinControl.SkinTextBox skinTextBox_workPath;
         private CCWin.SkinControl.SkinLabel skinLabel4;
         private CCWin.SkinControl.SkinNumericUpDown skinNumericUpDown_X;

@@ -323,6 +323,16 @@ namespace LBPlayer
     public enum CmdType
     {
         DownloadPlan,
+        Lock,
+        SetHartBeatPeriod,
+        UploadMonitor,
+        SoftWareRunTime,
+        SetScreenLocation,
+        SetScreenWorkTime,
+        EmergencyPlan,
+        OfflinePlan,
+        WebSocketReConnection
+
     }
     public class Bind
     {
@@ -893,14 +903,10 @@ namespace LBPlayer
     }
     public class RunTime
     {
+        private bool _switch;
         private TimeSpan _enable;
         private TimeSpan _disable;
-
-        public RunTime(TimeSpan _enable, TimeSpan _disable)
-        {
-            this._enable = _enable;
-            this._disable = _disable;
-        }
+        
 
         public TimeSpan Enable
         {
@@ -925,6 +931,19 @@ namespace LBPlayer
             set
             {
                 _disable = value;
+            }
+        }
+
+        public bool Switch
+        {
+            get
+            {
+                return _switch;
+            }
+
+            set
+            {
+                _switch = value;
             }
         }
     }
@@ -979,6 +998,145 @@ namespace LBPlayer
             set
             {
                 _cycle = value;
+            }
+        }
+    }
+
+    public class MonitorPollInterval
+    {
+        private int _cycle;
+
+        public int Cycle
+        {
+            get
+            {
+                return _cycle;
+            }
+
+            set
+            {
+                _cycle = value;
+            }
+        }
+    }
+
+    public class WebSocketAccept
+    {
+        private string _act;
+        private string _id;
+        private string _key;
+        private string _mac;
+
+        public WebSocketAccept(string _act, string _id, string _key, string _mac)
+        {
+            this._act = _act;
+            this._id = _id;
+            this._key = _key;
+            this._mac = _mac;
+        }
+
+        public string Act
+        {
+            get
+            {
+                return _act;
+            }
+
+            set
+            {
+                _act = value;
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                return _id;
+            }
+
+            set
+            {
+                _id = value;
+            }
+        }
+
+        public string Key
+        {
+            get
+            {
+                return _key;
+            }
+
+            set
+            {
+                _key = value;
+            }
+        }
+
+        public string Mac
+        {
+            get
+            {
+                return _mac;
+            }
+
+            set
+            {
+                _mac = value;
+            }
+        }
+    }
+    public class WebSocketMsg
+    {
+        private Accept _act;
+        private string _msg;
+
+        public Accept Act
+        {
+            get
+            {
+                return _act;
+            }
+
+            set
+            {
+                _act = value;
+            }
+        }
+
+        public string Msg
+        {
+            get
+            {
+                return _msg;
+            }
+
+            set
+            {
+                _msg = value;
+            }
+        }
+    }
+    public enum Accept
+    {
+        notice =1,
+        studow =2
+    }
+    public class ReConnectionWebSocket
+    {
+        private string _host;
+
+        public string Host
+        {
+            get
+            {
+                return _host;
+            }
+
+            set
+            {
+                _host = value;
             }
         }
     }
