@@ -20,6 +20,8 @@ using System.Threading;
 using LBManager.Infrastructure.Models;
 using WebSocketSharp;
 using System.Diagnostics;
+using JumpKick.HttpLib;
+using System.Net;
 
 namespace LBPlayer
 {
@@ -55,11 +57,13 @@ namespace LBPlayer
         private string PollURL = "http://lbcloud.ddt123.cn/?s=api/Player/heartbeat";
         private string CmdBackURL = "http://lbcloud.ddt123.cn/?s=api/Player/cmd_result";
         private string MonitorInfoURL = "http://lbcloud.ddt123.cn/?s=api/Player/monitor";
+        private string GetPicUploadURL = "http://lbcloud.ddt123.cn/?s=api/Player/picture";
         private string WebSocketURL = "ws://123.56.240.172:9501";
         private WebSocket _webSocket;
         private MonitorDataPoll _monitorDataPoll;
         private ComputerStatus _computerStatus;
-        
+        private System.Threading.Timer _captureTimer;
+        private ScreenCapture _screenCaptrue = new ScreenCapture();
         #endregion
         #region 构造函数
         public LBPlayerMain()
@@ -735,6 +739,7 @@ namespace LBPlayer
             initialWebSocket(WebSocketURL);
             InitialLock();
             InitialMonitorDataUpload();
+            initialMonitorPic();
         }
         /// <summary>
         /// 桌面截屏预览
@@ -1062,14 +1067,132 @@ namespace LBPlayer
             _config.MonitorDateInterval = pollInterval.Cycle * 1000;
             ConfigTool.SaveConfigData(_config);
             _monitorDataPoll.MonitorDatePollInterval = _config.MonitorDateInterval;
+            _captureTimer.Change(0, _config.MonitorDateInterval);
             CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
             UploadCmdResult(cr);
             DeleteCmd(cmd);
         }
 
         #endregion
-        
-        
+        #region 监控图片上传
+        bool bUploding = false;
+        private void initialMonitorPic()
+        {
+            _captureTimer = new System.Threading.Timer(CaptureTick, null, Timeout.Infinite, Timeout.Infinite);
+            _captureTimer.Change(0, _config.MonitorDateInterval);
+        }
+        private void CaptureTick(object state)
+        {
+            try
+            {
+                DateTime nowTime = DateTime.Now;
+                _screenCaptrue.CaptrueScreenRegionToFile(_config.ScreenCuptureX, _config.ScreenCuptureY, _config.ScreenCuptureW, _config.ScreenCuptureH, Path.Combine(_picPath, nowTime.Ticks + ".jpg"), 30);
+                UploadImage();
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+        }
+        private void UploadImage()
+        {
+            if(bUploding)
+            {
+                return;
+            }
+            bUploding = true;
+            List<string> imageFiles;
+            GetImageList(out imageFiles);
+            if (imageFiles == null|| imageFiles.Count==0)
+            {
+                return;
+            }
+            HartBeatRequestObj obj = new HartBeatRequestObj();
+            obj.Id = _config.ID;
+            obj.Key = _config.Key;
+            obj.Mac = _config.Mac;
+            HttpClient httpClient = new HttpClient();
+            string replyData, errorData;
+            for (int i = 0; i < imageFiles.Count; i++)
+            {
+                if(!httpClient.Post(GetPicUploadURL, JsonConvert.SerializeObject(obj), out replyData, out errorData))
+                {
+                    return;
+                }
+                UploadPicInfo picInfo = JsonConvert.DeserializeObject<UploadPicInfo>(replyData);
+
+                if (UploadFile(picInfo.Url, imageFiles[i]))
+                {
+                    try
+                    {
+                        File.Delete(imageFiles[i]);
+                    }
+                    catch (Exception ex)
+                    {
+                        return;
+                    }
+                }
+            }
+            bUploding = false;
+        }
+
+
+
+    private bool UploadFile(string url, string FilePath)
+    {
+        using (FileStream fs = File.OpenRead(FilePath))
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.ContentType = "application/octet-stream";
+            request.Method = "PUT";
+
+            using (Stream requestStream = request.GetRequestStream())
+            {
+                long writeTotalBytes = 0;
+                byte[] inData = new byte[4096];
+                int bytesRead = fs.Read(inData, 0, inData.Length);
+
+                while (writeTotalBytes < fs.Length)
+                {
+                    requestStream.Write(inData, 0, bytesRead);
+                    writeTotalBytes += bytesRead;
+                    bytesRead = fs.Read(inData, 0, inData.Length);
+                }
+            }
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+    }
+
+       
+        private object _upLoadingListLockObj = new object();
+        private void GetImageList(out List<string> imageFiles)
+        {
+            imageFiles = new List<string>();
+            DirectoryInfo imageDestDirInfo = new DirectoryInfo(_picPath);
+            FileInfo[] images = imageDestDirInfo.GetFiles();
+            if (images.Length == 0)
+            {
+                return;
+            }
+            for (int i = 0; i < images.Length; i++)
+            {
+                lock (_upLoadingListLockObj)
+                {
+                    imageFiles.Add(images[i].FullName);
+                }
+            }
+        }
+        #endregion
     }
 }
 

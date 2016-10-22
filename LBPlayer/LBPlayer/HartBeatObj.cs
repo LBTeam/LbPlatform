@@ -1140,4 +1140,50 @@ namespace LBPlayer
             }
         }
     }
+
+    public class UploadPicInfo
+    {
+        private string _err_code;
+        private string _msg;
+        private string _url;
+
+        public string Err_code
+        {
+            get
+            {
+                return _err_code;
+            }
+
+            set
+            {
+                _err_code = value;
+            }
+        }
+
+        public string Msg
+        {
+            get
+            {
+                return _msg;
+            }
+
+            set
+            {
+                _msg = value;
+            }
+        }
+
+        public string Url
+        {
+            get
+            {
+                return _url;
+            }
+
+            set
+            {
+                _url = value;
+            }
+        }
+    }
 }
