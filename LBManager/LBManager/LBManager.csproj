@@ -119,7 +119,6 @@
     <Compile Include="SampleProgressDialog.xaml.cs">
       <DependentUpon>SampleProgressDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ScheduleViewModel.cs" />
     <Compile Include="ScreenListView.xaml.cs">
       <DependentUpon>ScreenListView.xaml</DependentUpon>
     </Compile>
@@ -130,6 +129,7 @@
     <Compile Include="TokenInvalidPromptDialog.xaml.cs">
       <DependentUpon>TokenInvalidPromptDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utility\EnumBindingSourceExtension.cs" />
     <Compile Include="Utility\PasswordHelper.cs" />
     <Page Include="EditScheduleView.xaml">
       <SubType>Designer</SubType>

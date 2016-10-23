@@ -1,4 +1,6 @@
-﻿using Prism.Mvvm;
+﻿using LBManager.Modules.ScheduleManage.Views;
+using Prism.Commands;
+using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
@@ -21,16 +24,37 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
             FetchProgramSchedules(mediaDirectory);
             InitializeFileWatcher(mediaDirectory);
-
+            NewScheduleCommand = new DelegateCommand(() => { NewSchedule(); }, () => { return CanNewSchedule(); });
         }
 
-
-        private ObservableCollection<ScheduleViewModel> _scheduleFileInfoList = new ObservableCollection<ScheduleViewModel>();
-        public ObservableCollection<ScheduleViewModel> ScheduleFileInfoList
+        private bool CanNewSchedule()
         {
-            get { return _scheduleFileInfoList; }
-            set { SetProperty(ref _scheduleFileInfoList, value); }
+            return true;
         }
+
+        private void NewSchedule()
+        {
+            ScheduleView scheduleView = new ScheduleView();
+            scheduleView.Owner = Application.Current.MainWindow;
+            scheduleView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            scheduleView.ShowDialog();
+        }
+
+        private ObservableCollection<ScheduleViewModel> _scheduleList = new ObservableCollection<ScheduleViewModel>();
+        public ObservableCollection<ScheduleViewModel> ScheduleList
+        {
+            get { return _scheduleList; }
+            set { SetProperty(ref _scheduleList, value); }
+        }
+
+        private ScheduleViewModel _currentSchedule;
+        public ScheduleViewModel CurrentSchedule
+        {
+            get { return _currentSchedule; }
+            set { SetProperty(ref _currentSchedule, value); }
+        }
+
+        public DelegateCommand NewScheduleCommand { get; private set; }
 
 
         private void FetchProgramSchedules(string directoryPath)
@@ -39,7 +63,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
             foreach (FileInfo fileInfo in folder.GetFiles("*.playprog"))
             {
-                ScheduleFileInfoList.Add(new ScheduleViewModel(fileInfo));
+                ScheduleList.Add(new ScheduleViewModel(fileInfo));
             }
         }
 
@@ -77,7 +101,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         {
             System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
             {
-                ScheduleFileInfoList.Add(new ScheduleViewModel(new FileInfo(e.FullPath)));
+                ScheduleList.Add(new ScheduleViewModel(new FileInfo(e.FullPath)));
             }), null);
 
             //throw new NotImplementedException();

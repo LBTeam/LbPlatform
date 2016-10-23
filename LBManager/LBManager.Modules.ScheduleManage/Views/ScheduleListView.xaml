@@ -19,7 +19,8 @@
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
                 <!--<Button Content="+" Width="25" Height="25" Margin="2"/>-->
                 <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
-                                ToolTip="新建排期">
+                                ToolTip="新建排期"
+                        Command="{Binding NewScheduleCommand}">
                     <materialDesign:PackIcon Kind="PlaylistPlus" Height="20" Width="20"/>
                 </Button>
 
@@ -35,8 +36,9 @@
         </DockPanel>
 
         <ListBox DockPanel.Dock="Top" FontSize="14"
-                                 ItemsSource="{Binding ScheduleListViewModel.ScheduleFileInfoList}"
-                                 DisplayMemberPath="FileName">
+                 ItemsSource="{Binding ScheduleList}"
+                 SelectedItem="{Binding CurrentSchedule}"
+                 DisplayMemberPath="FileName">
 
         </ListBox>
     </DockPanel>

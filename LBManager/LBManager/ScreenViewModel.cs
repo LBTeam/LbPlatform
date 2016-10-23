@@ -15,6 +15,7 @@ using System.Windows;
 using LBManager.Infrastructure.Utils;
 using Newtonsoft.Json;
 using System.Threading;
+using LBManager.Modules.ScheduleManage.ViewModels;
 
 namespace LBManager
 {
@@ -22,7 +23,7 @@ namespace LBManager
     {
 
         private LEDScreen _screen = null;
-        public ScreenViewModel(Screen screen, ProgramScheduleListViewModel scheduleList)
+        public ScreenViewModel(Screen screen, ScheduleListViewModel scheduleList)
         {
             _id = screen.Id;
             _name = screen.Name;
@@ -78,15 +79,15 @@ namespace LBManager
         }
 
 
-        private ScheduleFileInfo _selectedScheduleFile = new ScheduleFileInfo();
-        public ScheduleFileInfo SelectedScheduleFile
+        private ScheduleViewModel _selectedScheduleFile = new ScheduleViewModel();
+        public ScheduleViewModel SelectedScheduleFile
         {
             get { return _selectedScheduleFile; }
             set { SetProperty(ref _selectedScheduleFile, value); }
         }
 
-        private ProgramScheduleListViewModel _scheduleList;
-        public ProgramScheduleListViewModel ScheduleList
+        private ScheduleListViewModel _scheduleList;
+        public ScheduleListViewModel ScheduleList
         {
             get { return _scheduleList; }
             set { SetProperty(ref _scheduleList, value); }
@@ -100,7 +101,7 @@ namespace LBManager
         private async void PublishSchedule()
         {
             List<UploadFileInfo> uploadFileInfos = new List<UploadFileInfo>();
-
+            ScheduleFile scheduleFile;
             var scheduleFilePath = _selectedScheduleFile.FilePath;
             var scheduleFileMD5 = FileUtils.ComputeFileMd5(scheduleFilePath);
             using (FileStream fs = File.OpenRead(scheduleFilePath))
@@ -111,7 +112,7 @@ namespace LBManager
                 {
                     content = reader.ReadToEnd();
                 }
-                var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
+                scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
                 if (scheduleFile == null)
                 {
                     throw new ArgumentNullException("播放方案文件已损坏！");
@@ -121,18 +122,20 @@ namespace LBManager
                     var uploadMediaFileInfo = new UploadFileInfo(mediaItem.FilePath,
                                                                  new FileInfo(mediaItem.FilePath).Length,
                                                                  mediaItem.MD5,
-                                                                 mediaItem.Type);
+                                                                 mediaItem.Type,
+                                                                 scheduleFile.Type);
                     uploadFileInfos.Add(uploadMediaFileInfo);
                 }
                 var uploadScheduleFileInfo = new UploadFileInfo(scheduleFilePath,
                                                                 new FileInfo(scheduleFilePath).Length,
                                                                 scheduleFileMD5,
-                                                                FileType.Plan);
+                                                                FileType.Plan,
+                                                                scheduleFile.Type);
                 uploadScheduleFileInfo.MediaList = new List<MediaTempInfo>(scheduleFile.MediaList.Select(m => new MediaTempInfo(m.FilePath, m.MD5)));
                 uploadFileInfos.Add(uploadScheduleFileInfo);
             }
 
-            var uploadPartInfos = await GenerateUploadPartInfos("http://lbcloud.ddt123.cn/?s=api/Manager/upload", uploadFileInfos);
+            var uploadPartInfos = await GenerateUploadPartInfos(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/upload&token={0}", App.SessionToken), uploadFileInfos);
             foreach (var uploadPartInfo in uploadPartInfos)
             {
                 if (uploadPartInfo.Type == FileType.Plan)
@@ -140,7 +143,7 @@ namespace LBManager
                     continue;
                 }
 
-                var uploadComplete = UploadFile(uploadPartInfo);
+                var uploadComplete = UploadFile(uploadPartInfo, scheduleFile.Type);
 
                 var result = await CompleteMultipartUpload(uploadComplete);
             }
@@ -149,7 +152,7 @@ namespace LBManager
 
             if (uploadPartInfos.Count == 0)
             {
-                var scheduleUploadCompleted = new UploadComplete(scheduleFilePath, FileType.Plan, scheduleFileMD5, null, new List<string>() { this.Id });
+                var scheduleUploadCompleted = new UploadComplete(scheduleFilePath, FileType.Plan, scheduleFile.Type, scheduleFileMD5, null, new List<string>() { this.Id });
                 var scheduleUploadResult = await CompleteMultipartUpload(scheduleUploadCompleted);
             }
             else
@@ -159,7 +162,7 @@ namespace LBManager
                 {
                     throw new ArgumentNullException("发布缺少播放方案！");
                 }
-                var scheduleUploadCompleted = UploadFile(schedulePartInfo);
+                var scheduleUploadCompleted = UploadFile(schedulePartInfo, scheduleFile.Type);
                 var scheduleUploadResult = await CompleteMultipartUpload(scheduleUploadCompleted);
             }
 
@@ -209,12 +212,13 @@ namespace LBManager
         }
 
 
-        private UploadComplete UploadFile(UploadFileInfoForServer uploadPartInfo)
+        private UploadComplete UploadFile(UploadFileInfoForServer uploadPartInfo,ScheduleType planType)
         {
             UploadComplete uploadComplete = new UploadComplete();
             uploadComplete.FileName = uploadPartInfo.Name;
             uploadComplete.FileMD5 = uploadPartInfo.MD5;
             uploadComplete.FileType = uploadPartInfo.Type;
+            uploadComplete.PlanType = planType;
 
             if (uploadComplete.FileType == FileType.Plan)
             {
@@ -291,7 +295,7 @@ namespace LBManager
             HttpClient httpClient = new HttpClient();
             string uploadFileInfoJson = JsonConvert.SerializeObject(uploadComplete);
 
-            HttpResponseMessage response = await httpClient.PostAsync("http://lbcloud.ddt123.cn/?s=api/Manager/complete_upload", new StringContent(uploadFileInfoJson));
+            HttpResponseMessage response = await httpClient.PostAsync(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/complete_upload&token={0}", App.SessionToken), new StringContent(uploadFileInfoJson));
 
             response.EnsureSuccessStatusCode();
 

@@ -1,6 +1,7 @@
 ﻿using LBManager.Infrastructure.Common.Event;
 using LBManager.Infrastructure.Common.Utility;
 using LBManager.Infrastructure.Interfaces;
+using LBManager.Modules.ScheduleManage.ViewModels;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,8 @@ namespace LBManager
     public class ScreenListViewModel:BindableBase
     {
         private IScreenService _screenService;
-        private ProgramScheduleListViewModel _scheduleList;
-        public ScreenListViewModel(IScreenService screenService, ProgramScheduleListViewModel scheduleList)
+        private ScheduleListViewModel _scheduleList;
+        public ScreenListViewModel(IScreenService screenService, ScheduleListViewModel scheduleList)
         {
             _screenService = screenService;
             _scheduleList = scheduleList;

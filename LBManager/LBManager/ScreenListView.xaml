@@ -31,7 +31,7 @@
                 <materialDesign:MaterialDataGridComboBoxColumn Header="­Plan" 
                                                                DisplayMemberPath="FileName"
                                                                SelectedItemBinding="{Binding SelectedScheduleFile, UpdateSourceTrigger=PropertyChanged}"
-                                                               ItemsSourceBinding="{Binding ScheduleList.ScheduleFileInfoList}" />
+                                                               ItemsSourceBinding="{Binding ScheduleList.ScheduleList}" />
                 
                 <DataGridTemplateColumn Header=""
                                         Width="*">

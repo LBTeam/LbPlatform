@@ -3,6 +3,7 @@ using LBManager.Infrastructure.Common.Event;
 using LBManager.Infrastructure.Common.Utility;
 using LBManager.Infrastructure.Models;
 using LBManager.Job;
+using LBManager.Modules.ScheduleManage.ViewModels;
 using MaterialDesignThemes.Wpf;
 using Newtonsoft.Json;
 using Prism.Commands;
@@ -23,14 +24,14 @@ namespace LBManager
     {
 
 
-        private ProgramScheduleListViewModel _scheduleListViewModel;
+        //private ScheduleListViewModel ScheduleList;
         private System.Threading.Timer _heartbeatTimer;
         public ShellViewModel()
         {
             ScheduleDetailViewModel = new ProgramScheduleDetailViewModel();
-            _scheduleListViewModel = new ProgramScheduleListViewModel();
+            ScheduleList = new ScheduleListViewModel();
 
-            ScreenList = new ScreenListViewModel(new ScreenService(), _scheduleListViewModel);
+            ScreenList = new ScreenListViewModel(new ScreenService(), ScheduleList);
 
             LoginCommand = new DelegateCommand(() => { OpenLoginDialog(); });
             NewScheduleCommand = new DelegateCommand(() => { NewSchedule(); });
@@ -41,7 +42,8 @@ namespace LBManager
                 if (LoginStatus)
                 {
                     LoginAccount = state.Account;
-                    _heartbeatTimer = new System.Threading.Timer(StartHeartbeat,null,100,10000);
+                    HeartbeatState = HeartbeatStatus.STOP;
+                    _heartbeatTimer = new System.Threading.Timer(StartHeartbeat, null, 100, 10000);
                     //StartHeartbeat();
                 }
                 else
@@ -88,7 +90,11 @@ namespace LBManager
 
         private async void HeartbeatEventHandle(HeartbeatStatus status)
         {
-            if (status == HeartbeatStatus.TokenExpired)
+            if(status == HeartbeatStatus.OK)
+            {
+
+            }
+            else if (status == HeartbeatStatus.TokenExpired)
             {
                 var response = await RefreshToken();
                 if (response.Code == "00000")
@@ -106,7 +112,7 @@ namespace LBManager
                await System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(async() =>
                 {
                     var view = new TokenInvalidPromptDialog();
-
+                    
                     //show the dialog
                     var result = await DialogHost.Show(view, "RootDialog", TokenInvalidPromptDialogOpenedEventHandler, TokenInvalidPromptDialogClosingEventHandler);
                 }), null);
@@ -150,25 +156,9 @@ namespace LBManager
         private ISimpleTrigger heartbeatTrigger;
         private void StartHeartbeat()
         {
-
-
-            ILog log = LogManager.GetLogger(typeof(ShellViewModel));
-            sched = sf.GetScheduler();
-
-            //DateTimeOffset startTime = DateBuilder.NextGivenSecondDate(null, 1);
-
-            heartbeatJob = JobBuilder.Create<HeartbeatJob>()
-               .WithIdentity("HeartbeatJob", "group1")
-               .Build();
-            heartbeatTrigger = (ISimpleTrigger)TriggerBuilder.Create()
-                                                       .WithIdentity("HeartbeatTrigger", "group1")
-                                                       .StartAt(DateTime.Now)
-                                                       .WithSimpleSchedule(x => x.WithIntervalInSeconds(10))
-                                                       .Build();
-
-            heartbeatJob.JobDataMap.Put(HeartbeatJob.HeartbeatState, this.HeartbeatState);
-            sched.ScheduleJob(heartbeatJob, heartbeatTrigger);
-            sched.Start();
+            JobDataMap dataMap = new JobDataMap();
+            dataMap.Put(HeartbeatJob.HeartbeatState, this.HeartbeatState);
+            ScheduleManager.StartJob("HeartbeatJob", typeof(HeartbeatJob), dataMap, "0/15 * * * * ?");
         }
 
         private async void OpenLoginDialog()
@@ -214,6 +204,7 @@ namespace LBManager
                     ScheduleFile scheduleFile = new ScheduleFile();
                     scheduleFile.Id = Guid.NewGuid().ToString();
                     scheduleFile.Name = string.Format("{0}.{1}", viewModel.ScheduleName, "playprog");
+                    scheduleFile.Type = viewModel.Type;
                     scheduleFile.MediaList = new List<MediaFile>();
                     foreach (var item in viewModel.MediaList)
                     {
@@ -247,6 +238,13 @@ namespace LBManager
         {
             get { return _screenList; }
             set { SetProperty(ref _screenList, value); }
+        }
+
+        private ScheduleListViewModel _scheduleList;
+        public ScheduleListViewModel ScheduleList
+        {
+            get { return _scheduleList; }
+            set { SetProperty(ref _scheduleList, value); }
         }
 
         private bool _loginStatus = false;

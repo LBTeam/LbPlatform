@@ -12,6 +12,7 @@ namespace LBManager.Infrastructure.Models
         private long _fileSize;
         private string _fileMD5;
         private FileType _type;
+        private ScheduleType _playType;
         private List<MediaTempInfo> _mediaList;
 
         public string FilePath
@@ -78,12 +79,25 @@ namespace LBManager.Infrastructure.Models
             }
         }
 
-        public UploadFileInfo(string filePath, long fileSize, string fileMD5, FileType type)
+        public ScheduleType PlanType
+        {
+            get
+            {
+                return _playType;
+            }
+            set
+            {
+                _playType = value;
+            }
+        }
+
+        public UploadFileInfo(string filePath, long fileSize, string fileMD5, FileType type,ScheduleType playType)
         {
             _filePath = filePath;
             _fileSize = fileSize;
             _fileMD5 = fileMD5;
             _type = type;
+            _playType = playType;
         }
     }
 }

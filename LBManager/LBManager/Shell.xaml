@@ -85,7 +85,8 @@
 
 
                     </materialDesign:ColorZone>
-                    <scheduleModule:ScheduleListView DockPanel.Dock="Top"/>
+                    <scheduleModule:ScheduleListView  DockPanel.Dock="Top"/>
+                    <!--DataContext="{Binding ScheduleList}"-->
                     <!--<DockPanel DockPanel.Dock="Top" >
                         <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                             <Button Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"

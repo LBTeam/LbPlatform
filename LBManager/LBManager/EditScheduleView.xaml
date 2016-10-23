@@ -8,6 +8,8 @@
              xmlns:mycontrol="http://lbmanager.net/winfx/xaml/controls"
              xmlns:params="http://schemas.codeplex.com/elysium/params"
              xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+             xmlns:utility="clr-namespace:LBManager.Utility"
+             xmlns:common ="clr-namespace:LBManager.Infrastructure.Models;assembly=LBManager.Infrastructure"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300" Width="500" Height="350">
@@ -18,10 +20,17 @@
             <RowDefinition />
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="0,4">
-            <Label Content="­播放方案名称"/>
-            <TextBox Width="200" Text="{Binding ScheduleName}"/>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,4">
+                <Label Content="­播放方案名称"/>
+                <TextBox Width="200" Text="{Binding ScheduleName}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,4">
+                <Label Content="­播放方案类型"/>
+                <ComboBox Width="100" ItemsSource="{Binding Source={utility:EnumBindingSource {x:Type common:ScheduleType}}}" SelectedItem="{Binding Type}"/>
+            </StackPanel>
         </StackPanel>
+       
         <ToolBarTray Grid.Row="1">
             <ToolBar Style="{DynamicResource MaterialDesignToolBar}">
                 <Button ToolTip="新建播放方案" Command="{Binding AddMediaCommand}">

@@ -19,7 +19,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         private void PreviewScreenSchedule()
         {
-           
+
         }
 
         public ScheduleViewModel(FileInfo fileInfo)
@@ -58,6 +58,18 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             set { SetProperty(ref _filePath, value); }
         }
 
+
+
         public DelegateCommand PreviewScreenScheduleCommand { get; private set; }
+    }
+
+    public class SchedulePlanViewModel : BindableBase
+    {
+        private double _fileSize;
+        public double FileSize
+        {
+            get { return _fileSize; }
+            set { SetProperty(ref _fileSize, value); }
+        }
     }
 }

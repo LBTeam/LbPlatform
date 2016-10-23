@@ -52,6 +52,15 @@ namespace LBManager
             get { return _scheduleName; }
             set { SetProperty(ref _scheduleName, value); }
         }
+
+        private ScheduleType _type = ScheduleType.Common;
+        public ScheduleType Type
+        {
+            get { return _type; }
+            set { SetProperty(ref _type, value); }
+        }
+
+
         public DelegateCommand AddMediaCommand { get; private set; }
 
     }
