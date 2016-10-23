@@ -37,6 +37,8 @@ namespace LBPlayerConfig
         public string Resoul_Y = "0";	
         public TimeSpan StartWorkTime = new TimeSpan(00, 00, 00);
         public TimeSpan EndWorkTime = new TimeSpan(23,59,59);
+        public string CurrentPlanPath = "";
+        public string CurrentOfflinePlanPath = "";
     }
     public static class ConfigTool
     {

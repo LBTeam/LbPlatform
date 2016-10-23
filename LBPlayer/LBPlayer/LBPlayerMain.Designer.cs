@@ -57,7 +57,6 @@
             this.skinLabel5 = new CCWin.SkinControl.SkinLabel();
             this.skinNumericUpDown_X = new CCWin.SkinControl.SkinNumericUpDown();
             this.skinLabel4 = new CCWin.SkinControl.SkinLabel();
-            this.skinButton1 = new CCWin.SkinControl.SkinButton();
             this.skinTabControl1.SuspendLayout();
             this.skinTabPage1.SuspendLayout();
             this.skinTabPage2.SuspendLayout();
@@ -168,7 +167,6 @@
             // 
             this.skinTabPage1.BackColor = System.Drawing.Color.White;
             this.skinTabPage1.Controls.Add(this.skinComboBox_Mac);
-            this.skinTabPage1.Controls.Add(this.skinButton1);
             this.skinTabPage1.Controls.Add(this.skinButton_Ok);
             this.skinTabPage1.Controls.Add(this.skinLabel10);
             this.skinTabPage1.Controls.Add(this.skinLabel9);
@@ -508,21 +506,6 @@
             this.skinLabel4.TabIndex = 0;
             this.skinLabel4.Text = "X";
             // 
-            // skinButton1
-            // 
-            this.skinButton1.BackColor = System.Drawing.Color.Transparent;
-            this.skinButton1.ControlState = CCWin.SkinClass.ControlState.Normal;
-            this.skinButton1.DownBack = null;
-            this.skinButton1.Location = new System.Drawing.Point(248, 279);
-            this.skinButton1.MouseBack = null;
-            this.skinButton1.Name = "skinButton1";
-            this.skinButton1.NormlBack = null;
-            this.skinButton1.Size = new System.Drawing.Size(75, 23);
-            this.skinButton1.TabIndex = 1;
-            this.skinButton1.Text = "绑定";
-            this.skinButton1.UseVisualStyleBackColor = false;
-            this.skinButton1.Click += new System.EventHandler(this.skinButton1_Click);
-            // 
             // LBPlayerMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -580,7 +563,6 @@
         private CCWin.SkinControl.SkinTextBox skinTextBox_Key;
         private CCWin.SkinControl.SkinLabel skinLabel10;
         private CCWin.SkinControl.SkinComboBox skinComboBox_Mac;
-        private CCWin.SkinControl.SkinButton skinButton1;
     }
 }
 

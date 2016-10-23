@@ -307,8 +307,10 @@ namespace LBPlayer
                         SetWorkTime(_cmdList[i]);
                         break;
                     case CmdType.EmergencyPlan:
+                        DownloadEmergencyPlan(_cmdList[i]);
                         break;
                     case CmdType.OfflinePlan:
+                        DownloadOfflinePlan(_cmdList[i]);
                         break;
                     case CmdType.WebSocketReConnection:
                         SetWebSocketReConnection(_cmdList[i]);
@@ -391,6 +393,76 @@ namespace LBPlayer
             {
                 return;
             }
+        }
+        #endregion
+        #region 下载紧急插播
+        private bool _bDownloadEmergencyPlan = false;
+        private void DownloadEmergencyPlan(Cmd cmd)
+        {
+            if (cmd == null || cmd.CmdType != CmdType.EmergencyPlan || _bDownloadEmergencyPlan == true)
+            {
+                return;
+            }
+            _bDownloadEmergencyPlan = true;
+            CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, false.ToString());
+            PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(DecodeBase64((Encoding.UTF8), cmd.CmdParam));
+            if (!DeownloadFile(Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
+            {
+                UploadCmdResult(cr);
+                DeleteCmd(cmd);
+                _bDownloadEmergencyPlan = false;
+                return;
+            }
+            for (int i = 0; i < planCmdPar.Medias.Count; i++)
+            {
+                if (!DeownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                {
+                    UploadCmdResult(cr);
+                    DeleteCmd(cmd);
+                    _bDownloadEmergencyPlan = false;
+                    return;
+                }
+            }
+            cr.CmdRes = true.ToString();
+            UploadCmdResult(cr);
+            DeleteCmd(cmd);
+            _bDownloadEmergencyPlan = false;
+        }
+        #endregion
+        #region 下载离线策略
+        private bool _bDownloadOfflinePlan = false;
+        private void DownloadOfflinePlan(Cmd cmd)
+        {
+            if (cmd == null || cmd.CmdType != CmdType.OfflinePlan || _bDownloadOfflinePlan == true)
+            {
+                return;
+            }
+            _bDownloadOfflinePlan = true;
+            CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, false.ToString());
+            PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(DecodeBase64((Encoding.UTF8), cmd.CmdParam));
+            if (!DeownloadFile(Path.Combine(_offlinePlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
+            {
+                UploadCmdResult(cr);
+                DeleteCmd(cmd);
+                _bDownloadOfflinePlan = false;
+                return;
+            }
+            for (int i = 0; i < planCmdPar.Medias.Count; i++)
+            {
+                if (!DeownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                {
+                    UploadCmdResult(cr);
+                    DeleteCmd(cmd);
+                    _bDownloadOfflinePlan = false;
+                    return;
+                }
+            }
+            cr.CmdRes = true.ToString();
+            UploadCmdResult(cr);
+            DeleteCmd(cmd);
+            _config.CurrentOfflinePlanPath = Path.Combine(_offlinePlanPath, Path.GetFileName(planCmdPar.ProgramName));
+            ConfigTool.SaveConfigData(_config);
+            _bDownloadOfflinePlan = false;
         }
         #endregion
         #region 私有函数
@@ -477,6 +549,58 @@ namespace LBPlayer
             }
             SetControlTextDelegate setTextDelegate = new SetControlTextDelegate(SetControlText);
             this.Invoke(setTextDelegate, new object[] { setControl, text });
+        }
+        public bool DeownloadFile(string strFileName, string url)
+        {
+            bool flag = false;
+            //打开上次下载的文件
+            long SPosition = 0;
+            //实例化流对象
+            FileStream FStream;
+            //判断要下载的文件夹是否存在
+            if (File.Exists(strFileName))
+            {
+                return true;
+                ////打开要下载的文件
+                //FStream = File.OpenWrite(strFileName);
+                ////获取已经下载的长度
+                //SPosition = FStream.Length;
+                //FStream.Seek(SPosition, SeekOrigin.Current);
+            }
+            else
+            {
+                //文件不保存创建一个文件
+                FStream = new FileStream(strFileName, FileMode.Create);
+                SPosition = 0;
+            }
+            try
+            {
+                //打开网络连接
+                HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);
+                if (SPosition > 0)
+                    myRequest.AddRange((int)SPosition);             //设置Range值
+                //向服务器请求,获得服务器的回应数据流
+                Stream myStream = myRequest.GetResponse().GetResponseStream();
+                //定义一个字节数据
+                byte[] btContent = new byte[512];
+                int intSize = 0;
+                intSize = myStream.Read(btContent, 0, 512);
+                while (intSize > 0)
+                {
+                    FStream.Write(btContent, 0, intSize);
+                    intSize = myStream.Read(btContent, 0, 512);
+                }
+                //关闭流
+                FStream.Close();
+                myStream.Close();
+                flag = true;        //返回true下载成功
+            }
+            catch (Exception)
+            {
+                FStream.Close();
+                flag = false;       //返回false下载失败
+            }
+            return flag;
         }
         #endregion
         #region 锁定
@@ -822,10 +946,7 @@ namespace LBPlayer
         }
         #endregion
         #region 下载方案
-        private int _fileCount = 0;
         private bool _bDownloading = false;
-        private int _completeCount = 0;
-        private PlanCmdPar _PlanCmdParTemp = null;
         private void DownloadPlan(Cmd cmd)
         {
             if(cmd==null||cmd.CmdType!= CmdType.DownloadPlan|| _bDownloading==true)
@@ -833,81 +954,81 @@ namespace LBPlayer
                 return;
             }
             _bDownloading = true;
+            CmdResult cr =new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, false.ToString());
             PlanCmdPar planCmdPar=JsonConvert.DeserializeObject<PlanCmdPar>(DecodeBase64((Encoding.UTF8),cmd.CmdParam));
-            _PlanCmdParTemp = planCmdPar;
-            _fileCount = planCmdPar.Medias.Count + 1;
-
-            DownloadTransmit downloadTransmit = new DownloadTransmit();
-            downloadTransmit.Completed +=new Completed(DownloadTransmit_Completed);
-            downloadTransmit.Download(planCmdPar.ProgramUrl, Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)));
+            if(!DeownloadFile(Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
+            {
+                UploadCmdResult(cr);
+                DeleteCmd(cmd);
+                _bDownloading = false;
+                return;
+            }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                downloadTransmit.Download(planCmdPar.Medias[i].MediaUrl, Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)));
+                if(!DeownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                {
+                    UploadCmdResult(cr);
+                    DeleteCmd(cmd);
+                    _bDownloading = false;
+                    return;
+                }
             }
-        }
-        private void DownloadTransmit_Completed(object obj)
-        {
-            _completeCount++;
-            if (_fileCount == _completeCount)
-            {
-                _fileCount = 0;
-                _completeCount = 0;
-                _bDownloading = false;
-                ThreadStart threadDelegate = new ThreadStart(PlayMedia);
-                Thread showThread = new Thread(threadDelegate);
-                showThread.Start();
-            }
+            cr.CmdRes = true.ToString();
+            UploadCmdResult(cr);
+            DeleteCmd(cmd);
+            _config.CurrentPlanPath = Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName));
+            ConfigTool.SaveConfigData(_config);
+            _bDownloading = false;
         }
         private PlanCmdPar _cureentPlan = null;
         private LEDScreen _screen = null;
         private Object thisLock = new Object();
-        private void PlayMedia()
-        {
-            //lock (thisLock)
-            //{
-                if (_screen != null)
-                {
-                    if (_cureentPlan != null && _cureentPlan.ProgramName == _PlanCmdParTemp.ProgramName)
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        _screen.Free();
-                        _screen = null;
-                    }
-                }
-                Thread.Sleep(1000);
-                var scheduleFilePath = Path.Combine(_lbPlanPath, Path.GetFileName(_PlanCmdParTemp.ProgramName));
-                using (FileStream fs = File.OpenRead(scheduleFilePath))
-                {
+        //private void PlayMedia()
+        //{
+        //    //lock (thisLock)
+        //    //{
+        //        if (_screen != null)
+        //        {
+        //            if (_cureentPlan != null && _cureentPlan.ProgramName == _PlanCmdParTemp.ProgramName)
+        //            {
+        //                return;
+        //            }
+        //            else
+        //            {
+        //                _screen.Free();
+        //                _screen = null;
+        //            }
+        //        }
+        //        Thread.Sleep(1000);
+        //        var scheduleFilePath = Path.Combine(_lbPlanPath, Path.GetFileName(_PlanCmdParTemp.ProgramName));
+        //        using (FileStream fs = File.OpenRead(scheduleFilePath))
+        //        {
 
-                    string content;
-                    using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
-                    {
-                        content = reader.ReadToEnd();
-                    }
-                    var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
-                    foreach (var mediaItem in scheduleFile.MediaList)
-                    {
-                        if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Image)
-                        {
-                            _screen = new LEDScreen(0, 0, 1024, 768);
-                            _screen.PlayImage(Path.Combine(_mediaPath, Path.GetFileName(_PlanCmdParTemp.Medias[0].MediaName)));
-                            _cureentPlan = _PlanCmdParTemp;
-                        }
-                        else if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Video)
-                        {
-                            _screen = new LEDScreen(0, 0, 1024, 768);
-                            _screen.PlayVideo(Path.Combine(_mediaPath, Path.GetFileName(_PlanCmdParTemp.Medias[0].MediaName)));
-                            _cureentPlan = _PlanCmdParTemp;
-                        }
-                    }
-                }
-          //  }
+        //            string content;
+        //            using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
+        //            {
+        //                content = reader.ReadToEnd();
+        //            }
+        //            var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
+        //            foreach (var mediaItem in scheduleFile.MediaList)
+        //            {
+        //                if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Image)
+        //                {
+        //                    _screen = new LEDScreen(0, 0, 1024, 768);
+        //                    _screen.PlayImage(Path.Combine(_mediaPath, Path.GetFileName(_PlanCmdParTemp.Medias[0].MediaName)));
+        //                    _cureentPlan = _PlanCmdParTemp;
+        //                }
+        //                else if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Video)
+        //                {
+        //                    _screen = new LEDScreen(0, 0, 1024, 768);
+        //                    _screen.PlayVideo(Path.Combine(_mediaPath, Path.GetFileName(_PlanCmdParTemp.Medias[0].MediaName)));
+        //                    _cureentPlan = _PlanCmdParTemp;
+        //                }
+        //            }
+        //        }
+        //  //  }
            
-        }
-
+        //}
         #endregion
         #region 未知命令处理
         private void UnKnowCmd(Cmd cmd)
@@ -1159,7 +1280,7 @@ namespace LBPlayer
 
 
 
-    private bool UploadFile(string url, string FilePath)
+        private bool UploadFile(string url, string FilePath)
     {
         using (FileStream fs = File.OpenRead(FilePath))
         {
@@ -1214,12 +1335,6 @@ namespace LBPlayer
             }
         }
         #endregion
-
-        private void skinButton1_Click(object sender, EventArgs e)
-        {
-            PlayBack p = new PlayBack(_config.ID,_config.Key, _config.Mac, "02.png", "2dc17f2fd0329a9812b9a298c3fe9fed", DateTime.Now, DateTime.Now);
-            UploadPlayBack(p);
-        }
     }
 }
 
