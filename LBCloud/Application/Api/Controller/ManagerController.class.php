@@ -19,7 +19,7 @@ class ManagerController extends CommonController
 		/*登录令牌（token）检测开始*/
 		$token = I("request.token");
 		$this->user_model = D("User");
-		/*if(in_array(ACTION_NAME, C("manager_not_logged"))){
+		if(in_array(ACTION_NAME, C("manager_not_logged"))){
 			//未登录可访问模块
 			//不检查登录令牌
 			
@@ -40,8 +40,8 @@ class ManagerController extends CommonController
 				$respones = array('err_code'=>'010002', 'msg'=>"Token error");
 				$this->ajaxReturn($respones);exit;
 			}
-		}*/
-		$this->user_id = 13;
+		}
+		//$this->user_id = 13;
 		/*登录令牌（token）检测结束*/
 		$this->param = json_decode($request, true);
 		/*请求数据检测开始*/
@@ -176,17 +176,18 @@ class ManagerController extends CommonController
 			$filepath = $val['FilePath'];
 			$filename = end(explode('/', str_replace('\\', '/', $filepath)));
 			$filesize = $val['FileSize'];
-			$filemd5 = $val['FileMD5'];
+			$filemd5 = strtolower($val['FileMD5']);
 			$filesubfix = end(explode('.', $filename));
 			$filetype = $val['Type'];   //0-播放方案,1-图片,2-视频,3-文字
 			if($filetype == 0){
 				//file_put_contents('./1.log', json_encode($val)."\r\n", FILE_APPEND);
 				//播放方案
 				$medias = $val['MediaList'];
+				$plantype = $val['PlanType'] ? $val['PlanType'] : 0;
 				foreach($medias as &$v){
 					$v['MediaName'] = end(explode('/', str_replace('\\', '/', $v['MediaName'])));
 				}
-				$program_data = $this->_upload_program($program_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix, $medias, $filepath);
+				$program_data = $this->_upload_program($program_model, $AliyunOSS, $user_id, $filename, $filesize, $filemd5, $filesubfix, $medias, $filepath, $plantype);
 				if($program_data){
 					$program_data['type'] = intval($filetype);
 					$result[] = $program_data;
@@ -214,7 +215,7 @@ class ManagerController extends CommonController
 		//$filename = $obj['FileName'];
 		$filepath = $obj['FileName'];
 		$filename = end(explode('/', str_replace('\\', '/', $filepath)));
-		$filemd5 = $obj['FileMD5'];
+		$filemd5 = strtolower($obj['FileMD5']);
 		$filetype = $obj['FileType'];
 		$fileparts = $obj['Parts'];
 		$user_id = $this->user_id;
@@ -238,12 +239,14 @@ class ManagerController extends CommonController
 					$oss_res = $AliyunOSS->complete_upload($object, $uploadId, $parts, $this->program_bucket);
 				}
 			}
+			//方案类型，0-普通方案，7-紧急插播，8-离线方案
+			$plantype = $obj['PlanType'] ? $obj['PlanType'] : 0; 
 			//播放方案下发
 			$cmds = array();
 			foreach($screens as $val){
 				$cmds[] = array(
 					'screen_id'	=> $val,
-					'type'		=> 0,
+					'type'		=> $plantype,
 					'param'		=> json_encode(array('program_id'=>$prog_info['id'])),
 					'publish'	=> NOW_TIME,
 					'execute'	=> NOW_TIME,
@@ -253,7 +256,7 @@ class ManagerController extends CommonController
 			}
 			if($cmds){
 				$cmd_model = D("Command");
-				$cmd_del = $cmd_model->remove_cmd($screens, 0, 0);
+				$cmd_del = $cmd_model->remove_cmd($screens, $plantype, 0);
 				$cmd_add = $cmd_model->release_cmd($cmds);
 			}
 			$respones = array("err_code"=>"000000","msg"=>"success");
@@ -365,6 +368,13 @@ class ManagerController extends CommonController
 	}
 
 	/**
+	 * 播放方案备份
+	 */
+	public function backup(){
+		
+	}
+
+	/**
 	 * 播放方案列表
 	 */
 	public function programs(){
@@ -401,7 +411,7 @@ class ManagerController extends CommonController
 	/**
 	 * 上传播放方案
 	 */
-	private function _upload_program($model, $oss_obj, $user_id, $filename, $filesize, $filemd5, $subfix, $medias, $filepath){
+	private function _upload_program($model, $oss_obj, $user_id, $filename, $filesize, $filemd5, $subfix, $medias, $filepath, $plantype=0){
 		$result = array();
 		$program_id = $model->program_exists($filename, $filemd5, $user_id);
 		if($program_id){
@@ -486,6 +496,7 @@ class ManagerController extends CommonController
 				$program_data['upload_id'] = '';
 				$program_data['info'] = json_encode($medias);
 				$program_data['md5'] = $filemd5;
+				$program_data['type'] = $plantype;
 				$program_data['size'] = $filesize;
 				$program_data['publish'] = NOW_TIME;
 				$program_id = $model->add($program_data);
@@ -521,6 +532,7 @@ class ManagerController extends CommonController
 				$program_data['upload_id'] = $uploadId;
 				$program_data['info'] = json_encode($medias);
 				$program_data['md5'] = $filemd5;
+				$program_data['type'] = $plantype;
 				$program_data['size'] = $filesize;
 				$program_data['publish'] = NOW_TIME;
 				$program_id = $model->add($program_data);

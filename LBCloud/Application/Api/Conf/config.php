@@ -7,6 +7,7 @@ return array(
 	'aliyun_oss_bucket'		=>	'lb-player-test',
 	'oss_media_bucket'		=>	'lb-player-media',
 	'oss_program_bucket'	=>	'lb-player-program',
+	'oss_picture_bucket'	=>	'lb-monitor-picture',
 	
 	'oss_part_size'			=>	10485760,	//oss上传分片大小
 	'oss_100K_size'			=>	102400,		//100K大小
@@ -20,6 +21,7 @@ return array(
 	'player_program_subfix'	=>	'playprog',	//播放方案文件后缀名
 	
 	'redis_server'		=>	'10.171.126.247',
+	'redis_port'		=>	6379,
 	'websocket_ip'		=>	'123.56.240.172',
 	'websocket_port'	=>	'9501',
 	

@@ -24,14 +24,15 @@ class ScreenController extends CommonController
     		"city" => $regions,
     		"district" => $regions
     	);
-		$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("REDIS_SERVER")));
+		//$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("REDIS_SERVER")));
 		foreach($leds as &$val){
 			$pl_mac = strtoupper(str_replace(':', '-', $val['mac']));
 			if($pl_mac){
 				$pl_id = $val["bind_id"];
 				$pl_key = $val["bind_key"];
 				$cache_key = md5("{$pl_id}_{$pl_key}_{$pl_mac}_fd");
-				$pl_online = $redis_serv->get($cache_key);
+				//$pl_online = $redis_serv->get($cache_key);
+				$pl_online = true;
 				$val['online'] = $pl_online ? 1 : 0;
 			}else{
 				$val['online'] = 2;
@@ -268,6 +269,39 @@ class ScreenController extends CommonController
 			}
 		}
 	}
+
+	/**
+	 * 查看
+	 */
+	public function show($id=0){
+		$led_model = D("Screen");
+		$info = $led_model->screen_by_id($id);
+		if($info){
+			$user_model = D("User");
+			$group_model = D("Group");
+			$region_model = D("Region");
+			if($user_model->is_normal(ADMIN_UID)){
+				$this->assign("is_normal", 1);
+			}else{
+				$owner = $user_model->users_by_puid(ADMIN_UID);
+				$this->assign("owner", $owner);
+				$this->assign("is_normal", 0);
+			}
+			$groups = $group_model->group_by_uid(ADMIN_UID);
+			$provinces = $region_model->all_region(0);
+			$citys = $region_model->all_region($info['province']);
+			$districts = $region_model->all_region($info['city']);
+			$this->assign("groups", $groups);
+			$this->assign("provinces", $provinces);
+			$this->assign("citys", $citys);
+			$this->assign("districts", $districts);
+			$this->assign('info', $info);
+            $this->meta_title = '查看屏幕';
+            $this->display();
+		}else{
+			$this->error('获取屏幕信息错误');
+		}
+	}
 	
 	/**
 	 * 删除
@@ -286,6 +320,34 @@ class ScreenController extends CommonController
         } else {
             $this->error('删除失败！');
         }
+	}
+	
+	/*监控数据*/
+	public function monitor($id=0){
+		$alarm_model = D("Alarm");
+		$alarms = $alarm_model->alarm_by_sid($id);
+		if($alarms){
+			$led_model = D("Screen");
+			$player_model = D("Player");
+			$led_info = $led_model->screen_by_id($id, "s.name");
+			$player = $player_model->player_by_id($id);
+			$monitor = json_decode($alarms['param'], true);
+			$monitor['addtime'] = $alarms['up_time'];
+			$this->meta_title = "监控数据";
+			$this->assign('monitor', $monitor);
+			$this->assign('name', $led_info['name']);
+			$this->assign('p_name', $player['name']);
+			$this->display();
+		}else{
+			$this->error('播放器暂无监控数据！');
+		}
+	}
+	
+	/**
+	 * 监控图片
+	 */
+	public function picture($id=0){
+		
 	}
 	
 	/**

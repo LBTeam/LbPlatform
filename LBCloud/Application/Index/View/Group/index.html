@@ -55,8 +55,12 @@
 			                        	<if condition="in_array('GROUP/SCREENS', $_SESSION['_ACCESS_LIST'])">
 			                        	<a href="{:U('screens?id='.$vo['id'])}">屏幕列表</a>
 			                        	</if>
-			                        	<a href="">发送短信</a>
-			                        	<a href="">发送邮件</a>
+			                        	<if condition="in_array('GROUP/SEND_SMS', $_SESSION['_ACCESS_LIST'])">
+			                        	<a href="{:U('send_sms?id='.$vo['id'])}">发送短信</a>
+			                        	</if>
+			                        	<if condition="in_array('GROUP/SEND_EMAIL', $_SESSION['_ACCESS_LIST'])">
+			                        	<a href="{:U('send_email?id='.$vo['id'])}">发送邮件</a>
+			                        	</if>
 			                        </td>
 			                        <td>
 			                        	<if condition="in_array('GROUP/EDIT', $_SESSION['_ACCESS_LIST'])">

@@ -25,6 +25,29 @@ class AliyunOSS
 	}
 	
 	/**
+	 * 创建bucket
+	 * @param $bucket bucket名字
+	 * @return boolen
+	 */
+	public function create_bucket($bucket, $acl="private"){
+		try {
+			if($bucket){
+				$result = $this->client->createBucket($bucket);
+				if($result === null){
+					return true;
+				}else{
+					return false;
+				}
+			}else{
+				return false;
+			}
+		} catch (OssException $e) {
+		    //print $e->getMessage();
+		    return false;
+		}
+	}
+	
+	/**
 	 * 存储空间列表
 	 * @return array
 	 */

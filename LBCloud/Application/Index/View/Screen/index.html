@@ -90,6 +90,12 @@
 		                            <a href="{:U('price',array('id'=>$vo['id']))}">时段价格</a>
 		                            </if>
 		                            <a href="javascript:void(0);">播放记录</a>
+		                            <if condition="$vo['online'] eq 1 AND in_array('SCREEN/MONITOR', $_SESSION['_ACCESS_LIST'])">
+		                            <a href="{:U('monitor',array('id'=>$vo['id']))}">监控数据</a>
+		                            </if>
+		                            <if condition="$vo['online'] eq 1 AND in_array('SCREEN/PICTURE', $_SESSION['_ACCESS_LIST'])">
+		                            <a href="{:U('picture',array('id'=>$vo['id']))}">监控图片</a>
+		                            </if>
 		                            <if condition="in_array('SCREEN/SETTING', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('setting',array('id'=>$vo['id']))}">参数配置</a>
 		                            </if>
@@ -103,6 +109,9 @@
 			                        </if>
 		                        </td>
 		                        <td>
+		                        	<if condition="in_array('SCREEN/SHOW', $_SESSION['_ACCESS_LIST'])">
+		                            <a href="{:U('show',array('id'=>$vo['id']))}">查看</a>
+		                            </if>
 		                        	<if condition="in_array('SCREEN/EDIT', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('edit',array('id'=>$vo['id']))}">编辑</a>
 		                            </if>

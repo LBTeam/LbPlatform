@@ -77,4 +77,16 @@ class ScreenModel extends Model
 		}
 		return $this->table("player_group_screen")->where($map)->delete();
 	}
+	
+	/**
+	 * 屏幕uid列表
+	 */
+	public function screen_uids($screen_ids=array()){
+		if($screen_ids){
+			$map = array();
+			$map['id'] = array("IN", $screen_ids);
+			return $this->where($map)->getField("uid", true);
+		}
+		return array();
+	}
 }

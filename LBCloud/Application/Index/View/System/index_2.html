@@ -19,7 +19,9 @@
  		<ul class="nav nav-tabs ">
  			<if condition="in_array('SYSTEM/INDEX', $_SESSION['_ACCESS_LIST'])">
 			<li><a href="{:U('?id=1')}">基本配置</a></li>
-			<li class="active"><a href="{:U('?id=2')}">开发配置</a></li>
+			<li class="active"><a href="javascript:void(0);">开发配置</a></li>
+			<li><a href="{:U('?id=3')}">文件清理配置</a></li>
+			<li><a href="{:U('?id=4')}">监控图片清理配置</a></li>
 			</if>
 		</ul>
         <div class="tab-content" style="padding-top: 25px;">

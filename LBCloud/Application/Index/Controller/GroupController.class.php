@@ -161,4 +161,105 @@ class GroupController extends CommonController
 			$this->error("获取屏幕列表失败！");
 		}
 	}
+	
+	/**
+	 * 发送短信
+	 */
+	public function send_sms($id=0){
+		if ( empty($id) ) {
+            $this->error('请选择要操作的数据!');
+        }
+		$group_model = D("Group");
+		$info = $group_model->group_by_id($id);
+		if($info && $info['uid'] == ADMIN_UID){
+			if(IS_POST){
+				$content = I("post.content", "");
+				if($content){
+					$led_model = D("Screen");
+					$user_model = D("User");
+					$leds = $group_model->group_screens($id);
+					$uids = $led_model->screen_uids($leds);
+					$uids = array_unique(array_filter($uids));
+					$mobiles = $user_model->user_mobiles($uids);
+					$mobiles = array_unique(array_filter($mobiles));
+					if($mobiles){
+						$params = array();
+			    		$params['phones'] = implode(',', $mobiles);
+			    		$params['msg'] = trim($content);
+			    		$request_param = http_build_query($params);
+			    		$request_uri = C("SMS_SERVER") . $request_param;
+			    		$resp = file_get_contents($request_uri);
+			    		if($resp == 'success'){
+			    			$this->success("短信发送成功！");
+			    		}else{
+			    			$this->error("短信发送失败！");
+			    		}
+					}else{
+						$this->success("发送成功！");
+					}
+				}else{
+					$this->error("短信内容不能为空！");
+				}
+			}else{
+				$this->assign("id", $id);
+				$this->assign("g_name", $info['name']);
+				$this->meta_title = "发送短信";
+				$this->display();
+			}
+		}else{
+			$this->error("获取分组信息失败！");
+		}
+	}
+	 
+	/**
+	 * 发送邮件
+	 */
+	public function send_email($id=0){
+		if ( empty($id) ) {
+            $this->error('请选择要操作的数据!');
+        }
+		$group_model = D("Group");
+		$info = $group_model->group_by_id($id);
+		if($info && $info['uid'] == ADMIN_UID){
+			if(IS_POST){
+				$rules = array(
+					array('title','require','邮件标题不能为空！'),
+					array('content','require','邮件内容不能为空！')
+				);
+				if($group_model->validate($rules)->create()){
+					$led_model = D("Screen");
+					$user_model = D("User");
+					$leds = $group_model->group_screens($id);
+					$uids = $led_model->screen_uids($leds);
+					$uids = array_unique(array_filter($uids));
+					$emails = $user_model->user_emails($uids);
+					$emails = array_unique(array_filter($emails));
+					if($emails){
+						$m_info = array();
+						$m_info['adder'] = implode(',', $emails);
+						$m_info['title'] = I("post.title");
+						$m_info['content'] = I("post.content");
+						$request_uri = C("EMAIL_SERVER").http_build_query($m_info);
+						$resp = file_get_contents($request_uri);
+						if($resp === ''){
+							$this->success("邮件发送成功！");
+						}else{
+							$this->error("邮件发送失败！");
+						}
+					}else{
+						$this->success("邮件发送成功！");
+					}
+				}else{
+					$this->error($group_model->getError());
+				}
+			}else{
+				$this->assign("id", $id);
+				$this->assign("g_name", $info['name']);
+				$this->meta_title = "发送邮件";
+				$this->display();
+			}
+		}else{
+			$this->error("获取分组信息失败！");
+		}
+	}
 }

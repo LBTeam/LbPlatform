@@ -15,11 +15,11 @@ class PlayerController extends CommonController
 	public function _initialize(){
 		$request = file_get_contents('php://input');
 		$this->param = json_decode($request, true);
-		$this->param = array(
+		/*$this->param = array(
 			'Id' => "deMkPdrk",
 			'Key' => 'sU3PjNesZ3f4KqXg',
 			'Mac' => '4C-CC-6A-05-70-7B'
-		);
+		);*/
 		if(empty($this->param) === true){
 			$respones = array('err_code'=>'010001', 'msg'=>"Protocol content error");
 			$this->ajaxReturn($respones);exit;
@@ -105,15 +105,23 @@ class PlayerController extends CommonController
 							$media_list = json_decode($plan['info'], true);
 							foreach($media_list as $v){
 								$media = $media_model->media_by_name_md5($v['MediaName'], $v['MediaMD5'], $screen['uid']);
+								$media_name_array = explode('.', stripslashes($media['name']));
+								$suffix = end($media_name_array);
+								$temp_name = array_pop($media_name_array);
+								$media_name = implode('.', $media_name_array) . "_{$v['MediaMD5']}.{$suffix}";
 								$medias[] = array(
 									'MediaId'	=> $media['id'],
-									'MediaName'	=> stripslashes($media['name']),
+									'MediaName'	=> $media_name,
 									'MediaUrl'	=> $AliyunOSS->download_uri($this->media_bucket, $media['object'])
 								);
 							}
+							$plan_name_array = explode('.', stripslashes($plan['name']));
+							$plan_suffix = end($plan_name_array);
+							$temp_name = array_pop($plan_name_array);
+							$plan_name = implode('.', $plan_name_array) . "_{$plan['md5']}.{$plan_suffix}";
 							$cmdParam = array(
 								'ProgramId'		=> $plan['id'],
-								'ProgramName'	=> stripslashes($plan['name']),
+								'ProgramName'	=> $plan_name,
 								'ProgramUrl'	=> $AliyunOSS->download_uri($this->program_bucket, $plan['object']),
 								'Medias'		=> $medias
 							);
@@ -178,6 +186,76 @@ class PlayerController extends CommonController
 							);
 						}
 						break;
+					/*7-播放方案紧急插播*/
+					case "7":
+						$screen_model = D("Screen");
+						$plan_model = D("Program");
+						$media_model = D("Media");
+						$AliyunOSS = new AliyunOSS();
+						$plan = $plan_model->program_detail($param['program_id']);
+						$screen = $screen_model->screen_by_id($led_id);
+						if($plan){
+							$medias = array();
+							$media_list = json_decode($plan['info'], true);
+							foreach($media_list as $v){
+								$media = $media_model->media_by_name_md5($v['MediaName'], $v['MediaMD5'], $screen['uid']);
+								$media_name_array = explode('.', stripslashes($media['name']));
+								$suffix = end($media_name_array);
+								$temp_name = array_pop($media_name_array);
+								$media_name = implode('.', $media_name_array) . "_{$v['MediaMD5']}.{$suffix}";
+								$medias[] = array(
+									'MediaId'	=> $media['id'],
+									'MediaName'	=> $media_name,
+									'MediaUrl'	=> $AliyunOSS->download_uri($this->media_bucket, $media['object'])
+								);
+							}
+							$plan_name_array = explode('.', stripslashes($plan['name']));
+							$plan_suffix = end($plan_name_array);
+							$temp_name = array_pop($plan_name_array);
+							$plan_name = implode('.', $plan_name_array) . "_{$plan['md5']}.{$plan_suffix}";
+							$cmdParam = array(
+								'ProgramId'		=> $plan['id'],
+								'ProgramName'	=> $plan_name,
+								'ProgramUrl'	=> $AliyunOSS->download_uri($this->program_bucket, $plan['object']),
+								'Medias'		=> $medias
+							);
+						}
+						break;
+					/*8-离线方案*/
+					case "8":
+						$screen_model = D("Screen");
+						$plan_model = D("Program");
+						$media_model = D("Media");
+						$AliyunOSS = new AliyunOSS();
+						$plan = $plan_model->program_detail($param['program_id']);
+						$screen = $screen_model->screen_by_id($led_id);
+						if($plan){
+							$medias = array();
+							$media_list = json_decode($plan['info'], true);
+							foreach($media_list as $v){
+								$media = $media_model->media_by_name_md5($v['MediaName'], $v['MediaMD5'], $screen['uid']);
+								$media_name_array = explode('.', stripslashes($media['name']));
+								$suffix = end($media_name_array);
+								$temp_name = array_pop($media_name_array);
+								$media_name = implode('.', $media_name_array) . "_{$v['MediaMD5']}.{$suffix}";
+								$medias[] = array(
+									'MediaId'	=> $media['id'],
+									'MediaName'	=> $media_name,
+									'MediaUrl'	=> $AliyunOSS->download_uri($this->media_bucket, $media['object'])
+								);
+							}
+							$plan_name_array = explode('.', stripslashes($plan['name']));
+							$plan_suffix = end($plan_name_array);
+							$temp_name = array_pop($plan_name_array);
+							$plan_name = implode('.', $plan_name_array) . "_{$plan['md5']}.{$plan_suffix}";
+							$cmdParam = array(
+								'ProgramId'		=> $plan['id'],
+								'ProgramName'	=> $plan_name,
+								'ProgramUrl'	=> $AliyunOSS->download_uri($this->program_bucket, $plan['object']),
+								'Medias'		=> $medias
+							);
+						}
+						break;
 					default:
 						break;
 				}
@@ -190,7 +268,9 @@ class PlayerController extends CommonController
 				}
 			}
 			/*9-终端长连接重连*/
-			$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("redis_server")));
+			//$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("redis_server")));
+			$redis_serv = new \Redis();
+			$redis_serv->connect(C("redis_server"), C("redis_port"));
 			$cache_key = md5("{$id}_{$key}_{$mac}_fd");
 			$pl_online = $redis_serv->get($cache_key);
 			unset($redis_serv);
@@ -198,8 +278,9 @@ class PlayerController extends CommonController
 				$cfg_model = D("Config");
 				$ws = $cfg_model->ws_config();
 				$cmdParam = array(
-					'ws_ip'	=> $ws['ip'],
-					'ws_port' => $ws['port']
+					/*'ws_ip'	=> $ws['ip'],
+					'ws_port' => $ws['port']*/
+					'host' => "ws://{$ws['ip']}:{$ws['port']}"
 				);
 				$cmds[] = array(
 					"CmdId"		=>	"0",
@@ -225,11 +306,11 @@ class PlayerController extends CommonController
 	
 	/**
 	 * 监控数据上传
-	 * CPU使用率		cpu usage
+	 * CPU使用率	cpu usage
 	 * 硬盘使用率	disk usage
 	 * 内存使用率	memory usage
-	 * CPU温度		cpu temperature
-	 * 风扇转速		fan speed
+	 * CPU温度	cpu temperature
+	 * 风扇转速	fan speed
 	 */
 	public function monitor(){
 		$obj = $this->param;
@@ -242,11 +323,11 @@ class PlayerController extends CommonController
 			$monitor = $obj['Monitor'];
 			if($monitor){
 				$params = array(
-					"Cpu_usage"			=> $monitor['cpu_usage'],
-					"Disk_ueage"		=> $monitor['disk_usage'],
-					"Memory_usage"		=> $monitor['memory_usage'],
-					"Cpu_temperature"	=> $monitor['cpu_temperature'],
-					"Fan_speed"			=> $monitor['fan_speed']
+					"Cpu_usage"			=> $monitor['Cpu_usage'],
+					"Disk_usage"		=> $monitor['Disk_usage'],
+					"Memory_usage"		=> $monitor['Memory_usage'],
+					"Cpu_temperature"	=> $monitor['Cpu_temperature'],
+					"Fan_speed"			=> $monitor['Fan_speed']
 				);
 				$screen_id = $player['id'];
 				$alarm_model = D("Alarm");
@@ -283,6 +364,23 @@ class PlayerController extends CommonController
 		}else{
 			$respones = array("err_code"=>"020201","msg"=>"Player MAC error");
 		}
+		$this->ajaxReturn($respones);
+	}
+
+	/**
+	 * 监控图片上传
+	 */
+	public function picture(){
+		$obj = $this->param;
+		$bind_id	= $obj['Id'];
+		$bind_key	= $obj['Key'];
+		$mac		= strtoupper(str_replace(':', '-', $obj['Mac']));
+		$mac		= str_replace('-', '', $obj['Mac']);
+		$picture_bucket = C("oss_picture_bucket");
+		$AliyunOSS = new AliyunOSS();
+		$object = "{$mac}/".date("Ymd")."/".time().".jpg";
+		$sign_url = $AliyunOSS->upload_sign_uri($object, $picture_bucket, 1800);
+		$respones = array("err_code"=>"000000","msg"=>"ok","url"=>$sign_url);
 		$this->ajaxReturn($respones);
 	}
 	
@@ -329,29 +427,30 @@ class PlayerController extends CommonController
 		$player_model = D("Player");
 		$player = $player_model->player_by_bind($bind_id, $bind_key, "id,mac");
 		if($mac == $player['mac']){
-			$media_id = $obj['MediaId'];
+			$media_model = D("Media");
+			$led_model = D("Screen");
+			$media_name = end(explode('/', str_replace('\\', '/', $obj['MediaName'])));
+			$media_md5 = strtolower($obj['MediaMD5']);
+			$led_info = $led_model->screen_by_id($player['id']);
+			$user_id = $led_info['id'];
+			$media_id = $media_model->media_exists($media_name, $media_md5, $user_id);
 			if($media_id){
-				$media_model = D("Media");
-				$media = $media_model->media_detail($media_id);
-				if($media){
-					$data = array();
-					$data['screen_id'] = $player['id'];
-					$data['media_id'] = $media_id;
-					$data['start'] = $obj['StartTime'];
-					$data['end'] = $obj['EndTime'];
-					$data['addtime'] = NOW_TIME;
-					$record_model = D("Record");
-					$res = $record_model->add($data);
-					if($res){
-						$respones = array("err_code"=>"000000","msg"=>"ok");
-					}else{
-						$respones = array("err_code"=>"020503","msg"=>"Report record failed");
-					}
+				$data = array();
+				$data['screen_id'] = $player['id'];
+				$data['media_name'] = mysql_real_escape_string($media_name);
+				$data['media_md5'] = $media_md5;
+				$data['start'] = $obj['StartTime'];
+				$data['end'] = $obj['EndTime'];
+				$data['addtime'] = NOW_TIME;
+				$record_model = D("Record");
+				$res = $record_model->add($data);
+				if($res){
+					$respones = array("err_code"=>"000000","msg"=>"ok");
 				}else{
-					$respones = array("err_code"=>"020502","msg"=>"Media not found");
+					$respones = array("err_code"=>"020503","msg"=>"Report record failed");
 				}
 			}else{
-				$respones = array("err_code"=>"020501","msg"=>"Media id error");
+				$respones = array("err_code"=>"020501","msg"=>"Media not found");
 			}
 		}else{
 			$respones = array("err_code"=>"020201","msg"=>"Player MAC error");

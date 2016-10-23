@@ -6,12 +6,27 @@ use Api\Service\AliyunOSS;
 class DemoController extends Controller
 {
 	public function demo(){
+		$media['name'] = "1.2.3.png";
+		$v['MediaMD5'] = "md5md5md5md5md5";
+		dump($media['name']);
+		$media_name_array = explode('.', stripslashes($media['name']));
+		$suffix = end($media_name_array);
+		$temp_name = array_pop($media_name_array);
+		$media_name = implode('.', $media_name_array) . "_" . $v['MediaMD5'] . "." . $suffix;
+		dump($media_name);
+		exit;
 		$response = array('err_code'=>'010101', 'msg'=>"User does not exist");
 		$this->ajaxReturn($response);
 	}
 	
 	public function index(){
+		exit;
 		$AliyunOSS = new AliyunOSS();
+		$result = $AliyunOSS->bucket_list();
+		dump($result);
+		exit;
+		$result = $AliyunOSS->create_bucket(C("oss_picture_bucket"));
+		exit;
 		/*$file = "./test.png";
 		$filesize = filesize($file);
 		dump($filesize);*/

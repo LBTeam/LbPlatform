@@ -14,6 +14,8 @@ class SystemController extends CommonController
 		$this->config_type = array(
 			'1'	=>	'基本配置',
 			'2'	=>	'开发配置',
+			'3'	=>	'文件清理配置',
+			'4'	=>	'监控图片清理配置'
 		);
 	}
 	
