@@ -36,14 +36,13 @@
             this.skinTabControl1 = new CCWin.SkinControl.SkinTabControl();
             this.skinTabPage1 = new CCWin.SkinControl.SkinTabPage();
             this.skinComboBox_Mac = new CCWin.SkinControl.SkinComboBox();
-            this.skinLabel8 = new CCWin.SkinControl.SkinLabel();
             this.skinLabel10 = new CCWin.SkinControl.SkinLabel();
             this.skinLabel9 = new CCWin.SkinControl.SkinLabel();
             this.skinTextBox_Key = new CCWin.SkinControl.SkinTextBox();
             this.skinTabPage2 = new CCWin.SkinControl.SkinTabPage();
-            this.skinButton5 = new CCWin.SkinControl.SkinButton();
+            this.skinButton_SaveConf = new CCWin.SkinControl.SkinButton();
             this.skinLabel2 = new CCWin.SkinControl.SkinLabel();
-            this.skinButton2 = new CCWin.SkinControl.SkinButton();
+            this.skinButton_b = new CCWin.SkinControl.SkinButton();
             this.skinTextBox_workPath = new CCWin.SkinControl.SkinTextBox();
             this.skinTabPage3 = new CCWin.SkinControl.SkinTabPage();
             this.skinButton4 = new CCWin.SkinControl.SkinButton();
@@ -58,6 +57,7 @@
             this.skinLabel5 = new CCWin.SkinControl.SkinLabel();
             this.skinNumericUpDown_X = new CCWin.SkinControl.SkinNumericUpDown();
             this.skinLabel4 = new CCWin.SkinControl.SkinLabel();
+            this.skinButton1 = new CCWin.SkinControl.SkinButton();
             this.skinTabControl1.SuspendLayout();
             this.skinTabPage1.SuspendLayout();
             this.skinTabPage2.SuspendLayout();
@@ -168,7 +168,7 @@
             // 
             this.skinTabPage1.BackColor = System.Drawing.Color.White;
             this.skinTabPage1.Controls.Add(this.skinComboBox_Mac);
-            this.skinTabPage1.Controls.Add(this.skinLabel8);
+            this.skinTabPage1.Controls.Add(this.skinButton1);
             this.skinTabPage1.Controls.Add(this.skinButton_Ok);
             this.skinTabPage1.Controls.Add(this.skinLabel10);
             this.skinTabPage1.Controls.Add(this.skinLabel9);
@@ -192,18 +192,6 @@
             this.skinComboBox_Mac.Size = new System.Drawing.Size(326, 22);
             this.skinComboBox_Mac.TabIndex = 4;
             this.skinComboBox_Mac.WaterText = "";
-            // 
-            // skinLabel8
-            // 
-            this.skinLabel8.AutoSize = true;
-            this.skinLabel8.BackColor = System.Drawing.Color.Transparent;
-            this.skinLabel8.BorderColor = System.Drawing.Color.White;
-            this.skinLabel8.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.skinLabel8.Location = new System.Drawing.Point(104, 222);
-            this.skinLabel8.Name = "skinLabel8";
-            this.skinLabel8.Size = new System.Drawing.Size(69, 17);
-            this.skinLabel8.TabIndex = 3;
-            this.skinLabel8.Text = "skinLabel8";
             // 
             // skinLabel10
             // 
@@ -273,9 +261,9 @@
             // skinTabPage2
             // 
             this.skinTabPage2.BackColor = System.Drawing.Color.White;
-            this.skinTabPage2.Controls.Add(this.skinButton5);
+            this.skinTabPage2.Controls.Add(this.skinButton_SaveConf);
             this.skinTabPage2.Controls.Add(this.skinLabel2);
-            this.skinTabPage2.Controls.Add(this.skinButton2);
+            this.skinTabPage2.Controls.Add(this.skinButton_b);
             this.skinTabPage2.Controls.Add(this.skinTextBox_workPath);
             this.skinTabPage2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.skinTabPage2.Location = new System.Drawing.Point(0, 36);
@@ -285,19 +273,20 @@
             this.skinTabPage2.TabItemImage = null;
             this.skinTabPage2.Text = "配置";
             // 
-            // skinButton5
+            // skinButton_SaveConf
             // 
-            this.skinButton5.BackColor = System.Drawing.Color.Transparent;
-            this.skinButton5.ControlState = CCWin.SkinClass.ControlState.Normal;
-            this.skinButton5.DownBack = null;
-            this.skinButton5.Location = new System.Drawing.Point(367, 319);
-            this.skinButton5.MouseBack = null;
-            this.skinButton5.Name = "skinButton5";
-            this.skinButton5.NormlBack = null;
-            this.skinButton5.Size = new System.Drawing.Size(75, 23);
-            this.skinButton5.TabIndex = 8;
-            this.skinButton5.Text = "保存";
-            this.skinButton5.UseVisualStyleBackColor = false;
+            this.skinButton_SaveConf.BackColor = System.Drawing.Color.Transparent;
+            this.skinButton_SaveConf.ControlState = CCWin.SkinClass.ControlState.Normal;
+            this.skinButton_SaveConf.DownBack = null;
+            this.skinButton_SaveConf.Location = new System.Drawing.Point(367, 319);
+            this.skinButton_SaveConf.MouseBack = null;
+            this.skinButton_SaveConf.Name = "skinButton_SaveConf";
+            this.skinButton_SaveConf.NormlBack = null;
+            this.skinButton_SaveConf.Size = new System.Drawing.Size(75, 23);
+            this.skinButton_SaveConf.TabIndex = 8;
+            this.skinButton_SaveConf.Text = "保存";
+            this.skinButton_SaveConf.UseVisualStyleBackColor = false;
+            this.skinButton_SaveConf.Click += new System.EventHandler(this.skinButton_SaveConf_Click);
             // 
             // skinLabel2
             // 
@@ -311,19 +300,20 @@
             this.skinLabel2.Text = "文件保存路径";
             this.skinLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // skinButton2
+            // skinButton_b
             // 
-            this.skinButton2.BackColor = System.Drawing.Color.Transparent;
-            this.skinButton2.ControlState = CCWin.SkinClass.ControlState.Normal;
-            this.skinButton2.DownBack = null;
-            this.skinButton2.Location = new System.Drawing.Point(381, 14);
-            this.skinButton2.MouseBack = null;
-            this.skinButton2.Name = "skinButton2";
-            this.skinButton2.NormlBack = null;
-            this.skinButton2.Size = new System.Drawing.Size(42, 28);
-            this.skinButton2.TabIndex = 6;
-            this.skinButton2.Text = "...";
-            this.skinButton2.UseVisualStyleBackColor = false;
+            this.skinButton_b.BackColor = System.Drawing.Color.Transparent;
+            this.skinButton_b.ControlState = CCWin.SkinClass.ControlState.Normal;
+            this.skinButton_b.DownBack = null;
+            this.skinButton_b.Location = new System.Drawing.Point(381, 14);
+            this.skinButton_b.MouseBack = null;
+            this.skinButton_b.Name = "skinButton_b";
+            this.skinButton_b.NormlBack = null;
+            this.skinButton_b.Size = new System.Drawing.Size(42, 28);
+            this.skinButton_b.TabIndex = 6;
+            this.skinButton_b.Text = "...";
+            this.skinButton_b.UseVisualStyleBackColor = false;
+            this.skinButton_b.Click += new System.EventHandler(this.skinButton_b_Click);
             // 
             // skinTextBox_workPath
             // 
@@ -345,7 +335,7 @@
             this.skinTextBox_workPath.Name = "skinTextBox_workPath";
             this.skinTextBox_workPath.NormlBack = null;
             this.skinTextBox_workPath.Padding = new System.Windows.Forms.Padding(5);
-            this.skinTextBox_workPath.ReadOnly = false;
+            this.skinTextBox_workPath.ReadOnly = true;
             this.skinTextBox_workPath.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.skinTextBox_workPath.Size = new System.Drawing.Size(270, 28);
             // 
@@ -356,6 +346,7 @@
             this.skinTextBox_workPath.SkinTxt.Font = new System.Drawing.Font("微软雅黑", 9.75F);
             this.skinTextBox_workPath.SkinTxt.Location = new System.Drawing.Point(5, 5);
             this.skinTextBox_workPath.SkinTxt.Name = "BaseText";
+            this.skinTextBox_workPath.SkinTxt.ReadOnly = true;
             this.skinTextBox_workPath.SkinTxt.Size = new System.Drawing.Size(260, 18);
             this.skinTextBox_workPath.SkinTxt.TabIndex = 0;
             this.skinTextBox_workPath.SkinTxt.WaterColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(127)))), ((int)(((byte)(127)))));
@@ -517,6 +508,21 @@
             this.skinLabel4.TabIndex = 0;
             this.skinLabel4.Text = "X";
             // 
+            // skinButton1
+            // 
+            this.skinButton1.BackColor = System.Drawing.Color.Transparent;
+            this.skinButton1.ControlState = CCWin.SkinClass.ControlState.Normal;
+            this.skinButton1.DownBack = null;
+            this.skinButton1.Location = new System.Drawing.Point(248, 279);
+            this.skinButton1.MouseBack = null;
+            this.skinButton1.Name = "skinButton1";
+            this.skinButton1.NormlBack = null;
+            this.skinButton1.Size = new System.Drawing.Size(75, 23);
+            this.skinButton1.TabIndex = 1;
+            this.skinButton1.Text = "绑定";
+            this.skinButton1.UseVisualStyleBackColor = false;
+            this.skinButton1.Click += new System.EventHandler(this.skinButton1_Click);
+            // 
             // LBPlayerMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -531,7 +537,6 @@
             this.Load += new System.EventHandler(this.LBPlayerMain_Load);
             this.skinTabControl1.ResumeLayout(false);
             this.skinTabPage1.ResumeLayout(false);
-            this.skinTabPage1.PerformLayout();
             this.skinTabPage2.ResumeLayout(false);
             this.skinTabPage3.ResumeLayout(false);
             this.skinTabPage3.PerformLayout();
@@ -556,7 +561,7 @@
         private CCWin.SkinControl.SkinTabPage skinTabPage2;
         private CCWin.SkinControl.SkinTabPage skinTabPage3;
         private CCWin.SkinControl.SkinLabel skinLabel2;
-        private CCWin.SkinControl.SkinButton skinButton2;
+        private CCWin.SkinControl.SkinButton skinButton_b;
         private CCWin.SkinControl.SkinTextBox skinTextBox_workPath;
         private CCWin.SkinControl.SkinLabel skinLabel4;
         private CCWin.SkinControl.SkinNumericUpDown skinNumericUpDown_X;
@@ -570,12 +575,12 @@
         private CCWin.SkinControl.SkinButton skinButton3;
         private CCWin.SkinControl.SkinPanel skinPanel1;
         private CCWin.SkinControl.SkinButton skinButton4;
-        private CCWin.SkinControl.SkinButton skinButton5;
-        private CCWin.SkinControl.SkinLabel skinLabel8;
+        private CCWin.SkinControl.SkinButton skinButton_SaveConf;
         private CCWin.SkinControl.SkinLabel skinLabel9;
         private CCWin.SkinControl.SkinTextBox skinTextBox_Key;
         private CCWin.SkinControl.SkinLabel skinLabel10;
         private CCWin.SkinControl.SkinComboBox skinComboBox_Mac;
+        private CCWin.SkinControl.SkinButton skinButton1;
     }
 }
 

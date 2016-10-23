@@ -391,16 +391,18 @@ namespace LBPlayer
         private string _id;
         private string _key;
         private string _mac;
-        private string _mediaId;
+        private string _mediaName;
+        private string _mediaMD5;
         private DateTime _startTime;
         private DateTime _endTime;
 
-        public PlayBack(string _id, string _key, string _mac, string _mediaId, DateTime _startTime, DateTime _endTime)
+        public PlayBack(string _id, string _key, string _mac, string _mediaName, string _mediaMD5, DateTime _startTime, DateTime _endTime)
         {
             this._id = _id;
             this._key = _key;
             this._mac = _mac;
-            this._mediaId = _mediaId;
+            this._mediaName = _mediaName;
+            this._mediaMD5 = _mediaMD5;
             this._startTime = _startTime;
             this._endTime = _endTime;
         }
@@ -444,16 +446,29 @@ namespace LBPlayer
             }
         }
 
-        public string MediaId
+        public string MediaName
         {
             get
             {
-                return _mediaId;
+                return _mediaName;
             }
 
             set
             {
-                _mediaId = value;
+                _mediaName = value;
+            }
+        }
+
+        public string MediaMD5
+        {
+            get
+            {
+                return _mediaMD5;
+            }
+
+            set
+            {
+                _mediaMD5 = value;
             }
         }
 

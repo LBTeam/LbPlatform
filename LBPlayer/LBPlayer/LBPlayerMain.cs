@@ -799,6 +799,27 @@ namespace LBPlayer
             }
             
         }
+        private void skinButton_b_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.ShowDialog();
+            skinTextBox_workPath.Text = fbd.SelectedPath;
+        }
+
+        private void skinButton_SaveConf_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                _config.FileSavePath = skinTextBox_workPath.Text;
+                ConfigTool.SaveConfigData(_config);
+                MessageBoxEx.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error); return;
+            }
+        }
         #endregion
         #region 下载方案
         private int _fileCount = 0;
@@ -1193,6 +1214,12 @@ namespace LBPlayer
             }
         }
         #endregion
+
+        private void skinButton1_Click(object sender, EventArgs e)
+        {
+            PlayBack p = new PlayBack(_config.ID,_config.Key, _config.Mac, "02.png", "2dc17f2fd0329a9812b9a298c3fe9fed", DateTime.Now, DateTime.Now);
+            UploadPlayBack(p);
+        }
     }
 }
 
