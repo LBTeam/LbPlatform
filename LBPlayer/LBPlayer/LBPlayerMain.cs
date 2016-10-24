@@ -64,6 +64,7 @@ namespace LBPlayer
         private ComputerStatus _computerStatus;
         private System.Threading.Timer _captureTimer;
         private ScreenCapture _screenCaptrue = new ScreenCapture();
+        private int HeartBeatFailCount = 0;
         #endregion
         #region 构造函数
         public LBPlayerMain()
@@ -81,6 +82,12 @@ namespace LBPlayer
         private void _poll_GetPollResponseEvent(object sender, GetPollResponseEventArgs args)
         {
             Debug.WriteLine("心跳完成："+DateTime.Now);
+            if(!args.bSuc)
+            {
+                HeartBeatFailCount++;
+                return;
+            }
+            HeartBeatFailCount = 0;
             HartBeatResponseObj hartBeatResponseObj;
             //throw new NotImplementedException();
             hartBeatResponseObj = JsonConvert.DeserializeObject<HartBeatResponseObj>(args.Replydata);
