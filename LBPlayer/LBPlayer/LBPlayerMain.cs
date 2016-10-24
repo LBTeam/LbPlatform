@@ -987,55 +987,40 @@ namespace LBPlayer
             ConfigTool.SaveConfigData(_config);
             _bDownloading = false;
         }
-        private PlanCmdPar _cureentPlan = null;
         private LEDScreen _screen = null;
-        private Object thisLock = new Object();
-        //private void PlayMedia()
-        //{
-        //    //lock (thisLock)
-        //    //{
-        //        if (_screen != null)
-        //        {
-        //            if (_cureentPlan != null && _cureentPlan.ProgramName == _PlanCmdParTemp.ProgramName)
-        //            {
-        //                return;
-        //            }
-        //            else
-        //            {
-        //                _screen.Free();
-        //                _screen = null;
-        //            }
-        //        }
-        //        Thread.Sleep(1000);
-        //        var scheduleFilePath = Path.Combine(_lbPlanPath, Path.GetFileName(_PlanCmdParTemp.ProgramName));
-        //        using (FileStream fs = File.OpenRead(scheduleFilePath))
-        //        {
+        private void PlayMedia()
+        {
+            if (_screen != null)
+            {
+                _screen.Free();
+                _screen = null;
+            }
+            Thread.Sleep(1000);
+            var scheduleFilePath = _config.CurrentPlanPath;
+            using (FileStream fs = File.OpenRead(scheduleFilePath))
+            {
 
-        //            string content;
-        //            using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
-        //            {
-        //                content = reader.ReadToEnd();
-        //            }
-        //            var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
-        //            foreach (var mediaItem in scheduleFile.MediaList)
-        //            {
-        //                if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Image)
-        //                {
-        //                    _screen = new LEDScreen(0, 0, 1024, 768);
-        //                    _screen.PlayImage(Path.Combine(_mediaPath, Path.GetFileName(_PlanCmdParTemp.Medias[0].MediaName)));
-        //                    _cureentPlan = _PlanCmdParTemp;
-        //                }
-        //                else if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Video)
-        //                {
-        //                    _screen = new LEDScreen(0, 0, 1024, 768);
-        //                    _screen.PlayVideo(Path.Combine(_mediaPath, Path.GetFileName(_PlanCmdParTemp.Medias[0].MediaName)));
-        //                    _cureentPlan = _PlanCmdParTemp;
-        //                }
-        //            }
-        //        }
-        //  //  }
-           
-        //}
+                string content;
+                using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
+                {
+                    content = reader.ReadToEnd();
+                }
+                var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
+                foreach (var mediaItem in scheduleFile.MediaList)
+                {
+                    if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Image)
+                    {
+                        _screen = new LEDScreen(0, 0, 1024, 768);
+                        _screen.PlayImage(Path.Combine(_mediaPath, Path.GetFileName(mediaItem.FilePath)));
+                    }
+                    else if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Video)
+                    {
+                        _screen = new LEDScreen(0, 0, 1024, 768);
+                        _screen.PlayVideo(Path.Combine(_mediaPath, Path.GetFileName(mediaItem.FilePath)));
+                    }
+                }
+            }
+        }
         #endregion
         #region 未知命令处理
         private void UnKnowCmd(Cmd cmd)
@@ -1284,9 +1269,6 @@ namespace LBPlayer
             }
             bUploding = false;
         }
-
-
-
         private bool UploadFile(string url, string FilePath)
     {
         using (FileStream fs = File.OpenRead(FilePath))
@@ -1321,8 +1303,6 @@ namespace LBPlayer
             }
         }
     }
-
-       
         private object _upLoadingListLockObj = new object();
         private void GetImageList(out List<string> imageFiles)
         {
