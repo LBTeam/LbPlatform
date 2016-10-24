@@ -279,4 +279,28 @@ class UserModel extends Model
 		$map = array("email" => $email);
     	return $this->field($field)->where($map)->find();
 	}
+	
+	/**
+	 * 用户list用户手机号列表
+	 */
+	public function user_mobiles($uids = array()){
+		if($uids){
+			$map = array();
+			$map['uid'] = array("IN", $uids);
+			return $this->where($map)->getField("phone", true);
+		}
+		return array();
+	}
+	
+	/**
+	 * 用户list邮箱地址列表
+	 */
+	public function user_emails($uids = array()){
+		if($uids){
+			$map = array();
+			$map['uid'] = array("IN", $uids);
+			return $this->where($map)->getField("email", true);
+		}
+		return array();
+	}
 }

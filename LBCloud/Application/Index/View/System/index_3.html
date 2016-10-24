@@ -18,35 +18,27 @@
     <div class="tab-wrap  panel-body ">	    
  		<ul class="nav nav-tabs ">
  			<if condition="in_array('SYSTEM/INDEX', $_SESSION['_ACCESS_LIST'])">
-			<li class="active"><a href="javascript:void(0);">基本配置</a></li>
+			<li><a href="{:U('?id=1')}">基本配置</a></li>
 			<li><a href="{:U('?id=2')}">开发配置</a></li>
-			<li><a href="{:U('?id=3')}">文件清理配置</a></li>
+			<li class="active"><a href="javascript:void(0);">文件清理配置</a></li>
 			<li><a href="{:U('?id=4')}">监控图片清理配置</a></li>
 			</if>
 		</ul>
         <div class="tab-content" style="padding-top: 25px;">
             <form action="{:U('save')}" method="post" class="form col-lg-6" role="form" >
                 <div class="form-group">
-                    <label class="item-label ">网站标题<span class="check-tips">（管理系统显示标题）</span> </label> 
-                    <input type="text" class="form-control" name="config[WEB_SITE_TITLE]" value="{$cfgs.WEB_SITE_TITLE}">
+                    <label class="item-label ">文件大小<span class="check-tips">（当文件大小超过此设置时清理，单位：MB）</span> </label> 
+                    <input type="text" class="form-control" name="config[CLEAR_SIZE]" value="{$cfgs.CLEAR_SIZE}">
                 </div>
                 <div class="form-group">
-                    <label class="item-label ">网站描述<span class="check-tips">（网站搜索引擎描述）</span> </label> 
-                    <input type="text" class="form-control" name="config[WEB_SITE_DESCRIPTION]" value="{$cfgs.WEB_SITE_DESCRIPTION}">
-                </div>
-                <div class="form-group">
-                    <label class="item-label ">网站关键字<span class="check-tips">（网站搜索引擎关键字）</span> </label> 
-                    <input type="text" class="form-control" name="config[WEB_SITE_KEYWORD]" value="{$cfgs.WEB_SITE_KEYWORD}">
-                </div>
-                <div class="form-group">
-                    <label class="item-label ">网站备案号<span class="check-tips">（设置在网站底部显示的备案号，如陕ICP备88888888号-8）</span> </label> 
-                    <input type="text" class="form-control" name="config[WEB_SITE_ICP]" value="{$cfgs.WEB_SITE_ICP}">
+                    <label class="item-label ">文件期限<span class="check-tips">（当文件期限超过此设置时清理，单位：天）</span> </label> 
+                    <input type="text" class="form-control" name="config[CLEAR_DAY]" value="{$cfgs.CLEAR_DAY}">
                 </div>
                 <div class="form-group">
                     <label class="item-label"></label>
                     <div class="controls">
                     	  <if condition="in_array('SYSTEM/INDEX', $_SESSION['_ACCESS_LIST'])">
-                          <button type="submit" class="btn btn-default submit-btn ajax-post" target-form="form">确 定</button>	
+                          <button type="submit" class="btn btn-default submit-btn ajax-post" target-form="form">确 定</button>		
                           </if>
                           <button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
                     </div>

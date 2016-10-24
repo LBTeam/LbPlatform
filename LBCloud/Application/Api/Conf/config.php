@@ -1,13 +1,6 @@
 <?php
 return array(
 	//'配置项'=>'配置值'
-	'aliyun_oss_id'			=>	'f1mcwCSSqB9tIY57',
-	'aliyun_oss_secret'		=>	'7aSeEDlyyV5pIddw49FhLXFMVvG9UK',
-	'aliyun_oss_endpoint'	=>	'http://oss-cn-shenzhen.aliyuncs.com',
-	'aliyun_oss_bucket'		=>	'lb-player-test',
-	'oss_media_bucket'		=>	'lb-player-media',
-	'oss_program_bucket'	=>	'lb-player-program',
-	
 	'oss_part_size'			=>	10485760,	//oss上传分片大小
 	'oss_100K_size'			=>	102400,		//100K大小
 	'oss_200K_size'			=>	204800,		//100K大小
@@ -18,10 +11,6 @@ return array(
 	'oss_50M_part_size'		=>	52428800,	//50M大小
 	
 	'player_program_subfix'	=>	'playprog',	//播放方案文件后缀名
-	
-	'redis_server'		=>	'10.171.126.247',
-	'websocket_ip'		=>	'123.56.240.172',
-	'websocket_port'	=>	'9501',
 	
 	//未登录可访问模块
 	'manager_not_logged' => array(

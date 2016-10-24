@@ -82,4 +82,17 @@ class GroupModel extends Model
 		}
 		return array();
 	}
+	
+	/**
+	 * 屏幕id列表
+	 */
+	public function group_screens($group_id){
+		if($group_id){
+			return $this
+					->table("player_group_screen")
+					->where("group_id={$group_id}")
+					->getField("screen_id", true);
+		}
+		return array();
+	}
 }

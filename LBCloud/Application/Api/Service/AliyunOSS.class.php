@@ -16,12 +16,36 @@ class AliyunOSS
 	private $endpoint;
 	private $bucket;
 	public function __construct(){
-		require_once(MODULE_PATH."/ORG/oss/autoload.php");
+		//require_once(MODULE_PATH."ORG/oss/autoload.php");
+		require_once("./Application/Api/ORG/oss/autoload.php");
 		$this->ossId = C("aliyun_oss_id");
 		$this->ossSecret = C("aliyun_oss_secret");
 		$this->endpoint = C("aliyun_oss_endpoint");
 		$this->bucket = C("aliyun_oss_bucket");
 		$this->client = new OssClient($this->ossId, $this->ossSecret, $this->endpoint);
+	}
+	
+	/**
+	 * 创建bucket
+	 * @param $bucket bucket名字
+	 * @return boolen
+	 */
+	public function create_bucket($bucket, $acl="private"){
+		try {
+			if($bucket){
+				$result = $this->client->createBucket($bucket);
+				if($result === null){
+					return true;
+				}else{
+					return false;
+				}
+			}else{
+				return false;
+			}
+		} catch (OssException $e) {
+		    //print $e->getMessage();
+		    return false;
+		}
 	}
 	
 	/**
@@ -70,12 +94,18 @@ class AliyunOSS
 	 * @param $prefix 存储虚拟目录
 	 * @return array
 	 */
-	public function object_list($bucket = false, $prefix = ''){
+	public function object_list($bucket = false, $prefix = '', $max = false, $marker = false){
 		try {
 			$bucket = $bucket ? $bucket : $this->bucket;
 			$options = array();
 			if($prefix){
 				$options['prefix'] = $prefix;
+			}
+			if($max){
+				$options['max-keys'] = $max;
+			}
+			if($marker){
+				$options['marker'] = $marker;
 			}
 			$object_lists = $this->client->listObjects($bucket, $options);
 			$objects = $object_lists->getObjectList();
@@ -391,7 +421,25 @@ class AliyunOSS
 			//return $response;
 			return true;
 		} catch (OssException $e) {
-		    print $e->getMessage();
+		    //print $e->getMessage();
+		    return false;
+		}
+	}
+	
+	/**
+	 * 删除存储文件列表
+	 * @param $objects 存储对象
+	 * @param $bucket 存储空间
+	 * @return boolen
+	 */
+	public function delete_objects($objects, $bucket=false){
+		try {
+			$bucket = $bucket ? $bucket : $this->bucket;
+			$response = $this->client->deleteObjects($bucket, $objects);
+			//return $response;
+			return true;
+		} catch (OssException $e) {
+		    //print $e->getMessage();
 		    return false;
 		}
 	}

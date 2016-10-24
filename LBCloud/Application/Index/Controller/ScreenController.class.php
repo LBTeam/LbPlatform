@@ -5,6 +5,7 @@
  * @email 15934854815@163.com
  */
 namespace Index\Controller;
+use Api\Service\AliyunOSS;
 
 class ScreenController extends CommonController
 {
@@ -24,14 +25,15 @@ class ScreenController extends CommonController
     		"city" => $regions,
     		"district" => $regions
     	);
-		$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("REDIS_SERVER")));
+		//$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("redis_server")));
 		foreach($leds as &$val){
 			$pl_mac = strtoupper(str_replace(':', '-', $val['mac']));
 			if($pl_mac){
 				$pl_id = $val["bind_id"];
 				$pl_key = $val["bind_key"];
 				$cache_key = md5("{$pl_id}_{$pl_key}_{$pl_mac}_fd");
-				$pl_online = $redis_serv->get($cache_key);
+				//$pl_online = $redis_serv->get($cache_key);
+				$pl_online = true;
 				$val['online'] = $pl_online ? 1 : 0;
 			}else{
 				$val['online'] = 2;
@@ -268,6 +270,39 @@ class ScreenController extends CommonController
 			}
 		}
 	}
+
+	/**
+	 * 查看
+	 */
+	public function show($id=0){
+		$led_model = D("Screen");
+		$info = $led_model->screen_by_id($id);
+		if($info){
+			$user_model = D("User");
+			$group_model = D("Group");
+			$region_model = D("Region");
+			if($user_model->is_normal(ADMIN_UID)){
+				$this->assign("is_normal", 1);
+			}else{
+				$owner = $user_model->users_by_puid(ADMIN_UID);
+				$this->assign("owner", $owner);
+				$this->assign("is_normal", 0);
+			}
+			$groups = $group_model->group_by_uid(ADMIN_UID);
+			$provinces = $region_model->all_region(0);
+			$citys = $region_model->all_region($info['province']);
+			$districts = $region_model->all_region($info['city']);
+			$this->assign("groups", $groups);
+			$this->assign("provinces", $provinces);
+			$this->assign("citys", $citys);
+			$this->assign("districts", $districts);
+			$this->assign('info', $info);
+            $this->meta_title = '查看屏幕';
+            $this->display();
+		}else{
+			$this->error('获取屏幕信息错误');
+		}
+	}
 	
 	/**
 	 * 删除
@@ -286,6 +321,77 @@ class ScreenController extends CommonController
         } else {
             $this->error('删除失败！');
         }
+	}
+	
+	/*监控数据*/
+	public function monitor($id=0){
+		$alarm_model = D("Alarm");
+		$alarms = $alarm_model->alarm_by_sid($id);
+		if($alarms){
+			$led_model = D("Screen");
+			$player_model = D("Player");
+			$led_info = $led_model->screen_by_id($id, "s.name");
+			$player = $player_model->player_by_id($id);
+			$monitor = json_decode($alarms['param'], true);
+			$monitor['addtime'] = $alarms['up_time'];
+			$this->meta_title = "监控数据";
+			$this->assign('monitor', $monitor);
+			$this->assign('name', $led_info['name']);
+			$this->assign('p_name', $player['name']);
+			$this->display();
+		}else{
+			$this->error('播放器暂无监控数据！');
+		}
+	}
+	
+	/**
+	 * 监控图片
+	 */
+	public function picture($id=0){
+		$player_model = D("Player");
+		$player = $player_model->player_by_id($id);
+		if($player && $player['mac']){
+			$led_model = D("Screen");
+			if($led_model->check_screen_operation($id)){
+				$mac = str_replace('-', '', $player['mac']);
+				
+				//$mac = "D07E355210CB";
+				
+				$date = date('Ymd');
+				$AliyunOSS = new AliyunOSS();
+				$picture_bucket = C("oss_picture_bucket");
+				$prefix = "{$mac}/{$date}/";
+				$object = '';
+				$marker = false;
+				while(true){
+					$o_list = $AliyunOSS->object_list($picture_bucket, $prefix, 1000, $marker);
+					if($o_list['objects']){
+						if(count($o_list['objects']) == 1000){
+							$temp_marker = end($o_list['objects']);
+							$marker = $temp_marker['key'];
+							continue;
+						}else{
+							$end_obj = end($o_list['objects']);
+							$object = $end_obj['key'];
+							break;
+						}
+					}else{
+						break;
+					}
+				}
+				if($object){
+					$uri = $AliyunOSS->download_uri($picture_bucket, $object);
+					$this->assign("uri", $uri);
+					$this->display();
+				}else{
+					$this->error("播放器暂无监控图片！", "about:blank");
+				}
+			}else{
+				$this->error("系统错误：权限拒绝！", "about:blank");
+			}
+		}else{
+			$this->error("系统错误：非法操作！", "about:blank");
+		}
 	}
 	
 	/**
@@ -617,27 +723,48 @@ class ScreenController extends CommonController
 		$player_model = D("Player");
 		$player = $player_model->player_by_id($id);
 		if($player && $player['mac']){
-			$ws_in = array();
-			$ws_in['Act'] = "shutdown";
-			$ws_in['Id'] = $player['bind_id'];
-			$ws_in['Key'] = $player['bind_key'];
-			$ws_in['Mac'] = strtoupper(str_replace(':', '-', $player['mac']));
-			$cfg_model = D("Config");
-			$ws = $cfg_model->websocket();
-			$ws_ip = $ws['ip'];
-			$ws_port = $ws['port'];
-			import("@.Service.WebsocketClient", '', ".php");
-			$client = new \WebSocketClient();
-			$client->connect($ws_ip, $ws_port, '/');
-			$resp = $client->sendData(json_encode($ws_in));
-			unset($client);
-			if( $resp !== true ){
-				$this->error("发送失败");
+			if(IS_POST){
+				$password = I("post.password", "");
+				if($password){
+					$user_model = D("User");
+					$user_info = $user_model->user_by_id(ADMIN_UID);
+					$db_pass = $user_info['password'];
+					if(sp_compare_password($password, $db_pass)){
+						$ws_in = array();
+						$ws_in['Act'] = "shutdown";
+						$ws_in['Id'] = $player['bind_id'];
+						$ws_in['Key'] = $player['bind_key'];
+						$ws_in['Mac'] = strtoupper(str_replace(':', '-', $player['mac']));
+						$cfg_model = D("Config");
+						$ws = $cfg_model->websocket();
+						$ws_ip = $ws['ip'];
+						$ws_port = $ws['port'];
+						import("@.Service.WebsocketClient", '', ".php");
+						$client = new \WebSocketClient();
+						$client->connect($ws_ip, $ws_port, '/');
+						$resp = $client->sendData(json_encode($ws_in));
+						unset($client);
+						if( $resp !== true ){
+							$this->error("发送失败！");
+						}else{
+							$this->success("屏幕关闭成功！");
+						}
+					}else{
+						$this->error("用户登录密码错误！");
+					}
+				}else{
+					$this->error("用户登录密码不能为空！");
+				}
 			}else{
-				$this->success("屏幕关闭成功");
+				$led_model = D("Screen");
+				$led_info = $led_model->screen_by_id($id, "s.name");
+				$this->meta_title = "关闭屏幕";
+				$this->assign("id", $id);
+				$this->assign("name", $led_info['name']);
+				$this->display();
 			}
 		}else{
-			$this->error("屏幕未绑定播放器");
+			$this->error("屏幕未绑定播放器！");
 		}
 	}
 	
