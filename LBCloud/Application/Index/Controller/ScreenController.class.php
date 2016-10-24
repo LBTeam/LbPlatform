@@ -5,6 +5,7 @@
  * @email 15934854815@163.com
  */
 namespace Index\Controller;
+use Api\Service\AliyunOSS;
 
 class ScreenController extends CommonController
 {
@@ -24,7 +25,7 @@ class ScreenController extends CommonController
     		"city" => $regions,
     		"district" => $regions
     	);
-		//$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("REDIS_SERVER")));
+		//$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("redis_server")));
 		foreach($leds as &$val){
 			$pl_mac = strtoupper(str_replace(':', '-', $val['mac']));
 			if($pl_mac){
@@ -347,7 +348,50 @@ class ScreenController extends CommonController
 	 * 监控图片
 	 */
 	public function picture($id=0){
-		
+		$player_model = D("Player");
+		$player = $player_model->player_by_id($id);
+		if($player && $player['mac']){
+			$led_model = D("Screen");
+			if($led_model->check_screen_operation($id)){
+				$mac = str_replace('-', '', $player['mac']);
+				
+				//$mac = "D07E355210CB";
+				
+				$date = date('Ymd');
+				$AliyunOSS = new AliyunOSS();
+				$picture_bucket = C("oss_picture_bucket");
+				$prefix = "{$mac}/{$date}/";
+				$object = '';
+				$marker = false;
+				while(true){
+					$o_list = $AliyunOSS->object_list($picture_bucket, $prefix, 1000, $marker);
+					if($o_list['objects']){
+						if(count($o_list['objects']) == 1000){
+							$temp_marker = end($o_list['objects']);
+							$marker = $temp_marker['key'];
+							continue;
+						}else{
+							$end_obj = end($o_list['objects']);
+							$object = $end_obj['key'];
+							break;
+						}
+					}else{
+						break;
+					}
+				}
+				if($object){
+					$uri = $AliyunOSS->download_uri($picture_bucket, $object);
+					$this->assign("uri", $uri);
+					$this->display();
+				}else{
+					$this->error("播放器暂无监控图片！", "about:blank");
+				}
+			}else{
+				$this->error("系统错误：权限拒绝！", "about:blank");
+			}
+		}else{
+			$this->error("系统错误：非法操作！", "about:blank");
+		}
 	}
 	
 	/**
@@ -679,27 +723,48 @@ class ScreenController extends CommonController
 		$player_model = D("Player");
 		$player = $player_model->player_by_id($id);
 		if($player && $player['mac']){
-			$ws_in = array();
-			$ws_in['Act'] = "shutdown";
-			$ws_in['Id'] = $player['bind_id'];
-			$ws_in['Key'] = $player['bind_key'];
-			$ws_in['Mac'] = strtoupper(str_replace(':', '-', $player['mac']));
-			$cfg_model = D("Config");
-			$ws = $cfg_model->websocket();
-			$ws_ip = $ws['ip'];
-			$ws_port = $ws['port'];
-			import("@.Service.WebsocketClient", '', ".php");
-			$client = new \WebSocketClient();
-			$client->connect($ws_ip, $ws_port, '/');
-			$resp = $client->sendData(json_encode($ws_in));
-			unset($client);
-			if( $resp !== true ){
-				$this->error("发送失败");
+			if(IS_POST){
+				$password = I("post.password", "");
+				if($password){
+					$user_model = D("User");
+					$user_info = $user_model->user_by_id(ADMIN_UID);
+					$db_pass = $user_info['password'];
+					if(sp_compare_password($password, $db_pass)){
+						$ws_in = array();
+						$ws_in['Act'] = "shutdown";
+						$ws_in['Id'] = $player['bind_id'];
+						$ws_in['Key'] = $player['bind_key'];
+						$ws_in['Mac'] = strtoupper(str_replace(':', '-', $player['mac']));
+						$cfg_model = D("Config");
+						$ws = $cfg_model->websocket();
+						$ws_ip = $ws['ip'];
+						$ws_port = $ws['port'];
+						import("@.Service.WebsocketClient", '', ".php");
+						$client = new \WebSocketClient();
+						$client->connect($ws_ip, $ws_port, '/');
+						$resp = $client->sendData(json_encode($ws_in));
+						unset($client);
+						if( $resp !== true ){
+							$this->error("发送失败！");
+						}else{
+							$this->success("屏幕关闭成功！");
+						}
+					}else{
+						$this->error("用户登录密码错误！");
+					}
+				}else{
+					$this->error("用户登录密码不能为空！");
+				}
 			}else{
-				$this->success("屏幕关闭成功");
+				$led_model = D("Screen");
+				$led_info = $led_model->screen_by_id($id, "s.name");
+				$this->meta_title = "关闭屏幕";
+				$this->assign("id", $id);
+				$this->assign("name", $led_info['name']);
+				$this->display();
 			}
 		}else{
-			$this->error("屏幕未绑定播放器");
+			$this->error("屏幕未绑定播放器！");
 		}
 	}
 	

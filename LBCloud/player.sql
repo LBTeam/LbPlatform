@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-10-23 23:05:57
+-- Date/time:                    2016-10-24 19:59:55
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS `player_config` (
   `value` varchar(128) NOT NULL DEFAULT '' COMMENT '值'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统设置';
 
--- Dumping data for table player.player_config: ~9 rows (approximately)
+-- Dumping data for table player.player_config: ~7 rows (approximately)
 /*!40000 ALTER TABLE `player_config` DISABLE KEYS */;
 INSERT INTO `player_config` (`key`, `value`) VALUES
 	('ROOT_ROLE_ID', '1'),
@@ -155,9 +155,9 @@ INSERT INTO `player_config` (`key`, `value`) VALUES
 	('WEB_SITE_DESCRIPTION', ''),
 	('WEB_SITE_KEYWORD', ''),
 	('WEB_SITE_ICP', '陕ICP备88888888号-8'),
+	('MONITOR_DAY', '3'),
 	('CLEAR_SIZE', '5'),
-	('CLEAR_DAY', '30'),
-	('MONITOR_DAY', '45');
+	('CLEAR_DAY', '30');
 /*!40000 ALTER TABLE `player_config` ENABLE KEYS */;
 
 
@@ -218,12 +218,48 @@ CREATE TABLE IF NOT EXISTS `player_media` (
   `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
   `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='播放媒体';
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COMMENT='播放媒体';
 
 -- Dumping data for table player.player_media: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_media` DISABLE KEYS */;
 INSERT INTO `player_media` (`id`, `user_id`, `name`, `md5`, `object`, `upload_id`, `size`, `status`, `publish`, `expired`) VALUES
-	(1, 1, 'aab\\\'bcc.avi', 'b3206b4529ba377b0fa9f4a3bd9261f2', '20160822/57ba998526ba9.avi', '064A0509F679494DBB2CE13D3A01726E', '20971520', 0, 1471846788, 0);
+	(1, 1, '【猴姆独家】Taylor Swift热单Welcome To New York电影版mv大首播！_标清.mp4', '5caffa02d636e23c73b2ebcd9acd81e4', '20160903/57ca825f7502b.mp4', 'BE7AD774AA4D4CC6BBB9CB6CBD3C6C36', '7810525', 1, 1472889439, 0),
+	(2, 1, '001.mp4', '5caffa02d636e23c73b2ebcd9acd81e4', '20160903/57ca8d8c292b8.mp4', '62C16BB1F3FE4DA3BEAD210FB2F15796', '7810525', 1, 1472892300, 0),
+	(3, 1, '01.png', '2dc17f2fd0329a9812b9a298c3fe9fed', '20160903/57caea699b71a.png', '', '39241', 1, 1472916073, 0),
+	(4, 1, '02.png', '2dc17f2fd0329a9812b9a298c3fe9fed', '20160903/57caebc885c7f.png', '', '39241', 1, 1472916424, 0),
+	(5, 1, '002.mp4', '5caffa02d636e23c73b2ebcd9acd81e4', '20160903/57caf1574745f.mp4', '947DFAC5BCA64601A95A938BC532B8A1', '7810525', 1, 1472917847, 0),
+	(6, 1, 'FLIR1976.jpg', '1c7d8e7a9bfe2a12354d7292974af473', '20160904/57cb8546cbcaa.jpg', '544ACC6F7E1143A281F7649D112916D4', '498720', 1, 1472955718, 0),
+	(7, 1, 'nwn.mp4', '7820efec216d85dd696974d81bf98d13', '20160904/57cb85dd9287e.mp4', 'FC9F886ED6584BA48A20A13DF287A5E7', '2668872', 1, 1472955869, 0),
+	(8, 1, 'FullSizeRender.jpg', 'e3977fcce703b8e3e48db33e3dfe2629', '20160904/57cb865972fa6.jpg', '', '27749', 1, 1472955993, 0),
+	(9, 1, '红枫-秋1.jpg', 'f401aaebfd78622aa0190e040fd2889b', '20160904/57cb86ced01ec.jpg', 'FEDE1970ACAD4ED2836A73B94C261801', '195642', 1, 1472956110, 0),
+	(10, 1, '2.jpg', '1b467def973338b515f7cbbd7876d26f', '20160904/57cb874a3ac17.jpg', 'E44C69F764414F41AC9D0DEBDE334E66', '170265', 1, 1472956234, 0),
+	(11, 1, '我们.mp4', '5caffa02d636e23c73b2ebcd9acd81e4', '20160904/57cc06f4a1ca6.mp4', 'FAA461AFDB8C49729CA19196F15F6610', '7810525', 1, 1472988916, 0),
+	(12, 1, 'texture.png', '21335f1c5a9980b62ac5bb0b21cd2e2d', '20160906/57ce32f5a1b4f.png', '', '14003', 1, 1473131253, 0),
+	(13, 1, 'QQ截图20160704101618.png', '2dc17f2fd0329a9812b9a298c3fe9fed', '20160919/57df532a2885f.png', '', '39241', 1, 1474253610, 0),
+	(14, 1, 'oaaa_billboards.jpg', '071f3ae80546d7ace453e469668c796c', '20160919/57df555525ac6.jpg', 'B7A7D4AF03E043EE908CFC835667B980', '370286', 1, 1474254165, 0),
+	(15, 1, '20160704101618.png', '2dc17f2fd0329a9812b9a298c3fe9fed', '20160919/57df5cd24d351.png', '', '39241', 1, 1474256082, 0),
+	(16, 1, 'IMAX3D1.mp4', 'e9560d9b9a2f82281213f721ee0fccd8', '20160919/57df9f3d4bf80.mp4', '058A52F43B994A5395F12568C5FCE385', '24578865', 1, 1474273085, 0),
+	(17, 1, 'IMAX3D2.mp4', '5de50495dd97e71d5123482ca3962a17', '20160919/57df9f3db42c5.mp4', '4C6C734773D4429183711C8749BB8AF9', '35430479', 1, 1474273085, 0),
+	(18, 1, '15秒预告【IMAX3D Captain America Civil War】.mp4', 'e9560d9b9a2f82281213f721ee0fccd8', '20160919/57df9febf30de.mp4', '80B08ACC029E45DCBA4D9E8BD60A9ECB', '24578865', 1, 1474273259, 0),
+	(19, 1, '15秒预告【IMAX3D Ice Age Collision Course 】.mp4', '5de50495dd97e71d5123482ca3962a17', '20160919/57df9fec62d3a.mp4', '8C6DFADFE99D41ECB5BE352E03163F5C', '35430479', 0, 1474273259, 0),
+	(20, 1, '15秒预告【IMAX3D 盗墓笔记】.mp4', 'fe7a98bb86850470f98ae5dbae564088', '20160919/57dfaf4db936f.mp4', '5F42FDC14EF54B71908D3FFEAB7BD091', '24957595', 1, 1474277197, 0),
+	(21, 1, 'PML-Article-3.jpg', '35284f9d8a9aacaa71fda496093a6d45', '20160919/57dfb5d5ec431.jpg', '642D720CF69C4F44A371E999F7AFB523', '489686', 1, 1474278869, 0),
+	(22, 1, 'PMLArticle3.jpg', '35284f9d8a9aacaa71fda496093a6d45', '20160919/57dfbaf27286e.jpg', '82ED94837D8F46D0A766EF424DEFB950', '489686', 1, 1474280178, 0),
+	(23, 1, 'test01.mp4', '7820efec216d85dd696974d81bf98d13', '20160919/57dfc397ca9ed.mp4', '0D323F5D9D2441619482BC08248D5492', '2668872', 1, 1474282391, 0),
+	(24, 1, 'FLIR1652.jpg', 'a6f34453fabfb9eb56a7c321079f4ba5', '20160919/57dfc5bcc0ca8.jpg', '15D16EEBF949420F84AB80608182C90C', '392126', 1, 1474282940, 0),
+	(25, 1, 'FLIR165212.jpg', 'a6f34453fabfb9eb56a7c321079f4ba5', '20160919/57dfc88b40bcf.jpg', 'B644ADF944DA4C26B09FF30D8D305879', '392126', 1, 1474283659, 0),
+	(26, 1, 'PMLArticle3-1.jpg', '35284f9d8a9aacaa71fda496093a6d45', '20160920/57e0b03791ca8.jpg', '593B8ED4D7084A2DB031C7696A9D432D', '489686', 1, 1474342967, 0),
+	(27, 1, '15秒预告【IMAX3D Jason Bourne】.mp4', '0b299b6632b45b2dccd261b4ed24757c', '20160920/57e0b3b1f2b7c.mp4', '0725180310844F3AA21A9159F9E24E18', '27879319', 1, 1474343857, 0),
+	(28, 1, 'IMAX3D3.mp4', 'fe7a98bb86850470f98ae5dbae564088', '20160920/57e0c24fd7175.mp4', 'E975C417A8AF47FA8B482CA61505D35F', '24957595', 1, 1474347599, 0),
+	(29, 1, 'IMAX3D4.mp4', '0b299b6632b45b2dccd261b4ed24757c', '20160920/57e0c25013c2f.mp4', '658BD6AD8A174D01B34300EF90B5466C', '27879319', 1, 1474347599, 0),
+	(30, 13, 'QQ图片20161023154616.png', '581e3bcacc5735321f9e2ddf718c6748', '20161023/580c6f47c4c7a.png', 'AC7B87B1C833465BB4BE7A3C06602363', '545442', 1, 1477209927, 0),
+	(31, 13, '20161023154616.png', '581e3bcacc5735321f9e2ddf718c6748', '20161023/580c70826cd5e.png', '46A407CF70C84504A4BDAFAF848A5F26', '545442', 1, 1477210242, 0),
+	(32, 13, '2016.png', '581e3bcacc5735321f9e2ddf718c6748', '20161023/580c85846ff95.png', 'E6482EAB9FF146AEA854BF9F04569669', '545442', 1, 1477215620, 0),
+	(33, 13, '2016_1.png', '581e3bcacc5735321f9e2ddf718c6748', '20161023/580c8618686a7.png', '646B188EF6B445039C1572CBAECF6E82', '545442', 1, 1477215768, 0),
+	(34, 13, '2016_2.png', '581e3bcacc5735321f9e2ddf718c6748', '20161023/580c867beb6e4.png', '4EE5821826854ADF976686EAFB6E4742', '545442', 1, 1477215867, 0),
+	(35, 13, 'nwn.mp4', '7820efec216d85dd696974d81bf98d13', '20161023/580c883baa489.mp4', 'EDC19D0D07D047D083F02C0864236093', '2668872', 1, 1477216315, 0),
+	(36, 13, '01.png', '2dc17f2fd0329a9812b9a298c3fe9fed', '20161023/580c89caad526.png', '', '39241', 1, 1477216714, 0),
+	(37, 13, 'nwn1.mp4', '7820efec216d85dd696974d81bf98d13', '20161023/580c8b9502de5.mp4', '7F141FF02F154995B5A61987C2D53E10', '2668872', 1, 1477217172, 0);
 /*!40000 ALTER TABLE `player_media` ENABLE KEYS */;
 
 
@@ -241,7 +277,7 @@ CREATE TABLE IF NOT EXISTS `player_node` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8 COMMENT='节点表';
 
--- Dumping data for table player.player_node: ~53 rows (approximately)
+-- Dumping data for table player.player_node: ~51 rows (approximately)
 /*!40000 ALTER TABLE `player_node` DISABLE KEYS */;
 INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `pid`, `level`) VALUES
 	(1, 'User', '用户管理', 0, '', 1, 0, 1),
@@ -347,7 +383,7 @@ CREATE TABLE IF NOT EXISTS `player_player_setting` (
   `soft_disable` varchar(16) NOT NULL DEFAULT '' COMMENT '定时关闭时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放器配置参数';
 
--- Dumping data for table player.player_player_setting: ~0 rows (approximately)
+-- Dumping data for table player.player_player_setting: ~1 rows (approximately)
 /*!40000 ALTER TABLE `player_player_setting` DISABLE KEYS */;
 INSERT INTO `player_player_setting` (`id`, `clock`, `clock_password`, `heartbeat_cycle`, `alarm_cycle`, `alarm_url`, `time_switch`, `soft_enable`, `soft_disable`) VALUES
 	(4, 1, 'liangjian123', '45', '30', 'http://lbcloud.ddt123.cn', 0, '00:00', '11:00');
@@ -3845,13 +3881,13 @@ CREATE TABLE IF NOT EXISTS `player_user` (
 -- Dumping data for table player.player_user: ~7 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `is_del`, `is_full`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###1b2967588713b658dd803ed0c94d726d', '15934854815@163.com', '15934854818', '梁健', '西安软件园', 0, 0, 0, 0, 0, 1477211173, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
+	(1, '', '###1b2967588713b658dd803ed0c94d726d', '15934854815@163.com', '15934854818', '梁健', '西安软件园', 0, 0, 0, 0, 0, 1477309196, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
 	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15999999999', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 0, 1477117261, '127.0.0.1', 1474340261, '', '', 0),
-	(10, '', '###1b2967588713b658dd803ed0c94d726d', '136048525@qq.com', '15934854816', '梁健', '西安软件园', 0, 0, 1, 0, 0, 0, '0.0.0.0', 1474361171, 'J6zAkThcdrkj', '', 0),
+	(10, '', '###1b2967588713b658dd803ed0c94d726d', '136048525@qq.com', '15934854816', '梁健', '西安软件园', 0, 0, 1, 0, 0, 1477308696, '127.0.0.1', 1474361171, 'J6zAkThcdrkj', '', 0),
 	(11, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@bestfu.com', '15934854817', '', '', 0, 0, 1, 0, 0, 1475032479, '127.0.0.1', 1474425987, 'CF8teK5B2fyx', '', 0),
 	(13, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@126.com', '15934854815', '', '', 11, 0, 2, 0, 0, 1475891221, '127.0.0.1', 1474427588, '', 'a5cb0891759937e15ad9c79d72ecdfdcc1f18552', 1475054081),
 	(17, '', '###1b2967588713b658dd803ed0c94d726d', '779302139@qq.com', '15129249923', '刘刘刘刘刘刘', '西安', 10, 0, 2, 0, 1, 1475413529, '127.0.0.1', 1475412720, '', '', 0),
-	(19, '', '###1b2967588713b658dd803ed0c94d726d', '136048524@qq.com', '15934854822', 'liangjian', 'xian', 11, 0, 2, 0, 2, 1475684095, '127.0.0.1', 1475684095, '', '', 0);
+	(19, '', '###1b2967588713b658dd803ed0c94d726d', '136048524@qq.com', '15934854822', 'liangjian', 'xian', 11, 0, 2, 0, 2, 1477308962, '127.0.0.1', 1475684095, '', '', 0);
 /*!40000 ALTER TABLE `player_user` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

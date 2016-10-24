@@ -25,8 +25,8 @@ class ConfigModel extends Model{
 	public function websocket(){
 		$websocket = array();
 		$cfgs = $this->getField("key,value");
-		$websocket['ip'] = $cfgs['WEB_SOCKET_IP'] ? $cfgs['WEB_SOCKET_IP'] : C("WEBSOCKET_IP");
-		$websocket['port'] = $cfgs['WEB_SOCKET_PORT'] ? $cfgs['WEB_SOCKET_PORT'] : C("WEBSOCKET_PORT");
+		$websocket['ip'] = $cfgs['WEB_SOCKET_IP'] ? $cfgs['WEB_SOCKET_IP'] : C("websocket_ip");
+		$websocket['port'] = $cfgs['WEB_SOCKET_PORT'] ? $cfgs['WEB_SOCKET_PORT'] : C("websocket_port");
 		return $websocket;
 	}
 }

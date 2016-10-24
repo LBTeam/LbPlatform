@@ -89,4 +89,43 @@ class ScreenModel extends Model
 		}
 		return array();
 	}
+	
+	/**
+	 * 检查当前用户是否对屏幕有操作权限
+	 * @return boolen true-有权限，false-没权限
+	 */
+	public function check_screen_operation($screen_id=0){
+		if($screen_id){
+			if(is_administrator()){
+				return true;
+			}else{
+				$user_model = D("User");
+				$cfg_model = D("Config");
+				$role_model = D("Role");
+    			$roles = $cfg_model->roles();
+    			$role_id = $role_model->role_id_by_user(ADMIN_UID);
+				if($user_model->is_root(ADMIN_UID, $role_id, $roles)){
+					return true;
+				}else if($user_model->is_agent(ADMIN_UID, $role_id, $roles)){
+					$screen_uid = $this->where("id={$screen_id}")->getField("uid");
+					$screen_puid = $user_model->where("uid={$screen_uid}")->getField("puid");
+					if($screen_puid == ADMIN_UID){
+						return true;
+					}else{
+						return false;
+					}
+				}else if($user_model->is_normal(ADMIN_UID, $role_id, $roles)){
+					$screen_uid = $this->where("id={$screen_id}")->getField("uid");
+					if(ADMIN_UID == $screen_uid){
+						return true;
+					}else{
+						return false;
+					}
+				}else{
+					return false;
+				}
+			}
+		}
+		return false;
+	}
 }
