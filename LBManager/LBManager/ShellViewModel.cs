@@ -29,7 +29,7 @@ namespace LBManager
         public ShellViewModel()
         {
             ScheduleDetailViewModel = new ProgramScheduleDetailViewModel();
-            ScheduleList = new ScheduleListViewModel();
+            ScheduleList = new ScheduleSummaryListViewModel();
 
             ScreenList = new ScreenListViewModel(new ScreenService(), ScheduleList);
 
@@ -209,9 +209,9 @@ namespace LBManager
                     foreach (var item in viewModel.MediaList)
                     {
                         var mediaFile = new MediaFile();
-                        mediaFile.FilePath = item.FilePath;
+                        mediaFile.FilePath = item.URL;
                         mediaFile.Type = item.FileType;
-                        mediaFile.MD5 = item.FileMD5;
+                        mediaFile.MD5 = item.MD5;
                         scheduleFile.MediaList.Add(mediaFile);
                     }
                     sw.WriteLine(JsonConvert.SerializeObject(scheduleFile));
@@ -240,8 +240,8 @@ namespace LBManager
             set { SetProperty(ref _screenList, value); }
         }
 
-        private ScheduleListViewModel _scheduleList;
-        public ScheduleListViewModel ScheduleList
+        private ScheduleSummaryListViewModel _scheduleList;
+        public ScheduleSummaryListViewModel ScheduleList
         {
             get { return _scheduleList; }
             set { SetProperty(ref _scheduleList, value); }

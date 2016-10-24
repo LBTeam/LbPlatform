@@ -12,7 +12,7 @@ namespace LBManager.Infrastructure.Models
         private string _name;
         private string _mD5;
         private string _key;
-        private FileType _type;
+        private MediaType _type;
         private List<Part> _parts;
         [JsonProperty("name")]
         public string Name
@@ -67,7 +67,7 @@ namespace LBManager.Infrastructure.Models
             }
         }
         [JsonProperty("type")]
-        public FileType Type
+        public MediaType Type
         {
             get
             {

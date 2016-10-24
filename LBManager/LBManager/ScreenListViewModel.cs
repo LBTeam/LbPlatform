@@ -15,8 +15,8 @@ namespace LBManager
     public class ScreenListViewModel:BindableBase
     {
         private IScreenService _screenService;
-        private ScheduleListViewModel _scheduleList;
-        public ScreenListViewModel(IScreenService screenService, ScheduleListViewModel scheduleList)
+        private ScheduleSummaryListViewModel _scheduleList;
+        public ScreenListViewModel(IScreenService screenService, ScheduleSummaryListViewModel scheduleList)
         {
             _screenService = screenService;
             _scheduleList = scheduleList;

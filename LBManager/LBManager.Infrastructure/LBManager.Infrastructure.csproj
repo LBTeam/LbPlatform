@@ -51,7 +51,7 @@
     <Compile Include="Interfaces\IChecksumProvider.cs" />
     <Compile Include="Interfaces\IScreenService.cs" />
     <Compile Include="Models\CompleteMultipartUploadResult.cs" />
-    <Compile Include="Models\FileType.cs" />
+    <Compile Include="Models\MediaType.cs" />
     <Compile Include="Models\HeartbeatResponse.cs" />
     <Compile Include="Models\ImageMedia.cs" />
     <Compile Include="Models\LoginResponse.cs" />

@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace LBManager.Infrastructure.Models
 {
-    public enum FileType
+    public enum MediaType
     {
-        Plan,
         Image,
         Video,
         Text

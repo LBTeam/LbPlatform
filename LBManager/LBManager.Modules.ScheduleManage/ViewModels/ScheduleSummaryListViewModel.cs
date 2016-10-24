@@ -12,10 +12,10 @@ using System.Windows;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
-    public class ScheduleListViewModel: BindableBase
+    public class ScheduleSummaryListViewModel: BindableBase
     {
         private FileSystemWatcher _fileWatcher;
-        public ScheduleListViewModel()
+        public ScheduleSummaryListViewModel()
         {
             string mediaDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media");
             if (!Directory.Exists(mediaDirectory))
@@ -40,18 +40,18 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             scheduleView.ShowDialog();
         }
 
-        private ObservableCollection<ScheduleViewModel> _scheduleList = new ObservableCollection<ScheduleViewModel>();
-        public ObservableCollection<ScheduleViewModel> ScheduleList
+        private ObservableCollection<ScheduleSummaryViewModel> _scheduleSummaryList = new ObservableCollection<ScheduleSummaryViewModel>();
+        public ObservableCollection<ScheduleSummaryViewModel> ScheduleSummaryList
         {
-            get { return _scheduleList; }
-            set { SetProperty(ref _scheduleList, value); }
+            get { return _scheduleSummaryList; }
+            set { SetProperty(ref _scheduleSummaryList, value); }
         }
 
-        private ScheduleViewModel _currentSchedule;
-        public ScheduleViewModel CurrentSchedule
+        private ScheduleSummaryViewModel _currentScheduleSummary;
+        public ScheduleSummaryViewModel CurrentScheduleSummary
         {
-            get { return _currentSchedule; }
-            set { SetProperty(ref _currentSchedule, value); }
+            get { return _currentScheduleSummary; }
+            set { SetProperty(ref _currentScheduleSummary, value); }
         }
 
         public DelegateCommand NewScheduleCommand { get; private set; }
@@ -63,7 +63,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
             foreach (FileInfo fileInfo in folder.GetFiles("*.playprog"))
             {
-                ScheduleList.Add(new ScheduleViewModel(fileInfo));
+                ScheduleSummaryList.Add(new ScheduleSummaryViewModel(fileInfo));
             }
         }
 
@@ -101,7 +101,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         {
             System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
             {
-                ScheduleList.Add(new ScheduleViewModel(new FileInfo(e.FullPath)));
+                ScheduleSummaryList.Add(new ScheduleSummaryViewModel(new FileInfo(e.FullPath)));
             }), null);
 
             //throw new NotImplementedException();

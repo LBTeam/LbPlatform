@@ -29,7 +29,7 @@
                         <ColumnDefinition Width="4"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ListBox Grid.Column="0">
+                    <ListBox Grid.Column="0" ItemsSource="{Binding DisplayRegions}">
 
                     </ListBox>
                     <Grid Grid.Column="2">

@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Prism, Version=6.2.0.0, Culture=neutral, PublicKeyToken=91a96d2a154366d8, processorArchitecture=MSIL">
       <HintPath>..\packages\Prism.Core.6.2.0\lib\net45\Prism.dll</HintPath>
       <Private>True</Private>
@@ -74,7 +78,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="ViewModels\ScheduleListViewModel.cs" />
+    <Compile Include="ViewModels\DisplayRegionViewModel.cs" />
+    <Compile Include="ViewModels\MediaViewModel.cs" />
+    <Compile Include="ViewModels\ScheduleSummaryListViewModel.cs" />
+    <Compile Include="ViewModels\ScheduleSummaryViewModel.cs" />
     <Compile Include="ViewModels\ScheduleViewModel.cs" />
     <Compile Include="Views\ScheduleListView.xaml.cs">
       <DependentUpon>ScheduleListView.xaml</DependentUpon>
@@ -108,6 +115,14 @@
     <ProjectReference Include="..\..\Common\MaterialDesign\MaterialDesignThemes.Wpf\MaterialDesignThemes.Wpf.csproj">
       <Project>{f079fb0a-a8ed-4216-b6a5-345756751a04}</Project>
       <Name>MaterialDesignThemes.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LBManager.Infrastructure.Common\LBManager.Infrastructure.Common.csproj">
+      <Project>{bc563c83-a276-438e-9acb-d6324a3f8fc3}</Project>
+      <Name>LBManager.Infrastructure.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LBManager.Infrastructure\LBManager.Infrastructure.csproj">
+      <Project>{ae40c0e5-6c31-4364-874d-6a0a6c028367}</Project>
+      <Name>LBManager.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

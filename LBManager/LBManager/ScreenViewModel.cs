@@ -23,7 +23,7 @@ namespace LBManager
     {
 
         private LEDScreen _screen = null;
-        public ScreenViewModel(Screen screen, ScheduleListViewModel scheduleList)
+        public ScreenViewModel(Screen screen, ScheduleSummaryListViewModel scheduleList)
         {
             _id = screen.Id;
             _name = screen.Name;
@@ -86,8 +86,8 @@ namespace LBManager
             set { SetProperty(ref _selectedScheduleFile, value); }
         }
 
-        private ScheduleListViewModel _scheduleList;
-        public ScheduleListViewModel ScheduleList
+        private ScheduleSummaryListViewModel _scheduleList;
+        public ScheduleSummaryListViewModel ScheduleList
         {
             get { return _scheduleList; }
             set { SetProperty(ref _scheduleList, value); }
@@ -129,7 +129,7 @@ namespace LBManager
                 var uploadScheduleFileInfo = new UploadFileInfo(scheduleFilePath,
                                                                 new FileInfo(scheduleFilePath).Length,
                                                                 scheduleFileMD5,
-                                                                FileType.Plan,
+                                                                MediaType.Plan,
                                                                 scheduleFile.Type);
                 uploadScheduleFileInfo.MediaList = new List<MediaTempInfo>(scheduleFile.MediaList.Select(m => new MediaTempInfo(m.FilePath, m.MD5)));
                 uploadFileInfos.Add(uploadScheduleFileInfo);
@@ -138,7 +138,7 @@ namespace LBManager
             var uploadPartInfos = await GenerateUploadPartInfos(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/upload&token={0}", App.SessionToken), uploadFileInfos);
             foreach (var uploadPartInfo in uploadPartInfos)
             {
-                if (uploadPartInfo.Type == FileType.Plan)
+                if (uploadPartInfo.Type == MediaType.Plan)
                 {
                     continue;
                 }
@@ -152,12 +152,12 @@ namespace LBManager
 
             if (uploadPartInfos.Count == 0)
             {
-                var scheduleUploadCompleted = new UploadComplete(scheduleFilePath, FileType.Plan, scheduleFile.Type, scheduleFileMD5, null, new List<string>() { this.Id });
+                var scheduleUploadCompleted = new UploadComplete(scheduleFilePath, MediaType.Plan, scheduleFile.Type, scheduleFileMD5, null, new List<string>() { this.Id });
                 var scheduleUploadResult = await CompleteMultipartUpload(scheduleUploadCompleted);
             }
             else
             {
-                schedulePartInfo = uploadPartInfos.FirstOrDefault(p => p.Type == FileType.Plan);
+                schedulePartInfo = uploadPartInfos.FirstOrDefault(p => p.Type == MediaType.Plan);
                 if (schedulePartInfo == null)
                 {
                     throw new ArgumentNullException("发布缺少播放方案！");
@@ -197,12 +197,12 @@ namespace LBManager
                 var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
                 foreach (var mediaItem in scheduleFile.MediaList)
                 {
-                    if (mediaItem.Type == FileType.Image)
+                    if (mediaItem.Type == MediaType.Image)
                     {
                         _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
                         _screen.PlayImage(mediaItem.FilePath);
                     }
-                    else if (mediaItem.Type == FileType.Video)
+                    else if (mediaItem.Type == MediaType.Video)
                     {
                         _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
                         _screen.PlayVideo(mediaItem.FilePath);
@@ -220,7 +220,7 @@ namespace LBManager
             uploadComplete.FileType = uploadPartInfo.Type;
             uploadComplete.PlanType = planType;
 
-            if (uploadComplete.FileType == FileType.Plan)
+            if (uploadComplete.FileType == MediaType.Plan)
             {
                 uploadComplete.Screens = new List<string>() { this.Id };
             }

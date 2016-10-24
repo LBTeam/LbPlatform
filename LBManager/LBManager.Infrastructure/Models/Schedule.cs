@@ -8,9 +8,21 @@ namespace LBManager.Infrastructure.Models
 {
     public class Schedule
     {
-        public string FilePath { get; set; }
-        public long FileSize { get; set; }
-        public FileType FileType { get; set; }
-        public string FileMD5 { get; set; }
+        public string Name { get; set; }
+        public ScheduleType Type { get; set; }
+        public int Width { get; set; }
+        public int Heigh { get; set; }
+        public List<DisplayRegion> DisplayRegionList { get; set; }
+
+    }
+
+    public class DisplayRegion
+    {
+        public string Name { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Width { get; set; }
+        public int Heigh { get; set; }
+        public List<Media> MediaList { get; set; }
     }
 }

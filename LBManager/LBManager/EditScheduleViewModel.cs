@@ -31,10 +31,10 @@ namespace LBManager
 
                 MediaList.Add(new Media()
                 {
-                    FilePath = fileInfo.FullName,
-                    FileType = fileInfo.Extension.Equals(".mp4",StringComparison.CurrentCultureIgnoreCase)?FileType.Video:FileType.Image,
+                    URL = fileInfo.FullName,
+                    FileType = fileInfo.Extension.Equals(".mp4",StringComparison.CurrentCultureIgnoreCase)?MediaType.Video:MediaType.Image,
                     FileSize = fileInfo.Length,
-                    FileMD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
+                    MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
                 });
             }
         }

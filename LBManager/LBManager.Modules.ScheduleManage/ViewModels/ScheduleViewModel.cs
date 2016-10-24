@@ -1,7 +1,12 @@
-﻿using Prism.Commands;
+﻿using LBManager.Infrastructure.Common.Event;
+using LBManager.Infrastructure.Common.Utility;
+using LBManager.Infrastructure.Models;
+using Newtonsoft.Json;
+using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,10 +16,17 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 {
     public class ScheduleViewModel : BindableBase
     {
-        private static double Megabytes = 1024.0 * 1024.0;
+        private Schedule _schedule;
         public ScheduleViewModel()
         {
+
             PreviewScreenScheduleCommand = new DelegateCommand(() => { PreviewScreenSchedule(); });
+        }
+
+        public ScheduleViewModel(Schedule schedule)
+            : this()
+        {
+
         }
 
         private void PreviewScreenSchedule()
@@ -23,53 +35,69 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         }
 
         public ScheduleViewModel(FileInfo fileInfo)
+            : this()
         {
-            _fileName = fileInfo.Name;
-            _fileSize = fileInfo.Length / Megabytes;
-            _lastWriteTime = fileInfo.LastWriteTime;
-            _filePath = fileInfo.FullName;
+            ParseScheduleFile(fileInfo.FullName);
         }
 
-        private string _fileName;
-        public string FileName
+        private void ParseScheduleFile(string fullName)
         {
-            get { return _fileName; }
-            set { SetProperty(ref _fileName, value); }
+            string readContents = string.Empty;
+            using (StreamReader streamReader = new StreamReader(fullName, Encoding.UTF8))
+            {
+                readContents = streamReader.ReadToEnd();
+            }
+            _schedule = JsonConvert.DeserializeObject<Schedule>(readContents);
+            foreach (var displayRegionItem in _schedule.DisplayRegionList)
+            {
+                DisplayRegions.Add(new DisplayRegionViewModel(displayRegionItem));
+            }
+            CurrentDisplayRegion = DisplayRegions[0];
         }
 
-        private double _fileSize;
-        public double FileSize
+        private string _name;
+        public string Name
         {
-            get { return _fileSize; }
-            set { SetProperty(ref _fileSize, value); }
+            get { return _name; }
+            set { SetProperty(ref _name, value); }
         }
 
-        private DateTime _lastWriteTime;
-        public DateTime LastWriteTime
+        private int _width;
+        public int Width
         {
-            get { return _lastWriteTime; }
-            set { SetProperty(ref _lastWriteTime, value); }
+            get { return _width; }
+            set { SetProperty(ref _width, value); }
         }
 
-        private string _filePath;
-        public string FilePath
+        private int _heigh;
+        public int Heigh
         {
-            get { return _filePath; }
-            set { SetProperty(ref _filePath, value); }
+            get { return _heigh; }
+            set { SetProperty(ref _heigh, value); }
         }
 
+        private ObservableCollection<DisplayRegionViewModel> _displayRegions = new ObservableCollection<DisplayRegionViewModel>();
+        public ObservableCollection<DisplayRegionViewModel> DisplayRegions
+        {
+            get { return _displayRegions; }
+            set { SetProperty(ref _displayRegions, value); }
+        }
 
+        private DisplayRegionViewModel _currentDisplayRegion;
+        public DisplayRegionViewModel CurrentDisplayRegion
+        {
+            get { return _currentDisplayRegion; }
+            set
+            {
+                if (value != _currentDisplayRegion)
+                {
+                    Messager.Default.EventAggregator.GetEvent<OnCurrentDisplayRegionChangedEvent>().Publish(new OnCurrentDisplayRegionChangedEventArg(_currentDisplayRegion.Region, value.Region));
+                    SetProperty(ref _currentDisplayRegion, value);
+                }
+            }
+        }
 
         public DelegateCommand PreviewScreenScheduleCommand { get; private set; }
     }
 
-    public class SchedulePlanViewModel : BindableBase
-    {
-        private double _fileSize;
-        public double FileSize
-        {
-            get { return _fileSize; }
-            set { SetProperty(ref _fileSize, value); }
-        }
-    }
 }
