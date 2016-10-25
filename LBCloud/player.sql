@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-10-25 17:38:41
+-- Date/time:                    2016-10-25 18:19:40
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `player_access` (
   `module` varchar(64) DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限表';
 
--- Dumping data for table player.player_access: ~60 rows (approximately)
+-- Dumping data for table player.player_access: ~76 rows (approximately)
 /*!40000 ALTER TABLE `player_access` DISABLE KEYS */;
 INSERT INTO `player_access` (`role_id`, `node_id`, `level`, `module`) VALUES
 	(1, 1, 1, ''),
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `player_alarm` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='监控数据';
 
--- Dumping data for table player.player_alarm: ~0 rows (approximately)
+-- Dumping data for table player.player_alarm: ~1 rows (approximately)
 /*!40000 ALTER TABLE `player_alarm` DISABLE KEYS */;
 INSERT INTO `player_alarm` (`id`, `screen_id`, `type`, `param`, `up_time`) VALUES
 	(1, 4, 0, '{"Cpu_usage":"13.81749","Disk_usage":"62.542","Memory_usage":"52","Cpu_temperature":"65","Fan_speed":""}', 1477210441);
@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS `player_config` (
   `value` varchar(128) NOT NULL DEFAULT '' COMMENT '值'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统设置';
 
--- Dumping data for table player.player_config: ~8 rows (approximately)
+-- Dumping data for table player.player_config: ~10 rows (approximately)
 /*!40000 ALTER TABLE `player_config` DISABLE KEYS */;
 INSERT INTO `player_config` (`key`, `value`) VALUES
 	('ROOT_ROLE_ID', '1'),
@@ -293,7 +293,7 @@ CREATE TABLE IF NOT EXISTS `player_node` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8 COMMENT='节点表';
 
--- Dumping data for table player.player_node: ~60 rows (approximately)
+-- Dumping data for table player.player_node: ~61 rows (approximately)
 /*!40000 ALTER TABLE `player_node` DISABLE KEYS */;
 INSERT INTO `player_node` (`id`, `name`, `title`, `status`, `remark`, `sort`, `pid`, `level`) VALUES
 	(1, 'User', '用户管理', 0, '', 1, 0, 1),
@@ -402,7 +402,7 @@ CREATE TABLE IF NOT EXISTS `player_player_setting` (
   `soft_disable` varchar(16) NOT NULL DEFAULT '' COMMENT '定时关闭时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放器配置参数';
 
--- Dumping data for table player.player_player_setting: ~0 rows (approximately)
+-- Dumping data for table player.player_player_setting: ~1 rows (approximately)
 /*!40000 ALTER TABLE `player_player_setting` DISABLE KEYS */;
 INSERT INTO `player_player_setting` (`id`, `clock`, `clock_password`, `heartbeat_cycle`, `alarm_cycle`, `alarm_url`, `time_switch`, `soft_enable`, `soft_disable`) VALUES
 	(4, 1, 'liangjian123', '45', '30', 'http://lbcloud.ddt123.cn', 0, '00:00', '11:00');
