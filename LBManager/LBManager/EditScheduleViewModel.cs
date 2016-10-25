@@ -32,7 +32,7 @@ namespace LBManager
                 MediaList.Add(new Media()
                 {
                     URL = fileInfo.FullName,
-                    FileType = fileInfo.Extension.Equals(".mp4",StringComparison.CurrentCultureIgnoreCase)?MediaType.Video:MediaType.Image,
+                    Type = fileInfo.Extension.Equals(".mp4",StringComparison.CurrentCultureIgnoreCase)?MediaType.Video:MediaType.Image,
                     FileSize = fileInfo.Length,
                     MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
                 });

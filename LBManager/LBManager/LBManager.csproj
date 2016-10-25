@@ -130,6 +130,7 @@
       <DependentUpon>TokenInvalidPromptDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utility\EnumBindingSourceExtension.cs" />
+    <Compile Include="Utility\UtilityTool.cs" />
     <Compile Include="Utility\PasswordHelper.cs" />
     <Page Include="EditScheduleView.xaml">
       <SubType>Designer</SubType>

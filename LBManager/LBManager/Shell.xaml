@@ -85,7 +85,7 @@
 
 
                     </materialDesign:ColorZone>
-                    <scheduleModule:ScheduleListView  DockPanel.Dock="Top"/>
+                    <scheduleModule:ScheduleListView DataContext="{Binding ScheduleList}"  DockPanel.Dock="Top"/>
                     <!--DataContext="{Binding ScheduleList}"-->
                     <!--<DockPanel DockPanel.Dock="Top" >
                         <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">

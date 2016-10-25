@@ -34,7 +34,7 @@ namespace LBManager
             ScreenList = new ScreenListViewModel(new ScreenService(), ScheduleList);
 
             LoginCommand = new DelegateCommand(() => { OpenLoginDialog(); });
-            NewScheduleCommand = new DelegateCommand(() => { NewSchedule(); });
+           // NewScheduleCommand = new DelegateCommand(() => { NewSchedule(); });
 
             Messager.Default.EventAggregator.GetEvent<OnLoginEvent>().Subscribe(state =>
             {
@@ -210,7 +210,7 @@ namespace LBManager
                     {
                         var mediaFile = new MediaFile();
                         mediaFile.FilePath = item.URL;
-                        mediaFile.Type = item.FileType;
+                        mediaFile.Type = item.Type;
                         mediaFile.MD5 = item.MD5;
                         scheduleFile.MediaList.Add(mediaFile);
                     }

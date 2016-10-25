@@ -30,8 +30,8 @@
                                                         />
                 <materialDesign:MaterialDataGridComboBoxColumn Header="­Plan" 
                                                                DisplayMemberPath="FileName"
-                                                               SelectedItemBinding="{Binding SelectedScheduleFile, UpdateSourceTrigger=PropertyChanged}"
-                                                               ItemsSourceBinding="{Binding ScheduleList.ScheduleList}" />
+                                                               SelectedItemBinding="{Binding SelectedScheduleSummaryFile, UpdateSourceTrigger=PropertyChanged}"
+                                                               ItemsSourceBinding="{Binding ScheduleList.ScheduleSummaryList}" />
                 
                 <DataGridTemplateColumn Header=""
                                         Width="*">

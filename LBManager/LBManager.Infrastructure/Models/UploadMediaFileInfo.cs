@@ -11,7 +11,7 @@ namespace LBManager.Infrastructure.Models
         private string _filePath;
         private long _fileSize;
         private string _fileMD5;
-        private MediaType _type;
+        private FileContentType _type;
 
         public string FilePath
         {
@@ -52,7 +52,7 @@ namespace LBManager.Infrastructure.Models
             }
         }
 
-              public MediaType Type
+        public FileContentType Type
         {
             get
             {
@@ -65,7 +65,7 @@ namespace LBManager.Infrastructure.Models
         }
 
 
-        public UploadMediaFileInfo(string filePath, long fileSize, string fileMD5, MediaType type)
+        public UploadMediaFileInfo(string filePath, long fileSize, string fileMD5, FileContentType type)
         {
             _filePath = filePath;
             _fileSize = fileSize;

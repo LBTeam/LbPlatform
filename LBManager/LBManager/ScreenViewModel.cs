@@ -16,6 +16,7 @@ using LBManager.Infrastructure.Utils;
 using Newtonsoft.Json;
 using System.Threading;
 using LBManager.Modules.ScheduleManage.ViewModels;
+using LBManager.Utility;
 
 namespace LBManager
 {
@@ -101,7 +102,8 @@ namespace LBManager
         private async void PublishSchedule()
         {
             List<UploadMediaFileInfo> uploadFileInfos = new List<UploadMediaFileInfo>();
-            ScheduleFile scheduleFile;
+            UploadScheduleFileInfo uploadScheduleFileInfo;
+            Schedule scheduleFile;
             var scheduleFilePath = _selectedScheduleSummaryFile.FilePath;
             var scheduleFileMD5 = FileUtils.ComputeFileMd5(scheduleFilePath);
             using (FileStream fs = File.OpenRead(scheduleFilePath))
@@ -112,33 +114,33 @@ namespace LBManager
                 {
                     content = reader.ReadToEnd();
                 }
-                scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
+                scheduleFile = JsonConvert.DeserializeObject<Schedule>(content);
                 if (scheduleFile == null)
                 {
                     throw new ArgumentNullException("播放方案文件已损坏！");
                 }
-                foreach (var mediaItem in scheduleFile.MediaList)
+                var mediaList = scheduleFile.GetAllMedia();
+                foreach (var mediaItem in mediaList)
                 {
-                    var uploadMediaFileInfo = new UploadMediaFileInfo(mediaItem.FilePath,
-                                                                 new FileInfo(mediaItem.FilePath).Length,
+                    var uploadMediaFileInfo = new UploadMediaFileInfo(mediaItem.URL,
+                                                                 new FileInfo(mediaItem.URL).Length,
                                                                  mediaItem.MD5,
-                                                                 mediaItem.Type,
-                                                                 scheduleFile.Type);
+                                                                 UtilityTool.MediaTypeToContentType(mediaItem.Type));
                     uploadFileInfos.Add(uploadMediaFileInfo);
                 }
-                var uploadScheduleFileInfo = new UploadMediaFileInfo(scheduleFilePath,
+                uploadScheduleFileInfo = new UploadScheduleFileInfo(scheduleFilePath,
                                                                 new FileInfo(scheduleFilePath).Length,
                                                                 scheduleFileMD5,
-                                                                MediaType.Plan,
+                                                                FileContentType.Schedule,
                                                                 scheduleFile.Type);
-                uploadScheduleFileInfo.MediaList = new List<MediaTempInfo>(scheduleFile.MediaList.Select(m => new MediaTempInfo(m.FilePath, m.MD5)));
-                uploadFileInfos.Add(uploadScheduleFileInfo);
+                uploadScheduleFileInfo.MediaList = new List<MediaTempInfo>(mediaList.Select(m => new MediaTempInfo(m.URL, m.MD5)));
+                //uploadFileInfos.Add(uploadScheduleFileInfo);
             }
 
-            var uploadPartInfos = await GenerateUploadPartInfos(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/upload&token={0}", App.SessionToken), uploadFileInfos);
+            var uploadPartInfos = await GenerateUploadPartInfos(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/upload&token={0}", App.SessionToken), uploadScheduleFileInfo, uploadFileInfos);
             foreach (var uploadPartInfo in uploadPartInfos)
             {
-                if (uploadPartInfo.Type == MediaType.Plan)
+                if (uploadPartInfo.Type == FileContentType.Schedule)
                 {
                     continue;
                 }
@@ -152,12 +154,12 @@ namespace LBManager
 
             if (uploadPartInfos.Count == 0)
             {
-                var scheduleUploadCompleted = new UploadComplete(scheduleFilePath, MediaType.Plan, scheduleFile.Type, scheduleFileMD5, null, new List<string>() { this.Id });
+                var scheduleUploadCompleted = new UploadComplete(scheduleFilePath, FileContentType.Schedule, scheduleFile.Type, scheduleFileMD5, null, new List<string>() { this.Id });
                 var scheduleUploadResult = await CompleteMultipartUpload(scheduleUploadCompleted);
             }
             else
             {
-                schedulePartInfo = uploadPartInfos.FirstOrDefault(p => p.Type == MediaType.Plan);
+                schedulePartInfo = uploadPartInfos.FirstOrDefault(p => p.Type == FileContentType.Schedule);
                 if (schedulePartInfo == null)
                 {
                     throw new ArgumentNullException("发布缺少播放方案！");
@@ -212,7 +214,7 @@ namespace LBManager
         }
 
 
-        private UploadComplete UploadFile(UploadFileInfoForServer uploadPartInfo,ScheduleType planType)
+        private UploadComplete UploadFile(UploadFileInfoForServer uploadPartInfo, ScheduleType planType)
         {
             UploadComplete uploadComplete = new UploadComplete();
             uploadComplete.FileName = uploadPartInfo.Name;
@@ -220,7 +222,7 @@ namespace LBManager
             uploadComplete.FileType = uploadPartInfo.Type;
             uploadComplete.PlanType = planType;
 
-            if (uploadComplete.FileType == MediaType.Plan)
+            if (uploadComplete.FileType == FileContentType.Schedule)
             {
                 uploadComplete.Screens = new List<string>() { this.Id };
             }
@@ -277,10 +279,11 @@ namespace LBManager
             return uploadComplete;
         }
 
-        private async Task<List<UploadFileInfoForServer>> GenerateUploadPartInfos(string url, List<UploadMediaFileInfo> fileList)
+        private async Task<List<UploadFileInfoForServer>> GenerateUploadPartInfos(string url, UploadScheduleFileInfo scheduleFile, List<UploadMediaFileInfo> mediaFileList)
         {
             HttpClient httpClient = new HttpClient();
-            string uploadFileInfoJson = JsonConvert.SerializeObject(fileList);
+
+            string uploadFileInfoJson = JsonConvert.SerializeObject(new { scheduleFile, mediaFileList });
 
             HttpResponseMessage response = await httpClient.PostAsync(url, new StringContent(uploadFileInfoJson));
 

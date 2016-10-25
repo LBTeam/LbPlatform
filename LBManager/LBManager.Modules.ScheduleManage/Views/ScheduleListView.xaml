@@ -36,8 +36,8 @@
         </DockPanel>
 
         <ListBox DockPanel.Dock="Top" FontSize="14"
-                 ItemsSource="{Binding ScheduleList}"
-                 SelectedItem="{Binding CurrentSchedule}"
+                 ItemsSource="{Binding ScheduleSummaryList}"
+                 SelectedItem="{Binding CurrentScheduleSummary}"
                  DisplayMemberPath="FileName">
 
         </ListBox>

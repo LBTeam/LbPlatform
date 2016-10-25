@@ -12,12 +12,13 @@ using System.Windows;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
-    public class ScheduleSummaryListViewModel: BindableBase
+    public class ScheduleSummaryListViewModel : BindableBase
     {
+        private static string mediaDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media");
         private FileSystemWatcher _fileWatcher;
         public ScheduleSummaryListViewModel()
         {
-            string mediaDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media");
+            //string mediaDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media");
             if (!Directory.Exists(mediaDirectory))
             {
                 Directory.CreateDirectory(mediaDirectory);
@@ -37,6 +38,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             ScheduleView scheduleView = new ScheduleView();
             scheduleView.Owner = Application.Current.MainWindow;
             scheduleView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            scheduleView.DataContext = new ScheduleViewModel();
             scheduleView.ShowDialog();
         }
 
@@ -84,16 +86,28 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         private void _fileWatcher_Deleted(object sender, FileSystemEventArgs e)
         {
-            throw new NotImplementedException();
+            System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                ScheduleSummaryList.ToList().RemoveAll(s => s.FilePath == e.FullPath);
+            }), null);
         }
 
         private void _fileWatcher_Renamed(object sender, RenamedEventArgs e)
         {
-            //throw new NotImplementedException();
+            System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                ScheduleSummaryList.ToList().RemoveAll(s => s.FilePath == e.OldFullPath);
+                ScheduleSummaryList.Add(new ScheduleSummaryViewModel(new FileInfo(e.FullPath)));
+            }), null);
         }
 
         private void _fileWatcher_Changed(object sender, FileSystemEventArgs e)
         {
+            System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                ScheduleSummaryList.Clear();
+                FetchProgramSchedules(mediaDirectory);
+            }), null);
             //throw new NotImplementedException();
         }
 

@@ -1,6 +1,7 @@
 ﻿using LBManager.Infrastructure.Common.Event;
 using LBManager.Infrastructure.Common.Utility;
 using LBManager.Infrastructure.Models;
+using LBManager.Modules.ScheduleManage.Views;
 using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -19,9 +20,12 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         private Schedule _schedule;
         public ScheduleViewModel()
         {
-
+            CurrentDisplayRegion = new DisplayRegionViewModel() { Name = "Default DisplayRegion" };
+            DisplayRegions.Add(CurrentDisplayRegion);
             PreviewScreenScheduleCommand = new DelegateCommand(() => { PreviewScreenSchedule(); });
+            SaveScheduleCommand = new DelegateCommand<ScheduleView>((v) => { SaveSchedule(v); });
         }
+
 
         public ScheduleViewModel(Schedule schedule)
             : this()
@@ -76,6 +80,13 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             set { SetProperty(ref _heigh, value); }
         }
 
+        private ScheduleType _type;
+        public ScheduleType Type
+        {
+            get { return _type; }
+            set { SetProperty(ref _type, value); }
+        }
+
         private ObservableCollection<DisplayRegionViewModel> _displayRegions = new ObservableCollection<DisplayRegionViewModel>();
         public ObservableCollection<DisplayRegionViewModel> DisplayRegions
         {
@@ -93,7 +104,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                 {
                     Messager.Default.EventAggregator
                                     .GetEvent<OnCurrentDisplayRegionChangedEvent>()
-                                    .Publish(new OnCurrentDisplayRegionChangedEventArg(_currentDisplayRegion.Region, value.Region));
+                                    .Publish(new OnCurrentDisplayRegionChangedEventArg(_currentDisplayRegion?.Region, value.Region));
                     SetProperty(ref _currentDisplayRegion, value);
                 }
             }
@@ -101,6 +112,55 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
 
         public DelegateCommand PreviewScreenScheduleCommand { get; private set; }
+        public DelegateCommand AddDisplayRegionCommand { get; private set; }
+        public DelegateCommand RemoveDisplayRegionCommand { get; private set; }
+        public DelegateCommand PreviewDisplayRegionCommand { get; private set; }
+        public DelegateCommand<ScheduleView> SaveScheduleCommand { get; private set; }
+
+
+
+
+        private void SaveSchedule(ScheduleView view)
+        {
+
+            string scheduleFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media", this.Name + ".playprog");
+            if (!File.Exists(scheduleFilePath))
+            {
+                // Create a file to write to.
+                using (StreamWriter sw = File.CreateText(scheduleFilePath))
+                {
+                    _schedule = new Schedule();
+                    _schedule.Name = this.Name;
+                    _schedule.Type = this.Type;
+                    _schedule.Width = this.Width;
+                    _schedule.Heigh = this.Heigh;
+                    _schedule.DisplayRegionList = new List<DisplayRegion>();
+                    foreach (var displayRegionitem in this.DisplayRegions)
+                    {
+                        var displayRegion = new DisplayRegion();
+                        displayRegion.Name = displayRegionitem.Name;
+                        displayRegion.X = displayRegionitem.X;
+                        displayRegion.Y = displayRegionitem.Y;
+                        displayRegion.Width = displayRegionitem.Width;
+                        displayRegion.Heigh = displayRegionitem.Heigh;
+                        displayRegion.MediaList = new List<Media>();
+                        foreach (var mediaItem in displayRegionitem.MediaList)
+                        {
+                            var media = new Media();
+                            media.URL = mediaItem.FilePath;
+                            media.FileSize = mediaItem.FileSize;
+                            media.Type = mediaItem.FileType;
+                            media.MD5 = mediaItem.MD5;
+                            displayRegion.MediaList.Add(media);
+                        }
+                        _schedule.DisplayRegionList.Add(displayRegion);
+                    }
+                    
+                    sw.WriteLine(JsonConvert.SerializeObject(_schedule));
+                }
+                view.Close();
+            }
+        }
     }
 
 }

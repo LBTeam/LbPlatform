@@ -14,6 +14,15 @@ namespace LBManager.Infrastructure.Models
         public int Heigh { get; set; }
         public List<DisplayRegion> DisplayRegionList { get; set; }
 
+        public List<Media> GetAllMedia()
+        {
+            List<Media> mediaList = new List<Media>();
+            foreach (var item in DisplayRegionList)
+            {
+                mediaList.AddRange(item.MediaList);
+            }
+            return mediaList;
+        }
     }
 
     public class DisplayRegion

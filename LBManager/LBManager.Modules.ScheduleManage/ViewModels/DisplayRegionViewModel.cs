@@ -1,6 +1,13 @@
 ﻿using LBManager.Infrastructure.Models;
+using Prism.Commands;
 using Prism.Mvvm;
 using System.Collections.ObjectModel;
+using System;
+using Microsoft.Win32;
+using System.IO;
+using LBManager.Infrastructure.Utils;
+using MaterialDesignThemes.Wpf;
+using System.Threading.Tasks;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
@@ -9,8 +16,10 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         private DisplayRegion _displayRegion;
         public DisplayRegionViewModel()
         {
-
+            AddMediaCommand = new DelegateCommand(() => { AddMedia(); });
         }
+
+
         public DisplayRegionViewModel(DisplayRegion displayRegion)
         {
             _displayRegion = displayRegion;
@@ -63,6 +72,100 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         {
             get { return _mediaList; }
             set { SetProperty(ref _mediaList, value); }
+        }
+
+        public DelegateCommand AddMediaCommand { get; private set; }
+
+
+
+        private void AddMedia()
+        {
+            //OpenFileDialog openFileDialog = new OpenFileDialog();
+            //openFileDialog.Filter = "JPEG|*.jpg|PNG|*.png|MP4|*.mp4";
+            //if (openFileDialog.ShowDialog() == true)
+            //{
+            //    FileInfo fileInfo = new FileInfo(openFileDialog.FileName);
+            //    string fileExtension = Path.GetExtension(openFileDialog.FileName);
+
+            //    MediaList.Add(new Media()
+            //    {
+            //        URL = fileInfo.FullName,
+            //        Type = fileInfo.Extension.Equals(".mp4", StringComparison.CurrentCultureIgnoreCase) ? MediaType.Video : MediaType.Image,
+            //        FileSize = fileInfo.Length,
+            //        MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
+            //    });
+            //}
+
+            var view = new OpenFileDialog()
+            {
+                Filter = "Image File|*.jpg;*.jpeg;*.png|Video File|*.mp4;*.mov"
+            };
+            
+            if (view.ShowDialog() == true)
+            {
+                FileInfo fileInfo = new FileInfo(view.FileName);
+                string fileExtension = Path.GetExtension(view.FileName);
+
+                var media = new Media()
+                {
+                    URL = fileInfo.FullName,
+                    Type = GetMediaType(fileInfo.Extension),
+                    FileSize = fileInfo.Length,
+                    MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
+                };
+                MediaList.Add(new MediaViewModel(media));
+            }
+
+           // var result = DialogHost.Show(view, "ScheduleRootDialog", AddMediaDialogClosingEventHandler);
+        }
+
+        //private void AddMediaDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
+        //{
+        //    if ((bool)eventArgs.Parameter == false) return;
+        //    eventArgs.Cancel();
+            
+        //    DialogHost dialog = sender as DialogHost;
+        //    var view = dialog.DialogContent as OpenFileDialog;
+        //    if (view.ShowDialog() == true)
+        //    {
+        //        FileInfo fileInfo = new FileInfo(view.FileName);
+        //        string fileExtension = Path.GetExtension(view.FileName);
+
+        //        var media = new Media()
+        //        {
+        //            URL = fileInfo.FullName,
+        //            Type = GetMediaType(fileInfo.Extension),
+        //            FileSize = fileInfo.Length,
+        //            MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
+        //        };
+        //    }
+
+        //    Task.Delay(TimeSpan.FromSeconds(1))
+        //        .ContinueWith((t, _) =>
+        //            eventArgs.Session.Close(false),
+        //            null,
+        //            TaskScheduler.FromCurrentSynchronizationContext());
+        //}
+
+        private static MediaType GetMediaType(string fileExtension)
+        {
+            MediaType mediaType;
+            switch (fileExtension.ToLower())
+            {
+                case ".mp4":
+                case ".mov":
+                    mediaType = MediaType.Video;
+                    break;
+                case ".jpg":
+                case ".jpeg":
+                case ".png":
+                    mediaType = MediaType.Image;
+                    break;
+                default:
+                    mediaType = MediaType.Text;
+                    break;
+            }
+            return mediaType;
         }
     }
 }
