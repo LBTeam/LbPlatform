@@ -6,6 +6,7 @@ use Api\Service\AliyunOSS;
 class DemoController extends Controller
 {
 	public function demo(){
+		exit;
 		$media['name'] = "1.2.3.png";
 		$v['MediaMD5'] = "md5md5md5md5md5";
 		dump($media['name']);
@@ -21,12 +22,12 @@ class DemoController extends Controller
 	
 	public function index(){
 		exit;
-		$AliyunOSS = new AliyunOSS();
+		/*$AliyunOSS = new AliyunOSS();
 		$result = $AliyunOSS->bucket_list();
 		dump($result);
 		exit;
 		$result = $AliyunOSS->create_bucket(C("oss_picture_bucket"));
-		exit;
+		exit;*/
 		/*$file = "./test.png";
 		$filesize = filesize($file);
 		dump($filesize);*/
@@ -38,12 +39,12 @@ class DemoController extends Controller
 		//分片情况
 		/*$parts = $AliyunOSS->generate_upload_part($filesize, $partsize);
 		dump($parts);*/
-		
+		$AliyunOSS = new AliyunOSS();
 		$media_bucket = C("oss_media_bucket");
 		//获取upload_id
 		//$result = $AliyunOSS->get_upload_id("png", $media_bucket);
 		//dump($result);
-		$object = "20160919/57dfbaf27286e.jpg";
+		$object = "20161025/580f1909d8f61.MOV";
 		$upload_id = "4C6C734773D4429183711C8749BB8AF9";
 		
 		//生成分片文件

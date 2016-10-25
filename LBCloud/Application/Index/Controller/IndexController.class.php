@@ -3,7 +3,21 @@ namespace Index\Controller;
 
 class IndexController extends CommonController {
     public function index(){
+    	if(is_administrator()){
+			$identity = 0;
+		}else{
+			if(D("User")->is_root(ADMIN_UID)){
+				$identity = 1;
+			}else if(D("User")->is_agent(ADMIN_UID)){
+				$identity = 2;
+			}else if(D("User")->is_agent(ADMIN_UID)){
+				$identity = 3;
+			}else{
+				$identity = 4;
+			}
+		}
         $this->meta_title = '管理首页';
+		$this->assign("index_identity", $identity);
         $this->display();
     }
     

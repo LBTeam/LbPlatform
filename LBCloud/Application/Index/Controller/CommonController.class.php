@@ -41,6 +41,9 @@ class CommonController extends Controller
 		}else{
 			$this->assign("header_is_agent", 0);
 		}
+		
+		$configs = D("Config")->configs();
+		$this->assign("configs", $configs);
 	}
 	
 	/**

@@ -9,6 +9,10 @@ use Think\Controller;
 
 class PublicController extends Controller
 {
+	protected function _initialize(){
+		$configs = D("Config")->configs();
+		$this->assign("configs", $configs);
+	}
 	/**
      * 后台用户登录
      */

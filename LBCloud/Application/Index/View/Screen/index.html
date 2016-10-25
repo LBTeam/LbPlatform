@@ -89,7 +89,7 @@
 		                            <if condition="in_array('SCREEN/PRICE', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('price',array('id'=>$vo['id']))}">时段价格</a>
 		                            </if>
-		                            <a href="javascript:void(0);">播放记录</a>
+		                            <!--<a href="javascript:void(0);">播放记录</a>-->
 		                            <if condition="$vo['online'] eq 1 AND in_array('SCREEN/MONITOR', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('monitor',array('id'=>$vo['id']))}">监控数据</a>
 		                            </if>

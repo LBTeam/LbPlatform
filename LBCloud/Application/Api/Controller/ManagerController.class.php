@@ -171,7 +171,40 @@ class ManagerController extends CommonController
 		$media_model = D("Media");
 		$program_model = D("Program");
 		$AliyunOSS = new AliyunOSS();
-		foreach ($obj as $val) {
+		//file_put_contents('./1.log', json_encode($obj)."\r\n", FILE_APPEND);
+		$plan = $obj['scheduleFile'];
+		$medias = $obj['mediaFileList'];
+		$user_id = $this->user_id;
+		//处理播放方案
+		$planpath = $plan['FilePath'];
+		$planname = end(explode('/', str_replace('\\', '/', $planpath)));
+		$plansize = $plan['FileSize'];
+		$planmd5 = strtolower($plan['FileMD5']);
+		$plansubfix = end(explode('.', $planname));
+		$plantype = $plan['PlanType'] ? $plan['PlanType'] : 0;
+		$planmedias = $plan['MediaList'];
+		foreach($planmedias as &$v){
+			$v['MediaName'] = end(explode('/', str_replace('\\', '/', $v['MediaName'])));
+		}
+		$plan_data = $this->_upload_program($program_model, $AliyunOSS, $user_id, $planname, $plansize, $planmd5, $plansubfix, $planmedias, $planpath, $plantype);
+		if($plan_data){
+			$plan_data['type'] = intval($plan['Type']);
+			$result[] = $plan_data;
+		}
+		//处理媒体
+		foreach ($medias as $val) {
+			$mediapath = $val['FilePath'];
+			$medianame = end(explode('/', str_replace('\\', '/', $mediapath)));
+			$mediasize = $val['FileSize'];
+			$mediamd5 = strtolower($val['FileMD5']);
+			$mediasubfix = end(explode('.', $medianame));
+			$media_data = $this->_upload_media($media_model, $AliyunOSS, $user_id, $medianame, $mediasize, $mediamd5, $mediasubfix, $mediapath);
+			if($media_data){
+				$media_data['type'] = intval($val['Type']);
+				$result[] = $media_data;
+			}
+		}
+		/*foreach ($obj as $val) {
 			$user_id = $this->user_id;
 			$filepath = $val['FilePath'];
 			$filename = end(explode('/', str_replace('\\', '/', $filepath)));
@@ -201,7 +234,7 @@ class ManagerController extends CommonController
 					$result[] = $media_data;
 				}
 			}
-		}
+		}*/
 		//file_put_contents('./1.log', json_encode($result)."\r\n", FILE_APPEND);
 		$this->ajaxReturn($result);
 	}

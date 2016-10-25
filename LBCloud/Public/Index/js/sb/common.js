@@ -19,6 +19,7 @@
     //启用表格功能   dataTables  
     $('#dataTables').dataTable({
         "sPaginationType" : "full_numbers",
+        "ordering": false,
         "oLanguage" : {
             "sLengthMenu": "每页显示 _MENU_ 条记录",
             "sZeroRecords": "抱歉， 没有找到",
@@ -40,6 +41,7 @@
     $('#dataTable_nosearch').dataTable({
         "sPaginationType" : "full_numbers",
         "searching": false,
+        "ordering": false,
         "oLanguage" : {
             "sLengthMenu": "每页显示 _MENU_ 条记录",
             "sZeroRecords": "抱歉， 没有找到",

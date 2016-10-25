@@ -354,9 +354,7 @@ class ScreenController extends CommonController
 			$led_model = D("Screen");
 			if($led_model->check_screen_operation($id)){
 				$mac = str_replace('-', '', $player['mac']);
-				
 				//$mac = "D07E355210CB";
-				
 				$date = date('Ymd');
 				$AliyunOSS = new AliyunOSS();
 				$picture_bucket = C("oss_picture_bucket");
