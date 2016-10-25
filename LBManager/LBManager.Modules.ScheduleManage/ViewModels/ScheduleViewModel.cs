@@ -91,11 +91,14 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             {
                 if (value != _currentDisplayRegion)
                 {
-                    Messager.Default.EventAggregator.GetEvent<OnCurrentDisplayRegionChangedEvent>().Publish(new OnCurrentDisplayRegionChangedEventArg(_currentDisplayRegion.Region, value.Region));
+                    Messager.Default.EventAggregator
+                                    .GetEvent<OnCurrentDisplayRegionChangedEvent>()
+                                    .Publish(new OnCurrentDisplayRegionChangedEventArg(_currentDisplayRegion.Region, value.Region));
                     SetProperty(ref _currentDisplayRegion, value);
                 }
             }
         }
+
 
         public DelegateCommand PreviewScreenScheduleCommand { get; private set; }
     }

@@ -29,7 +29,10 @@
                         <ColumnDefinition Width="4"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ListBox Grid.Column="0" ItemsSource="{Binding DisplayRegions}">
+                    <ListBox Grid.Column="0"
+                             ItemsSource="{Binding DisplayRegions}" 
+                             SelectedItem="{Binding CurrentDisplayRegion}"
+                             DisplayMemberPath="Name">
 
                     </ListBox>
                     <Grid Grid.Column="2">

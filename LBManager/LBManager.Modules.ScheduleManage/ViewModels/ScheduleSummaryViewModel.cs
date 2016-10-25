@@ -12,6 +12,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
     public class ScheduleSummaryViewModel:BindableBase
     {
         private static double Megabytes = 1024.0 * 1024.0;
+
+        public ScheduleSummaryViewModel() { }
         public ScheduleSummaryViewModel(FileInfo fileInfo)
         {
             _fileName = fileInfo.Name;

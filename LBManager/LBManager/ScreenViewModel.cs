@@ -79,11 +79,11 @@ namespace LBManager
         }
 
 
-        private ScheduleViewModel _selectedScheduleFile = new ScheduleViewModel();
-        public ScheduleViewModel SelectedScheduleFile
+        private ScheduleSummaryViewModel _selectedScheduleSummaryFile = new ScheduleSummaryViewModel();
+        public ScheduleSummaryViewModel SelectedScheduleSummaryFile
         {
-            get { return _selectedScheduleFile; }
-            set { SetProperty(ref _selectedScheduleFile, value); }
+            get { return _selectedScheduleSummaryFile; }
+            set { SetProperty(ref _selectedScheduleSummaryFile, value); }
         }
 
         private ScheduleSummaryListViewModel _scheduleList;
@@ -100,9 +100,9 @@ namespace LBManager
 
         private async void PublishSchedule()
         {
-            List<UploadFileInfo> uploadFileInfos = new List<UploadFileInfo>();
+            List<UploadMediaFileInfo> uploadFileInfos = new List<UploadMediaFileInfo>();
             ScheduleFile scheduleFile;
-            var scheduleFilePath = _selectedScheduleFile.FilePath;
+            var scheduleFilePath = _selectedScheduleSummaryFile.FilePath;
             var scheduleFileMD5 = FileUtils.ComputeFileMd5(scheduleFilePath);
             using (FileStream fs = File.OpenRead(scheduleFilePath))
             {
@@ -119,14 +119,14 @@ namespace LBManager
                 }
                 foreach (var mediaItem in scheduleFile.MediaList)
                 {
-                    var uploadMediaFileInfo = new UploadFileInfo(mediaItem.FilePath,
+                    var uploadMediaFileInfo = new UploadMediaFileInfo(mediaItem.FilePath,
                                                                  new FileInfo(mediaItem.FilePath).Length,
                                                                  mediaItem.MD5,
                                                                  mediaItem.Type,
                                                                  scheduleFile.Type);
                     uploadFileInfos.Add(uploadMediaFileInfo);
                 }
-                var uploadScheduleFileInfo = new UploadFileInfo(scheduleFilePath,
+                var uploadScheduleFileInfo = new UploadMediaFileInfo(scheduleFilePath,
                                                                 new FileInfo(scheduleFilePath).Length,
                                                                 scheduleFileMD5,
                                                                 MediaType.Plan,
@@ -185,7 +185,7 @@ namespace LBManager
                 _screen = null;
                 return;
             }
-            var scheduleFilePath = _selectedScheduleFile.FilePath;
+            var scheduleFilePath = _selectedScheduleSummaryFile.FilePath;
             using (FileStream fs = File.OpenRead(scheduleFilePath))
             {
 
@@ -277,7 +277,7 @@ namespace LBManager
             return uploadComplete;
         }
 
-        private async Task<List<UploadFileInfoForServer>> GenerateUploadPartInfos(string url, List<UploadFileInfo> fileList)
+        private async Task<List<UploadFileInfoForServer>> GenerateUploadPartInfos(string url, List<UploadMediaFileInfo> fileList)
         {
             HttpClient httpClient = new HttpClient();
             string uploadFileInfoJson = JsonConvert.SerializeObject(fileList);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LBManager.Infrastructure.Models
 {
-    public class UploadFileInfo
+    class UploadScheduleFileInfo
     {
         private string _filePath;
         private long _fileSize;
@@ -91,7 +91,7 @@ namespace LBManager.Infrastructure.Models
             }
         }
 
-        public UploadFileInfo(string filePath, long fileSize, string fileMD5, MediaType type,ScheduleType playType)
+        public UploadScheduleFileInfo(string filePath, long fileSize, string fileMD5, MediaType type, ScheduleType playType)
         {
             _filePath = filePath;
             _fileSize = fileSize;
@@ -100,4 +100,5 @@ namespace LBManager.Infrastructure.Models
             _playType = playType;
         }
     }
+
 }
