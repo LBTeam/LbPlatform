@@ -25,15 +25,15 @@ class ScreenController extends CommonController
     		"city" => $regions,
     		"district" => $regions
     	);
-		//$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("redis_server")));
+		$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("redis_server")));
 		foreach($leds as &$val){
 			$pl_mac = strtoupper(str_replace(':', '-', $val['mac']));
 			if($pl_mac){
 				$pl_id = $val["bind_id"];
 				$pl_key = $val["bind_key"];
 				$cache_key = md5("{$pl_id}_{$pl_key}_{$pl_mac}_fd");
-				//$pl_online = $redis_serv->get($cache_key);
-				$pl_online = true;
+				$pl_online = $redis_serv->get($cache_key);
+				//$pl_online = true;
 				$val['online'] = $pl_online ? 1 : 0;
 			}else{
 				$val['online'] = 2;

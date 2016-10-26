@@ -10,7 +10,7 @@ class IndexController extends CommonController {
 				$identity = 1;
 			}else if(D("User")->is_agent(ADMIN_UID)){
 				$identity = 2;
-			}else if(D("User")->is_agent(ADMIN_UID)){
+			}else if(D("User")->is_normal(ADMIN_UID)){
 				$identity = 3;
 			}else{
 				$identity = 4;
