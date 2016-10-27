@@ -741,11 +741,12 @@ class ScreenController extends CommonController
 						$client = new \WebSocketClient();
 						$client->connect($ws_ip, $ws_port, '/');
 						$resp = $client->sendData(json_encode($ws_in));
+						$client->disconnect();
 						unset($client);
 						if( $resp !== true ){
 							$this->error("发送失败！");
 						}else{
-							$this->success("屏幕关闭成功！");
+							$this->success("屏幕关闭成功！", U('index'));
 						}
 					}else{
 						$this->error("用户登录密码错误！");

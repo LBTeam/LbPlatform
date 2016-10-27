@@ -2,6 +2,8 @@
 /**
  * websocket
  */
+error_reporting(0);
+
 $server = new swoole_websocket_server("0.0.0.0", 9501);
 
 $server->on('open', function (swoole_websocket_server $server, $request) {
@@ -61,7 +63,9 @@ $server->on('message', function (swoole_websocket_server $server, $frame) {
 				//通知播放端
 				$client_res = $server->push($client_fd, json_encode($client_resp));
 				if($client_res){
+					$fd_key = md5("player_fd_{$fd}");
 					$redis_serv->del($redis_key);
+					$redis_serv->del($fd_key);
 					//$response = array("err_code"=>"000000","msg"=>"ok");
 					//通知web端
 					$server->push($frame->fd, true);
