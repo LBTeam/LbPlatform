@@ -33,7 +33,7 @@ class ProgramModel extends Model
 	public function program_exists($name, $md5, $user_id){
 		$map = array();
 		$map['user_id'] = $user_id;
-		$map['name'] = mysql_real_escape_string($name);
+		$map['name'] = mysql_escape_string($name);
 		$map['md5'] = $md5;
 		$program_id = $this->where($map)->getField('id');
 		if($program_id){
@@ -68,7 +68,7 @@ class ProgramModel extends Model
 	public function program_by_name_md5($name, $md5, $user_id){
 		$map = array();
 		$map['user_id'] = $user_id;
-		$map['name'] = mysql_real_escape_string($name);
+		$map['name'] = mysql_escape_string($name);
 		$map['md5'] = $md5;
 		return $this->where($map)->find();
 	}

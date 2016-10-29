@@ -178,6 +178,7 @@ class ManagerController extends CommonController
 		//处理播放方案
 		$planpath = $plan['FilePath'];
 		$planname = end(explode('/', str_replace('\\', '/', $planpath)));
+		//file_put_contents('./1.log', $planname."\r\n", FILE_APPEND);
 		$plansize = $plan['FileSize'];
 		$planmd5 = strtolower($plan['FileMD5']);
 		$plansubfix = end(explode('.', $planname));
@@ -524,7 +525,8 @@ class ManagerController extends CommonController
 				$object = oss_object($subfix);
 				$program_data = array();
 				$program_data['user_id'] = $user_id;
-				$program_data['name'] = mysql_real_escape_string($filename);
+				$program_data['name'] = mysql_escape_string($filename);
+				//$program_data['name'] = $filename;
 				$program_data['object'] = $object;
 				$program_data['upload_id'] = '';
 				$program_data['info'] = json_encode($medias);
@@ -533,6 +535,7 @@ class ManagerController extends CommonController
 				$program_data['size'] = $filesize;
 				$program_data['publish'] = NOW_TIME;
 				$program_id = $model->add($program_data);
+				//file_put_contents('./1.log', $model->getLastSql()."\r\n", FILE_APPEND);
 				$sign_url = $oss_obj->upload_sign_uri($object, $this->program_bucket);
 				$parts = array();
 				$parts[] = array(
@@ -560,7 +563,9 @@ class ManagerController extends CommonController
 				$uploadId = $upload_info['UploadId'];
 				$program_data = array();
 				$program_data['user_id'] = $user_id;
-				$program_data['name'] = mysql_real_escape_string($filename);
+				$program_data['name'] = mysql_escape_string($filename);
+				//$program_data['name'] = $filename;
+				//file_put_contents('./1.log', $model->getLastSql()."\r\n", FILE_APPEND);
 				$program_data['object'] = $object;
 				$program_data['upload_id'] = $uploadId;
 				$program_data['info'] = json_encode($medias);
@@ -674,7 +679,8 @@ class ManagerController extends CommonController
 				$object = oss_object($subfix);
 				$media_data = array();
 				$media_data['user_id'] = $user_id;
-				$media_data['name'] = mysql_real_escape_string($filename);
+				$media_data['name'] = mysql_escape_string($filename);
+				//$media_data['name'] = $filename;
 				$media_data['object'] = $object;
 				$media_data['upload_id'] = '';
 				$media_data['md5'] = $filemd5;
@@ -708,7 +714,8 @@ class ManagerController extends CommonController
 				$uploadId = $upload_info['UploadId'];
 				$media_data = array();
 				$media_data['user_id'] = $user_id;
-				$media_data['name'] = mysql_real_escape_string($filename);
+				$media_data['name'] = mysql_escape_string($filename);
+				//$media_data['name'] = $filename;
 				$media_data['object'] = $object;
 				$media_data['upload_id'] = $uploadId;
 				$media_data['md5'] = $filemd5;
