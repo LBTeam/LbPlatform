@@ -44,7 +44,8 @@ class PlayerController extends CommonController
 		$player = $player_model->player_by_bind($bind_id, $bind_key, "id,mac");
 		if($player){
 			if($mac == $player['mac']){
-				$respones = array("err_code"=>"020102","msg"=>"Binding player repeat");
+				//$respones = array("err_code"=>"020102","msg"=>"Binding player repeat");
+				$respones = array("err_code"=>"000000","msg"=>"ok","data"=>array("screen_id"=>$player['id']));
 			}else{
 				$map = array('id'=>$player['id']);
 				$data = array('mac'=>$mac);
@@ -459,25 +460,35 @@ class PlayerController extends CommonController
 	}
 
 	public function screen(){
-		$screen_model = D("Screen");
-		$screen = $screen_model->screen_by_id(1);
-		$regions = D("Region")->all_region_name();
-		$province = $regions[$screen['province']];
-		$city = $regions[$screen['city']];
-		$district = $regions[$screen['district']];
-		$temp = array(
-			'id'		=> $screen['id'],
-			'name'		=> $screen['name'],
-			'size_x'	=> intval($screen['size_x']),
-			'size_y'	=> intval($screen['size_y']),
-			'resolu_x'	=> intval($screen['resolu_x']),
-			'resolu_y'	=> intval($screen['resolu_y']),
-			'type'		=> intval($screen['type']),
-			'operate'	=> intval($screen['operate']),
-			'longitude'	=> floatval($screen['longitude']),
-			'latitude'	=> floatval($screen['latitude']),
-			'address'	=> "{$province}{$city}{$district}{$screen['address']}",
-		);
-		$this->ajaxReturn($temp);
+		$obj = $this->param;
+		$bind_id	= $obj['Id'];
+		$bind_key	= $obj['Key'];
+		$mac		= strtoupper(str_replace(':', '-', $obj['Mac']));
+		$player_model = D("Player");
+		$player = $player_model->player_by_bind($bind_id, $bind_key, "id,mac");
+		if($mac == $player['mac']){
+			$screen_model = D("Screen");
+			$screen = $screen_model->screen_by_id($player['id']);
+			$regions = D("Region")->all_region_name();
+			$province = $regions[$screen['province']];
+			$city = $regions[$screen['city']];
+			$district = $regions[$screen['district']];
+			$respones = array(
+				'id'		=> $screen['id'],
+				'name'		=> $screen['name'],
+				'size_x'	=> intval($screen['size_x']),
+				'size_y'	=> intval($screen['size_y']),
+				'resolu_x'	=> intval($screen['resolu_x']),
+				'resolu_y'	=> intval($screen['resolu_y']),
+				'type'		=> intval($screen['type']),
+				'operate'	=> intval($screen['operate']),
+				'longitude'	=> floatval($screen['longitude']),
+				'latitude'	=> floatval($screen['latitude']),
+				'address'	=> "{$province}{$city}{$district}{$screen['address']}",
+			);
+		}else{
+			$respones = array("err_code"=>"020201","msg"=>"Player MAC error");
+		}
+		$this->ajaxReturn($respones);
 	}
 }
