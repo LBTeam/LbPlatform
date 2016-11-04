@@ -5,6 +5,19 @@ use Api\Service\AliyunOSS;
 
 class DemoController extends Controller
 {
+	public function demo_tes(){
+		$filepath = 'C:\\Users\\Hardborn\\AppData\\Roaming\\LBManager\\Media\\Test1"11.playprog';
+		$filename = end(explode('/', str_replace('\\', '/', $filepath)));
+		dump($filename);
+		$demo = mysql_real_escape_string($filename);
+		dump($demo);
+		$demo = mysql_escape_string($filename);
+		dump($demo);
+		$demo = addslashes($filename);
+		dump($demo);
+	}
+	
+	
 	public function demo(){
 		exit;
 		$media['name'] = "1.2.3.png";

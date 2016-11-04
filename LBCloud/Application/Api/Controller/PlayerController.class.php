@@ -437,7 +437,7 @@ class PlayerController extends CommonController
 			if($media_id){
 				$data = array();
 				$data['screen_id'] = $player['id'];
-				$data['media_name'] = mysql_real_escape_string($media_name);
+				$data['media_name'] = mysql_escape_string($media_name);
 				$data['media_md5'] = $media_md5;
 				$data['start'] = $obj['StartTime'];
 				$data['end'] = $obj['EndTime'];
