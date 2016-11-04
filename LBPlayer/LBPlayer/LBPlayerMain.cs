@@ -20,7 +20,6 @@ using System.Threading;
 using LBManager.Infrastructure.Models;
 using WebSocketSharp;
 using System.Diagnostics;
-using JumpKick.HttpLib;
 using System.Net;
 
 namespace LBPlayer
@@ -65,6 +64,7 @@ namespace LBPlayer
         private System.Threading.Timer _captureTimer;
         private ScreenCapture _screenCaptrue = new ScreenCapture();
         private int HeartBeatFailCount = 0;
+        private ScreenPlayer _screenPlayer;
         #endregion
         #region 构造函数
         public LBPlayerMain()
@@ -350,7 +350,9 @@ namespace LBPlayer
                 return;
             }
         }
-
+        /// <summary>
+        /// 初始化监控图片上传
+        /// </summary>
         private void InitialMonitorDataUpload()
         {
             _computerStatus = new ComputerStatus();
@@ -363,13 +365,21 @@ namespace LBPlayer
             _monitorDataPoll.Start();
             
         }
-
+        /// <summary>
+        /// 监控图片上传完成事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void _monitorDataPoll_GetMonitorDatePollResponseEvent(object sender, GetMonitorDatePollResponseEventArgs args)
         {
             Debug.WriteLine("上传监控完成：" + DateTime.Now);
            
         }
-
+        /// <summary>
+        /// 监控图片上传开始事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void _monitorDataPoll_SendMonitorDatePollEvent(object sender, MonitorDatePollEventArgs args)
         {
             Debug.WriteLine("上传监控开始：" + DateTime.Now);
@@ -400,6 +410,13 @@ namespace LBPlayer
             {
                 return;
             }
+        }
+
+        private void initialPlay()
+        {
+            _screenPlayer = new ScreenPlayer(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
+            _screenPlayer.Initialize();
+            Start();
         }
         #endregion
         #region 下载紧急插播
@@ -557,7 +574,7 @@ namespace LBPlayer
             SetControlTextDelegate setTextDelegate = new SetControlTextDelegate(SetControlText);
             this.Invoke(setTextDelegate, new object[] { setControl, text });
         }
-        public bool DeownloadFile(string strFileName, string url)
+        private bool DeownloadFile(string strFileName, string url)
         {
             bool flag = false;
             //打开上次下载的文件
@@ -609,6 +626,31 @@ namespace LBPlayer
             }
             return flag;
         }
+
+        private bool ScheduleParser(string path,out Schedule sch)
+        {
+
+            sch = null;
+            if (!File.Exists(path))
+            {
+                return false;
+            }
+            try
+            {
+                string scheduleContent = File.ReadAllText(path, Encoding.UTF8);
+                if(scheduleContent==null||scheduleContent=="")
+                {
+                    return false;
+                }
+                sch = JsonConvert.DeserializeObject<Schedule>(scheduleContent);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
+
         #endregion
         #region 锁定
         /// <summary>
@@ -859,7 +901,6 @@ namespace LBPlayer
         /// <param name="e"></param>
         private void LBPlayerMain_Load(object sender, EventArgs e)
         {
-
             LoadConfig();
             initialWorkPath();
             _screenCapture = new ScreenCapture();
@@ -871,6 +912,7 @@ namespace LBPlayer
             InitialLock();
             InitialMonitorDataUpload();
             initialMonitorPic();
+            initialPlay();
         }
         /// <summary>
         /// 桌面截屏预览
@@ -904,6 +946,21 @@ namespace LBPlayer
         /// <param name="e"></param>
         private void skinButton_Ok_Click(object sender, EventArgs e)
         {
+            if(skinTextBox_Id.Text.Trim()=="")
+            {
+                MessageBoxEx.Show("请填写ID", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (skinTextBox_Key.Text.Trim() == "")
+            {
+                MessageBoxEx.Show("请填写Key", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (skinComboBox_Mac.SelectedItem.ToString() == "")
+            {
+                MessageBoxEx.Show("请选择MAC", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             Bind bind = new Bind(skinTextBox_Id.Text.Trim(), skinTextBox_Key.Text.Trim(), skinComboBox_Mac.SelectedItem.ToString());
             HttpClient httpClient = new HttpClient();
             string json = JsonConvert.SerializeObject(bind);
@@ -986,41 +1043,49 @@ namespace LBPlayer
             _config.CurrentPlanPath = Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName));
             ConfigTool.SaveConfigData(_config);
             _bDownloading = false;
-        }
-        private LEDScreen _screen = null;
-        private void PlayMedia()
-        {
-            if (_screen != null)
-            {
-                _screen.Free();
-                _screen = null;
-            }
-            Thread.Sleep(1000);
-            var scheduleFilePath = _config.CurrentPlanPath;
-            using (FileStream fs = File.OpenRead(scheduleFilePath))
-            {
 
-                string content;
-                using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
-                {
-                    content = reader.ReadToEnd();
-                }
-                var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
-                foreach (var mediaItem in scheduleFile.MediaList)
-                {
-                    if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Image)
-                    {
-                        _screen = new LEDScreen(0, 0, 1024, 768);
-                        _screen.PlayImage(Path.Combine(_mediaPath, Path.GetFileName(mediaItem.FilePath)));
-                    }
-                    else if (mediaItem.Type == LBManager.Infrastructure.Models.FileType.Video)
-                    {
-                        _screen = new LEDScreen(0, 0, 1024, 768);
-                        _screen.PlayVideo(Path.Combine(_mediaPath, Path.GetFileName(mediaItem.FilePath)));
-                    }
-                }
-            }
+            Start();
+
         }
+        private void Start()
+        {
+            Thread t = new Thread(StartPlay);
+            t.Start();
+        }
+        private void StartPlay()
+        {
+            if(_config.CurrentPlanPath==null|| _config.CurrentPlanPath=="")
+            {
+                return;
+            }
+            Schedule sch;
+            if(!ScheduleParser(_config.CurrentPlanPath, out sch))
+            {
+                return ;
+            }
+            List<PlayInfoWrapper> playInfoList = new List<PlayInfoWrapper>();
+            List<LBManager.Infrastructure.Models.Media> mediaList=sch.GetAllMedia();
+            if(mediaList==null||mediaList.Count<=0)
+            {
+                return ;
+            }
+            for (int i = 0; i < mediaList.Count; i++)
+            {
+                PlayInfoWrapper playInfo = new PlayInfoWrapper(Path.Combine(_mediaPath, Path.GetFileNameWithoutExtension(mediaList[i].URL)+"_"+mediaList[i].MD5+ Path.GetExtension(mediaList[i].URL)),mediaList[i].LoopCount);
+                playInfoList.Add(playInfo);
+            }
+            try
+            {
+                _screenPlayer.Play(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y), playInfoList);
+            }
+            catch (Exception ex)
+            {
+                
+                return  ;
+            }
+            return ;
+        }
+        
         #endregion
         #region 未知命令处理
         private void UnKnowCmd(Cmd cmd)

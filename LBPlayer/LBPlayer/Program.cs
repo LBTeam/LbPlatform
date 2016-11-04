@@ -17,9 +17,7 @@ namespace LBPlayer
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Thread.Sleep(9000);
-            var mainWindow = new LBPlayerMain();
-            Application.Run(mainWindow);
+            Application.Run(new LBPlayerMain());
         }
     }
 }
