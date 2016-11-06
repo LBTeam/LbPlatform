@@ -23,7 +23,7 @@ namespace LBManager
     public class ScreenViewModel : BindableBase
     {
 
-        private LEDScreen _screen = null;
+        //private LEDScreen _screen = null;
         public ScreenViewModel(Screen screen, ScheduleSummaryListViewModel scheduleList)
         {
             _id = screen.Id;
@@ -181,36 +181,36 @@ namespace LBManager
 
         private void Preview()
         {
-            if (_screen != null)
-            {
-                _screen.Free();
-                _screen = null;
-                return;
-            }
-            var scheduleFilePath = _selectedScheduleSummaryFile.FilePath;
-            using (FileStream fs = File.OpenRead(scheduleFilePath))
-            {
+            //if (_screen != null)
+            //{
+            //    _screen.Free();
+            //    _screen = null;
+            //    return;
+            //}
+            //var scheduleFilePath = _selectedScheduleSummaryFile.FilePath;
+            //using (FileStream fs = File.OpenRead(scheduleFilePath))
+            //{
 
-                string content;
-                using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
-                {
-                    content = reader.ReadToEnd();
-                }
-                var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
-                foreach (var mediaItem in scheduleFile.MediaList)
-                {
-                    if (mediaItem.Type == MediaType.Image)
-                    {
-                        _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
-                        _screen.PlayImage(mediaItem.FilePath);
-                    }
-                    else if (mediaItem.Type == MediaType.Video)
-                    {
-                        _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
-                        _screen.PlayVideo(mediaItem.FilePath);
-                    }
-                }
-            }
+            //    string content;
+            //    using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
+            //    {
+            //        content = reader.ReadToEnd();
+            //    }
+            //    var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
+            //    foreach (var mediaItem in scheduleFile.MediaList)
+            //    {
+            //        if (mediaItem.Type == MediaType.Image)
+            //        {
+            //            _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
+            //            _screen.PlayImage(mediaItem.FilePath);
+            //        }
+            //        else if (mediaItem.Type == MediaType.Video)
+            //        {
+            //            _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
+            //            _screen.PlayVideo(mediaItem.FilePath);
+            //        }
+            //    }
+            //}
         }
 
 
