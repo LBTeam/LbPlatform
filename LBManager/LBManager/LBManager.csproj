@@ -210,10 +210,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\LEDScreenSDK\LEDScreenSDK.vcxproj">
-      <Project>{546ef49c-2654-4b15-bff2-18f32a8d7f31}</Project>
-      <Name>LEDScreenSDK</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Common\MahAppsMetro\MahApps.Metro\MahApps.Metro.NET45.csproj">
       <Project>{942d11c4-29f5-46c4-8c14-4b976d56c637}</Project>
       <Name>MahApps.Metro.NET45</Name>
