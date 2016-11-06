@@ -47,17 +47,17 @@
                     <DockPanel Grid.Column="0">
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                             <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
-                                    ToolTip="预览"
+                                    ToolTip="预览" IsEnabled="False"
                                     Command="{Binding PreviewDisplayRegionCommand}">
                                 <materialDesign:PackIcon Kind="PlaylistPlay" Height="20" Width="20"/>
                             </Button>
                             <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
-                                    ToolTip="添加显示区域"
+                                    ToolTip="添加显示区域" IsEnabled="False"
                                     Command="{Binding AddDisplayRegionCommand}">
                                 <materialDesign:PackIcon Kind="PlaylistPlus" Height="20" Width="20"/>
                             </Button>
                             <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
-                                    ToolTip="删除显示区域"
+                                    ToolTip="删除显示区域" IsEnabled="False"
                                     Command="{Binding RemoveDisplayRegionCommand}">
                                 <materialDesign:PackIcon Kind="PlaylistMinus" Height="20" Width="20"/>
                             </Button>
@@ -87,7 +87,7 @@
                             </Grid.ColumnDefinitions>
                             <Grid x:Name="BaseInfoGrid" Grid.Row="0" Grid.ColumnSpan="3">
                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
-                                    <TextBox materialDesign:HintAssist.Hint="方案名称" Text="{Binding Name}" Margin="0,0,8,6" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                                    <TextBox materialDesign:HintAssist.Hint="方案名称" Text="{Binding Name}" Width="120" Margin="0,0,8,6" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                                    
                                     <!--IsEditable="True" materialDesign:HintAssist.HintOpacity=".26"-->
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,8,10">
@@ -108,7 +108,7 @@
                             <Grid x:Name="ScheduleInfoGrid" DataContext="{Binding CurrentDisplayRegion}" Grid.Row="2" Grid.Column="0" Margin="4,0,4,0">
                                 <DockPanel>
                                     <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Margin="0,2,0,0">
-                                        <TextBox  materialDesign:HintAssist.Hint="区域名称" Text="{Binding Name}" Margin="0 0 0 10" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+                                        <TextBox  materialDesign:HintAssist.Hint="区域名称" Text="{Binding Name}" Width="120" Margin="0 0 0 10" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                             <TextBox  materialDesign:HintAssist.Hint="起始位置-X" Text="{Binding X}" Margin="0 0 8 0" VerticalAlignment="Bottom" />
                                             <TextBox  materialDesign:HintAssist.Hint="起始位置-Y" Text="{Binding Y}" Margin="0 0 8 0" VerticalAlignment="Bottom" />
@@ -128,11 +128,12 @@
                                                 <materialDesign:PackIcon Kind="Plus" Height="20" Width="20"/>
                                             </Button>
                                             <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
-                                                ToolTip="删除媒体">
+                                                ToolTip="删除媒体"
+                                                    Command="{Binding RemoveMediaCommand}">
                                                 <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
                                             </Button>
                                         </StackPanel>
-                                        <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" DisplayMemberPath="Name"/>
+                                        <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}" DisplayMemberPath="Name"/>
                                     </Grid>
                                 </DockPanel>
                             </Grid>
@@ -146,10 +147,10 @@
                 <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
                     <Button Content="保存" Width="75" Height="30" VerticalContentAlignment="Center" Margin="0,0,10,0"
                             Style="{DynamicResource MaterialDesignRaisedLightButton}" IsDefault="True"
-                            Command="{Binding SaveScheduleCommand}"/>
+                            Command="{Binding SaveScheduleCommand}" CommandParameter="{Binding ElementName=scheduleView}"/>
                     <Button Content="取消" Width="75" Height="30" VerticalContentAlignment="Center" Margin="0,0,20,0"
                             Style="{DynamicResource MaterialDesignRaisedLightButton}" IsCancel="True"
-                            Command="{Binding CancelCommand}" CommandParameter="{Binding ElementName=scheduleView}"/>
+                            Command="{Binding CancelCommand}" />
                 </StackPanel>
             </Grid>
         </DockPanel>

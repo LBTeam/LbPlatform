@@ -25,22 +25,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
             FetchProgramSchedules(mediaDirectory);
             InitializeFileWatcher(mediaDirectory);
-            NewScheduleCommand = new DelegateCommand(() => { NewSchedule(); }, () => { return CanNewSchedule(); });
         }
 
-        private bool CanNewSchedule()
-        {
-            return true;
-        }
-
-        private void NewSchedule()
-        {
-            ScheduleView scheduleView = new ScheduleView();
-            scheduleView.Owner = Application.Current.MainWindow;
-            scheduleView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            scheduleView.DataContext = new ScheduleViewModel();
-            scheduleView.ShowDialog();
-        }
 
         private ObservableCollection<ScheduleSummaryViewModel> _scheduleSummaryList = new ObservableCollection<ScheduleSummaryViewModel>();
         public ObservableCollection<ScheduleSummaryViewModel> ScheduleSummaryList
@@ -56,8 +42,59 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             set { SetProperty(ref _currentScheduleSummary, value); }
         }
 
-        public DelegateCommand NewScheduleCommand { get; private set; }
+        public DelegateCommand NewScheduleCommand => new DelegateCommand(NewSchedule, CanNewSchedule);
 
+        private bool CanNewSchedule()
+        {
+            return true;
+        }
+
+        private void NewSchedule()
+        {
+            ScheduleView scheduleView = new ScheduleView();
+            scheduleView.Owner = Application.Current.MainWindow;
+            scheduleView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            scheduleView.DataContext = new ScheduleViewModel();
+            scheduleView.ShowDialog();
+        }
+
+
+        public DelegateCommand DeleteScheduleCommand => new DelegateCommand(DeleteSchedule, CanDeleteSchedule);
+
+        private bool CanDeleteSchedule()
+        {
+            return CurrentScheduleSummary == null ? false : true;
+        }
+
+        private void DeleteSchedule()
+        {
+            ScheduleSummaryList.Remove(CurrentScheduleSummary);
+            if (ScheduleSummaryList.Count > 0)
+            {
+                CurrentScheduleSummary = ScheduleSummaryList[0];
+            }
+            else
+            {
+                CurrentScheduleSummary = null;
+            }
+        }
+
+
+        public DelegateCommand EditScheduleCommand => new DelegateCommand(EditSchedule, CanEditSchedule);
+
+        private bool CanEditSchedule()
+        {
+            return CurrentScheduleSummary == null ? false : true;
+        }
+
+        private void EditSchedule()
+        {
+            ScheduleView scheduleView = new ScheduleView();
+            scheduleView.Owner = Application.Current.MainWindow;
+            scheduleView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            scheduleView.DataContext = new ScheduleViewModel(new FileInfo(CurrentScheduleSummary.FilePath));
+            scheduleView.ShowDialog();
+        }
 
         private void FetchProgramSchedules(string directoryPath)
         {
@@ -67,6 +104,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             {
                 ScheduleSummaryList.Add(new ScheduleSummaryViewModel(fileInfo));
             }
+            CurrentScheduleSummary = ScheduleSummaryList.Count == 0 ? null : ScheduleSummaryList[0];
         }
 
         private void InitializeFileWatcher(string targetDirectory)

@@ -25,11 +25,13 @@
                 </Button>
 
                 <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
-                                ToolTip="删除排期">
+                                ToolTip="删除排期"
+                        Command="{Binding DeleteScheduleCommand}">
                     <materialDesign:PackIcon Kind="PlaylistRemove" Height="20" Width="20"/>
                 </Button>
                 <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Width="25" Height="25"
-                                ToolTip="编辑排期">
+                                ToolTip="编辑排期"
+                        Command="{Binding EditScheduleCommand}">
                     <materialDesign:PackIcon Kind="PlaylistCheck" Height="20" Width="20"/>
                 </Button>
             </StackPanel >

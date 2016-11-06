@@ -27,21 +27,16 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         }
 
 
-        public ScheduleViewModel(Schedule schedule)
-            : this()
-        {
-
-        }
-
         private void PreviewScreenSchedule()
         {
 
         }
 
         public ScheduleViewModel(FileInfo fileInfo)
-            : this()
         {
             ParseScheduleFile(fileInfo.FullName);
+            PreviewScreenScheduleCommand = new DelegateCommand(() => { PreviewScreenSchedule(); });
+            SaveScheduleCommand = new DelegateCommand<ScheduleView>((v) => { SaveSchedule(v); });
         }
 
         private void ParseScheduleFile(string fullName)
@@ -52,11 +47,15 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                 readContents = streamReader.ReadToEnd();
             }
             _schedule = JsonConvert.DeserializeObject<Schedule>(readContents);
+            this.Name = _schedule.Name;
+            this.Width = _schedule.Width;
+            this.Heigh = _schedule.Heigh;
+            this.Type = _schedule.Type;
             foreach (var displayRegionItem in _schedule.DisplayRegionList)
             {
                 DisplayRegions.Add(new DisplayRegionViewModel(displayRegionItem));
             }
-            CurrentDisplayRegion = DisplayRegions[0];
+            CurrentDisplayRegion = DisplayRegions.Count == 0 ? null : DisplayRegions[0];
         }
 
         private string _name;
@@ -116,50 +115,45 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         public DelegateCommand RemoveDisplayRegionCommand { get; private set; }
         public DelegateCommand PreviewDisplayRegionCommand { get; private set; }
         public DelegateCommand<ScheduleView> SaveScheduleCommand { get; private set; }
-
-
-
+       
 
         private void SaveSchedule(ScheduleView view)
         {
 
             string scheduleFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media", this.Name + ".playprog");
-            if (!File.Exists(scheduleFilePath))
+            using (StreamWriter outputFile = new StreamWriter(scheduleFilePath, false))
             {
-                // Create a file to write to.
-                using (StreamWriter sw = File.CreateText(scheduleFilePath))
+                _schedule = new Schedule();
+                _schedule.Name = this.Name;
+                _schedule.Type = this.Type;
+                _schedule.Width = this.Width;
+                _schedule.Heigh = this.Heigh;
+                _schedule.DisplayRegionList = new List<DisplayRegion>();
+                foreach (var displayRegionitem in this.DisplayRegions)
                 {
-                    _schedule = new Schedule();
-                    _schedule.Name = this.Name;
-                    _schedule.Type = this.Type;
-                    _schedule.Width = this.Width;
-                    _schedule.Heigh = this.Heigh;
-                    _schedule.DisplayRegionList = new List<DisplayRegion>();
-                    foreach (var displayRegionitem in this.DisplayRegions)
+                    var displayRegion = new DisplayRegion();
+                    displayRegion.Name = displayRegionitem.Name;
+                    displayRegion.X = displayRegionitem.X;
+                    displayRegion.Y = displayRegionitem.Y;
+                    displayRegion.Width = displayRegionitem.Width;
+                    displayRegion.Heigh = displayRegionitem.Heigh;
+                    displayRegion.MediaList = new List<Media>();
+                    foreach (var mediaItem in displayRegionitem.MediaList)
                     {
-                        var displayRegion = new DisplayRegion();
-                        displayRegion.Name = displayRegionitem.Name;
-                        displayRegion.X = displayRegionitem.X;
-                        displayRegion.Y = displayRegionitem.Y;
-                        displayRegion.Width = displayRegionitem.Width;
-                        displayRegion.Heigh = displayRegionitem.Heigh;
-                        displayRegion.MediaList = new List<Media>();
-                        foreach (var mediaItem in displayRegionitem.MediaList)
-                        {
-                            var media = new Media();
-                            media.URL = mediaItem.FilePath;
-                            media.FileSize = mediaItem.FileSize;
-                            media.Type = mediaItem.FileType;
-                            media.MD5 = mediaItem.MD5;
-                            displayRegion.MediaList.Add(media);
-                        }
-                        _schedule.DisplayRegionList.Add(displayRegion);
+                        var media = new Media();
+                        media.URL = mediaItem.FilePath;
+                        media.FileSize = mediaItem.FileSize;
+                        media.Type = mediaItem.FileType;
+                        media.MD5 = mediaItem.MD5;
+                        displayRegion.MediaList.Add(media);
                     }
-                    
-                    sw.WriteLine(JsonConvert.SerializeObject(_schedule));
+                    _schedule.DisplayRegionList.Add(displayRegion);
                 }
-                view.Close();
+
+                outputFile.WriteLine(JsonConvert.SerializeObject(_schedule));
             }
+            
+            view.Close();
         }
     }
 

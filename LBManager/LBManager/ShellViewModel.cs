@@ -272,6 +272,8 @@ namespace LBManager
 
         public DelegateCommand NewScheduleCommand { get; private set; }
 
+       
+
         private void ExtendedOpenedEventHandler(object sender, DialogOpenedEventArgs eventargs)
         {
             Console.WriteLine("You could intercept the open and affect the dialog using eventArgs.Session.");

@@ -5,18 +5,18 @@ using System.Collections.ObjectModel;
 using System;
 using Microsoft.Win32;
 using System.IO;
-using LBManager.Infrastructure.Utils;
+using LBManager.Infrastructure.Utility;
 using MaterialDesignThemes.Wpf;
 using System.Threading.Tasks;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
-    public class DisplayRegionViewModel:BindableBase
+    public class DisplayRegionViewModel : BindableBase
     {
         private DisplayRegion _displayRegion;
         public DisplayRegionViewModel()
         {
-            AddMediaCommand = new DelegateCommand(() => { AddMedia(); });
+           // AddMediaCommand = new DelegateCommand(() => { AddMedia(); });
         }
 
 
@@ -28,6 +28,13 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             _width = displayRegion.Width;
             _heigh = displayRegion.Heigh;
             _name = displayRegion.Name;
+            foreach (var mediaItem in displayRegion.MediaList)
+            {
+                MediaList.Add(new MediaViewModel(mediaItem));
+            }
+            CurrentMedia = MediaList.Count == 0 ? null : MediaList[0];
+
+           // AddMediaCommand = new DelegateCommand(() => { AddMedia(); });
         }
 
         private string _name;
@@ -74,8 +81,33 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             set { SetProperty(ref _mediaList, value); }
         }
 
-        public DelegateCommand AddMediaCommand { get; private set; }
+        private MediaViewModel _currentMedia;
+        public MediaViewModel CurrentMedia
+        {
+            get { return _currentMedia; }
+            set { SetProperty(ref _currentMedia, value); }
+        }
 
+        public DelegateCommand AddMediaCommand => new DelegateCommand(AddMedia);
+        public DelegateCommand RemoveMediaCommand => new DelegateCommand(RemoveMedia, CanRemoveMedia);
+
+        private bool CanRemoveMedia()
+        {
+            return CurrentMedia == null ? false : true;
+        }
+
+        private void RemoveMedia()
+        {
+            MediaList.Remove(CurrentMedia);
+            if (MediaList.Count >0)
+            {
+                CurrentMedia = MediaList[0];
+            }
+            else
+            {
+                CurrentMedia = null;
+            }
+        }
 
 
         private void AddMedia()
@@ -100,7 +132,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             {
                 Filter = "Image File|*.jpg;*.jpeg;*.png|Video File|*.mp4;*.mov"
             };
-            
+
             if (view.ShowDialog() == true)
             {
                 FileInfo fileInfo = new FileInfo(view.FileName);
@@ -116,14 +148,14 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                 MediaList.Add(new MediaViewModel(media));
             }
 
-           // var result = DialogHost.Show(view, "ScheduleRootDialog", AddMediaDialogClosingEventHandler);
+            // var result = DialogHost.Show(view, "ScheduleRootDialog", AddMediaDialogClosingEventHandler);
         }
 
         //private void AddMediaDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
         //{
         //    if ((bool)eventArgs.Parameter == false) return;
         //    eventArgs.Cancel();
-            
+
         //    DialogHost dialog = sender as DialogHost;
         //    var view = dialog.DialogContent as OpenFileDialog;
         //    if (view.ShowDialog() == true)

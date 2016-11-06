@@ -12,7 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using LBManager.Infrastructure.Utils;
+using LBManager.Infrastructure.Utility;
 using Newtonsoft.Json;
 using System.Threading;
 using LBManager.Modules.ScheduleManage.ViewModels;

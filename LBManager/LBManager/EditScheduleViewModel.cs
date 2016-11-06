@@ -1,5 +1,5 @@
 ﻿using LBManager.Infrastructure.Models;
-using LBManager.Infrastructure.Utils;
+using LBManager.Infrastructure.Utility;
 using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
