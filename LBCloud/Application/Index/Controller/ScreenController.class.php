@@ -111,7 +111,7 @@ class ScreenController extends CommonController
 				if($led_id && $player_res && $bind_res){
 					$model->commit();
 					/*命令下发开始*/
-					$param = array(
+					/*$param = array(
 						"name"		=> $led_data['name'],
 						"size_x"	=> $led_data['size_x'],
 						"size_y"	=> $led_data['size_y'],
@@ -126,7 +126,7 @@ class ScreenController extends CommonController
 					$cmd_data['execute'] = NOW_TIME;
 					$cmd_data['expired'] = NOW_TIME;
 					$cmd_model = D("Command");
-					$cmd_model->add($cmd_data);
+					$cmd_model->add($cmd_data);*/
 					/*命令下发结束*/
 					$this->success('新增成功', U('index'));
 				}else{

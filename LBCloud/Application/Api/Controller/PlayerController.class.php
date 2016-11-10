@@ -45,13 +45,39 @@ class PlayerController extends CommonController
 		if($player){
 			if($mac == $player['mac']){
 				//$respones = array("err_code"=>"020102","msg"=>"Binding player repeat");
-				$respones = array("err_code"=>"000000","msg"=>"ok","data"=>array("screen_id"=>$player['id']));
+				$led_model = D("Screen");
+				$led_info = $led_model->screen_by_id($player['id']);
+				$data = array(
+					"id"		=> $bind_id,
+					"key"		=> $bind_key,
+					'mac'		=> $mac,
+					'screen_id'	=> $player['id'],
+					"name"		=> $led_info['name'],
+					"size_x"	=> intval($led_info['size_x']),
+					"size_y"	=> intval($led_info['size_y']),
+					"resolu_x"	=> intval($led_info['resolu_x']),
+					"resolu_y"	=> intval($led_info['resolu_y'])
+				);
+				$respones = array("err_code"=>"000000","msg"=>"ok","data"=>$data);
 			}else{
 				$map = array('id'=>$player['id']);
 				$data = array('mac'=>$mac);
 				$res = $player_model->where($map)->save($data);
 				if($res){
-					$respones = array("err_code"=>"000000","msg"=>"ok","data"=>array("screen_id"=>$player['id']));
+					$led_model = D("Screen");
+					$led_info = $led_model->screen_by_id($player['id']);
+					$data = array(
+						"id"		=> $bind_id,
+						"key"		=> $bind_key,
+						'mac'		=> $mac,
+						'screen_id'	=> $player['id'],
+						"name"		=> $led_info['name'],
+						"size_x"	=> intval($led_info['size_x']),
+						"size_y"	=> intval($led_info['size_y']),
+						"resolu_x"	=> intval($led_info['resolu_x']),
+						"resolu_y"	=> intval($led_info['resolu_y'])
+					);
+					$respones = array("err_code"=>"000000","msg"=>"ok","data"=>$data);
 				}else{
 					$respones = array("err_code"=>"020103","msg"=>"Binding player failed");
 				}
