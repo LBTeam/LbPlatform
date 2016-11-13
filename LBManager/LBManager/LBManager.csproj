@@ -39,6 +39,14 @@
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Elysium, Version=2.0.1042.4, Culture=neutral, PublicKeyToken=afa220db249e5b15, processorArchitecture=MSIL">
       <HintPath>..\packages\Elysium.Theme.2.0.4\lib\net45\Elysium.dll</HintPath>
       <Private>True</Private>
@@ -67,6 +75,10 @@
       <HintPath>..\packages\Prism.Wpf.6.2.0\lib\net45\Prism.Wpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Quartz, Version=2.4.1.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Quartz.2.4.1\lib\net40\Quartz.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -91,10 +103,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converter\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="EditScheduleView.xaml.cs">
       <DependentUpon>EditScheduleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="EditScheduleViewModel.cs" />
+    <Compile Include="Job\HeartbeatJob.cs" />
+    <Compile Include="Job\ScheduleManager.cs" />
     <Compile Include="LoginDialog.xaml.cs">
       <DependentUpon>LoginDialog.xaml</DependentUpon>
     </Compile>
@@ -104,7 +119,6 @@
     <Compile Include="SampleProgressDialog.xaml.cs">
       <DependentUpon>SampleProgressDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ScheduleViewModel.cs" />
     <Compile Include="ScreenListView.xaml.cs">
       <DependentUpon>ScreenListView.xaml</DependentUpon>
     </Compile>
@@ -112,6 +126,12 @@
     <Compile Include="ScreenService.cs" />
     <Compile Include="ScreenViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
+    <Compile Include="TokenInvalidPromptDialog.xaml.cs">
+      <DependentUpon>TokenInvalidPromptDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Utility\EnumBindingSourceExtension.cs" />
+    <Compile Include="Utility\UtilityTool.cs" />
+    <Compile Include="Utility\PasswordHelper.cs" />
     <Page Include="EditScheduleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -153,6 +173,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="TokenInvalidPromptDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -172,6 +196,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="job_scheduling_data_2_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -183,10 +210,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\LEDScreenSDK\LEDScreenSDK.vcxproj">
-      <Project>{546ef49c-2654-4b15-bff2-18f32a8d7f31}</Project>
-      <Name>LEDScreenSDK</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Common\MahAppsMetro\MahApps.Metro\MahApps.Metro.NET45.csproj">
       <Project>{942d11c4-29f5-46c4-8c14-4b976d56c637}</Project>
       <Name>MahApps.Metro.NET45</Name>
@@ -203,11 +226,20 @@
       <Project>{5dc0aec5-e59b-4868-b125-92eeb3c1225b}</Project>
       <Name>LBManager.Controls</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LBManager.Infrastructure.Common\LBManager.Infrastructure.Common.csproj">
+      <Project>{bc563c83-a276-438e-9acb-d6324a3f8fc3}</Project>
+      <Name>LBManager.Infrastructure.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LBManager.Infrastructure\LBManager.Infrastructure.csproj">
       <Project>{AE40C0E5-6C31-4364-874D-6A0A6C028367}</Project>
       <Name>LBManager.Infrastructure</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LBManager.Modules.ScheduleManage\LBManager.Modules.ScheduleManage.csproj">
+      <Project>{ab8b448c-dd74-4d60-a041-3e5d03a32180}</Project>
+      <Name>LBManager.Modules.ScheduleManage</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

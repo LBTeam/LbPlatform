@@ -9,7 +9,8 @@ namespace LBManager.Infrastructure.Models
     public class UploadComplete
     {
         private string _fileName;
-        private FileType _fileType;
+        private FileContentType _fileType;
+        private ScheduleType _playType;
         private string _fileMD5;
         private List<PartComplete> _parts;
         private List<string> _screens;
@@ -19,13 +20,14 @@ namespace LBManager.Infrastructure.Models
 
         }
 
-        public UploadComplete(string _fileName, FileType _fileType, string _fileMD5, List<PartComplete> _parts, List<string> _screens)
+        public UploadComplete(string _fileName, FileContentType _fileType, ScheduleType planType, string _fileMD5, List<PartComplete> _parts, List<string> _screens)
         {
             this._fileName = _fileName;
             this._fileType = _fileType;
             this._fileMD5 = _fileMD5;
             this._parts = _parts;
             this._screens = _screens;
+            this._playType = planType;
         }
 
         public string FileName
@@ -41,7 +43,7 @@ namespace LBManager.Infrastructure.Models
             }
         }
 
-        public FileType FileType
+        public FileContentType FileType
         {
             get
             {
@@ -51,6 +53,18 @@ namespace LBManager.Infrastructure.Models
             set
             {
                 _fileType = value;
+            }
+        }
+
+        public ScheduleType PlanType
+        {
+            get
+            {
+                return _playType;
+            }
+            set
+            {
+                _playType = value;
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿using LBManager.Infrastructure.Models;
-using LBManager.Infrastructure.Utils;
+using LBManager.Infrastructure.Utility;
 using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -31,10 +31,10 @@ namespace LBManager
 
                 MediaList.Add(new Media()
                 {
-                    FilePath = fileInfo.FullName,
-                    FileType = fileInfo.Extension.Equals(".mp4",StringComparison.CurrentCultureIgnoreCase)?FileType.Video:FileType.Image,
+                    URL = fileInfo.FullName,
+                    Type = fileInfo.Extension.Equals(".mp4",StringComparison.CurrentCultureIgnoreCase)?MediaType.Video:MediaType.Image,
                     FileSize = fileInfo.Length,
-                    FileMD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
+                    MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
                 });
             }
         }
@@ -52,6 +52,15 @@ namespace LBManager
             get { return _scheduleName; }
             set { SetProperty(ref _scheduleName, value); }
         }
+
+        private ScheduleType _type = ScheduleType.Common;
+        public ScheduleType Type
+        {
+            get { return _type; }
+            set { SetProperty(ref _type, value); }
+        }
+
+
         public DelegateCommand AddMediaCommand { get; private set; }
 
     }

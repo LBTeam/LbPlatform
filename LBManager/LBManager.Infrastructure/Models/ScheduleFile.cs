@@ -10,6 +10,7 @@ namespace LBManager.Infrastructure.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public ScheduleType Type { get; set; }
         public List<MediaFile> MediaList { get; set; }
     }
 }

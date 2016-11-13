@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\T\LbPlatform\LBPlayer\packages\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -51,27 +51,33 @@
     <Compile Include="Interfaces\IChecksumProvider.cs" />
     <Compile Include="Interfaces\IScreenService.cs" />
     <Compile Include="Models\CompleteMultipartUploadResult.cs" />
-    <Compile Include="Models\FileType.cs" />
+    <Compile Include="Models\FileContentType.cs" />
+    <Compile Include="Models\MediaType.cs" />
+    <Compile Include="Models\HeartbeatResponse.cs" />
     <Compile Include="Models\ImageMedia.cs" />
+    <Compile Include="Models\LoginResponse.cs" />
     <Compile Include="Models\Media.cs" />
     <Compile Include="Models\MediaFile.cs" />
     <Compile Include="Models\MediaSchedule.cs" />
     <Compile Include="Models\MediaTempInfo.cs" />
+    <Compile Include="Models\RefreshTokenResponse.cs" />
     <Compile Include="Models\Schedule.cs" />
+    <Compile Include="Models\ScheduleType.cs" />
     <Compile Include="Models\Screen.cs" />
     <Compile Include="Models\ScheduleFile.cs" />
     <Compile Include="Models\TextMedia.cs" />
     <Compile Include="Models\UploadComplete.cs" />
-    <Compile Include="Models\UploadFileInfo.cs" />
+    <Compile Include="Models\UploadMediaFileInfo.cs" />
     <Compile Include="Models\UploadFileInfoForServer.cs" />
+    <Compile Include="Models\UploadScheduleFileInfo.cs" />
     <Compile Include="Models\VideoMedia.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\FileUtils.cs" />
+    <Compile Include="Utility\EnumDescriptionTypeConverter.cs" />
+    <Compile Include="Utility\FileUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

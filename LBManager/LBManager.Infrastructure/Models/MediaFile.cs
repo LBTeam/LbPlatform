@@ -9,7 +9,7 @@ namespace LBManager.Infrastructure.Models
     public class MediaFile
     {
         public string FilePath { get; set; }
-        public FileType Type { get; set; }
+        public MediaType Type { get; set; }
         public string MD5 { get; set; }
     }
 }

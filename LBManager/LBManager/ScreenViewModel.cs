@@ -12,17 +12,19 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using LBManager.Infrastructure.Utils;
+using LBManager.Infrastructure.Utility;
 using Newtonsoft.Json;
 using System.Threading;
+using LBManager.Modules.ScheduleManage.ViewModels;
+using LBManager.Utility;
 
 namespace LBManager
 {
     public class ScreenViewModel : BindableBase
     {
 
-        private LEDScreen _screen = null;
-        public ScreenViewModel(Screen screen, ProgramScheduleListViewModel scheduleList)
+        //private LEDScreen _screen = null;
+        public ScreenViewModel(Screen screen, ScheduleSummaryListViewModel scheduleList)
         {
             _id = screen.Id;
             _name = screen.Name;
@@ -78,15 +80,15 @@ namespace LBManager
         }
 
 
-        private ScheduleFileInfo _selectedScheduleFile = new ScheduleFileInfo();
-        public ScheduleFileInfo SelectedScheduleFile
+        private ScheduleSummaryViewModel _selectedScheduleSummaryFile = new ScheduleSummaryViewModel();
+        public ScheduleSummaryViewModel SelectedScheduleSummaryFile
         {
-            get { return _selectedScheduleFile; }
-            set { SetProperty(ref _selectedScheduleFile, value); }
+            get { return _selectedScheduleSummaryFile; }
+            set { SetProperty(ref _selectedScheduleSummaryFile, value); }
         }
 
-        private ProgramScheduleListViewModel _scheduleList;
-        public ProgramScheduleListViewModel ScheduleList
+        private ScheduleSummaryListViewModel _scheduleList;
+        public ScheduleSummaryListViewModel ScheduleList
         {
             get { return _scheduleList; }
             set { SetProperty(ref _scheduleList, value); }
@@ -99,9 +101,10 @@ namespace LBManager
 
         private async void PublishSchedule()
         {
-            List<UploadFileInfo> uploadFileInfos = new List<UploadFileInfo>();
-
-            var scheduleFilePath = _selectedScheduleFile.FilePath;
+            List<UploadMediaFileInfo> uploadFileInfos = new List<UploadMediaFileInfo>();
+            UploadScheduleFileInfo uploadScheduleFileInfo;
+            Schedule scheduleFile;
+            var scheduleFilePath = _selectedScheduleSummaryFile.FilePath;
             var scheduleFileMD5 = FileUtils.ComputeFileMd5(scheduleFilePath);
             using (FileStream fs = File.OpenRead(scheduleFilePath))
             {
@@ -111,36 +114,38 @@ namespace LBManager
                 {
                     content = reader.ReadToEnd();
                 }
-                var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
+                scheduleFile = JsonConvert.DeserializeObject<Schedule>(content);
                 if (scheduleFile == null)
                 {
                     throw new ArgumentNullException("播放方案文件已损坏！");
                 }
-                foreach (var mediaItem in scheduleFile.MediaList)
+                var mediaList = scheduleFile.GetAllMedia();
+                foreach (var mediaItem in mediaList)
                 {
-                    var uploadMediaFileInfo = new UploadFileInfo(mediaItem.FilePath,
-                                                                 new FileInfo(mediaItem.FilePath).Length,
+                    var uploadMediaFileInfo = new UploadMediaFileInfo(mediaItem.URL,
+                                                                 new FileInfo(mediaItem.URL).Length,
                                                                  mediaItem.MD5,
-                                                                 mediaItem.Type);
+                                                                 UtilityTool.MediaTypeToContentType(mediaItem.Type));
                     uploadFileInfos.Add(uploadMediaFileInfo);
                 }
-                var uploadScheduleFileInfo = new UploadFileInfo(scheduleFilePath,
+                uploadScheduleFileInfo = new UploadScheduleFileInfo(scheduleFilePath,
                                                                 new FileInfo(scheduleFilePath).Length,
                                                                 scheduleFileMD5,
-                                                                FileType.Plan);
-                uploadScheduleFileInfo.MediaList = new List<MediaTempInfo>(scheduleFile.MediaList.Select(m => new MediaTempInfo(m.FilePath, m.MD5)));
-                uploadFileInfos.Add(uploadScheduleFileInfo);
+                                                                FileContentType.Schedule,
+                                                                scheduleFile.Type);
+                uploadScheduleFileInfo.MediaList = new List<MediaTempInfo>(mediaList.Select(m => new MediaTempInfo(m.URL, m.MD5)));
+                //uploadFileInfos.Add(uploadScheduleFileInfo);
             }
 
-            var uploadPartInfos = await GenerateUploadPartInfos("http://lbcloud.ddt123.cn/?s=api/Manager/upload", uploadFileInfos);
+            var uploadPartInfos = await GenerateUploadPartInfos(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/upload&token={0}", App.SessionToken), uploadScheduleFileInfo, uploadFileInfos);
             foreach (var uploadPartInfo in uploadPartInfos)
             {
-                if (uploadPartInfo.Type == FileType.Plan)
+                if (uploadPartInfo.Type == FileContentType.Schedule)
                 {
                     continue;
                 }
 
-                var uploadComplete = UploadFile(uploadPartInfo);
+                var uploadComplete = UploadFile(uploadPartInfo, scheduleFile.Type);
 
                 var result = await CompleteMultipartUpload(uploadComplete);
             }
@@ -149,17 +154,17 @@ namespace LBManager
 
             if (uploadPartInfos.Count == 0)
             {
-                var scheduleUploadCompleted = new UploadComplete(scheduleFilePath, FileType.Plan, scheduleFileMD5, null, new List<string>() { this.Id });
+                var scheduleUploadCompleted = new UploadComplete(scheduleFilePath, FileContentType.Schedule, scheduleFile.Type, scheduleFileMD5, null, new List<string>() { this.Id });
                 var scheduleUploadResult = await CompleteMultipartUpload(scheduleUploadCompleted);
             }
             else
             {
-                schedulePartInfo = uploadPartInfos.FirstOrDefault(p => p.Type == FileType.Plan);
+                schedulePartInfo = uploadPartInfos.FirstOrDefault(p => p.Type == FileContentType.Schedule);
                 if (schedulePartInfo == null)
                 {
                     throw new ArgumentNullException("发布缺少播放方案！");
                 }
-                var scheduleUploadCompleted = UploadFile(schedulePartInfo);
+                var scheduleUploadCompleted = UploadFile(schedulePartInfo, scheduleFile.Type);
                 var scheduleUploadResult = await CompleteMultipartUpload(scheduleUploadCompleted);
             }
 
@@ -176,47 +181,48 @@ namespace LBManager
 
         private void Preview()
         {
-            if (_screen != null)
-            {
-                _screen.Free();
-                _screen = null;
-                return;
-            }
-            var scheduleFilePath = _selectedScheduleFile.FilePath;
-            using (FileStream fs = File.OpenRead(scheduleFilePath))
-            {
+            //if (_screen != null)
+            //{
+            //    _screen.Free();
+            //    _screen = null;
+            //    return;
+            //}
+            //var scheduleFilePath = _selectedScheduleSummaryFile.FilePath;
+            //using (FileStream fs = File.OpenRead(scheduleFilePath))
+            //{
 
-                string content;
-                using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
-                {
-                    content = reader.ReadToEnd();
-                }
-                var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
-                foreach (var mediaItem in scheduleFile.MediaList)
-                {
-                    if (mediaItem.Type == FileType.Image)
-                    {
-                        _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
-                        _screen.PlayImage(mediaItem.FilePath);
-                    }
-                    else if (mediaItem.Type == FileType.Video)
-                    {
-                        _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
-                        _screen.PlayVideo(mediaItem.FilePath);
-                    }
-                }
-            }
+            //    string content;
+            //    using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
+            //    {
+            //        content = reader.ReadToEnd();
+            //    }
+            //    var scheduleFile = JsonConvert.DeserializeObject<ScheduleFile>(content);
+            //    foreach (var mediaItem in scheduleFile.MediaList)
+            //    {
+            //        if (mediaItem.Type == MediaType.Image)
+            //        {
+            //            _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
+            //            _screen.PlayImage(mediaItem.FilePath);
+            //        }
+            //        else if (mediaItem.Type == MediaType.Video)
+            //        {
+            //            _screen = new LEDScreen(0, 0, _pixelsWidth, _pixelsHeight);
+            //            _screen.PlayVideo(mediaItem.FilePath);
+            //        }
+            //    }
+            //}
         }
 
 
-        private UploadComplete UploadFile(UploadFileInfoForServer uploadPartInfo)
+        private UploadComplete UploadFile(UploadFileInfoForServer uploadPartInfo, ScheduleType planType)
         {
             UploadComplete uploadComplete = new UploadComplete();
             uploadComplete.FileName = uploadPartInfo.Name;
             uploadComplete.FileMD5 = uploadPartInfo.MD5;
             uploadComplete.FileType = uploadPartInfo.Type;
+            uploadComplete.PlanType = planType;
 
-            if (uploadComplete.FileType == FileType.Plan)
+            if (uploadComplete.FileType == FileContentType.Schedule)
             {
                 uploadComplete.Screens = new List<string>() { this.Id };
             }
@@ -273,10 +279,11 @@ namespace LBManager
             return uploadComplete;
         }
 
-        private async Task<List<UploadFileInfoForServer>> GenerateUploadPartInfos(string url, List<UploadFileInfo> fileList)
+        private async Task<List<UploadFileInfoForServer>> GenerateUploadPartInfos(string url, UploadScheduleFileInfo scheduleFile, List<UploadMediaFileInfo> mediaFileList)
         {
             HttpClient httpClient = new HttpClient();
-            string uploadFileInfoJson = JsonConvert.SerializeObject(fileList);
+
+            string uploadFileInfoJson = JsonConvert.SerializeObject(new { scheduleFile, mediaFileList });
 
             HttpResponseMessage response = await httpClient.PostAsync(url, new StringContent(uploadFileInfoJson));
 
@@ -291,7 +298,7 @@ namespace LBManager
             HttpClient httpClient = new HttpClient();
             string uploadFileInfoJson = JsonConvert.SerializeObject(uploadComplete);
 
-            HttpResponseMessage response = await httpClient.PostAsync("http://lbcloud.ddt123.cn/?s=api/Manager/complete_upload", new StringContent(uploadFileInfoJson));
+            HttpResponseMessage response = await httpClient.PostAsync(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/complete_upload&token={0}", App.SessionToken), new StringContent(uploadFileInfoJson));
 
             response.EnsureSuccessStatusCode();
 

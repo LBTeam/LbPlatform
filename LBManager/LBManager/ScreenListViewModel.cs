@@ -1,4 +1,7 @@
-﻿using LBManager.Infrastructure.Interfaces;
+﻿using LBManager.Infrastructure.Common.Event;
+using LBManager.Infrastructure.Common.Utility;
+using LBManager.Infrastructure.Interfaces;
+using LBManager.Modules.ScheduleManage.ViewModels;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -12,12 +15,22 @@ namespace LBManager
     public class ScreenListViewModel:BindableBase
     {
         private IScreenService _screenService;
-        private ProgramScheduleListViewModel _scheduleList;
-        public ScreenListViewModel(IScreenService screenService, ProgramScheduleListViewModel scheduleList)
+        private ScheduleSummaryListViewModel _scheduleList;
+        public ScreenListViewModel(IScreenService screenService, ScheduleSummaryListViewModel scheduleList)
         {
             _screenService = screenService;
             _scheduleList = scheduleList;
-            FetchScreens();
+            Messager.Default.EventAggregator.GetEvent<OnLoginEvent>().Subscribe(state => 
+            {
+                if (state.Status)
+                {
+                    FetchScreens();
+                }
+                else
+                {
+                    ScreenList.Clear();
+                }
+            });
         }
 
         private async void FetchScreens()

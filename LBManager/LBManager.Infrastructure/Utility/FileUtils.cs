@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LBManager.Infrastructure.Utils
+namespace LBManager.Infrastructure.Utility
 {
     public static class FileUtils
     {
