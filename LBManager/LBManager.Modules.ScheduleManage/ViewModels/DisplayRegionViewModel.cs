@@ -130,7 +130,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
             var view = new OpenFileDialog()
             {
-                Filter = "Image File|*.jpg;*.jpeg;*.png|Video File|*.mp4;*.mov"
+                Filter = "Video File|*.mp4;*.mov;*.wmv"
             };
 
             if (view.ShowDialog() == true)
@@ -143,7 +143,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     URL = fileInfo.FullName,
                     Type = GetMediaType(fileInfo.Extension),
                     FileSize = fileInfo.Length,
-                    MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
+                    MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName),
+                    LoopCount = 1
                 };
                 MediaList.Add(new MediaViewModel(media));
             }

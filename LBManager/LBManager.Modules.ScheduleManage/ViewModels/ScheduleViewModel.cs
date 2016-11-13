@@ -145,6 +145,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                         media.FileSize = mediaItem.FileSize;
                         media.Type = mediaItem.FileType;
                         media.MD5 = mediaItem.MD5;
+                        media.LoopCount = mediaItem.LoopCount;
                         displayRegion.MediaList.Add(media);
                     }
                     _schedule.DisplayRegionList.Add(displayRegion);

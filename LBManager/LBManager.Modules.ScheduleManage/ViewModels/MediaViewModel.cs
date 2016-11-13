@@ -16,6 +16,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             _md5 = media.MD5;
             _cron = media.Cron;
             _content = media.Content;
+            _loopCount = media.LoopCount;
         }
 
         private string _name;
@@ -65,6 +66,12 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         {
             get { return _content; }
             set { SetProperty(ref _content, value); }
+        }
+        private int _loopCount = 1;
+        public int LoopCount
+        {
+            get { return _loopCount; }
+            set { SetProperty(ref _loopCount, value); }
         }
     }
 }

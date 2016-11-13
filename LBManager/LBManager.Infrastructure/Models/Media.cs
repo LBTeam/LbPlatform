@@ -20,7 +20,7 @@ namespace LBManager.Infrastructure.Models
         public string MD5 { get; set; }
         public string Cron { get; set; }
         public string Content { get; set; }
-
+        public int LoopCount { get; set; }
 
 
     }

@@ -7,6 +7,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:utility="clr-namespace:LBManager.Infrastructure.Common.Utility;assembly=LBManager.Infrastructure.Common"
         xmlns:model="clr-namespace:LBManager.Infrastructure.Models;assembly=LBManager.Infrastructure"
+        xmlns:Controls ="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
         Name="scheduleView"
         Title="ScheduleView" Height="600" Width="800"
@@ -133,7 +134,30 @@
                                                 <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
                                             </Button>
                                         </StackPanel>
-                                        <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}" DisplayMemberPath="Name"/>
+                                        <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,2">
+                                                        <Grid.Resources>
+                                                            <Style TargetType="TextBox">
+                                                                <Setter Property="MaxWidth" Value="75"/>
+                                                            </Style>
+                                                        </Grid.Resources>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="{Binding Name}" Grid.Column="0" VerticalAlignment="Center"/>
+                                                        <Controls:NumericUpDown x:Name="StringFormatNumUpDown"
+                                                                                Grid.Column="1"
+                                                                                Interval="1"
+                                                                                IsReadOnly="False"
+                                                                                StringFormat=" {0} 次" VerticalContentAlignment="Center" VerticalAlignment="Center"
+                                                                                Value="{Binding LoopCount, Mode=TwoWay}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
                                     </Grid>
                                 </DockPanel>
                             </Grid>
