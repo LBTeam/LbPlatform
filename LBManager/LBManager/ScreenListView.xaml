@@ -13,7 +13,8 @@
         <DataGrid  ItemsSource="{Binding ScreenList}" 
                    AutoGenerateColumns="False"
                    VerticalContentAlignment="Center"
-                   Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}">
+                   Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}"
+                   Background="#FAFAFA">
             <!--materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                    materialDesign:DataGridAssist.ColumnHeaderPadding="8"-->
             <DataGrid.Columns>
@@ -26,7 +27,7 @@
                                                         />
                 <!-- set a max length to get an indicator in the editor -->
                 <materialDesign:MaterialDataGridTextColumn Binding="{Binding PixelsWidth}" Width="*"
-                                                        Header="PixelsWidth" 
+                                                        Header="PixelsWidth"
                                                         />
                 <materialDesign:MaterialDataGridComboBoxColumn Header="­Plan" 
                                                                DisplayMemberPath="FileName"

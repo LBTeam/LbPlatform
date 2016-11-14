@@ -40,7 +40,8 @@
         <ListBox DockPanel.Dock="Top" FontSize="14"
                  ItemsSource="{Binding ScheduleSummaryList}"
                  SelectedItem="{Binding CurrentScheduleSummary}"
-                 DisplayMemberPath="FileName">
+                 DisplayMemberPath="FileName"
+                 Background="#FAFAFA">
 
         </ListBox>
     </DockPanel>

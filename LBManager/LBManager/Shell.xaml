@@ -85,7 +85,7 @@
 
 
                     </materialDesign:ColorZone>
-                    <scheduleModule:ScheduleListView DataContext="{Binding ScheduleList}"  DockPanel.Dock="Top"/>
+                    <scheduleModule:ScheduleListView DataContext="{Binding ScheduleList}"  DockPanel.Dock="Top" Background="#FAFAFA"/>
                     <!--DataContext="{Binding ScheduleList}"-->
                     <!--<DockPanel DockPanel.Dock="Top" >
                         <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
@@ -124,7 +124,7 @@
                                               Mode="Accent" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" FontWeight="Black">LED Screen</TextBlock>
                     </materialDesign:ColorZone>
-                    <local:ScreenListView DockPanel.Dock="Top" DataContext="{Binding ScreenList}"/>
+                    <local:ScreenListView DockPanel.Dock="Top" DataContext="{Binding ScreenList}" Background="#FAFAFA"/>
                 </DockPanel>
             </Grid>
         </DockPanel>
