@@ -17,12 +17,17 @@ using Newtonsoft.Json;
 using System.Threading;
 using LBManager.Modules.ScheduleManage.ViewModels;
 using LBManager.Utility;
+using MaterialDesignThemes.Wpf;
+using LBManager.Infrastructure.Common.Utility;
+using LBManager.Infrastructure.Common.Event;
+using Prism.Events;
 
 namespace LBManager
 {
     public class ScreenViewModel : BindableBase
     {
-
+        private SubscriptionToken _uploadFileProgressChangedToken;
+        private SubscriptionToken _publishScheduleCompletedToken;
         //private LEDScreen _screen = null;
         public ScreenViewModel(Screen screen, ScheduleSummaryListViewModel scheduleList)
         {
@@ -101,6 +106,45 @@ namespace LBManager
 
         private async void PublishSchedule()
         {
+
+            var view = new UploadFileProgressBar();
+
+            _uploadFileProgressChangedToken = Messager.Default.EventAggregator.GetEvent<OnUploadFileProgressChangedEvent>().Subscribe(e =>
+             {
+                 view.progressTxt.Text = string.Format("{0}({1:f}%)", e.FileName, e.UploadedPercent);
+             }, ThreadOption.UIThread);
+
+            _publishScheduleCompletedToken = Messager.Default.EventAggregator.GetEvent<OnPublishScheduleCompletedEvent>().Subscribe(e =>
+              {
+                  DialogHost.CloseDialogCommand.Execute(false, view);
+              }, ThreadOption.UIThread);
+
+            var result = await DialogHost.Show(view, "RootDialog", UploadFileProgressOpenedHandler, UploadFileProgressCloseingHandler);
+
+        }
+
+        private void UploadFileProgressCloseingHandler(object sender, DialogClosingEventArgs eventArgs)
+        {
+            if ((bool)eventArgs.Parameter == false)
+            {
+                Messager.Default.EventAggregator.GetEvent<OnUploadFileProgressChangedEvent>().Unsubscribe(_uploadFileProgressChangedToken);
+                Messager.Default.EventAggregator.GetEvent<OnPublishScheduleCompletedEvent>().Unsubscribe(_publishScheduleCompletedToken);
+                return;
+            }
+            eventArgs.Cancel();
+        }
+
+        private void UploadFileProgressOpenedHandler(object sender, DialogOpenedEventArgs eventArgs)
+        {
+            var action = new Action(() => CompletedUpload());
+            action.BeginInvoke(null, null);
+        }
+
+
+
+
+        private async void CompletedUpload()
+        {
             List<UploadMediaFileInfo> uploadFileInfos = new List<UploadMediaFileInfo>();
             UploadScheduleFileInfo uploadScheduleFileInfo;
             Schedule scheduleFile;
@@ -137,6 +181,7 @@ namespace LBManager
                 //uploadFileInfos.Add(uploadScheduleFileInfo);
             }
 
+
             var uploadPartInfos = await GenerateUploadPartInfos(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/upload&token={0}", App.SessionToken), uploadScheduleFileInfo, uploadFileInfos);
             foreach (var uploadPartInfo in uploadPartInfos)
             {
@@ -148,6 +193,8 @@ namespace LBManager
                 var uploadComplete = UploadFile(uploadPartInfo, scheduleFile.Type);
 
                 var result = await CompleteMultipartUpload(uploadComplete);
+
+
             }
 
             UploadFileInfoForServer schedulePartInfo;
@@ -167,10 +214,8 @@ namespace LBManager
                 var scheduleUploadCompleted = UploadFile(schedulePartInfo, scheduleFile.Type);
                 var scheduleUploadResult = await CompleteMultipartUpload(scheduleUploadCompleted);
             }
-
+            Messager.Default.EventAggregator.GetEvent<OnPublishScheduleCompletedEvent>().Publish(new OnPublishScheduleCompletedEventArg());
         }
-
-
 
         private void PreviewSchedule()
         {
@@ -230,6 +275,8 @@ namespace LBManager
 
             using (FileStream fs = File.OpenRead(uploadPartInfo.Name))
             {
+                double totalFileSize = uploadPartInfo.Parts.Sum(p => (double)p.Length);
+                double uploadedFileSize = 0.0;
                 foreach (var part in uploadPartInfo.Parts)
                 {
                     long partSize = part.Length;
@@ -258,6 +305,10 @@ namespace LBManager
                     {
                         if (response.StatusCode == HttpStatusCode.OK)
                         {
+                            uploadedFileSize += part.Length;
+                            Messager.Default.EventAggregator
+                                            .GetEvent<OnUploadFileProgressChangedEvent>()
+                                            .Publish(new OnUploadFileProgressChangedEventArg(Path.GetFileName(uploadPartInfo.Name), (uploadedFileSize / totalFileSize) * 100.0));
                             PartComplete pc = new PartComplete();
                             pc.PartNumber = part.PartNumber;
                             pc.MD5 = FileUtils.ComputeContentMd5(fs, part.Length);

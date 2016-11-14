@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="LBManager.UploadFileProgressBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:LBManager"
+             mc:Ignorable="d" 
+             d:DesignHeight="128" d:DesignWidth="128">
+    <StackPanel Margin="16">
+        <ProgressBar Style="{DynamicResource MaterialDesignCircularProgressBar}" HorizontalAlignment="Center" Margin="16" IsIndeterminate="True" Value="0" />
+        <TextBlock Name="progressTxt" HorizontalAlignment="Center"/>
+    </StackPanel>
+</UserControl>

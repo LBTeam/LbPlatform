@@ -68,6 +68,10 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         private void DeleteSchedule()
         {
+            if (File.Exists(CurrentScheduleSummary.FilePath))
+            {
+                File.Delete(CurrentScheduleSummary.FilePath);
+            }
             ScheduleSummaryList.Remove(CurrentScheduleSummary);
             if (ScheduleSummaryList.Count > 0)
             {
@@ -126,6 +130,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         {
             System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
             {
+              
                 ScheduleSummaryList.ToList().RemoveAll(s => s.FilePath == e.FullPath);
             }), null);
         }

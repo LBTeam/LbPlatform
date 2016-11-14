@@ -129,6 +129,9 @@
     <Compile Include="TokenInvalidPromptDialog.xaml.cs">
       <DependentUpon>TokenInvalidPromptDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UploadFileProgressBar.xaml.cs">
+      <DependentUpon>UploadFileProgressBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utility\EnumBindingSourceExtension.cs" />
     <Compile Include="Utility\UtilityTool.cs" />
     <Compile Include="Utility\PasswordHelper.cs" />
@@ -174,6 +177,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TokenInvalidPromptDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UploadFileProgressBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
