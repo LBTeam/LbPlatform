@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBManager.Modules.ScheduleM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBManager.Infrastructure.Common", "LBManager.Infrastructure.Common\LBManager.Infrastructure.Common.csproj", "{BC563C83-A276-438E-9ACB-D6324A3F8FC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBManager.Infrastructure.Logger", "LBManager.Infrastructure.Logger\LBManager.Infrastructure.Logger.csproj", "{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppVeyor|Any CPU = AppVeyor|Any CPU
@@ -242,6 +244,24 @@ Global
 		{BC563C83-A276-438E-9ACB-D6324A3F8FC3}.Release|x64.Build.0 = Release|Any CPU
 		{BC563C83-A276-438E-9ACB-D6324A3F8FC3}.Release|x86.ActiveCfg = Release|Any CPU
 		{BC563C83-A276-438E-9ACB-D6324A3F8FC3}.Release|x86.Build.0 = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.AppVeyor|x64.ActiveCfg = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.AppVeyor|x64.Build.0 = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.AppVeyor|x86.ActiveCfg = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.AppVeyor|x86.Build.0 = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Debug|x64.Build.0 = Debug|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Debug|x86.Build.0 = Debug|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Release|x64.ActiveCfg = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Release|x64.Build.0 = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Release|x86.ActiveCfg = Release|Any CPU
+		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

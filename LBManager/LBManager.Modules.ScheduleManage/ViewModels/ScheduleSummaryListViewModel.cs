@@ -1,5 +1,7 @@
 ﻿using LBManager.Modules.ScheduleManage.Views;
+using Microsoft.Practices.ServiceLocation;
 using Prism.Commands;
+using Prism.Logging;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -16,8 +18,11 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
     {
         private static string mediaDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media");
         private FileSystemWatcher _fileWatcher;
+        private ILoggerFacade _logger;
         public ScheduleSummaryListViewModel()
         {
+            _logger = ServiceLocator.Current.GetInstance<ILoggerFacade>();
+
             //string mediaDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media");
             if (!Directory.Exists(mediaDirectory))
             {
@@ -129,6 +134,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         private void FetchProgramSchedules(string directoryPath)
         {
+            _logger.Log("获取本机播放方案...",Category.Debug,Priority.Medium);
             DirectoryInfo folder = new DirectoryInfo(directoryPath);
 
             foreach (FileInfo fileInfo in folder.GetFiles("*.playprog"))
@@ -155,15 +161,16 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         private void _fileWatcher_Deleted(object sender, FileSystemEventArgs e)
         {
+            _logger.Log(string.Format("删除{0}文件",e.FullPath), Category.Debug, Priority.Medium);
             System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
             {
-
                 ScheduleSummaryList.ToList().RemoveAll(s => s.FilePath == e.FullPath);
             }), null);
         }
 
         private void _fileWatcher_Renamed(object sender, RenamedEventArgs e)
         {
+            _logger.Log(string.Format("重命名{0}文件为{1}", e.OldFullPath, e.FullPath), Category.Debug, Priority.Medium);
             System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
             {
                 ScheduleSummaryList.ToList().RemoveAll(s => s.FilePath == e.OldFullPath);
@@ -183,6 +190,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         private void _fileWatcher_Created(object sender, FileSystemEventArgs e)
         {
+            _logger.Log(string.Format("新增{0}文件", e.FullPath), Category.Debug, Priority.Medium);
             System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
             {
                 ScheduleSummaryList.Add(new ScheduleSummaryViewModel(new FileInfo(e.FullPath)));

@@ -6,11 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Autofac;
+using Prism.Logging;
+using LBManager.Infrastructure.Common.Utility;
+using LBManager.Infrastructure.Logger;
 
 namespace LBManager
 {
-    public class LBManagerBootstrapper: AutofacBootstrapper
+    public class LBManagerBootstrapper : AutofacBootstrapper
     {
+        protected override ILoggerFacade CreateLogger()
+        {
+            return new Log4NetLogger();
+        }
+
         protected override void InitializeShell()
         {
             base.InitializeShell();
@@ -25,6 +33,12 @@ namespace LBManager
         {
             builder.RegisterType<Shell>().SingleInstance();
             base.ConfigureContainerBuilder(builder);
+        }
+
+        protected override void ConfigureServiceLocator()
+        {
+            base.ConfigureServiceLocator();
+
         }
 
         protected override DependencyObject CreateShell()

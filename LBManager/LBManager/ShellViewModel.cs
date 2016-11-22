@@ -1,17 +1,21 @@
-﻿using Common.Logging;
+﻿
+using Common.Logging;
 using LBManager.Infrastructure.Common.Event;
 using LBManager.Infrastructure.Common.Utility;
 using LBManager.Infrastructure.Models;
 using LBManager.Job;
 using LBManager.Modules.ScheduleManage.ViewModels;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Practices.ServiceLocation;
 using Newtonsoft.Json;
 using Prism.Commands;
+using Prism.Logging;
 using Prism.Mvvm;
 using Quartz;
 using Quartz.Impl;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -26,15 +30,20 @@ namespace LBManager
 
         //private ScheduleListViewModel ScheduleList;
         private System.Threading.Timer _heartbeatTimer;
-        public ShellViewModel()
+        
+        private ILoggerFacade _logger;
+        public ShellViewModel()/**/
         {
-            ScheduleDetailViewModel = new ProgramScheduleDetailViewModel();
+            _logger = ServiceLocator.Current.GetInstance<ILoggerFacade>();
+
+            
+            //ScheduleDetailViewModel = new ProgramScheduleDetailViewModel();
             ScheduleList = new ScheduleSummaryListViewModel();
 
             ScreenList = new ScreenListViewModel(new ScreenService(), ScheduleList);
 
             LoginCommand = new DelegateCommand(() => { OpenLoginDialog(); });
-           // NewScheduleCommand = new DelegateCommand(() => { NewSchedule(); });
+            // NewScheduleCommand = new DelegateCommand(() => { NewSchedule(); });
 
             Messager.Default.EventAggregator.GetEvent<OnLoginEvent>().Subscribe(state =>
             {
@@ -44,7 +53,6 @@ namespace LBManager
                     LoginAccount = state.Account;
                     HeartbeatState = HeartbeatStatus.STOP;
                     _heartbeatTimer = new System.Threading.Timer(StartHeartbeat, null, 100, 10000);
-                    //StartHeartbeat();
                 }
                 else
                 {
@@ -57,6 +65,7 @@ namespace LBManager
 
         private async void StartHeartbeat(object state)
         {
+            _logger.Log("开始心跳", Category.Debug, Priority.Medium);
             if (HeartbeatState == HeartbeatStatus.OK || HeartbeatState == HeartbeatStatus.STOP)
             {
 
@@ -90,7 +99,7 @@ namespace LBManager
 
         private async void HeartbeatEventHandle(HeartbeatStatus status)
         {
-            if(status == HeartbeatStatus.OK)
+            if (status == HeartbeatStatus.OK)
             {
 
             }
@@ -109,14 +118,14 @@ namespace LBManager
             else if (status == HeartbeatStatus.TokenInvalid)
             {
                 HeartbeatState = HeartbeatStatus.TokenInvalid;
-               await System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(async() =>
-                {
-                    var view = new TokenInvalidPromptDialog();
-                    
-                    //show the dialog
-                    var result = await DialogHost.Show(view, "RootDialog", TokenInvalidPromptDialogOpenedEventHandler, TokenInvalidPromptDialogClosingEventHandler);
-                }), null);
-               
+                await System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(async () =>
+                 {
+                     var view = new TokenInvalidPromptDialog();
+
+                     //show the dialog
+                     var result = await DialogHost.Show(view, "RootDialog", TokenInvalidPromptDialogOpenedEventHandler, TokenInvalidPromptDialogClosingEventHandler);
+                 }), null);
+
             }
         }
 
@@ -272,7 +281,7 @@ namespace LBManager
 
         public DelegateCommand NewScheduleCommand { get; private set; }
 
-       
+
 
         private void ExtendedOpenedEventHandler(object sender, DialogOpenedEventArgs eventargs)
         {
