@@ -40,7 +40,7 @@ namespace LBManager
             //ScheduleDetailViewModel = new ProgramScheduleDetailViewModel();
             ScheduleList = new ScheduleSummaryListViewModel();
 
-            ScreenList = new ScreenListViewModel(new ScreenService(), ScheduleList);
+            ScreenList = new ScreenListViewModel(ScheduleList);
 
             LoginCommand = new DelegateCommand(() => { OpenLoginDialog(); });
             // NewScheduleCommand = new DelegateCommand(() => { NewSchedule(); });
@@ -84,6 +84,7 @@ namespace LBManager
                     Messager.Default.EventAggregator.GetEvent<OnHeartbeatEvent>().Publish(new OnHeartbeatEventArg(HeartbeatStatus.TokenExpired));
                 }
             }
+            _logger.Log("心跳完成", Category.Debug, Priority.Medium);
         }
 
         private async Task<HeartbeatResponse> Heartbeat()

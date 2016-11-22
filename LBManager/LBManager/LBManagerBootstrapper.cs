@@ -9,6 +9,7 @@ using Autofac;
 using Prism.Logging;
 using LBManager.Infrastructure.Common.Utility;
 using LBManager.Infrastructure.Logger;
+using LBManager.Infrastructure.Interfaces;
 
 namespace LBManager
 {
@@ -32,6 +33,7 @@ namespace LBManager
         protected override void ConfigureContainerBuilder(ContainerBuilder builder)
         {
             builder.RegisterType<Shell>().SingleInstance();
+            builder.RegisterType<ScreenService>().As<IScreenService>();
             base.ConfigureContainerBuilder(builder);
         }
 

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LBManager.Infrastructure.Models;
-using JumpKick.HttpLib;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using RestSharp;
 
 namespace LBManager
 {
@@ -16,19 +16,19 @@ namespace LBManager
         public Task<IList<Screen>> GetScreens()
         {
             var tcs = new TaskCompletionSource<IList<Screen>>();
-            Http.Get(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/screens&token={0}",App.SessionToken))
-                .OnSuccess((result) =>
+            var httpClient = new RestClient("http://lbcloud.ddt123.cn/?s=api");
+            var httpRequest = new RestRequest();
+            httpRequest.Resource = string.Format("Manager/screens&token={0}", App.SessionToken);
+            httpClient.ExecuteAsync(httpRequest,response =>{
+                if (response.ErrorException != null)
                 {
-                    Debug.WriteLine(result);
-                    var screens = JsonConvert.DeserializeObject<List<Screen>>(result);
-                    tcs.SetResult(screens);
-                })
-                .OnFail((fail) =>
-                {
-                    Debug.WriteLine(fail);
-                })
-                .Go();
-
+                    const string message = "Error retrieving response.  Check inner details for more info.";
+                    var twilioException = new ApplicationException(message, response.ErrorException);
+                    throw twilioException;
+                }
+                var screens = JsonConvert.DeserializeObject<List<Screen>>(response.Content);
+                tcs.SetResult(screens);
+            });
             return tcs.Task;
         }
 
