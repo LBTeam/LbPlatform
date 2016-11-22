@@ -73,5 +73,12 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             get { return _loopCount; }
             set { SetProperty(ref _loopCount, value); }
         }
+
+        private double _duration = 0;
+        public double Duration
+        {
+            get { return _duration; }
+            set { SetProperty(ref _duration, value); }
+        }
     }
 }

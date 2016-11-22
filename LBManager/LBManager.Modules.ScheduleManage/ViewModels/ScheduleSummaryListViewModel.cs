@@ -39,7 +39,12 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         public ScheduleSummaryViewModel CurrentScheduleSummary
         {
             get { return _currentScheduleSummary; }
-            set { SetProperty(ref _currentScheduleSummary, value); }
+            set
+            {
+                SetProperty(ref _currentScheduleSummary, value);
+                EditScheduleCommand.RaiseCanExecuteChanged();
+                DeleteScheduleCommand.RaiseCanExecuteChanged();
+            }
         }
 
         public DelegateCommand NewScheduleCommand => new DelegateCommand(NewSchedule, CanNewSchedule);
@@ -58,8 +63,19 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             scheduleView.ShowDialog();
         }
 
+        private DelegateCommand _deleteScheduleCommand;
 
-        public DelegateCommand DeleteScheduleCommand => new DelegateCommand(DeleteSchedule, CanDeleteSchedule);
+        public DelegateCommand DeleteScheduleCommand
+        {
+            get
+            {
+                if (_deleteScheduleCommand == null)
+                {
+                    _deleteScheduleCommand = new DelegateCommand(DeleteSchedule, CanDeleteSchedule);
+                }
+                return _deleteScheduleCommand;
+            }
+        }
 
         private bool CanDeleteSchedule()
         {
@@ -83,8 +99,19 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
         }
 
+        private DelegateCommand _editScheduleCommand;
 
-        public DelegateCommand EditScheduleCommand => new DelegateCommand(EditSchedule, CanEditSchedule);
+        public DelegateCommand EditScheduleCommand
+        {
+            get
+            {
+                if (_editScheduleCommand == null)
+                {
+                    _editScheduleCommand = new DelegateCommand(EditSchedule, CanEditSchedule);
+                }
+                return _editScheduleCommand;
+            }
+        }
 
         private bool CanEditSchedule()
         {
@@ -130,7 +157,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         {
             System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
             {
-              
+
                 ScheduleSummaryList.ToList().RemoveAll(s => s.FilePath == e.FullPath);
             }), null);
         }

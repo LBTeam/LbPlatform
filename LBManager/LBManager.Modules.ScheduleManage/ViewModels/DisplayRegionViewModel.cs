@@ -8,6 +8,7 @@ using System.IO;
 using LBManager.Infrastructure.Utility;
 using MaterialDesignThemes.Wpf;
 using System.Threading.Tasks;
+using LBManager.Modules.ScheduleManage.Utility;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
@@ -16,7 +17,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         private DisplayRegion _displayRegion;
         public DisplayRegionViewModel()
         {
-           // AddMediaCommand = new DelegateCommand(() => { AddMedia(); });
+            // AddMediaCommand = new DelegateCommand(() => { AddMedia(); });
         }
 
 
@@ -34,7 +35,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
             CurrentMedia = MediaList.Count == 0 ? null : MediaList[0];
 
-           // AddMediaCommand = new DelegateCommand(() => { AddMedia(); });
+            // AddMediaCommand = new DelegateCommand(() => { AddMedia(); });
         }
 
         private string _name;
@@ -85,11 +86,40 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         public MediaViewModel CurrentMedia
         {
             get { return _currentMedia; }
-            set { SetProperty(ref _currentMedia, value); }
+            set
+            {
+                SetProperty(ref _currentMedia, value);
+                RemoveMediaCommand.RaiseCanExecuteChanged();
+            }
         }
 
-        public DelegateCommand AddMediaCommand => new DelegateCommand(AddMedia);
-        public DelegateCommand RemoveMediaCommand => new DelegateCommand(RemoveMedia, CanRemoveMedia);
+        private DelegateCommand _removeMediaCommand;
+        public DelegateCommand RemoveMediaCommand
+        {
+            get
+            {
+                if (_removeMediaCommand == null)
+                {
+                    _removeMediaCommand = new DelegateCommand(RemoveMedia, CanRemoveMedia);
+                }
+                return _removeMediaCommand;
+            }
+        }
+
+
+        private DelegateCommand _addMediaCommand;
+        public DelegateCommand AddMediaCommand
+        {
+            get
+            {
+                if (_addMediaCommand == null)
+                {
+                    _addMediaCommand = new DelegateCommand(AddMedia);
+                }
+                return _addMediaCommand;
+            }
+        }
+
 
         private bool CanRemoveMedia()
         {
@@ -99,7 +129,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         private void RemoveMedia()
         {
             MediaList.Remove(CurrentMedia);
-            if (MediaList.Count >0)
+            if (MediaList.Count > 0)
             {
                 CurrentMedia = MediaList[0];
             }
@@ -112,21 +142,6 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         private void AddMedia()
         {
-            //OpenFileDialog openFileDialog = new OpenFileDialog();
-            //openFileDialog.Filter = "JPEG|*.jpg|PNG|*.png|MP4|*.mp4";
-            //if (openFileDialog.ShowDialog() == true)
-            //{
-            //    FileInfo fileInfo = new FileInfo(openFileDialog.FileName);
-            //    string fileExtension = Path.GetExtension(openFileDialog.FileName);
-
-            //    MediaList.Add(new Media()
-            //    {
-            //        URL = fileInfo.FullName,
-            //        Type = fileInfo.Extension.Equals(".mp4", StringComparison.CurrentCultureIgnoreCase) ? MediaType.Video : MediaType.Image,
-            //        FileSize = fileInfo.Length,
-            //        MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
-            //    });
-            //}
 
             var view = new OpenFileDialog()
             {
@@ -137,7 +152,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             {
                 FileInfo fileInfo = new FileInfo(view.FileName);
                 string fileExtension = Path.GetExtension(view.FileName);
-
+                FFmpegMediaInfo info = new FFmpegMediaInfo(view.FileName);
                 var media = new Media()
                 {
                     URL = fileInfo.FullName,
@@ -146,7 +161,9 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName),
                     LoopCount = 1
                 };
-                MediaList.Add(new MediaViewModel(media));
+                CurrentMedia = new MediaViewModel(media);
+                CurrentMedia.Duration = Math.Round(info.Duration.TotalSeconds, 1);
+                MediaList.Add(CurrentMedia);
             }
 
             // var result = DialogHost.Show(view, "ScheduleRootDialog", AddMediaDialogClosingEventHandler);

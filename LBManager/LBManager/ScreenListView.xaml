@@ -14,13 +14,16 @@
                    AutoGenerateColumns="False"
                    VerticalContentAlignment="Center"
                    Margin="{Binding RelativeSource={RelativeSource Self}, Path=(params:General.BoldPadding), Mode=OneWay}"
+                   Style="{DynamicResource MaterialDesignDataGrid}"
+                    CanUserAddRows="False" IsReadOnly="True"
                    Background="#FAFAFA">
             <!--materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                    materialDesign:DataGridAssist.ColumnHeaderPadding="8"-->
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Width="*"
                                             Header="名称"
-                                           /> <!--EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"-->
+                                           />
+                <!--EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"-->
                 <!-- if you want to use the pop up style (MaterialDesignDataGridTextColumnPopupEditingStyle), you must use MaterialDataGridTextColumn -->
                 <materialDesign:MaterialDataGridTextColumn Binding="{Binding Width}" Width="*"
                                                         Header="Width"   
@@ -33,7 +36,7 @@
                                                                DisplayMemberPath="FileName"
                                                                SelectedItemBinding="{Binding SelectedScheduleSummaryFile, UpdateSourceTrigger=PropertyChanged}"
                                                                ItemsSourceBinding="{Binding ScheduleList.ScheduleSummaryList}" />
-                
+
                 <DataGridTemplateColumn Header=""
                                         Width="*">
                     <DataGridTemplateColumn.CellTemplate>

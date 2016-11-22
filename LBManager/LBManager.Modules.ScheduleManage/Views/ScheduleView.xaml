@@ -66,6 +66,7 @@
                         <ListBox Grid.Column="0"
                              ItemsSource="{Binding DisplayRegions}" 
                              SelectedItem="{Binding CurrentDisplayRegion}"
+                                 Style="{DynamicResource MaterialDesignListBox}"
                              DisplayMemberPath="Name">
 
                         </ListBox>
@@ -134,7 +135,8 @@
                                                 <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
                                             </Button>
                                         </StackPanel>
-                                        <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}">
+                                        <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}" Style="{DynamicResource MaterialDesignListBox}"
+                                                 HorizontalContentAlignment="Stretch">
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <Grid Margin="0,2">
@@ -145,13 +147,15 @@
                                                         </Grid.Resources>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="auto"/>
                                                             <ColumnDefinition Width="auto" />
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Text="{Binding Name}" Grid.Column="0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding Duration}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,20,0"/>
                                                         <Controls:NumericUpDown x:Name="StringFormatNumUpDown"
-                                                                                Grid.Column="1"
+                                                                                Grid.Column="2"
                                                                                 Interval="1"
-                                                                                IsReadOnly="False"
+                                                                                IsReadOnly="False" Minimum="1"
                                                                                 StringFormat=" {0} 次" VerticalContentAlignment="Center" VerticalAlignment="Center"
                                                                                 Value="{Binding LoopCount, Mode=TwoWay}" />
                                                     </Grid>

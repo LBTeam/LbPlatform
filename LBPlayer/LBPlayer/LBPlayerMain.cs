@@ -414,9 +414,16 @@ namespace LBPlayer
 
         private void initialPlay()
         {
-            _screenPlayer = new ScreenPlayer(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
-            _screenPlayer.Initialize();
-            Start();
+            Task playTask = new Task(() =>
+            {
+                _screenPlayer = new ScreenPlayer(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
+                _screenPlayer.Initialize();
+            });
+            playTask.Start();
+
+            Task.Delay(TimeSpan.FromMilliseconds(1000))
+               .ContinueWith((t, _) => Start(), null, TaskScheduler.FromCurrentSynchronizationContext());
+            
         }
         #endregion
         #region 下载紧急插播
@@ -971,16 +978,18 @@ namespace LBPlayer
                 MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            SystemResult sr;
-            sr = JsonConvert.DeserializeObject<SystemResult>(replaydata);
+            BindResult sr;
+            sr = JsonConvert.DeserializeObject<BindResult>(replaydata);
             if(sr.Err_code!= SystemCode.OK)
             {
                 MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
             _config.ID = skinTextBox_Id.Text.Trim();
             _config.Key = skinTextBox_Key.Text.Trim();
             _config.Mac = skinComboBox_Mac.SelectedItem.ToString();
+            SetScreenInfo(sr.ScreenInfo);//modify by lixc
             if (ConfigTool.SaveConfigData(_config))
             {
                 MessageBoxEx.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1071,12 +1080,17 @@ namespace LBPlayer
             }
             for (int i = 0; i < mediaList.Count; i++)
             {
-                PlayInfoWrapper playInfo = new PlayInfoWrapper(Path.Combine(_mediaPath, Path.GetFileNameWithoutExtension(mediaList[i].URL)+"_"+mediaList[i].MD5+ Path.GetExtension(mediaList[i].URL)),mediaList[i].LoopCount);
+                PlayInfoWrapper playInfo = new PlayInfoWrapper(Path.Combine(_mediaPath, Path.GetFileNameWithoutExtension(mediaList[i].URL)+"_"+mediaList[i].MD5+ Path.GetExtension(mediaList[i].URL)),
+                                                               mediaList[i].LoopCount,
+                                                               int.Parse(_config.Size_X), 
+                                                               int.Parse(_config.Size_Y),
+                                                               int.Parse(_config.Resoul_X),
+                                                               int.Parse(_config.Resoul_Y));
                 playInfoList.Add(playInfo);
             }
             try
             {
-                _screenPlayer.Play(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y), playInfoList);
+                _screenPlayer.Play(playInfoList);
             }
             catch (Exception ex)
             {
@@ -1191,6 +1205,16 @@ namespace LBPlayer
             CmdResult cr = new CmdResult(_config.ID, _config.Key,_config.Mac, cmd.CmdId, true.ToString());
             UploadCmdResult(cr);
             DeleteCmd(cmd);
+        }
+
+        private void SetScreenInfo(ScreenSet screenInfo)
+        {
+            //ScreenSet screenSet = JsonConvert.DeserializeObject<ScreenSet>(DecodeBase64(Encoding.UTF8, cmd.CmdParam));
+            _config.Size_X = screenInfo.Size_x;
+            _config.Size_Y = screenInfo.Size_y;
+            _config.Resoul_X = screenInfo.Resolu_x;
+            _config.Resoul_Y = screenInfo.Resolu_y;
+           // ConfigTool.SaveConfigData(_config);
         }
         #endregion
         #region 设置工作时间

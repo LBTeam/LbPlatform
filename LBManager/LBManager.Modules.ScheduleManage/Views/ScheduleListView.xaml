@@ -41,6 +41,7 @@
                  ItemsSource="{Binding ScheduleSummaryList}"
                  SelectedItem="{Binding CurrentScheduleSummary}"
                  DisplayMemberPath="FileName"
+                 Style="{DynamicResource MaterialDesignListBox}"
                  Background="#FAFAFA">
 
         </ListBox>

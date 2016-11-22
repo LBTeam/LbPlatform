@@ -531,6 +531,49 @@ namespace LBPlayer
             }
         }
     }
+
+    public class BindResult
+    {
+        private SystemCode _err_code;
+        private string _msg;
+        private ScreenSet _screenInfo;
+
+        [JsonProperty("err_code")]
+        public SystemCode Err_code
+        {
+            get
+            {
+                return _err_code;
+            }
+
+            set
+            {
+                _err_code = value;
+            }
+        }
+
+        [JsonProperty("msg")]
+        public string Msg
+        {
+            get
+            {
+                return _msg;
+            }
+
+            set
+            {
+                _msg = value;
+
+            }
+        }
+
+        [JsonProperty("data")]
+        public ScreenSet ScreenInfo
+        {
+            get { return _screenInfo; }
+            set { _screenInfo = value; }
+        }
+    }
     public enum SystemCode
     {
         OK = 000000,
@@ -921,7 +964,7 @@ namespace LBPlayer
         private bool _switch;
         private TimeSpan _enable;
         private TimeSpan _disable;
-        
+
 
         public TimeSpan Enable
         {
@@ -1135,8 +1178,8 @@ namespace LBPlayer
     }
     public enum Accept
     {
-        notice =1,
-        studow =2
+        notice = 1,
+        studow = 2
     }
     public class ReConnectionWebSocket
     {

@@ -31,10 +31,10 @@ namespace LBPlayerConfig
         public int ScreenCuptureW = 0;
         public int ScreenCuptureH = 0;
         public string FileSavePath;
-        public string Size_X="100";     //int,偏移量x
-        public string Size_Y = "100";
-        public string Resoul_X = "0";
-        public string Resoul_Y = "0";	
+        public string Size_X="0";     //int,偏移量x
+        public string Size_Y = "0";
+        public string Resoul_X = "200";
+        public string Resoul_Y = "200";	
         public TimeSpan StartWorkTime = new TimeSpan(00, 00, 00);
         public TimeSpan EndWorkTime = new TimeSpan(23,59,59);
         public string CurrentPlanPath = "";
