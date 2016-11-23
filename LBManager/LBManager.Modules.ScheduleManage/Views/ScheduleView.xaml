@@ -116,10 +116,12 @@
                                             <TextBox  materialDesign:HintAssist.Hint="起始位置-Y" Text="{Binding Y}" Margin="0 0 8 0" VerticalAlignment="Bottom" />
                                             <TextBox  materialDesign:HintAssist.Hint="宽" Text="{Binding Width}" Margin="0 0 8 0" VerticalAlignment="Bottom" />
                                             <TextBox  materialDesign:HintAssist.Hint="高" Text="{Binding Heigh}" Margin="0 0 0 0" VerticalAlignment="Bottom" />
+                                            
                                         </StackPanel>
                                     </StackPanel>
                                     <Grid DockPanel.Dock="Top" Margin="0,4,0,0">
-                                        <Grid.RowDefinitions>
+                                        <local:PlayingArrangementView />
+                                        <!--<Grid.RowDefinitions>
                                             <RowDefinition Height="30"/>
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
@@ -161,7 +163,7 @@
                                                     </Grid>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
-                                        </ListBox>
+                                        </ListBox>-->
                                     </Grid>
                                 </DockPanel>
                             </Grid>

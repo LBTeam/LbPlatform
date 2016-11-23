@@ -62,6 +62,7 @@
     <Compile Include="Models\MediaTempInfo.cs" />
     <Compile Include="Models\RefreshTokenResponse.cs" />
     <Compile Include="Models\Schedule.cs" />
+    <Compile Include="Models\ScheduledStage.cs" />
     <Compile Include="Models\ScheduleType.cs" />
     <Compile Include="Models\Screen.cs" />
     <Compile Include="Models\ScheduleFile.cs" />

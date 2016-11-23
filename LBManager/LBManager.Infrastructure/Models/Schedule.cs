@@ -33,5 +33,6 @@ namespace LBManager.Infrastructure.Models
         public int Width { get; set; }
         public int Heigh { get; set; }
         public List<Media> MediaList { get; set; }
+        public List<VideoMedia> VideoMediaList { get; set; }
     }
 }

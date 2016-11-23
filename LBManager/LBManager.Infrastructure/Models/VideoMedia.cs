@@ -7,12 +7,7 @@ using System.Threading.Tasks;
 
 namespace LBManager.Infrastructure.Models
 {
-    public class VideoMedia : Media
+    public class VideoMedia
     {
-        public VideoMedia()
-            :base()
-        {
-            
-        }
     }
 }

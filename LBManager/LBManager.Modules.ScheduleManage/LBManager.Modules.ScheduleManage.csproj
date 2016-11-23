@@ -89,6 +89,9 @@
     <Compile Include="ViewModels\ScheduleSummaryListViewModel.cs" />
     <Compile Include="ViewModels\ScheduleSummaryViewModel.cs" />
     <Compile Include="ViewModels\ScheduleViewModel.cs" />
+    <Compile Include="Views\PlayingArrangementView.xaml.cs">
+      <DependentUpon>PlayingArrangementView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ScheduleListView.xaml.cs">
       <DependentUpon>ScheduleListView.xaml</DependentUpon>
     </Compile>
@@ -108,6 +111,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="Views\PlayingArrangementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ScheduleListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

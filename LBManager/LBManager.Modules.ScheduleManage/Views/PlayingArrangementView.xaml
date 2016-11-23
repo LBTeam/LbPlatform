@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="LBManager.Modules.ScheduleManage.Views.PlayingArrangementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:Controls ="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:local="clr-namespace:LBManager.Modules.ScheduleManage.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <AdornerDecorator>
+        <Grid>
+            <GroupBox Header="智能编排" Style="{DynamicResource MaterialDesignGroupBox}" materialDesign:ShadowAssist.ShadowDepth="Depth3" BorderThickness="0">
+                <DockPanel LastChildFill="True">
+                    <!--<materialDesign:Card  DockPanel.Dock="Top" >-->
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+
+                        <!--<Border Background="{DynamicResource SecondaryAccentBrush}"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0,20,0">
+                                <TextBlock Style="{DynamicResource MaterialDesignBody2TextBlock}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="播放时段" />
+                            </Border>-->
+
+
+                        <materialDesign:TimePicker  materialDesign:HintAssist.Hint="开始时间" VerticalAlignment="Bottom"
+                                                Style="{DynamicResource MaterialDesignFloatingHintTimePicker}"
+                                                IsInvalidTextAllowed="True"
+                                                Is24Hours="True" Width="100" Margin="0,0,10,0"/>
+                        <materialDesign:TimePicker  materialDesign:HintAssist.Hint="结束时间" VerticalAlignment="Bottom"
+                                                Style="{DynamicResource MaterialDesignFloatingHintTimePicker}"
+                                                IsInvalidTextAllowed="True"
+                                                Is24Hours="True" Width="100"/>
+                    </StackPanel>
+                    <!--</materialDesign:Card>-->
+                    <Grid DockPanel.Dock="Top" Margin="0,4,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                            <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
+                                                ToolTip="添加媒体"
+                                                    Command="{Binding AddMediaCommand}">
+                                <materialDesign:PackIcon Kind="Plus" Height="20" Width="20"/>
+                            </Button>
+                            <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
+                                                ToolTip="删除媒体"
+                                                    Command="{Binding RemoveMediaCommand}">
+                                <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
+                            </Button>
+                        </StackPanel>
+                        <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}" Style="{DynamicResource MaterialDesignListBox}"
+                                 HorizontalContentAlignment="Stretch">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2">
+                                        <Grid.Resources>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="MaxWidth" Value="75"/>
+                                            </Style>
+                                        </Grid.Resources>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}" Grid.Column="0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Duration}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                                        <Controls:NumericUpDown x:Name="StringFormatNumUpDown"
+                                                                                Grid.Column="2"
+                                                                                Interval="1"
+                                                                                IsReadOnly="False" Minimum="1"
+                                                                                StringFormat=" {0} 次" VerticalContentAlignment="Center" VerticalAlignment="Center"
+                                                                                Value="{Binding LoopCount, Mode=TwoWay}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </DockPanel>
+            </GroupBox>
+        </Grid>
+    </AdornerDecorator>
+</UserControl>
