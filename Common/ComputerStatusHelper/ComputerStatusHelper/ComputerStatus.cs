@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OpenHardwareMonitor;
 using OpenHardwareMonitor.Hardware;
+using LbPlayer.Logger;
 
 namespace Com.Utility
 {
@@ -164,6 +165,7 @@ namespace Com.Utility
             }
             catch (Exception ex)
             {
+                Log4NetLogger.LogError("获取Fan异常：" + ex.Message);
                 Debug.WriteLine("获取Fan异常：" + ex.ToString());
                 return false;
             }

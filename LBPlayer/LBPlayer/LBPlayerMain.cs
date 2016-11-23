@@ -21,6 +21,7 @@ using LBManager.Infrastructure.Models;
 using WebSocketSharp;
 using System.Diagnostics;
 using System.Net;
+using LbPlayer.Logger;
 
 namespace LBPlayer
 {
@@ -37,19 +38,19 @@ namespace LBPlayer
 
         #endregion
         #region 字段
-        
+
         private ScreenCapture _screenCapture;
         private string _playLogPath = "";
         private string _lbPlanPath = "";
         private string _mediaPath = "";
         private string _offlinePlanPath = "";
         private string _picPath = "";
-        private Config _config =null;
+        private Config _config = null;
         private string _privewPic = "Privew.jpg";
         private Poll _poll;
         private List<Cmd> _cmdList;
         private string _cmdSavePath;
-        private System.Windows.Forms.Timer _queryTimer;   
+        private System.Windows.Forms.Timer _queryTimer;
         private const int QueryTimerInterval = 10000;
         private string BindingURL = "http://lbcloud.ddt123.cn/?s=api/Player/bind_player";
         private string PlayBackURL = "http://lbcloud.ddt123.cn/?s=api/Player/record";
@@ -70,7 +71,7 @@ namespace LBPlayer
         public LBPlayerMain()
         {
             InitializeComponent();
-           
+
         }
         #endregion
         #region 心跳
@@ -81,8 +82,8 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _poll_GetPollResponseEvent(object sender, GetPollResponseEventArgs args)
         {
-            Debug.WriteLine("心跳完成："+DateTime.Now);
-            if(!args.bSuc)
+            Debug.WriteLine("心跳完成：" + DateTime.Now);
+            if (!args.bSuc)
             {
                 HeartBeatFailCount++;
                 return;
@@ -119,7 +120,7 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _poll_SendPollEvent(object sender, PollEventArgs args)
         {
-            Debug.WriteLine("开始心跳："+DateTime.Now);
+            Debug.WriteLine("开始心跳：" + DateTime.Now);
             HartBeatRequestObj obj = new HartBeatRequestObj();
             obj.Id = _config.ID;
             obj.Key = _config.Key;
@@ -133,11 +134,12 @@ namespace LBPlayer
         private void initialWebSocket(string url)
         {
             _webSocket = new WebSocket(url);
-            _webSocket.OnClose +=new EventHandler<CloseEventArgs>(_webSocket_OnClose);
+            _webSocket.OnClose += new EventHandler<CloseEventArgs>(_webSocket_OnClose);
             _webSocket.OnError += new EventHandler<WebSocketSharp.ErrorEventArgs>(_webSocket_OnError);
-            _webSocket.OnOpen +=new EventHandler(_webSocket_OnOpen);
+            _webSocket.OnOpen += new EventHandler(_webSocket_OnOpen);
             _webSocket.OnMessage += new EventHandler<MessageEventArgs>(_webSocket_OnMessage);
             _webSocket.Connect();
+            Log4NetLogger.LogDebug("初始化长连接");
         }
 
         private void _webSocket_OnMessage(object sender, MessageEventArgs e)
@@ -146,7 +148,7 @@ namespace LBPlayer
             switch (wsm.Act)
             {
                 case Accept.notice:
-                    Debug.WriteLine("收到紧急通知，通知内容："+wsm.Msg);
+                    Debug.WriteLine("收到紧急通知，通知内容：" + wsm.Msg);
                     break;
                 case Accept.studow:
                     Debug.WriteLine("收到关机通知");
@@ -160,19 +162,19 @@ namespace LBPlayer
         private void _webSocket_OnOpen(object sender, EventArgs e)
         {
             WebSocketAccept wsa = new WebSocketAccept("bind", _config.ID, _config.Key, _config.Mac);
-            
+
             _webSocket.Send(JsonConvert.SerializeObject(wsa));
 
         }
 
         private void _webSocket_OnError(object sender, WebSocketSharp.ErrorEventArgs e)
         {
-            
+
         }
 
         private void _webSocket_OnClose(object sender, CloseEventArgs e)
         {
-            
+
         }
         #endregion
         #region 初始化
@@ -183,6 +185,7 @@ namespace LBPlayer
         {
             _config = new Config();
             _config = ConfigTool.ReadConfigData();
+            Log4NetLogger.LogDebug(string.Format("---初始化配置文件---\r\n{0}", JsonConvert.SerializeObject(_config)));
         }
         /// <summary>
         /// 初始化工作目录
@@ -219,6 +222,7 @@ namespace LBPlayer
             {
                 Directory.CreateDirectory(_picPath);
             }
+            Log4NetLogger.LogDebug("初始化工作目录");
         }
         /// <summary>
         /// 初始化控件值
@@ -253,11 +257,13 @@ namespace LBPlayer
             for (int i = 0; i < macList.Count; i++)
             {
                 skinComboBox_Mac.Items.Add(macList[i]);
-                if(macList[i]== _config.Mac)
+                if (macList[i] == _config.Mac)
                 {
                     skinComboBox_Mac.SelectedIndex = i;
                 }
             }
+
+            Log4NetLogger.LogDebug("初始化控件值");
         }
         /// <summary>
         /// 初始化心跳
@@ -270,6 +276,7 @@ namespace LBPlayer
             _poll.GetPollResponseEvent += new GetPollResponseEventHandler(_poll_GetPollResponseEvent);
             _poll.Initializer();
             _poll.Start();
+            Log4NetLogger.LogDebug("初始化心跳");
         }
         /// <summary>
         /// 启动命令轮询
@@ -280,6 +287,7 @@ namespace LBPlayer
             _queryTimer.Interval = QueryTimerInterval;
             _queryTimer.Tick += new EventHandler(QueryTimer_Tick);
             _queryTimer.Enabled = true;
+            Log4NetLogger.LogDebug("启动命令轮询");
         }
         /// <summary>
         /// 轮询命令事件
@@ -290,6 +298,7 @@ namespace LBPlayer
         {
             for (int i = 0; i < _cmdList.Count; i++)
             {
+                Log4NetLogger.LogDebug(string.Format("开始处理{0}命令...", _cmdList[i].CmdType));
                 switch (_cmdList[i].CmdType)
                 {
                     case CmdType.DownloadPlan:
@@ -342,9 +351,11 @@ namespace LBPlayer
             try
             {
                 _cmdList = XmlUtil.XmlDeserializeFromFile<List<Cmd>>(_cmdSavePath, Encoding.UTF8);
+                Log4NetLogger.LogDebug(string.Format("---从配置中读取命令列表---\r\n{0}", JsonConvert.SerializeObject(_cmdList)));
             }
             catch (Exception ex)
             {
+                Log4NetLogger.LogError(string.Format("[读取命令列表错误]：{0}", ex.Message));
                 File.Delete(_cmdSavePath);
                 _cmdList = new List<Cmd>();
                 return;
@@ -363,7 +374,7 @@ namespace LBPlayer
             _monitorDataPoll.GetMonitorDatePollResponseEvent += new GetMonitorDatePollResponseEventHandler(_monitorDataPoll_GetMonitorDatePollResponseEvent);
             _monitorDataPoll.Initializer();
             _monitorDataPoll.Start();
-            
+            Log4NetLogger.LogDebug("初始化监控图片上传");
         }
         /// <summary>
         /// 监控图片上传完成事件
@@ -372,8 +383,9 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _monitorDataPoll_GetMonitorDatePollResponseEvent(object sender, GetMonitorDatePollResponseEventArgs args)
         {
-            Debug.WriteLine("上传监控完成：" + DateTime.Now);
-           
+            Log4NetLogger.LogDebug("上传监控完成");
+           // Debug.WriteLine("上传监控完成：" + DateTime.Now);
+
         }
         /// <summary>
         /// 监控图片上传开始事件
@@ -382,7 +394,8 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _monitorDataPoll_SendMonitorDatePollEvent(object sender, MonitorDatePollEventArgs args)
         {
-            Debug.WriteLine("上传监控开始：" + DateTime.Now);
+            Log4NetLogger.LogDebug("上传监控开始");
+           // Debug.WriteLine("上传监控开始：" + DateTime.Now);
             try
             {
                 float cupUtilization;
@@ -408,6 +421,7 @@ namespace LBPlayer
             }
             catch (Exception ex)
             {
+                Log4NetLogger.LogError(string.Format("[监控图片上传错误]：{0}", ex.Message));
                 return;
             }
         }
@@ -417,13 +431,14 @@ namespace LBPlayer
             Task playTask = new Task(() =>
             {
                 _screenPlayer = new ScreenPlayer(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
+                Log4NetLogger.LogDebug("初始化播放组件...");
                 _screenPlayer.Initialize();
             });
             playTask.Start();
 
             Task.Delay(TimeSpan.FromMilliseconds(1000))
                .ContinueWith((t, _) => Start(), null, TaskScheduler.FromCurrentSynchronizationContext());
-            
+
         }
         #endregion
         #region 下载紧急插播
@@ -436,7 +451,9 @@ namespace LBPlayer
             }
             _bDownloadEmergencyPlan = true;
             CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, false.ToString());
-            PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(DecodeBase64((Encoding.UTF8), cmd.CmdParam));
+            string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
+            Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
+            PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
             if (!DeownloadFile(Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
             {
                 UploadCmdResult(cr);
@@ -470,7 +487,9 @@ namespace LBPlayer
             }
             _bDownloadOfflinePlan = true;
             CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, false.ToString());
-            PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(DecodeBase64((Encoding.UTF8), cmd.CmdParam));
+            string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
+            Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
+            PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
             if (!DeownloadFile(Path.Combine(_offlinePlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
             {
                 UploadCmdResult(cr);
@@ -634,7 +653,7 @@ namespace LBPlayer
             return flag;
         }
 
-        private bool ScheduleParser(string path,out Schedule sch)
+        private bool ScheduleParser(string path, out Schedule sch)
         {
 
             sch = null;
@@ -645,7 +664,7 @@ namespace LBPlayer
             try
             {
                 string scheduleContent = File.ReadAllText(path, Encoding.UTF8);
-                if(scheduleContent==null||scheduleContent=="")
+                if (scheduleContent == null || scheduleContent == "")
                 {
                     return false;
                 }
@@ -734,7 +753,7 @@ namespace LBPlayer
         {
             if (!InvokeRequired)
             {
-               
+
                 if (_keyPasswordWindow.Visible)
                 {
                     //当前处于解锁密码输入状态
@@ -793,7 +812,7 @@ namespace LBPlayer
                     _keyPasswordWindow.Hook_KeyDown(e);
 
                 }
-               
+
                 else
                 {
                     string strText = "你的鼠标和键盘已被锁定按ESC解锁！";
@@ -818,7 +837,7 @@ namespace LBPlayer
                     _keyPasswordWindow.Hook_KeyPress(e);
 
                 }
-               
+
                 else
                 {
 
@@ -879,10 +898,10 @@ namespace LBPlayer
                                             FileMode.Open,
                                             FileAccess.Read,
                                             FileShare.None);
-                
+
                 _hook.KeyboardHookStart();
                 _hook.MouseHookStart();
-               // RegistryKey keyLocalMachine = Registry.LocalMachine;
+                // RegistryKey keyLocalMachine = Registry.LocalMachine;
                 //RegistryKey key;
                 //key = keyLocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\USBSTOR", true);
                 //key.SetValue("Start", 4);
@@ -953,7 +972,7 @@ namespace LBPlayer
         /// <param name="e"></param>
         private void skinButton_Ok_Click(object sender, EventArgs e)
         {
-            if(skinTextBox_Id.Text.Trim()=="")
+            if (skinTextBox_Id.Text.Trim() == "")
             {
                 MessageBoxEx.Show("请填写ID", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -972,7 +991,7 @@ namespace LBPlayer
             HttpClient httpClient = new HttpClient();
             string json = JsonConvert.SerializeObject(bind);
             string replaydata, errordata;
-            bool bSuc=httpClient.Post(BindingURL, JsonConvert.SerializeObject(bind), out replaydata, out errordata);
+            bool bSuc = httpClient.Post(BindingURL, JsonConvert.SerializeObject(bind), out replaydata, out errordata);
             if (!bSuc)
             {
                 MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -980,7 +999,7 @@ namespace LBPlayer
             }
             BindResult sr;
             sr = JsonConvert.DeserializeObject<BindResult>(replaydata);
-            if(sr.Err_code!= SystemCode.OK)
+            if (sr.Err_code != SystemCode.OK)
             {
                 MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -994,7 +1013,7 @@ namespace LBPlayer
             {
                 MessageBoxEx.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            
+
         }
         private void skinButton_b_Click(object sender, EventArgs e)
         {
@@ -1022,14 +1041,18 @@ namespace LBPlayer
         private bool _bDownloading = false;
         private void DownloadPlan(Cmd cmd)
         {
-            if(cmd==null||cmd.CmdType!= CmdType.DownloadPlan|| _bDownloading==true)
+            if (cmd == null || cmd.CmdType != CmdType.DownloadPlan || _bDownloading == true)
             {
                 return;
             }
             _bDownloading = true;
-            CmdResult cr =new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, false.ToString());
-            PlanCmdPar planCmdPar=JsonConvert.DeserializeObject<PlanCmdPar>(DecodeBase64((Encoding.UTF8),cmd.CmdParam));
-            if(!DeownloadFile(Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
+            CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, false.ToString());
+            string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
+
+            Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
+
+            PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
+            if (!DeownloadFile(Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
             {
                 UploadCmdResult(cr);
                 DeleteCmd(cmd);
@@ -1038,7 +1061,7 @@ namespace LBPlayer
             }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                if(!DeownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                if (!DeownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
                 {
                     UploadCmdResult(cr);
                     DeleteCmd(cmd);
@@ -1063,26 +1086,26 @@ namespace LBPlayer
         }
         private void StartPlay()
         {
-            if(_config.CurrentPlanPath==null|| _config.CurrentPlanPath=="")
+            if (_config.CurrentPlanPath == null || _config.CurrentPlanPath == "")
             {
                 return;
             }
             Schedule sch;
-            if(!ScheduleParser(_config.CurrentPlanPath, out sch))
+            if (!ScheduleParser(_config.CurrentPlanPath, out sch))
             {
-                return ;
+                return;
             }
             List<PlayInfoWrapper> playInfoList = new List<PlayInfoWrapper>();
-            List<LBManager.Infrastructure.Models.Media> mediaList=sch.GetAllMedia();
-            if(mediaList==null||mediaList.Count<=0)
+            List<LBManager.Infrastructure.Models.Media> mediaList = sch.GetAllMedia();
+            if (mediaList == null || mediaList.Count <= 0)
             {
-                return ;
+                return;
             }
             for (int i = 0; i < mediaList.Count; i++)
             {
-                PlayInfoWrapper playInfo = new PlayInfoWrapper(Path.Combine(_mediaPath, Path.GetFileNameWithoutExtension(mediaList[i].URL)+"_"+mediaList[i].MD5+ Path.GetExtension(mediaList[i].URL)),
+                PlayInfoWrapper playInfo = new PlayInfoWrapper(Path.Combine(_mediaPath, Path.GetFileNameWithoutExtension(mediaList[i].URL) + "_" + mediaList[i].MD5 + Path.GetExtension(mediaList[i].URL)),
                                                                mediaList[i].LoopCount,
-                                                               int.Parse(_config.Size_X), 
+                                                               int.Parse(_config.Size_X),
                                                                int.Parse(_config.Size_Y),
                                                                int.Parse(_config.Resoul_X),
                                                                int.Parse(_config.Resoul_Y));
@@ -1090,37 +1113,40 @@ namespace LBPlayer
             }
             try
             {
+                Log4NetLogger.LogDebug(string.Format("***开始播放***"));
                 _screenPlayer.Play(playInfoList);
             }
             catch (Exception ex)
             {
-                
-                return  ;
+                Log4NetLogger.LogError(string.Format("[播放时出现错误]:{0}", ex.Message));
+                return;
             }
-            return ;
+            return;
         }
-        
+
         #endregion
         #region 未知命令处理
         private void UnKnowCmd(Cmd cmd)
         {
+            string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
+            Log4NetLogger.LogDebug(string.Format("---{0}命令(Unknow)内容---\r\n{1}", cmd.CmdType, cmdContent));
             return;
         }
         #endregion
         #region 上传播放记录
         private bool UploadPlayBack(PlayBack playBack)
         {
-            string data= JsonConvert.SerializeObject(playBack);
+            string data = JsonConvert.SerializeObject(playBack);
             HttpClient httpClient = new HttpClient();
             string replaydata, errordata;
-            bool bSuc=httpClient.Post(PlayBackURL, data, out replaydata, out errordata);
-            if(!bSuc)
+            bool bSuc = httpClient.Post(PlayBackURL, data, out replaydata, out errordata);
+            if (!bSuc)
             {
                 return false;
             }
             SystemResult sr;
             sr = JsonConvert.DeserializeObject<SystemResult>(replaydata);
-            if(sr.Err_code!= SystemCode.OK)
+            if (sr.Err_code != SystemCode.OK)
             {
                 return false;
             }
@@ -1185,7 +1211,9 @@ namespace LBPlayer
         #region 重连WebSocket命令
         private void SetWebSocketReConnection(Cmd cmd)
         {
-            ReConnectionWebSocket rcws = JsonConvert.DeserializeObject<ReConnectionWebSocket>(DecodeBase64(Encoding.UTF8, cmd.CmdParam));
+            string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
+            Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
+            ReConnectionWebSocket rcws = JsonConvert.DeserializeObject<ReConnectionWebSocket>(cmdContent);
             initialWebSocket(rcws.Host);
             CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
             UploadCmdResult(cr);
@@ -1195,14 +1223,16 @@ namespace LBPlayer
         #region 屏幕参数设置
         private void SetScreenInfo(Cmd cmd)
         {
-            ScreenSet screenSet=JsonConvert.DeserializeObject<ScreenSet>(DecodeBase64(Encoding.UTF8,cmd.CmdParam));
+            string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
+            Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
+            ScreenSet screenSet = JsonConvert.DeserializeObject<ScreenSet>(cmdContent);
             _config.Size_X = screenSet.Size_x;
             _config.Size_Y = screenSet.Size_y;
             _config.Resoul_X = screenSet.Resolu_x;
             _config.Resoul_Y = screenSet.Resolu_y;
             ConfigTool.SaveConfigData(_config);
 
-            CmdResult cr = new CmdResult(_config.ID, _config.Key,_config.Mac, cmd.CmdId, true.ToString());
+            CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
             UploadCmdResult(cr);
             DeleteCmd(cmd);
         }
@@ -1214,13 +1244,15 @@ namespace LBPlayer
             _config.Size_Y = screenInfo.Size_y;
             _config.Resoul_X = screenInfo.Resolu_x;
             _config.Resoul_Y = screenInfo.Resolu_y;
-           // ConfigTool.SaveConfigData(_config);
+            // ConfigTool.SaveConfigData(_config);
         }
         #endregion
         #region 设置工作时间
         private void SetWorkTime(Cmd cmd)
         {
-            WorkTime workTime = JsonConvert.DeserializeObject<WorkTime>(DecodeBase64(Encoding.UTF8, cmd.CmdParam));
+            string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
+            Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
+            WorkTime workTime = JsonConvert.DeserializeObject<WorkTime>(cmdContent);
             _config.StartWorkTime = workTime.Start;
             _config.EndWorkTime = workTime.End;
             ConfigTool.SaveConfigData(_config);
@@ -1232,7 +1264,9 @@ namespace LBPlayer
         #region 设置软件开关时间
         private void SetSoftWareRunTime(Cmd cmd)
         {
-            RunTime runTime = JsonConvert.DeserializeObject<RunTime>(DecodeBase64(Encoding.UTF8, cmd.CmdParam));
+            string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
+            Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
+            RunTime runTime = JsonConvert.DeserializeObject<RunTime>(cmdContent);
             _config.IsEnableAutoOpenOrClose = runTime.Switch;
             _config.OpenTime = runTime.Enable;
             _config.CloseTime = runTime.Disable;
@@ -1245,11 +1279,15 @@ namespace LBPlayer
         #region 设置电脑锁定
         private void SetComputerLock(Cmd cmd)
         {
-            LockSystem lockSystem = JsonConvert.DeserializeObject<LockSystem>(DecodeBase64((Encoding.UTF8), cmd.CmdParam));
+            string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
+
+            Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
+
+            LockSystem lockSystem = JsonConvert.DeserializeObject<LockSystem>(cmdContent);
             _config.LockUnLockPlayer = lockSystem.Enable;
             _config.LockPwd = lockSystem.Password;
             ConfigTool.SaveConfigData(_config);
-            if(lockSystem.Enable)
+            if (lockSystem.Enable)
             {
                 InitialLock();
             }
@@ -1274,8 +1312,10 @@ namespace LBPlayer
         #region 设置交互周期
         private void SetPollInterval(Cmd cmd)
         {
-            PollInterval pollInterval = JsonConvert.DeserializeObject<PollInterval>(DecodeBase64((Encoding.UTF8), cmd.CmdParam));
-            _config.HeartBeatInterval = pollInterval.Cycle*1000;
+            string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
+            Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
+            PollInterval pollInterval = JsonConvert.DeserializeObject<PollInterval>(cmdContent);
+            _config.HeartBeatInterval = pollInterval.Cycle * 1000;
             ConfigTool.SaveConfigData(_config);
             _poll.PollInterval = _config.HeartBeatInterval;
             CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
@@ -1286,7 +1326,9 @@ namespace LBPlayer
         #region 设置监控数据上传周期
         private void SetMonitorInterval(Cmd cmd)
         {
-            MonitorPollInterval pollInterval = JsonConvert.DeserializeObject<MonitorPollInterval>(DecodeBase64((Encoding.UTF8), cmd.CmdParam));
+            string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
+            Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
+            MonitorPollInterval pollInterval = JsonConvert.DeserializeObject<MonitorPollInterval>(cmdContent);
             _config.MonitorDateInterval = pollInterval.Cycle * 1000;
             ConfigTool.SaveConfigData(_config);
             _monitorDataPoll.MonitorDatePollInterval = _config.MonitorDateInterval;
@@ -1319,14 +1361,14 @@ namespace LBPlayer
         }
         private void UploadImage()
         {
-            if(bUploding)
+            if (bUploding)
             {
                 return;
             }
             bUploding = true;
             List<string> imageFiles;
             GetImageList(out imageFiles);
-            if (imageFiles == null|| imageFiles.Count==0)
+            if (imageFiles == null || imageFiles.Count == 0)
             {
                 return;
             }
@@ -1338,7 +1380,7 @@ namespace LBPlayer
             string replyData, errorData;
             for (int i = 0; i < imageFiles.Count; i++)
             {
-                if(!httpClient.Post(GetPicUploadURL, JsonConvert.SerializeObject(obj), out replyData, out errorData))
+                if (!httpClient.Post(GetPicUploadURL, JsonConvert.SerializeObject(obj), out replyData, out errorData))
                 {
                     return;
                 }
@@ -1359,39 +1401,39 @@ namespace LBPlayer
             bUploding = false;
         }
         private bool UploadFile(string url, string FilePath)
-    {
-        using (FileStream fs = File.OpenRead(FilePath))
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.ContentType = "application/octet-stream";
-            request.Method = "PUT";
-
-            using (Stream requestStream = request.GetRequestStream())
+            using (FileStream fs = File.OpenRead(FilePath))
             {
-                long writeTotalBytes = 0;
-                byte[] inData = new byte[4096];
-                int bytesRead = fs.Read(inData, 0, inData.Length);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.ContentType = "application/octet-stream";
+                request.Method = "PUT";
 
-                while (writeTotalBytes < fs.Length)
+                using (Stream requestStream = request.GetRequestStream())
                 {
-                    requestStream.Write(inData, 0, bytesRead);
-                    writeTotalBytes += bytesRead;
-                    bytesRead = fs.Read(inData, 0, inData.Length);
+                    long writeTotalBytes = 0;
+                    byte[] inData = new byte[4096];
+                    int bytesRead = fs.Read(inData, 0, inData.Length);
+
+                    while (writeTotalBytes < fs.Length)
+                    {
+                        requestStream.Write(inData, 0, bytesRead);
+                        writeTotalBytes += bytesRead;
+                        bytesRead = fs.Read(inData, 0, inData.Length);
+                    }
                 }
-            }
-            using (var response = (HttpWebResponse)request.GetResponse())
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
+                using (var response = (HttpWebResponse)request.GetResponse())
                 {
-                    return true;
-                }
-                else
-                {
-                    return false;
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
         }
-    }
         private object _upLoadingListLockObj = new object();
         private void GetImageList(out List<string> imageFiles)
         {

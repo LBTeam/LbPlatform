@@ -163,6 +163,10 @@
       <Project>{ae40c0e5-6c31-4364-874d-6a0a6c028367}</Project>
       <Name>LBManager.Infrastructure</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LbPlayer.Logger\LbPlayer.Logger.csproj">
+      <Project>{ee413312-7273-4ba5-a00a-4c1a21075b07}</Project>
+      <Name>LbPlayer.Logger</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LBPlayerConfig\LBPlayerConfig.csproj">
       <Project>{e4445e90-fd5e-4d10-9a53-b71c0e38725d}</Project>
       <Name>LBPlayerConfig</Name>

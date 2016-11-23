@@ -55,6 +55,12 @@
     <Compile Include="ComputerStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\LBPlayer\LbPlayer.Logger\LbPlayer.Logger.csproj">
+      <Project>{ee413312-7273-4ba5-a00a-4c1a21075b07}</Project>
+      <Name>LbPlayer.Logger</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
