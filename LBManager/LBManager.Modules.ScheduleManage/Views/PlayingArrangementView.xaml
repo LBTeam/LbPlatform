@@ -12,22 +12,34 @@
         <Grid>
             <GroupBox Header="智能编排" Style="{DynamicResource MaterialDesignGroupBox}" materialDesign:ShadowAssist.ShadowDepth="Depth3" BorderThickness="0">
                 <DockPanel LastChildFill="True">
-                    <!--<materialDesign:Card  DockPanel.Dock="Top" >-->
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-
-                        <!--<Border Background="{DynamicResource SecondaryAccentBrush}"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0,20,0">
-                                <TextBlock Style="{DynamicResource MaterialDesignBody2TextBlock}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="播放时段" />
-                            </Border>-->
-
-
-                        <materialDesign:TimePicker  materialDesign:HintAssist.Hint="开始时间" VerticalAlignment="Bottom"
+                    <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,4">
+                            <materialDesign:TimePicker  materialDesign:HintAssist.Hint="开始时间" VerticalAlignment="Bottom"
                                                 Style="{DynamicResource MaterialDesignFloatingHintTimePicker}"
                                                 IsInvalidTextAllowed="True"
-                                                Is24Hours="True" Width="100" Margin="0,0,10,0"/>
-                        <materialDesign:TimePicker  materialDesign:HintAssist.Hint="结束时间" VerticalAlignment="Bottom"
+                                                Is24Hours="True" Width="100" Margin="0,0,10,0"
+                                                        Text="{Binding StartTime, StringFormat=t}"/>
+                            <materialDesign:TimePicker  materialDesign:HintAssist.Hint="结束时间" VerticalAlignment="Bottom"
                                                 Style="{DynamicResource MaterialDesignFloatingHintTimePicker}"
                                                 IsInvalidTextAllowed="True"
-                                                Is24Hours="True" Width="100"/>
+                                                Is24Hours="True" Width="100"
+                                                        Text="{Binding EndTime, StringFormat=t}"/>
+                        </StackPanel>
+                        <Controls:NumericUpDown x:Name="StringFormatNumUpDown" Padding="0"
+                                                Width="100" Height="26"
+                                                Interval="1"
+                                                IsReadOnly="False" Minimum="1" StringFormat=" {0} 次"
+                                                VerticalContentAlignment="Center" VerticalAlignment="Center"
+                                                HorizontalAlignment="Left"
+                                                Value="{Binding LoopCount, Mode=TwoWay}">
+                            <Controls:NumericUpDown.Resources>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="MinHeight" Value="24"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                </Style>
+                            </Controls:NumericUpDown.Resources>
+                        </Controls:NumericUpDown>
                     </StackPanel>
                     <!--</materialDesign:Card>-->
                     <Grid DockPanel.Dock="Top" Margin="0,4,0,0">
@@ -64,12 +76,12 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="{Binding Name}" Grid.Column="0" VerticalAlignment="Center"/>
                                         <TextBlock Text="{Binding Duration}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,20,0"/>
-                                        <Controls:NumericUpDown x:Name="StringFormatNumUpDown"
+                                        <!--<Controls:NumericUpDown x:Name="StringFormatNumUpDown"
                                                                                 Grid.Column="2"
                                                                                 Interval="1"
                                                                                 IsReadOnly="False" Minimum="1"
                                                                                 StringFormat=" {0} 次" VerticalContentAlignment="Center" VerticalAlignment="Center"
-                                                                                Value="{Binding LoopCount, Mode=TwoWay}" />
+                                                                                Value="{Binding LoopCount, Mode=TwoWay}" />-->
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

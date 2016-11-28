@@ -17,9 +17,12 @@ namespace LBManager.Infrastructure.Models
         public List<Media> GetAllMedia()
         {
             List<Media> mediaList = new List<Media>();
-            foreach (var item in DisplayRegionList)
+            foreach (var regionItem in DisplayRegionList)
             {
-                mediaList.AddRange(item.MediaList);
+                foreach (var stageItem in regionItem.StageList)
+                {
+                    mediaList.AddRange(stageItem.MediaList);
+                }
             }
             return mediaList;
         }
@@ -32,7 +35,15 @@ namespace LBManager.Infrastructure.Models
         public int Y { get; set; }
         public int Width { get; set; }
         public int Heigh { get; set; }
-        public List<Media> MediaList { get; set; }
-        public List<VideoMedia> VideoMediaList { get; set; }
+        public List<ScheduledStage> StageList { get; set; }
+        public List<Media> GetRegionMediaList()
+        {
+            List<Media> mediaList = new List<Media>();
+            foreach (var stageItem in StageList)
+            {
+                mediaList.AddRange(stageItem.MediaList);
+            }
+            return mediaList;
+        }
     }
 }

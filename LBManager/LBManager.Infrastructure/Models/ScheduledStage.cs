@@ -10,8 +10,7 @@ namespace LBManager.Infrastructure.Models
     {
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public List<VideoMedia> VideoMediaList { get; set; }
-        public List<ImageMedia> ImageMediaList { get; set; }
-        public List<TextMedia> TextMediaList { get; set; }
+        public int LoopCount { get; set; }
+        public List<Media> MediaList { get; set; }
     }
 }

@@ -49,7 +49,8 @@ namespace LBManager
 
         private static void AppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            throw new NotImplementedException();
+            System.Diagnostics.Debug.WriteLine(e.ExceptionObject);
+            //throw new NotImplementedException();
         }
 
         #region 待重构

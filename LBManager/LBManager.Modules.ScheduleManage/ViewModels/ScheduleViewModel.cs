@@ -3,6 +3,7 @@ using LBManager.Infrastructure.Common.Utility;
 using LBManager.Infrastructure.Models;
 using LBManager.Modules.ScheduleManage.Views;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -137,21 +138,30 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     displayRegion.Y = displayRegionitem.Y;
                     displayRegion.Width = displayRegionitem.Width;
                     displayRegion.Heigh = displayRegionitem.Heigh;
-                    displayRegion.MediaList = new List<Media>();
-                    foreach (var mediaItem in displayRegionitem.MediaList)
+                    displayRegion.StageList = new List<ScheduledStage>();
+                    foreach (var stageItem in displayRegionitem.ScheduledStageList)
                     {
-                        var media = new Media();
-                        media.URL = mediaItem.FilePath;
-                        media.FileSize = mediaItem.FileSize;
-                        media.Type = mediaItem.FileType;
-                        media.MD5 = mediaItem.MD5;
-                        media.LoopCount = mediaItem.LoopCount;
-                        displayRegion.MediaList.Add(media);
+                        var stage = new ScheduledStage();
+                        stage.StartTime = stageItem.StartTime;
+                        stage.EndTime = stageItem.EndTime;
+                        stage.LoopCount = stageItem.LoopCount;
+                        stage.MediaList = new List<Media>();
+                        foreach (var mediaItem in stageItem.MediaList)
+                        {
+                            var media = new Media();
+                            media.URL = mediaItem.FilePath;
+                            media.FileSize = mediaItem.FileSize;
+                            media.Type = mediaItem.FileType;
+                            media.MD5 = mediaItem.MD5;
+                            media.LoopCount = mediaItem.LoopCount;
+                            stage.MediaList.Add(media);
+                        }
+                        displayRegion.StageList.Add(stage);
                     }
                     _schedule.DisplayRegionList.Add(displayRegion);
                 }
 
-                outputFile.WriteLine(JsonConvert.SerializeObject(_schedule));
+                outputFile.WriteLine(JsonConvert.SerializeObject(_schedule, new IsoDateTimeConverter() { DateTimeFormat = "HH:mm:ss" }));
             }
             
             view.Close();

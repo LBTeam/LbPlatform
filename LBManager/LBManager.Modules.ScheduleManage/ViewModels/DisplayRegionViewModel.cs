@@ -17,7 +17,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         private DisplayRegion _displayRegion;
         public DisplayRegionViewModel()
         {
-            // AddMediaCommand = new DelegateCommand(() => { AddMedia(); });
+            _selectedScheduledStage = new ScheduledStageViewModel();
+            _scheduledStageList.Add(_selectedScheduledStage);
         }
 
 
@@ -29,13 +30,12 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             _width = displayRegion.Width;
             _heigh = displayRegion.Heigh;
             _name = displayRegion.Name;
-            foreach (var mediaItem in displayRegion.MediaList)
+            //var mediaList = displayRegion.GetRegionMediaList();
+            foreach (var stageItem in displayRegion.StageList)
             {
-                MediaList.Add(new MediaViewModel(mediaItem));
+                _scheduledStageList.Add(new ScheduledStageViewModel(stageItem));
             }
-            CurrentMedia = MediaList.Count == 0 ? null : MediaList[0];
-
-            // AddMediaCommand = new DelegateCommand(() => { AddMedia(); });
+            _selectedScheduledStage = _scheduledStageList.Count == 0 ? null : _scheduledStageList[0];
         }
 
         private string _name;
@@ -75,147 +75,19 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         public DisplayRegion Region { get { return _displayRegion; } }
 
-        private ObservableCollection<MediaViewModel> _mediaList = new ObservableCollection<MediaViewModel>();
-        public ObservableCollection<MediaViewModel> MediaList
+        private ScheduledStageViewModel _selectedScheduledStage;
+        public ScheduledStageViewModel SelectedScheduledStage
         {
-            get { return _mediaList; }
-            set { SetProperty(ref _mediaList, value); }
+            get { return _selectedScheduledStage; }
+            set { SetProperty(ref _selectedScheduledStage, value); }
         }
 
-        private MediaViewModel _currentMedia;
-        public MediaViewModel CurrentMedia
+        private ObservableCollection<ScheduledStageViewModel> _scheduledStageList = new ObservableCollection<ScheduledStageViewModel>();
+        public ObservableCollection<ScheduledStageViewModel> ScheduledStageList
         {
-            get { return _currentMedia; }
-            set
-            {
-                SetProperty(ref _currentMedia, value);
-                RemoveMediaCommand.RaiseCanExecuteChanged();
-            }
+            get { return _scheduledStageList; }
+            set { SetProperty(ref _scheduledStageList, value); }
         }
-
-        private DelegateCommand _removeMediaCommand;
-        public DelegateCommand RemoveMediaCommand
-        {
-            get
-            {
-                if (_removeMediaCommand == null)
-                {
-                    _removeMediaCommand = new DelegateCommand(RemoveMedia, CanRemoveMedia);
-                }
-                return _removeMediaCommand;
-            }
-        }
-
-
-        private DelegateCommand _addMediaCommand;
-        public DelegateCommand AddMediaCommand
-        {
-            get
-            {
-                if (_addMediaCommand == null)
-                {
-                    _addMediaCommand = new DelegateCommand(AddMedia);
-                }
-                return _addMediaCommand;
-            }
-        }
-
-
-        private bool CanRemoveMedia()
-        {
-            return CurrentMedia == null ? false : true;
-        }
-
-        private void RemoveMedia()
-        {
-            MediaList.Remove(CurrentMedia);
-            if (MediaList.Count > 0)
-            {
-                CurrentMedia = MediaList[0];
-            }
-            else
-            {
-                CurrentMedia = null;
-            }
-        }
-
-
-        private void AddMedia()
-        {
-
-            var view = new OpenFileDialog()
-            {
-                Filter = "Video File|*.mp4;*.mov;*.wmv"
-            };
-
-            if (view.ShowDialog() == true)
-            {
-                FileInfo fileInfo = new FileInfo(view.FileName);
-                string fileExtension = Path.GetExtension(view.FileName);
-                FFmpegMediaInfo info = new FFmpegMediaInfo(view.FileName);
-                var media = new Media()
-                {
-                    URL = fileInfo.FullName,
-                    Type = GetMediaType(fileInfo.Extension),
-                    FileSize = fileInfo.Length,
-                    MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName),
-                    LoopCount = 1
-                };
-                CurrentMedia = new MediaViewModel(media);
-                CurrentMedia.Duration = Math.Round(info.Duration.TotalSeconds, 1);
-                MediaList.Add(CurrentMedia);
-            }
-
-            // var result = DialogHost.Show(view, "ScheduleRootDialog", AddMediaDialogClosingEventHandler);
-        }
-
-        //private void AddMediaDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
-        //{
-        //    if ((bool)eventArgs.Parameter == false) return;
-        //    eventArgs.Cancel();
-
-        //    DialogHost dialog = sender as DialogHost;
-        //    var view = dialog.DialogContent as OpenFileDialog;
-        //    if (view.ShowDialog() == true)
-        //    {
-        //        FileInfo fileInfo = new FileInfo(view.FileName);
-        //        string fileExtension = Path.GetExtension(view.FileName);
-
-        //        var media = new Media()
-        //        {
-        //            URL = fileInfo.FullName,
-        //            Type = GetMediaType(fileInfo.Extension),
-        //            FileSize = fileInfo.Length,
-        //            MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName)
-        //        };
-        //    }
-
-        //    Task.Delay(TimeSpan.FromSeconds(1))
-        //        .ContinueWith((t, _) =>
-        //            eventArgs.Session.Close(false),
-        //            null,
-        //            TaskScheduler.FromCurrentSynchronizationContext());
-        //}
-
-        private static MediaType GetMediaType(string fileExtension)
-        {
-            MediaType mediaType;
-            switch (fileExtension.ToLower())
-            {
-                case ".mp4":
-                case ".mov":
-                    mediaType = MediaType.Video;
-                    break;
-                case ".jpg":
-                case ".jpeg":
-                case ".png":
-                    mediaType = MediaType.Image;
-                    break;
-                default:
-                    mediaType = MediaType.Text;
-                    break;
-            }
-            return mediaType;
-        }
+      
     }
 }

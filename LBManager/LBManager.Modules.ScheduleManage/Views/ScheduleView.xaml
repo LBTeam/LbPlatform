@@ -120,50 +120,7 @@
                                         </StackPanel>
                                     </StackPanel>
                                     <Grid DockPanel.Dock="Top" Margin="0,4,0,0">
-                                        <local:PlayingArrangementView />
-                                        <!--<Grid.RowDefinitions>
-                                            <RowDefinition Height="30"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                            <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
-                                                ToolTip="添加媒体"
-                                                    Command="{Binding AddMediaCommand}">
-                                                <materialDesign:PackIcon Kind="Plus" Height="20" Width="20"/>
-                                            </Button>
-                                            <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
-                                                ToolTip="删除媒体"
-                                                    Command="{Binding RemoveMediaCommand}">
-                                                <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
-                                            </Button>
-                                        </StackPanel>
-                                        <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}" Style="{DynamicResource MaterialDesignListBox}"
-                                                 HorizontalContentAlignment="Stretch">
-                                            <ListBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Grid Margin="0,2">
-                                                        <Grid.Resources>
-                                                            <Style TargetType="TextBox">
-                                                                <Setter Property="MaxWidth" Value="75"/>
-                                                            </Style>
-                                                        </Grid.Resources>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="*" />
-                                                            <ColumnDefinition Width="auto"/>
-                                                            <ColumnDefinition Width="auto" />
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Text="{Binding Name}" Grid.Column="0" VerticalAlignment="Center"/>
-                                                        <TextBlock Text="{Binding Duration}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,20,0"/>
-                                                        <Controls:NumericUpDown x:Name="StringFormatNumUpDown"
-                                                                                Grid.Column="2"
-                                                                                Interval="1"
-                                                                                IsReadOnly="False" Minimum="1"
-                                                                                StringFormat=" {0} 次" VerticalContentAlignment="Center" VerticalAlignment="Center"
-                                                                                Value="{Binding LoopCount, Mode=TwoWay}" />
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ListBox.ItemTemplate>
-                                        </ListBox>-->
+                                        <local:PlayingArrangementView DataContext="{Binding SelectedScheduledStage}"/>
                                     </Grid>
                                 </DockPanel>
                             </Grid>

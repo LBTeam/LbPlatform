@@ -86,6 +86,7 @@
     <Compile Include="Utility\FFmpegMediaInfo.cs" />
     <Compile Include="ViewModels\DisplayRegionViewModel.cs" />
     <Compile Include="ViewModels\MediaViewModel.cs" />
+    <Compile Include="ViewModels\ScheduledStageViewModel.cs" />
     <Compile Include="ViewModels\ScheduleSummaryListViewModel.cs" />
     <Compile Include="ViewModels\ScheduleSummaryViewModel.cs" />
     <Compile Include="ViewModels\ScheduleViewModel.cs" />

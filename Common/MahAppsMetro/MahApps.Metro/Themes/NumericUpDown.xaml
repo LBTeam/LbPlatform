@@ -24,7 +24,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource ContentFontFamily}" />
         <Setter Property="FontSize" Value="{DynamicResource ContentFontSize}" />
         <Setter Property="HorizontalContentAlignment" Value="Right" />
-        <Setter Property="MinHeight" Value="26" />
+        <Setter Property="MinHeight" Value="20" />
         <Setter Property="MinWidth" Value="62" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
