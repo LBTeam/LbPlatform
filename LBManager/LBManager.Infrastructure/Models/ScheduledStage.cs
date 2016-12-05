@@ -11,6 +11,6 @@ namespace LBManager.Infrastructure.Models
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public int LoopCount { get; set; }
-        public List<Media> MediaList { get; set; }
+        public IList<Media> MediaList { get; set; }
     }
 }

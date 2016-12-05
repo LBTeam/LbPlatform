@@ -22,6 +22,8 @@ using WebSocketSharp;
 using System.Diagnostics;
 using System.Net;
 using LbPlayer.Logger;
+using Quartz;
+using LBPlayer.Job;
 
 namespace LBPlayer
 {
@@ -384,7 +386,7 @@ namespace LBPlayer
         private void _monitorDataPoll_GetMonitorDatePollResponseEvent(object sender, GetMonitorDatePollResponseEventArgs args)
         {
             Log4NetLogger.LogDebug("上传监控完成");
-           // Debug.WriteLine("上传监控完成：" + DateTime.Now);
+            // Debug.WriteLine("上传监控完成：" + DateTime.Now);
 
         }
         /// <summary>
@@ -395,7 +397,7 @@ namespace LBPlayer
         private void _monitorDataPoll_SendMonitorDatePollEvent(object sender, MonitorDatePollEventArgs args)
         {
             Log4NetLogger.LogDebug("上传监控开始");
-           // Debug.WriteLine("上传监控开始：" + DateTime.Now);
+            // Debug.WriteLine("上传监控开始：" + DateTime.Now);
             try
             {
                 float cupUtilization;
@@ -653,28 +655,29 @@ namespace LBPlayer
             return flag;
         }
 
-        private bool ScheduleParser(string path, out Schedule sch)
+        private Schedule ScheduleParser(string path)
         {
-
-            sch = null;
+            Schedule schedule = null;
             if (!File.Exists(path))
             {
-                return false;
+                return schedule;
             }
+
             try
             {
                 string scheduleContent = File.ReadAllText(path, Encoding.UTF8);
                 if (scheduleContent == null || scheduleContent == "")
                 {
-                    return false;
+                    return schedule;
                 }
-                sch = JsonConvert.DeserializeObject<Schedule>(scheduleContent);
+                schedule = JsonConvert.DeserializeObject<Schedule>(scheduleContent);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                Log4NetLogger.LogError(string.Format("解析排期时出现异常：\r\n{0}", ex.Message));
+                return schedule;
             }
-            return true;
+            return schedule;
         }
 
         #endregion
@@ -930,6 +933,7 @@ namespace LBPlayer
             LoadConfig();
             initialWorkPath();
             _screenCapture = new ScreenCapture();
+            DisplayScheduleManager.GetInstance().StartScheduler();
             InitialConfigValue();
             InitialCmdList();
             StartCmdTimer();
@@ -1070,58 +1074,101 @@ namespace LBPlayer
                 }
             }
             cr.CmdRes = true.ToString();
-            UploadCmdResult(cr);
-            DeleteCmd(cmd);
-            _config.CurrentPlanPath = Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName));
-            ConfigTool.SaveConfigData(_config);
-            _bDownloading = false;
+            if (UploadCmdResult(cr))
+            {
+                DeleteCmd(cmd);
+                _config.CurrentPlanPath = Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName));
+                ConfigTool.SaveConfigData(_config);
+                _bDownloading = false;
+                GenerateLEDSchedule(_config.CurrentPlanPath);
+                // Start();
+            }
+            else
+            {
+                _bDownloading = false;
+            }
+        }
 
-            Start();
+        private void GenerateLEDSchedule(string scheduleFilePath)
+        {
+            if (!File.Exists(scheduleFilePath))
+            {
+                Log4NetLogger.LogDebug(string.Format("---排期文件{0}不存在---", scheduleFilePath));
+            }
+            var currentSchedule = ScheduleParser(scheduleFilePath);
+            if (currentSchedule == null)
+            {
+                Log4NetLogger.LogDebug("获取当前排期失败");
+            }
+
+            foreach (var regionItem in currentSchedule.DisplayRegionList)
+            {
+                foreach (var stageItem in regionItem.StageList)
+                {
+                    JobDataMap jobDataMap = new JobDataMap();
+                    jobDataMap.Add("MediaList", stageItem.MediaList);
+                    jobDataMap.Add("LoopCount", stageItem.LoopCount);
+
+                    IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
+                        .WithIdentity("DisplayJob", regionItem.Name)
+                        .UsingJobData(jobDataMap)
+                        .Build();
+
+                    ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
+                        .WithIdentity("DisplayTrigger", regionItem.Name)
+                        .StartAt(DateTime.UtcNow.AddSeconds(5))
+                        .Build();
+
+                    DisplayScheduleManager.GetInstance().ScheduleJob(job, trigger);
+                }
+            }
+
+
 
         }
         private void Start()
         {
-            Thread t = new Thread(StartPlay);
-            t.Start();
+            Action playAction = new Action(StartPlay);
+            playAction.BeginInvoke(null, null);
         }
         private void StartPlay()
         {
-            if (_config.CurrentPlanPath == null || _config.CurrentPlanPath == "")
-            {
-                return;
-            }
-            Schedule sch;
-            if (!ScheduleParser(_config.CurrentPlanPath, out sch))
-            {
-                return;
-            }
-            List<PlayInfoWrapper> playInfoList = new List<PlayInfoWrapper>();
-            List<LBManager.Infrastructure.Models.Media> mediaList = sch.GetAllMedia();
-            if (mediaList == null || mediaList.Count <= 0)
-            {
-                return;
-            }
-            for (int i = 0; i < mediaList.Count; i++)
-            {
-                PlayInfoWrapper playInfo = new PlayInfoWrapper(Path.Combine(_mediaPath, Path.GetFileNameWithoutExtension(mediaList[i].URL) + "_" + mediaList[i].MD5 + Path.GetExtension(mediaList[i].URL)),
-                                                               mediaList[i].LoopCount,
-                                                               int.Parse(_config.Size_X),
-                                                               int.Parse(_config.Size_Y),
-                                                               int.Parse(_config.Resoul_X),
-                                                               int.Parse(_config.Resoul_Y));
-                playInfoList.Add(playInfo);
-            }
-            try
-            {
-                Log4NetLogger.LogDebug(string.Format("***开始播放***"));
-                _screenPlayer.Play(playInfoList);
-            }
-            catch (Exception ex)
-            {
-                Log4NetLogger.LogError(string.Format("[播放时出现错误]:{0}", ex.Message));
-                return;
-            }
-            return;
+            //if (_config.CurrentPlanPath == null || _config.CurrentPlanPath == "")
+            //{
+            //    return;
+            //}
+            //Schedule sch;
+            //if (!ScheduleParser(_config.CurrentPlanPath, out sch))
+            //{
+            //    return;
+            //}
+            //List<PlayInfoWrapper> playInfoList = new List<PlayInfoWrapper>();
+            //List<LBManager.Infrastructure.Models.Media> mediaList = sch.GetAllMedia();
+            //if (mediaList == null || mediaList.Count <= 0)
+            //{
+            //    return;
+            //}
+            //for (int i = 0; i < mediaList.Count; i++)
+            //{
+            //    PlayInfoWrapper playInfo = new PlayInfoWrapper(Path.Combine(_mediaPath, Path.GetFileNameWithoutExtension(mediaList[i].URL) + "_" + mediaList[i].MD5 + Path.GetExtension(mediaList[i].URL)),
+            //                                                   mediaList[i].LoopCount,
+            //                                                   int.Parse(_config.Size_X),
+            //                                                   int.Parse(_config.Size_Y),
+            //                                                   int.Parse(_config.Resoul_X),
+            //                                                   int.Parse(_config.Resoul_Y));
+            //    playInfoList.Add(playInfo);
+            //}
+            //try
+            //{
+            //    Log4NetLogger.LogDebug(string.Format("***开始播放***"));
+            //    _screenPlayer.Play(playInfoList);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log4NetLogger.LogError(string.Format("[播放时出现错误]:{0}", ex.Message));
+            //    return;
+            //}
+            //return;
         }
 
         #endregion
@@ -1203,6 +1250,7 @@ namespace LBPlayer
             }
             catch (Exception ex)
             {
+                Log4NetLogger.LogError(string.Format("删除命令时发生异常:\r\n{0}", ex.Message));
                 return false;
             }
             return true;

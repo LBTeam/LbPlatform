@@ -14,8 +14,8 @@ namespace LBManager.Infrastructure.Models
         public TimeSpan Duration { get; set; }
         public MediaType Type { get; set; }
         public string MD5 { get; set; }
-        public string Cron { get; set; }
-        public string Content { get; set; }
+        public string Cron { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
         public int LoopCount { get; set; }
 
 

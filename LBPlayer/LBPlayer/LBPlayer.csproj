@@ -104,6 +104,8 @@
       <DependentUpon>Encryption.cs</DependentUpon>
     </Compile>
     <Compile Include="HartBeatObj.cs" />
+    <Compile Include="Job\DisplayScheduleManager.cs" />
+    <Compile Include="Job\LEDDisplayJob.cs" />
     <Compile Include="LBPlayerMain.cs">
       <SubType>Form</SubType>
     </Compile>
