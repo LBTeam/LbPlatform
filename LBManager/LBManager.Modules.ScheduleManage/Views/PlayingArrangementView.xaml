@@ -60,7 +60,7 @@
                             </Button>
                         </StackPanel>
                         <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}" Style="{DynamicResource MaterialDesignListBox}"
-                                 HorizontalContentAlignment="Stretch">
+                                 HorizontalContentAlignment="Stretch" PreviewKeyDown="ListBox_PreviewKeyDown">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Margin="0,2">

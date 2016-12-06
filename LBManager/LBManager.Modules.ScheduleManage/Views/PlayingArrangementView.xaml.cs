@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LBManager.Modules.ScheduleManage.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,38 @@ namespace LBManager.Modules.ScheduleManage.Views
         public PlayingArrangementView()
         {
             InitializeComponent();
+        }
+
+        private void ListBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+           var viewModel =  this.DataContext as ScheduledStageViewModel;
+            if (e.Key == Key.Up && Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+               int selectedMediaIndex = viewModel.MediaList.IndexOf(viewModel.CurrentMedia);
+                if(selectedMediaIndex == 0)
+                {
+                    return;
+                }
+                var selectedMedia = viewModel.CurrentMedia;
+                viewModel.MediaList.Remove(selectedMedia);
+                viewModel.MediaList.Insert(selectedMediaIndex - 1, selectedMedia);
+                viewModel.CurrentMedia = selectedMedia;
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Down && Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                int selectedMediaIndex = viewModel.MediaList.IndexOf(viewModel.CurrentMedia);
+                if (selectedMediaIndex == viewModel.MediaList.Count - 1)
+                {
+                    return;
+                }
+                var selectedMedia = viewModel.CurrentMedia;
+                viewModel.MediaList.Remove(selectedMedia);
+                viewModel.MediaList.Insert(selectedMediaIndex + 1, selectedMedia);
+                viewModel.CurrentMedia = selectedMedia;
+                e.Handled = true;
+            }
+           
         }
     }
 }
