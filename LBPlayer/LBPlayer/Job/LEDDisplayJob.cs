@@ -10,7 +10,7 @@ namespace LBPlayer.Job
 {
     public class LEDDisplayJob : IJob
     {
-        public IList<LBManager.Infrastructure.Models.Media> MediaList { get; set; }
+        public IList<string> MediaPathList { get; set; }
         public int LoopCount { get; set; }
 
         public void Execute(IJobExecutionContext context)
@@ -19,7 +19,9 @@ namespace LBPlayer.Job
             JobDataMap dataMap = context.MergedJobDataMap;
 
             LoopCount = dataMap.GetInt("LoopCount");
-            MediaList = dataMap["MediaList"] as IList<LBManager.Infrastructure.Models.Media>;
+            MediaPathList = dataMap["MediaPathList"] as IList<string>;
+
+            LEDScreenDisplayer.GetInstance().DisplayMedias(MediaPathList, LoopCount);
 
             Log4NetLogger.LogInfo("Instance " + key + ":");
         }

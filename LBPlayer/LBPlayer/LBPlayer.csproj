@@ -112,6 +112,7 @@
     <Compile Include="LBPlayerMain.Designer.cs">
       <DependentUpon>LBPlayerMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="LEDScreenDisplayer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ToolTipWindow.cs">

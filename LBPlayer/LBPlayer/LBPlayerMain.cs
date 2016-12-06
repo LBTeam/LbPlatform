@@ -432,9 +432,8 @@ namespace LBPlayer
         {
             Task playTask = new Task(() =>
             {
-                _screenPlayer = new ScreenPlayer(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
+                LEDScreenDisplayer.GetInstance().Initialize(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
                 Log4NetLogger.LogDebug("初始化播放组件...");
-                _screenPlayer.Initialize();
             });
             playTask.Start();
 
@@ -1105,8 +1104,15 @@ namespace LBPlayer
             {
                 foreach (var stageItem in regionItem.StageList)
                 {
+                    IList<string> mediaPathList = new List<string>();
+                    foreach (var mediaItem in stageItem.MediaList)
+                    {
+                        string mediaPath = Path.Combine(_mediaPath, Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
+                        mediaPathList.Add(mediaPath);
+                    }
+
                     JobDataMap jobDataMap = new JobDataMap();
-                    jobDataMap.Add("MediaList", stageItem.MediaList);
+                    jobDataMap.Add("MediaPathList", mediaPathList);
                     jobDataMap.Add("LoopCount", stageItem.LoopCount);
 
                     IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
@@ -1116,7 +1122,7 @@ namespace LBPlayer
 
                     ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
                         .WithIdentity("DisplayTrigger", regionItem.Name)
-                        .StartAt(DateTime.UtcNow.AddSeconds(5))
+                        .StartAt(stageItem.StartTime)
                         .Build();
 
                     DisplayScheduleManager.GetInstance().ScheduleJob(job, trigger);
