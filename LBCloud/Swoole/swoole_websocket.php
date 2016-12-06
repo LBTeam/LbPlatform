@@ -63,7 +63,7 @@ $server->on('message', function (swoole_websocket_server $server, $frame) {
 				//通知播放端
 				$client_res = $server->push($client_fd, json_encode($client_resp));
 				if($client_res){
-					$fd_key = md5("player_fd_{$fd}");
+					$fd_key = md5("player_fd_{$client_fd}");
 					$redis_serv->del($redis_key);
 					$redis_serv->del($fd_key);
 					//$response = array("err_code"=>"000000","msg"=>"ok");
