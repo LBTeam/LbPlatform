@@ -430,15 +430,11 @@ namespace LBPlayer
 
         private void initialPlay()
         {
-            Task playTask = new Task(() =>
-            {
-                LEDScreenDisplayer.GetInstance().Initialize(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
-                Log4NetLogger.LogDebug("初始化播放组件...");
-            });
-            playTask.Start();
-
-            Task.Delay(TimeSpan.FromMilliseconds(1000))
-               .ContinueWith((t, _) => Start(), null, TaskScheduler.FromCurrentSynchronizationContext());
+            LEDScreenDisplayer.GetInstance().Initialize(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
+            Log4NetLogger.LogDebug("初始化播放组件...");
+            GenerateLEDSchedule(_config.CurrentPlanPath);
+            //Task.Delay(TimeSpan.FromMilliseconds(1000))
+            //   .ContinueWith((t, _) => GenerateLEDSchedule(_config.CurrentPlanPath);, null, TaskScheduler.FromCurrentSynchronizationContext());
 
         }
         #endregion
@@ -1112,6 +1108,7 @@ namespace LBPlayer
                     }
 
                     JobDataMap jobDataMap = new JobDataMap();
+                    jobDataMap.Add("SchedulePath", scheduleFilePath);
                     jobDataMap.Add("MediaPathList", mediaPathList);
                     jobDataMap.Add("LoopCount", stageItem.LoopCount);
 
@@ -1278,7 +1275,7 @@ namespace LBPlayer
         private void SetScreenInfo(Cmd cmd)
         {
             string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
-            Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
+            Log4NetLogger.LogInfo(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
             ScreenSet screenSet = JsonConvert.DeserializeObject<ScreenSet>(cmdContent);
             _config.Size_X = screenSet.Size_x;
             _config.Size_Y = screenSet.Size_y;
@@ -1286,6 +1283,7 @@ namespace LBPlayer
             _config.Resoul_Y = screenSet.Resolu_y;
             ConfigTool.SaveConfigData(_config);
 
+            LEDScreenDisplayer.GetInstance().UpdateScreenWindow(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
             CmdResult cr = new CmdResult(_config.ID, _config.Key, _config.Mac, cmd.CmdId, true.ToString());
             UploadCmdResult(cr);
             DeleteCmd(cmd);
