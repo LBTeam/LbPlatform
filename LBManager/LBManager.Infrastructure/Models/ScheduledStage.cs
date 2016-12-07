@@ -8,8 +8,8 @@ namespace LBManager.Infrastructure.Models
 {
     public class ScheduledStage
     {
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public DateTime StartTime { get; set; } = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 7, 30, 0);
+        public DateTime EndTime { get; set; } = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 21, 30, 0);
         public int LoopCount { get; set; }
         public IList<Media> MediaList { get; set; }
     }

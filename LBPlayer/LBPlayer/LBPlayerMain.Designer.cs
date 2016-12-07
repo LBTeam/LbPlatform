@@ -517,6 +517,8 @@
             this.MaximizeBox = false;
             this.Name = "LBPlayerMain";
             this.Text = "LBPlayer";
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.LBPlayerMain_FormClosed);
             this.Load += new System.EventHandler(this.LBPlayerMain_Load);
             this.skinTabControl1.ResumeLayout(false);
             this.skinTabPage1.ResumeLayout(false);

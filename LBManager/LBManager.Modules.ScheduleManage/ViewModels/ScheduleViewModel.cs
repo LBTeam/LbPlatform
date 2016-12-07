@@ -154,6 +154,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                             media.Type = mediaItem.FileType;
                             media.MD5 = mediaItem.MD5;
                             media.LoopCount = mediaItem.LoopCount;
+                            media.Duration = mediaItem.Duration;
                             stage.MediaList.Add(media);
                         }
                         displayRegion.StageList.Add(stage);

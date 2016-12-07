@@ -47,14 +47,14 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
         }
 
-        private DateTime _startTime;
+        private DateTime _startTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 7, 30, 0);
         public DateTime StartTime
         {
             get { return _startTime; }
             set { SetProperty(ref _startTime, value); }
         }
 
-        private DateTime _endTime;
+        private DateTime _endTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 21, 30, 0);
         public DateTime EndTime
         {
             get { return _endTime; }
@@ -138,7 +138,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     LoopCount = 1
                 };
                 CurrentMedia = new MediaViewModel(media);
-                CurrentMedia.Duration = Math.Round(info.Duration.TotalSeconds, 1);
+                CurrentMedia.Duration = TimeSpan.FromSeconds(Math.Round(info.Duration.TotalSeconds, 0));
                 MediaList.Add(CurrentMedia);
             }
         }
@@ -150,6 +150,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             {
                 case ".mp4":
                 case ".mov":
+                case ".wmv":
                     mediaType = MediaType.Video;
                     break;
                 case ".jpg":

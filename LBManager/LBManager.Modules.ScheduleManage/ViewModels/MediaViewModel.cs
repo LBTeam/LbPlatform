@@ -1,5 +1,6 @@
 ﻿using LBManager.Infrastructure.Models;
 using Prism.Mvvm;
+using System;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
@@ -16,6 +17,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             _md5 = media.MD5;
             _cron = media.Cron;
             _content = media.Content;
+            _duration = media.Duration;
             _loopCount = media.LoopCount;
         }
 
@@ -74,8 +76,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             set { SetProperty(ref _loopCount, value); }
         }
 
-        private double _duration = 0;
-        public double Duration
+        private TimeSpan _duration = new TimeSpan(0);
+        public TimeSpan Duration
         {
             get { return _duration; }
             set { SetProperty(ref _duration, value); }

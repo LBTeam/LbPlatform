@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LBManager.Infrastructure.Logger;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,6 +14,7 @@ namespace LBManager
     /// </summary>
     public partial class App : Application
     {
+        private static Log4NetLogger _logger = new Log4NetLogger();
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -49,7 +51,8 @@ namespace LBManager
 
         private static void AppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine(e.ExceptionObject);
+            _logger.Log(e.ExceptionObject.ToString(), Prism.Logging.Category.Exception, Prism.Logging.Priority.Medium);
+            //System.Diagnostics.Debug.WriteLine(e.ExceptionObject);
             //throw new NotImplementedException();
         }
 

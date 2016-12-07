@@ -432,6 +432,7 @@ namespace LBPlayer
         {
             LEDScreenDisplayer.GetInstance().Initialize(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
             Log4NetLogger.LogDebug("初始化播放组件...");
+            Thread.Sleep(2000);
             GenerateLEDSchedule(_config.CurrentPlanPath);
             //Task.Delay(TimeSpan.FromMilliseconds(1000))
             //   .ContinueWith((t, _) => GenerateLEDSchedule(_config.CurrentPlanPath);, null, TaskScheduler.FromCurrentSynchronizationContext());
@@ -1112,6 +1113,8 @@ namespace LBPlayer
                     jobDataMap.Add("MediaPathList", mediaPathList);
                     jobDataMap.Add("LoopCount", stageItem.LoopCount);
 
+                    
+
                     IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
                         .WithIdentity("DisplayJob", regionItem.Name)
                         .UsingJobData(jobDataMap)
@@ -1120,6 +1123,7 @@ namespace LBPlayer
                     ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
                         .WithIdentity("DisplayTrigger", regionItem.Name)
                         .StartAt(stageItem.StartTime)
+                        .EndAt(stageItem.EndTime)
                         .Build();
 
                     DisplayScheduleManager.GetInstance().ScheduleJob(job, trigger);
@@ -1505,6 +1509,11 @@ namespace LBPlayer
             }
         }
         #endregion
+
+        private void LBPlayerMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Environment.Exit(0);
+        }
     }
 }
 
