@@ -34,12 +34,12 @@ class DemoController extends Controller
 	}
 	
 	public function index(){
-		exit;
+		//exit;
 		/*$AliyunOSS = new AliyunOSS();
 		$result = $AliyunOSS->bucket_list();
 		dump($result);
-		exit;
-		$result = $AliyunOSS->create_bucket(C("oss_picture_bucket"));
+		exit;*/
+		/*$result = $AliyunOSS->create_bucket(C("oss_picture_bucket"));
 		exit;*/
 		/*$file = "./test.png";
 		$filesize = filesize($file);
