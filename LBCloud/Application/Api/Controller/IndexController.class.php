@@ -66,10 +66,9 @@ class IndexController extends Controller {
 		/*$url = $AliyunOSS->download_uri($picture_bucket, "D07E355210CB/20161022/1477127895.jpg");
 		dump($url);
 		exit;*/
-		$result = $AliyunOSS->object_list($picture_bucket, "D07E355210CB/20161022/");
-		dump($result);
+		$result = $AliyunOSS->object_list($program_bucket, "20161207/");
 		foreach($result['objects'] as $val){
-			$url = $AliyunOSS->download_uri($picture_bucket, $val['key']);
+			$url = $AliyunOSS->download_uri($program_bucket, $val['key']);
 			dump($url);
 			/*$result = $AliyunOSS->delete_object($val['key'], $picture_bucket);
 			dump($result);*/
