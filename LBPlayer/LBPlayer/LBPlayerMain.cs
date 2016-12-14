@@ -1216,12 +1216,14 @@ namespace LBPlayer
             bool bSuc = httpClient.Post(CmdBackURL, data, out replaydata, out errordata);
             if (!bSuc)
             {
+                Log4NetLogger.LogError(string.Format("回复命令[id:{0}]结果出现错误:\r\n{1}", cmdRes.CmdId, errordata));
                 return false;
             }
             SystemResult sr;
             sr = JsonConvert.DeserializeObject<SystemResult>(replaydata);
             if (sr.Err_code != SystemCode.OK)
             {
+                Log4NetLogger.LogError(string.Format("回复命令[id:{0}]结果解析出现异常，回复数据为：\r\n{1}", cmdRes.CmdId, replaydata));
                 return false;
             }
             return true;
