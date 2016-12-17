@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LbPlayer.Logger;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -9,6 +10,7 @@ namespace LBPlayer
 {
     static class Program
     {
+        // private static Log4NetLogger _logger;
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
@@ -23,7 +25,8 @@ namespace LBPlayer
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            throw new NotImplementedException();
+            Log4NetLogger.LogError(e.Exception.Message);
+            //throw new NotImplementedException();
         }
     }
 }

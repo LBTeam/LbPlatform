@@ -297,7 +297,7 @@ namespace LBManager
                         using (Stream requestStream = request.GetRequestStream())
                         {
                             long writeTotalBytes = 0;
-                            byte[] inData = new byte[4096];
+                            byte[] inData = new byte[1024];
                             int bytesRead = fs.Read(inData, 0, inData.Length);
 
                             while (writeTotalBytes < partSize)

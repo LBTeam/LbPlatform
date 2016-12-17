@@ -24,6 +24,8 @@ using System.Net;
 using LbPlayer.Logger;
 using Quartz;
 using LBPlayer.Job;
+using LBManager.Infrastructure.Utility;
+using Polly;
 
 namespace LBPlayer
 {
@@ -452,7 +454,7 @@ namespace LBPlayer
             string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
             Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
             PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
-            if (!DeownloadFile(Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
+            if (!DownloadFile(Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl, string.Empty))
             {
                 UploadCmdResult(cr);
                 DeleteCmd(cmd);
@@ -461,7 +463,7 @@ namespace LBPlayer
             }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                if (!DeownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                if (!DownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl, string.Empty))
                 {
                     UploadCmdResult(cr);
                     DeleteCmd(cmd);
@@ -488,7 +490,7 @@ namespace LBPlayer
             string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
             Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
             PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
-            if (!DeownloadFile(Path.Combine(_offlinePlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
+            if (!DownloadFile(Path.Combine(_offlinePlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
             {
                 UploadCmdResult(cr);
                 DeleteCmd(cmd);
@@ -497,7 +499,7 @@ namespace LBPlayer
             }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                if (!DeownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                if (!DownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
                 {
                     UploadCmdResult(cr);
                     DeleteCmd(cmd);
@@ -598,57 +600,127 @@ namespace LBPlayer
             SetControlTextDelegate setTextDelegate = new SetControlTextDelegate(SetControlText);
             this.Invoke(setTextDelegate, new object[] { setControl, text });
         }
-        private bool DeownloadFile(string strFileName, string url)
+        private bool DownloadFile(string strFileName, string url, string md5 = "")
         {
-            bool flag = false;
             //打开上次下载的文件
             long SPosition = 0;
             //实例化流对象
-            FileStream FStream;
-            //判断要下载的文件夹是否存在
+            // FileStream FStream;
+
             if (File.Exists(strFileName))
             {
-                return true;
-                ////打开要下载的文件
-                //FStream = File.OpenWrite(strFileName);
-                ////获取已经下载的长度
-                //SPosition = FStream.Length;
-                //FStream.Seek(SPosition, SeekOrigin.Current);
+                if (!string.IsNullOrEmpty(md5) && FileUtils.ComputeFileMd5(strFileName) == md5)
+                {
+                    return true;
+                }
+                else
+                {
+                    File.Delete(strFileName);
+                }
             }
-            else
+
+            var policy = Policy.Handle<Exception>().WaitAndRetry(
+                retryCount: 5, // Retry 3 times
+                sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(2000), // Wait 2000ms between each try.
+                onRetry: (exception, calculatedWaitDuration) => // Capture some info for logging!
             {
-                //文件不保存创建一个文件
-                FStream = new FileStream(strFileName, FileMode.Create);
-                SPosition = 0;
-            }
+                Log4NetLogger.LogDebug(string.Format("{0}下载异常，开始下载重试！\r\n{1}", strFileName, exception.Message));
+            });
+
             try
             {
-                //打开网络连接
-                HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);
-                if (SPosition > 0)
-                    myRequest.AddRange((int)SPosition);             //设置Range值
-                //向服务器请求,获得服务器的回应数据流
-                Stream myStream = myRequest.GetResponse().GetResponseStream();
-                //定义一个字节数据
-                byte[] btContent = new byte[512];
-                int intSize = 0;
-                intSize = myStream.Read(btContent, 0, 512);
-                while (intSize > 0)
+                policy.Execute(() =>
                 {
-                    FStream.Write(btContent, 0, intSize);
-                    intSize = myStream.Read(btContent, 0, 512);
-                }
-                //关闭流
-                FStream.Close();
-                myStream.Close();
-                flag = true;        //返回true下载成功
+                    using (FileStream fileStream = File.Create(strFileName))
+                    {
+                        //打开网络连接
+                        HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);
+                        if (SPosition > 0)
+                            myRequest.AddRange((int)SPosition);             //设置Range值
+                                                                            //向服务器请求,获得服务器的回应数据流
+                        using (Stream myStream = myRequest.GetResponse().GetResponseStream())
+                        {
+                            byte[] btContent = new byte[512];
+                            int intSize = 0;
+                            intSize = myStream.Read(btContent, 0, 512);
+                            while (intSize > 0)
+                            {
+                                fileStream.Write(btContent, 0, intSize);
+                                intSize = myStream.Read(btContent, 0, 512);
+                            }
+                        }
+                    }
+                });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                FStream.Close();
-                flag = false;       //返回false下载失败
+                Log4NetLogger.LogError(string.Format("{0}下载异常!！\r\n{1}", strFileName, ex.Message));
+                return false;
             }
-            return flag;
+
+            return true;
+        }
+
+        private bool DownloadFileAsync(string strFileName, string url, string md5 = "")
+        {
+            //打开上次下载的文件
+            long SPosition = 0;
+            //实例化流对象
+            // FileStream FStream;
+
+            if (File.Exists(strFileName))
+            {
+                if (!string.IsNullOrEmpty(md5) && FileUtils.ComputeFileMd5(strFileName) == md5)
+                {
+                    return true;
+                }
+                else
+                {
+                    File.Delete(strFileName);
+                }
+            }
+
+            var policy = Policy.Handle<Exception>().WaitAndRetryAsync(
+                retryCount: 5, // Retry 3 times
+                sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(2000), // Wait 2000ms between each try.
+                onRetry: (exception, calculatedWaitDuration) => // Capture some info for logging!
+            {
+                Log4NetLogger.LogDebug(string.Format("{0}下载异常，开始下载重试！\r\n{1}", strFileName, exception.Message));
+            });
+
+            try
+            {
+                policy.Execute(() =>
+               {
+                    using (FileStream fileStream = File.Create(strFileName))
+                    {
+                        //打开网络连接
+                        HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);
+                        if (SPosition > 0)
+                            myRequest.AddRange((int)SPosition);             //设置Range值
+                                                                            //向服务器请求,获得服务器的回应数据流
+                       
+                        using (Stream myStream = myRequest.GetResponse().GetResponseStream())
+                        {
+                            byte[] btContent = new byte[512];
+                            int intSize = 0;
+                            intSize = myStream.Read(btContent, 0, 512);
+                            while (intSize > 0)
+                            {
+                                fileStream.Write(btContent, 0, intSize);
+                                intSize = myStream.Read(btContent, 0, 512);
+                            }
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Log4NetLogger.LogError(string.Format("{0}下载异常!！\r\n{1}", strFileName, ex.Message));
+                return false;
+            }
+
+            return true;
         }
 
         private Schedule ScheduleParser(string path)
@@ -1052,7 +1124,7 @@ namespace LBPlayer
             Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
 
             PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
-            if (!DeownloadFile(Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
+            if (!DownloadFile(Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
             {
                 UploadCmdResult(cr);
                 DeleteCmd(cmd);
@@ -1061,7 +1133,7 @@ namespace LBPlayer
             }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                if (!DeownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                if (!DownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
                 {
                     UploadCmdResult(cr);
                     DeleteCmd(cmd);
@@ -1113,7 +1185,7 @@ namespace LBPlayer
                     jobDataMap.Add("MediaPathList", mediaPathList);
                     jobDataMap.Add("LoopCount", stageItem.LoopCount);
 
-                    
+
 
                     IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
                         .WithIdentity("DisplayJob", regionItem.Name)
