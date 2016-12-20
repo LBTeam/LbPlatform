@@ -660,7 +660,67 @@ namespace LBPlayer
 
             return true;
         }
+        private bool DownloadMediaFile(string strFileName, string url, string md5 = "")
+        {
+            //打开上次下载的文件
+            long SPosition = 0;
+            //实例化流对象
+            // FileStream FStream;
 
+            if (File.Exists(strFileName))
+            {
+                if (!string.IsNullOrEmpty(md5) && FileUtils.ComputeFileMd5(strFileName) == md5)
+                {
+                    return true;
+                }
+                else
+                {
+                    return true;
+                   // File.Delete(strFileName);
+                }
+            }
+
+            var policy = Policy.Handle<Exception>().WaitAndRetry(
+                retryCount: 5, // Retry 3 times
+                sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(2000), // Wait 2000ms between each try.
+                onRetry: (exception, calculatedWaitDuration) => // Capture some info for logging!
+            {
+                Log4NetLogger.LogDebug(string.Format("{0}下载异常，开始下载重试！\r\n{1}", strFileName, exception.Message));
+            });
+
+            try
+            {
+                policy.Execute(() =>
+                {
+                    using (FileStream fileStream = File.Create(strFileName))
+                    {
+                        //打开网络连接
+                        HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);
+                        if (SPosition > 0)
+                            myRequest.AddRange((int)SPosition);             //设置Range值
+                                                                            //向服务器请求,获得服务器的回应数据流
+                        using (Stream myStream = myRequest.GetResponse().GetResponseStream())
+                        {
+                            byte[] btContent = new byte[512];
+                            int intSize = 0;
+                            intSize = myStream.Read(btContent, 0, 512);
+                            while (intSize > 0)
+                            {
+                                fileStream.Write(btContent, 0, intSize);
+                                intSize = myStream.Read(btContent, 0, 512);
+                            }
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Log4NetLogger.LogError(string.Format("{0}下载异常!！\r\n{1}", strFileName, ex.Message));
+                return false;
+            }
+
+            return true;
+        }
         private bool DownloadFileAsync(string strFileName, string url, string md5 = "")
         {
             //打开上次下载的文件
@@ -692,27 +752,27 @@ namespace LBPlayer
             {
                 policy.Execute(() =>
                {
-                    using (FileStream fileStream = File.Create(strFileName))
-                    {
-                        //打开网络连接
-                        HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);
-                        if (SPosition > 0)
-                            myRequest.AddRange((int)SPosition);             //设置Range值
-                                                                            //向服务器请求,获得服务器的回应数据流
-                       
-                        using (Stream myStream = myRequest.GetResponse().GetResponseStream())
-                        {
-                            byte[] btContent = new byte[512];
-                            int intSize = 0;
-                            intSize = myStream.Read(btContent, 0, 512);
-                            while (intSize > 0)
-                            {
-                                fileStream.Write(btContent, 0, intSize);
-                                intSize = myStream.Read(btContent, 0, 512);
-                            }
-                        }
-                    }
-                });
+                   using (FileStream fileStream = File.Create(strFileName))
+                   {
+                       //打开网络连接
+                       HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);
+                       if (SPosition > 0)
+                           myRequest.AddRange((int)SPosition);             //设置Range值
+                                                                           //向服务器请求,获得服务器的回应数据流
+
+                       using (Stream myStream = myRequest.GetResponse().GetResponseStream())
+                       {
+                           byte[] btContent = new byte[512];
+                           int intSize = 0;
+                           intSize = myStream.Read(btContent, 0, 512);
+                           while (intSize > 0)
+                           {
+                               fileStream.Write(btContent, 0, intSize);
+                               intSize = myStream.Read(btContent, 0, 512);
+                           }
+                       }
+                   }
+               });
             }
             catch (Exception ex)
             {
@@ -1124,7 +1184,8 @@ namespace LBPlayer
             Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
 
             PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
-            if (!DownloadFile(Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
+            string scheduleFilePath = Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName));
+            if (!DownloadFile(scheduleFilePath, planCmdPar.ProgramUrl))
             {
                 UploadCmdResult(cr);
                 DeleteCmd(cmd);
@@ -1133,7 +1194,7 @@ namespace LBPlayer
             }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                if (!DownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                if (!DownloadMediaFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
                 {
                     UploadCmdResult(cr);
                     DeleteCmd(cmd);
@@ -1145,7 +1206,7 @@ namespace LBPlayer
             if (UploadCmdResult(cr))
             {
                 DeleteCmd(cmd);
-                _config.CurrentPlanPath = Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName));
+                _config.CurrentPlanPath = scheduleFilePath;
                 ConfigTool.SaveConfigData(_config);
                 _bDownloading = false;
                 GenerateLEDSchedule(_config.CurrentPlanPath);
@@ -1166,7 +1227,8 @@ namespace LBPlayer
             var currentSchedule = ScheduleParser(scheduleFilePath);
             if (currentSchedule == null)
             {
-                Log4NetLogger.LogDebug("获取当前排期失败");
+                Log4NetLogger.LogDebug(string.Format("获取当前排期{0}失败。", currentSchedule));
+                return;
             }
 
             foreach (var regionItem in currentSchedule.DisplayRegionList)
@@ -1177,7 +1239,15 @@ namespace LBPlayer
                     foreach (var mediaItem in stageItem.MediaList)
                     {
                         string mediaPath = Path.Combine(_mediaPath, Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
-                        mediaPathList.Add(mediaPath);
+                        if (File.Exists(mediaPath) && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath))
+                        {
+                            mediaPathList.Add(mediaPath);
+                        }
+                        else
+                        {
+                            Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", currentSchedule, mediaPath));
+                            return;
+                        }
                     }
 
                     JobDataMap jobDataMap = new JobDataMap();

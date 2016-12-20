@@ -23,6 +23,7 @@ using LBManager.Infrastructure.Common.Event;
 using Prism.Events;
 using Prism.Logging;
 using Microsoft.Practices.ServiceLocation;
+using Polly;
 
 namespace LBManager
 {
@@ -197,10 +198,16 @@ namespace LBManager
                 }
 
                 var uploadComplete = UploadFile(uploadPartInfo, scheduleFile.Type);
-
-                var result = await CompleteMultipartUpload(uploadComplete);
-
-
+                if(uploadComplete == null)
+                {
+                    Messager.Default.EventAggregator.GetEvent<OnPublishScheduleCompletedEvent>().Publish(new OnPublishScheduleCompletedEventArg());
+                    MessageBox.Show("播放方案发布出现异常，请检查网络。");
+                    return;
+                }
+                else
+                {
+                    var result = await CompleteMultipartUpload(uploadComplete);
+                }
             }
 
             UploadFileInfoForServer schedulePartInfo;
@@ -279,72 +286,80 @@ namespace LBManager
                 uploadComplete.Screens = new List<string>() { this.Id };
             }
 
+            var policy = Policy.Handle<Exception>().WaitAndRetry(
+               retryCount: 5, // Retry 3 times
+               sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(1000), // Wait 2000ms between each try.
+               onRetry: (exception, calculatedWaitDuration) => // Capture some info for logging!
+                {
+                    _logger.Log(string.Format("{0}上传异常，开始重试！\r\n{1}", uploadComplete.FileName, exception.Message), Category.Info, Priority.Medium);
+                });
 
-            using (FileStream fs = File.OpenRead(uploadPartInfo.Name))
+            try
             {
-                try
+                policy.Execute(() =>
                 {
-                    double totalFileSize = uploadPartInfo.Parts.Sum(p => (double)p.Length);
-                    double uploadedFileSize = 0.0;
-                    foreach (var part in uploadPartInfo.Parts)
+                    using (FileStream fs = File.OpenRead(uploadPartInfo.Name))
                     {
-                        long partSize = part.Length;
-                        fs.Seek(part.SeekTo, SeekOrigin.Begin);
-                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(part.Url);
-                        request.ContentType = "application/octet-stream";
-                        request.Method = "PUT";
-
-                        using (Stream requestStream = request.GetRequestStream())
+                        double totalFileSize = uploadPartInfo.Parts.Sum(p => (double)p.Length);
+                        double uploadedFileSize = 0.0;
+                        foreach (var part in uploadPartInfo.Parts)
                         {
-                            long writeTotalBytes = 0;
-                            byte[] inData = new byte[1024];
-                            int bytesRead = fs.Read(inData, 0, inData.Length);
+                            long partSize = part.Length;
+                            fs.Seek(part.SeekTo, SeekOrigin.Begin);
+                            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(part.Url);
+                            request.ContentType = "application/octet-stream";
+                            request.Method = "PUT";
 
-                            while (writeTotalBytes < partSize)
+                            using (Stream requestStream = request.GetRequestStream())
                             {
-                                requestStream.Write(inData, 0, bytesRead);
-                                writeTotalBytes += bytesRead;
-                                bytesRead = fs.Read(inData, 0, inData.Length);
-                            }
-                        }
+                                long writeTotalBytes = 0;
+                                byte[] inData = new byte[1024];
+                                int bytesRead = fs.Read(inData, 0, inData.Length);
 
-                        fs.Seek(part.SeekTo, SeekOrigin.Begin);
-
-                        using (var response = (HttpWebResponse)request.GetResponse())
-                        {
-                            if (response.StatusCode == HttpStatusCode.OK)
-                            {
-                                uploadedFileSize += part.Length;
-                                Messager.Default.EventAggregator
-                                                .GetEvent<OnUploadFileProgressChangedEvent>()
-                                                .Publish(new OnUploadFileProgressChangedEventArg(Path.GetFileName(uploadPartInfo.Name), (uploadedFileSize / totalFileSize) * 100.0));
-                                PartComplete pc = new PartComplete();
-                                pc.PartNumber = part.PartNumber;
-                                pc.MD5 = FileUtils.ComputeContentMd5(fs, part.Length);
-                                if (uploadComplete.Parts == null)
+                                while (writeTotalBytes < partSize)
                                 {
-                                    uploadComplete.Parts = new List<PartComplete>();
+                                    requestStream.Write(inData, 0, bytesRead);
+                                    writeTotalBytes += bytesRead;
+                                    bytesRead = fs.Read(inData, 0, inData.Length);
                                 }
-                                uploadComplete.Parts.Add(pc);
                             }
-                            else
+
+                            fs.Seek(part.SeekTo, SeekOrigin.Begin);
+
+                            using (var response = (HttpWebResponse)request.GetResponse())
                             {
-                                _logger.Log(string.Format("分片{0}上传异常", part.PartNumber), Category.Exception, Priority.Medium);
-                               // MessageBox.Show(string.Format("分片{0}上传异常", part.PartNumber));
+                                if (response.StatusCode == HttpStatusCode.OK)
+                                {
+                                    uploadedFileSize += part.Length;
+                                    Messager.Default.EventAggregator
+                                                    .GetEvent<OnUploadFileProgressChangedEvent>()
+                                                    .Publish(new OnUploadFileProgressChangedEventArg(Path.GetFileName(uploadPartInfo.Name), (uploadedFileSize / totalFileSize) * 100.0));
+                                    PartComplete pc = new PartComplete();
+                                    pc.PartNumber = part.PartNumber;
+                                    pc.MD5 = FileUtils.ComputeContentMd5(fs, part.Length);
+                                    if (uploadComplete.Parts == null)
+                                    {
+                                        uploadComplete.Parts = new List<PartComplete>();
+                                    }
+                                    uploadComplete.Parts.Add(pc);
+                                }
+                                else
+                                {
+                                    _logger.Log(string.Format("分片{0}上传异常", part.PartNumber), Category.Exception, Priority.Medium);
+                                    // MessageBox.Show(string.Format("分片{0}上传异常", part.PartNumber));
+                                }
                             }
+
+                            fs.Seek(0, SeekOrigin.Begin);
                         }
 
-                        fs.Seek(0, SeekOrigin.Begin);
                     }
-                }
-                catch (WebException webException)
-                {
-                    _logger.Log(string.Format("---上传文件[{0}]发生网络通讯异常---\r\n{1}", uploadPartInfo.Name, webException.Message), Category.Exception, Priority.Medium);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log(string.Format("---上传文件[{0}]发生异常---\r\n{1}", uploadPartInfo.Name, ex.Message), Category.Exception, Priority.Medium);
-                }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(string.Format("---上传文件[{0}]发生异常---\r\n{1}", uploadPartInfo.Name, ex.Message), Category.Exception, Priority.Medium);
+                return null;
             }
             return uploadComplete;
         }
