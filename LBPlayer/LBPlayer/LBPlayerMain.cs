@@ -15,7 +15,6 @@ using Microsoft.Win32;
 using System.Management;
 using com.lbplayer;
 using Newtonsoft.Json;
-using Com.Net;
 using System.Threading;
 using LBManager.Infrastructure.Models;
 using WebSocketSharp;
@@ -26,6 +25,7 @@ using Quartz;
 using LBPlayer.Job;
 using LBManager.Infrastructure.Utility;
 using Polly;
+using RestSharp;
 
 namespace LBPlayer
 {
@@ -676,7 +676,7 @@ namespace LBPlayer
                 else
                 {
                     return true;
-                   // File.Delete(strFileName);
+                    // File.Delete(strFileName);
                 }
             }
 
@@ -1120,17 +1120,17 @@ namespace LBPlayer
                 return;
             }
             Bind bind = new Bind(skinTextBox_Id.Text.Trim(), skinTextBox_Key.Text.Trim(), skinComboBox_Mac.SelectedItem.ToString());
-            HttpClient httpClient = new HttpClient();
-            string json = JsonConvert.SerializeObject(bind);
-            string replaydata, errordata;
-            bool bSuc = httpClient.Post(BindingURL, JsonConvert.SerializeObject(bind), out replaydata, out errordata);
-            if (!bSuc)
+            var httpClient = new RestClient();
+            var request = new RestRequest(BindingURL, Method.POST);
+            request.AddJsonBody(bind);
+            var response = httpClient.Execute(request);
+            if (response.ErrorException != null)
             {
                 MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            BindResult sr;
-            sr = JsonConvert.DeserializeObject<BindResult>(replaydata);
+
+            var sr = JsonConvert.DeserializeObject<BindResult>(response.Content);
             if (sr.Err_code != SystemCode.OK)
             {
                 MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1332,16 +1332,18 @@ namespace LBPlayer
         #region 上传播放记录
         private bool UploadPlayBack(PlayBack playBack)
         {
-            string data = JsonConvert.SerializeObject(playBack);
-            HttpClient httpClient = new HttpClient();
-            string replaydata, errordata;
-            bool bSuc = httpClient.Post(PlayBackURL, data, out replaydata, out errordata);
-            if (!bSuc)
+            //string data = JsonConvert.SerializeObject(playBack);
+            var httpClient = new RestClient();
+            var request = new RestRequest(PlayBackURL, Method.POST);
+            request.AddJsonBody(playBack);
+            var response = httpClient.Execute(request);
+            if (response.ErrorException != null)
             {
+                Log4NetLogger.LogError(string.Format("上传播放记录出现错误:\r\n{1}", response.ErrorMessage));
                 return false;
             }
-            SystemResult sr;
-            sr = JsonConvert.DeserializeObject<SystemResult>(replaydata);
+
+            var sr = JsonConvert.DeserializeObject<SystemResult>(response.Content);
             if (sr.Err_code != SystemCode.OK)
             {
                 return false;
@@ -1352,20 +1354,22 @@ namespace LBPlayer
         #region 回复命令结果
         private bool UploadCmdResult(CmdResult cmdRes)
         {
-            string data = JsonConvert.SerializeObject(cmdRes);
-            HttpClient httpClient = new HttpClient();
-            string replaydata, errordata;
-            bool bSuc = httpClient.Post(CmdBackURL, data, out replaydata, out errordata);
-            if (!bSuc)
+            //string data = JsonConvert.SerializeObject(cmdRes);
+
+            var httpClient = new RestClient();
+            var request = new RestRequest(CmdBackURL, Method.POST);
+            request.AddJsonBody(cmdRes);
+            var response = httpClient.Execute(request);
+            if (response.ErrorException != null)
             {
-                Log4NetLogger.LogError(string.Format("回复命令[id:{0}]结果出现错误:\r\n{1}", cmdRes.CmdId, errordata));
+                Log4NetLogger.LogError(string.Format("回复命令[id:{0}]结果出现错误:\r\n{1}", cmdRes.CmdId, response.ErrorMessage));
                 return false;
             }
-            SystemResult sr;
-            sr = JsonConvert.DeserializeObject<SystemResult>(replaydata);
+
+            var sr = JsonConvert.DeserializeObject<SystemResult>(response.Content);
             if (sr.Err_code != SystemCode.OK)
             {
-                Log4NetLogger.LogError(string.Format("回复命令[id:{0}]结果解析出现异常，回复数据为：\r\n{1}", cmdRes.CmdId, replaydata));
+                Log4NetLogger.LogError(string.Format("回复命令[id:{0}]结果解析出现异常，回复数据为：\r\n{1}", cmdRes.CmdId, response.Content));
                 return false;
             }
             return true;
@@ -1374,20 +1378,31 @@ namespace LBPlayer
         #region 上传监控数据
         private bool UploadMonitorInfo(MonitorResult monitor)
         {
-            string data = JsonConvert.SerializeObject(monitor);
-            HttpClient httpClient = new HttpClient();
-            string replaydata, errordata;
-            bool bSuc = httpClient.Post(MonitorInfoURL, data, out replaydata, out errordata);
-            if (!bSuc)
+            // string data = JsonConvert.SerializeObject(monitor);
+            var httpClient = new RestClient();
+            var request = new RestRequest(MonitorInfoURL, Method.POST);
+            request.AddJsonBody(monitor);
+            var response = httpClient.Execute(request);
+            if (response.ErrorException != null)
             {
+                Log4NetLogger.LogError(string.Format("向服务端上传监控信息时，出现错误！\r\n{0}", response.ErrorMessage));
                 return false;
             }
-            SystemResult sr;
-            sr = JsonConvert.DeserializeObject<SystemResult>(replaydata);
-            if (sr.Err_code != SystemCode.OK)
+
+            try
             {
+                var sr = JsonConvert.DeserializeObject<SystemResult>(response.Content);
+                if (sr.Err_code != SystemCode.OK)
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log4NetLogger.LogError(ex.Message);
                 return false;
             }
+
             return true;
         }
         #endregion
@@ -1570,33 +1585,39 @@ namespace LBPlayer
             GetImageList(out imageFiles);
             if (imageFiles == null || imageFiles.Count == 0)
             {
+                bUploding = false;
                 return;
             }
             HartBeatRequestObj obj = new HartBeatRequestObj();
             obj.Id = _config.ID;
             obj.Key = _config.Key;
             obj.Mac = _config.Mac;
-            HttpClient httpClient = new HttpClient();
-            string replyData, errorData;
+            var httpClient = new RestClient();
             for (int i = 0; i < imageFiles.Count; i++)
             {
-                if (!httpClient.Post(GetPicUploadURL, JsonConvert.SerializeObject(obj), out replyData, out errorData))
+                var request = new RestRequest(GetPicUploadURL, Method.POST);
+                request.AddJsonBody(obj);
+                var response = httpClient.Execute(request);
+                if (response.ErrorException != null)
                 {
+                    Log4NetLogger.LogError(string.Format("向服务端请求监控图片上传信息时，出现错误！\r\n{0}", response.ErrorMessage));
                     return;
                 }
-                UploadPicInfo picInfo = JsonConvert.DeserializeObject<UploadPicInfo>(replyData);
 
-                if (UploadFile(picInfo.Url, imageFiles[i]))
+                try
                 {
-                    try
+                    UploadPicInfo picInfo = JsonConvert.DeserializeObject<UploadPicInfo>(response.Content);
+
+                    if (UploadFile(picInfo.Url, imageFiles[i]))
                     {
                         File.Delete(imageFiles[i]);
                     }
-                    catch (Exception ex)
-                    {
-                        return;
-                    }
                 }
+                catch (Exception ex)
+                {
+                    bUploding = false;
+                }
+
             }
             bUploding = false;
         }
@@ -1611,7 +1632,7 @@ namespace LBPlayer
                 using (Stream requestStream = request.GetRequestStream())
                 {
                     long writeTotalBytes = 0;
-                    byte[] inData = new byte[4096];
+                    byte[] inData = new byte[1024];
                     int bytesRead = fs.Read(inData, 0, inData.Length);
 
                     while (writeTotalBytes < fs.Length)
