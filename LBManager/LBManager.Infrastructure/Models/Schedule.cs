@@ -26,6 +26,12 @@ namespace LBManager.Infrastructure.Models
             }
             return mediaList;
         }
+
+        public bool VerifyTimeConflict()
+        {
+            return true;
+        }
+
     }
 
     public class DisplayRegion

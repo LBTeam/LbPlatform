@@ -20,7 +20,7 @@ namespace LBPlayer.Job
             JobDataMap dataMap = context.MergedJobDataMap;
 
             LoopCount = dataMap.GetInt("LoopCount");
-            SchedulePath = dataMap.GetString("SchedulePath");
+            SchedulePath = dataMap.GetString("ScheduleName");
             MediaPathList = dataMap["MediaPathList"] as IList<string>;
 
             LEDScreenDisplayer.GetInstance().DisplayMedias(MediaPathList, LoopCount);

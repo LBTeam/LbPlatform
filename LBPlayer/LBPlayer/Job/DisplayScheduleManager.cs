@@ -1,7 +1,11 @@
-﻿using Quartz;
+﻿using LBManager.Infrastructure.Models;
+using LBManager.Infrastructure.Utility;
+using LbPlayer.Logger;
+using Quartz;
 using Quartz.Impl;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,15 +54,87 @@ namespace LBPlayer.Job
         #endregion
 
         private IScheduler _scheduler;
+        private List<IJobDetail> _mainScheduleJobList = new List<IJobDetail>();
+        //private IJobDetail _mainJobDetail;
+        //private ITrigger _mainJobTrigger;
+        //private IJobDetail _defaultJobDetail;
+        //private ITrigger _defaultJobTrigger;
 
         public void StartScheduler()
         {
             _scheduler.Start();
         }
 
-        public void ScheduleJob(IJobDetail job, ITrigger trigger)
+        public void ScheduleJob(IJobDetail job, ITrigger trigger, JobType jobType)
         {
+            if (JobType.Main == jobType)
+            {
+                _mainScheduleJobList.Add(job);
+            }
+            else if (JobType.Default == jobType)
+            {
+                //_defaultJobDetail = job;
+                //_defaultJobTrigger = trigger;
+            }
             _scheduler.ScheduleJob(job, trigger);
         }
+
+        public void ApplyMainSchedule(Schedule schedule)
+        {
+            var jobKeys = _mainScheduleJobList.Select(j => j.Key);
+            _scheduler.DeleteJobs(jobKeys.ToList());
+
+            if (!schedule.VerifyTimeConflict())
+            {
+                Log4NetLogger.LogDebug(string.Format("{0}播放方案存在播放时间冲突", schedule.Name));
+            }
+            foreach (var regionItem in schedule.DisplayRegionList)
+            {
+                foreach (var stageItem in regionItem.StageList)
+                {
+                    IList<string> mediaPathList = new List<string>();
+                    foreach (var mediaItem in stageItem.MediaList)
+                    {
+                        string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
+                        if (File.Exists(mediaPath) && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath))
+                        {
+                            mediaPathList.Add(mediaPath);
+                        }
+                        else
+                        {
+                            Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", schedule, mediaPath));
+                            return;
+                        }
+                    }
+
+                    JobDataMap jobDataMap = new JobDataMap();
+                    jobDataMap.Add("ScheduleName", schedule.Name);
+                    jobDataMap.Add("MediaPathList", mediaPathList);
+                    jobDataMap.Add("LoopCount", stageItem.LoopCount);
+
+                    IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
+                        .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
+                        .UsingJobData(jobDataMap)
+                        .Build();
+
+                    ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
+                        .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
+                        .StartAt(stageItem.StartTime)
+                        .EndAt(stageItem.EndTime)
+                        .Build();
+
+                    ScheduleJob(job, trigger, JobType.Main);
+                }
+            }
+            Log4NetLogger.LogInfo("应用主播放方案----");
+        }
+
+    }
+
+
+    public enum JobType
+    {
+        Main,
+        Default
     }
 }

@@ -44,11 +44,11 @@ namespace LBPlayer
         #region 字段
 
         private ScreenCapture _screenCapture;
-        private string _playLogPath = "";
-        private string _lbPlanPath = "";
-        private string _mediaPath = "";
-        private string _offlinePlanPath = "";
-        private string _picPath = "";
+
+
+
+
+
         private Config _config = null;
         private string _privewPic = "Privew.jpg";
         private Poll _poll;
@@ -56,13 +56,7 @@ namespace LBPlayer
         private string _cmdSavePath;
         private System.Windows.Forms.Timer _queryTimer;
         private const int QueryTimerInterval = 10000;
-        private string BindingURL = "http://lbcloud.ddt123.cn/?s=api/Player/bind_player";
-        private string PlayBackURL = "http://lbcloud.ddt123.cn/?s=api/Player/record";
-        private string PollURL = "http://lbcloud.ddt123.cn/?s=api/Player/heartbeat";
-        private string CmdBackURL = "http://lbcloud.ddt123.cn/?s=api/Player/cmd_result";
-        private string MonitorInfoURL = "http://lbcloud.ddt123.cn/?s=api/Player/monitor";
-        private string GetPicUploadURL = "http://lbcloud.ddt123.cn/?s=api/Player/picture";
-        private string WebSocketURL = "ws://123.56.240.172:9501";
+
         private WebSocket _webSocket;
         private MonitorDataPoll _monitorDataPoll;
         private ComputerStatus _computerStatus;
@@ -86,7 +80,7 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _poll_GetPollResponseEvent(object sender, GetPollResponseEventArgs args)
         {
-            Debug.WriteLine("心跳完成：" + DateTime.Now);
+           Log4NetLogger.LogDebug("心跳完成：" + DateTime.Now);
             if (!args.bSuc)
             {
                 HeartBeatFailCount++;
@@ -124,12 +118,12 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _poll_SendPollEvent(object sender, PollEventArgs args)
         {
-            Debug.WriteLine("开始心跳：" + DateTime.Now);
+            Log4NetLogger.LogDebug("开始心跳：" + DateTime.Now);
             HartBeatRequestObj obj = new HartBeatRequestObj();
             obj.Id = _config.ID;
             obj.Key = _config.Key;
             obj.Mac = _config.Mac;
-            args.Url = PollURL;
+            args.Url = ApplicationConfig.PollURL;
             args.PollData = JsonConvert.SerializeObject(obj);
             //SetControlText(skinLabel8, "开始心跳");
         }
@@ -201,30 +195,40 @@ namespace LBPlayer
                 _config.FileSavePath = Path.Combine(Path.GetPathRoot(Application.ExecutablePath), "LBPlay");
                 ConfigTool.SaveConfigData(_config);
             }
-            _playLogPath = Path.Combine(_config.FileSavePath, "PlayLog");
-            if (!Directory.Exists(_playLogPath))
+
+            string playLogPath = Path.Combine(_config.FileSavePath, "PlayLog");
+            ApplicationConfig.SetPlayLogFilePath(playLogPath);
+            if (!Directory.Exists(playLogPath))
             {
-                Directory.CreateDirectory(_playLogPath);
+                Directory.CreateDirectory(playLogPath);
             }
-            _lbPlanPath = Path.Combine(_config.FileSavePath, "Plan");
-            if (!Directory.Exists(_lbPlanPath))
+
+            string scheduleFilePath = Path.Combine(_config.FileSavePath, "Plan");
+            ApplicationConfig.SetScheduleFilePath(scheduleFilePath);
+            if (!Directory.Exists(scheduleFilePath))
             {
-                Directory.CreateDirectory(_lbPlanPath);
+                Directory.CreateDirectory(scheduleFilePath);
             }
-            _mediaPath = Path.Combine(_config.FileSavePath, "Media");
-            if (!Directory.Exists(_mediaPath))
+
+            string mediaPath = Path.Combine(_config.FileSavePath, "Media");
+            ApplicationConfig.SetMediaFilePath(mediaPath);
+            if (!Directory.Exists(mediaPath))
             {
-                Directory.CreateDirectory(_mediaPath);
+                Directory.CreateDirectory(mediaPath);
             }
-            _offlinePlanPath = Path.Combine(_config.FileSavePath, "OfflinePlan");
-            if (!Directory.Exists(_offlinePlanPath))
+
+            string offlineScheduleFilePath = Path.Combine(_config.FileSavePath, "OfflinePlan");
+            ApplicationConfig.SetOfflineScheduleFilePath(offlineScheduleFilePath);
+            if (!Directory.Exists(offlineScheduleFilePath))
             {
-                Directory.CreateDirectory(_offlinePlanPath);
+                Directory.CreateDirectory(offlineScheduleFilePath);
             }
-            _picPath = Path.Combine(_config.FileSavePath, "Pic");
-            if (!Directory.Exists(_picPath))
+
+            string pictureFilePath = Path.Combine(_config.FileSavePath, "Pic");
+            ApplicationConfig.SetPictureFilePath(pictureFilePath);
+            if (!Directory.Exists(pictureFilePath))
             {
-                Directory.CreateDirectory(_picPath);
+                Directory.CreateDirectory(pictureFilePath);
             }
             Log4NetLogger.LogDebug("初始化工作目录");
         }
@@ -420,7 +424,7 @@ namespace LBPlayer
                 MonitorInfo m = new MonitorInfo(CPUUusage, diskUsage, memoryUsage, CPUTem, fanSpeed);
                 MonitorResult obj = new MonitorResult(_config.ID, _config.Key, _config.Mac, m);
 
-                args.Url = MonitorInfoURL;
+                args.Url = ApplicationConfig.MonitorInfoURL;
                 args.PollData = JsonConvert.SerializeObject(obj);
             }
             catch (Exception ex)
@@ -454,7 +458,7 @@ namespace LBPlayer
             string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
             Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
             PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
-            if (!DownloadFile(Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl, string.Empty))
+            if (!DownloadFile(Path.Combine(ApplicationConfig.GetScheduleFilePath(), Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl, string.Empty))
             {
                 UploadCmdResult(cr);
                 DeleteCmd(cmd);
@@ -463,7 +467,7 @@ namespace LBPlayer
             }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                if (!DownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl, string.Empty))
+                if (!DownloadFile(Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl, string.Empty))
                 {
                     UploadCmdResult(cr);
                     DeleteCmd(cmd);
@@ -490,7 +494,7 @@ namespace LBPlayer
             string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
             Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
             PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
-            if (!DownloadFile(Path.Combine(_offlinePlanPath, Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
+            if (!DownloadFile(Path.Combine(ApplicationConfig.GetOfflineScheduleFilePath(), Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
             {
                 UploadCmdResult(cr);
                 DeleteCmd(cmd);
@@ -499,7 +503,7 @@ namespace LBPlayer
             }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                if (!DownloadFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                if (!DownloadFile(Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
                 {
                     UploadCmdResult(cr);
                     DeleteCmd(cmd);
@@ -510,7 +514,7 @@ namespace LBPlayer
             cr.CmdRes = true.ToString();
             UploadCmdResult(cr);
             DeleteCmd(cmd);
-            _config.CurrentOfflinePlanPath = Path.Combine(_offlinePlanPath, Path.GetFileName(planCmdPar.ProgramName));
+            _config.CurrentOfflinePlanPath = Path.Combine(ApplicationConfig.GetOfflineScheduleFilePath(), Path.GetFileName(planCmdPar.ProgramName));
             ConfigTool.SaveConfigData(_config);
             _bDownloadOfflinePlan = false;
         }
@@ -1066,7 +1070,7 @@ namespace LBPlayer
             InitialCmdList();
             StartCmdTimer();
             initialPoll();
-            initialWebSocket(WebSocketURL);
+            initialWebSocket(ApplicationConfig.WebSocketURL);
             InitialLock();
             InitialMonitorDataUpload();
             initialMonitorPic();
@@ -1085,8 +1089,8 @@ namespace LBPlayer
             }
             skinPictureBox_pic.Width = int.Parse(skinNumericUpDown_W.Value.ToString());
             skinPictureBox_pic.Height = int.Parse(skinNumericUpDown_H.Value.ToString());
-            _screenCapture.CaptrueScreenRegionToFile((int)skinNumericUpDown_X.Value, (int)skinNumericUpDown_Y.Value, (int)skinNumericUpDown_W.Value, (int)skinNumericUpDown_H.Value, Path.Combine(_picPath, _privewPic));
-            skinPictureBox_pic.Image = Image.FromFile(Path.Combine(_picPath, _privewPic));
+            _screenCapture.CaptrueScreenRegionToFile((int)skinNumericUpDown_X.Value, (int)skinNumericUpDown_Y.Value, (int)skinNumericUpDown_W.Value, (int)skinNumericUpDown_H.Value, Path.Combine(ApplicationConfig.GetPictureFilePath(), _privewPic));
+            skinPictureBox_pic.Image = Image.FromFile(Path.Combine(ApplicationConfig.GetPictureFilePath(), _privewPic));
         }
         /// <summary>
         /// 锁定
@@ -1120,8 +1124,8 @@ namespace LBPlayer
                 return;
             }
             Bind bind = new Bind(skinTextBox_Id.Text.Trim(), skinTextBox_Key.Text.Trim(), skinComboBox_Mac.SelectedItem.ToString());
-            var httpClient = new RestClient();
-            var request = new RestRequest(BindingURL, Method.POST);
+            var httpClient = new RestClient(ApplicationConfig.BaseURL);
+            var request = new RestRequest(ApplicationConfig.BindingURL, Method.POST);
             request.AddJsonBody(bind);
             var response = httpClient.Execute(request);
             if (response.ErrorException != null)
@@ -1184,7 +1188,7 @@ namespace LBPlayer
             Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
 
             PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
-            string scheduleFilePath = Path.Combine(_lbPlanPath, Path.GetFileName(planCmdPar.ProgramName));
+            string scheduleFilePath = Path.Combine(ApplicationConfig.GetScheduleFilePath(), Path.GetFileName(planCmdPar.ProgramName));
             if (!DownloadFile(scheduleFilePath, planCmdPar.ProgramUrl))
             {
                 UploadCmdResult(cr);
@@ -1194,7 +1198,7 @@ namespace LBPlayer
             }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                if (!DownloadMediaFile(Path.Combine(_mediaPath, Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                if (!DownloadMediaFile(Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
                 {
                     UploadCmdResult(cr);
                     DeleteCmd(cmd);
@@ -1231,48 +1235,7 @@ namespace LBPlayer
                 return;
             }
 
-            foreach (var regionItem in currentSchedule.DisplayRegionList)
-            {
-                foreach (var stageItem in regionItem.StageList)
-                {
-                    IList<string> mediaPathList = new List<string>();
-                    foreach (var mediaItem in stageItem.MediaList)
-                    {
-                        string mediaPath = Path.Combine(_mediaPath, Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
-                        if (File.Exists(mediaPath) && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath))
-                        {
-                            mediaPathList.Add(mediaPath);
-                        }
-                        else
-                        {
-                            Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", currentSchedule, mediaPath));
-                            return;
-                        }
-                    }
-
-                    JobDataMap jobDataMap = new JobDataMap();
-                    jobDataMap.Add("SchedulePath", scheduleFilePath);
-                    jobDataMap.Add("MediaPathList", mediaPathList);
-                    jobDataMap.Add("LoopCount", stageItem.LoopCount);
-
-
-
-                    IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
-                        .WithIdentity("DisplayJob", regionItem.Name)
-                        .UsingJobData(jobDataMap)
-                        .Build();
-
-                    ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
-                        .WithIdentity("DisplayTrigger", regionItem.Name)
-                        .StartAt(stageItem.StartTime)
-                        .EndAt(stageItem.EndTime)
-                        .Build();
-
-                    DisplayScheduleManager.GetInstance().ScheduleJob(job, trigger);
-                }
-            }
-
-
+            DisplayScheduleManager.GetInstance().ApplyMainSchedule(currentSchedule);
 
         }
         private void Start()
@@ -1333,8 +1296,8 @@ namespace LBPlayer
         private bool UploadPlayBack(PlayBack playBack)
         {
             //string data = JsonConvert.SerializeObject(playBack);
-            var httpClient = new RestClient();
-            var request = new RestRequest(PlayBackURL, Method.POST);
+            var httpClient = new RestClient(ApplicationConfig.BaseURL);
+            var request = new RestRequest(ApplicationConfig.PlayBackURL, Method.POST);
             request.AddJsonBody(playBack);
             var response = httpClient.Execute(request);
             if (response.ErrorException != null)
@@ -1356,8 +1319,8 @@ namespace LBPlayer
         {
             //string data = JsonConvert.SerializeObject(cmdRes);
 
-            var httpClient = new RestClient();
-            var request = new RestRequest(CmdBackURL, Method.POST);
+            var httpClient = new RestClient(ApplicationConfig.BaseURL);
+            var request = new RestRequest(ApplicationConfig.CmdBackURL, Method.POST);
             request.AddJsonBody(cmdRes);
             var response = httpClient.Execute(request);
             if (response.ErrorException != null)
@@ -1379,8 +1342,8 @@ namespace LBPlayer
         private bool UploadMonitorInfo(MonitorResult monitor)
         {
             // string data = JsonConvert.SerializeObject(monitor);
-            var httpClient = new RestClient();
-            var request = new RestRequest(MonitorInfoURL, Method.POST);
+            var httpClient = new RestClient(ApplicationConfig.BaseURL);
+            var request = new RestRequest(ApplicationConfig.MonitorInfoURL, Method.POST);
             request.AddJsonBody(monitor);
             var response = httpClient.Execute(request);
             if (response.ErrorException != null)
@@ -1566,7 +1529,7 @@ namespace LBPlayer
             try
             {
                 DateTime nowTime = DateTime.Now;
-                _screenCaptrue.CaptrueScreenRegionToFile(_config.ScreenCuptureX, _config.ScreenCuptureY, _config.ScreenCuptureW, _config.ScreenCuptureH, Path.Combine(_picPath, nowTime.Ticks + ".jpg"), 30);
+                _screenCaptrue.CaptrueScreenRegionToFile(_config.ScreenCuptureX, _config.ScreenCuptureY, _config.ScreenCuptureW, _config.ScreenCuptureH, Path.Combine(ApplicationConfig.GetPictureFilePath(), nowTime.Ticks + ".jpg"), 30);
                 UploadImage();
             }
             catch (Exception ex)
@@ -1592,10 +1555,10 @@ namespace LBPlayer
             obj.Id = _config.ID;
             obj.Key = _config.Key;
             obj.Mac = _config.Mac;
-            var httpClient = new RestClient();
+            var httpClient = new RestClient(ApplicationConfig.BaseURL);
             for (int i = 0; i < imageFiles.Count; i++)
             {
-                var request = new RestRequest(GetPicUploadURL, Method.POST);
+                var request = new RestRequest(ApplicationConfig.GetPicUploadURL, Method.POST);
                 request.AddJsonBody(obj);
                 var response = httpClient.Execute(request);
                 if (response.ErrorException != null)
@@ -1659,7 +1622,7 @@ namespace LBPlayer
         private void GetImageList(out List<string> imageFiles)
         {
             imageFiles = new List<string>();
-            DirectoryInfo imageDestDirInfo = new DirectoryInfo(_picPath);
+            DirectoryInfo imageDestDirInfo = new DirectoryInfo(ApplicationConfig.GetPictureFilePath());
             FileInfo[] images = imageDestDirInfo.GetFiles();
             if (images.Length == 0)
             {
