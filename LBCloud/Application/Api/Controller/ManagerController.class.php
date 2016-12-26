@@ -611,9 +611,9 @@ class ManagerController extends CommonController
 		if($media_id){
 			$media_info = $model->media_detail($media_id);
 			//file_put_contents('./1.log', json_encode($media_info)."\r\n", FILE_APPEND);
+			$object = $media_info['object'];
+			$uploadId = $media_info['upload_id'];
 			if($media_info['status'] == 0){
-				$object = $media_info['object'];
-				$uploadId = $media_info['upload_id'];
 				if($filesize <= C("oss_100K_size")){
 					//不使用分片
 					$sign_url = $oss_obj->upload_sign_uri($object, $this->media_bucket);
@@ -670,7 +670,71 @@ class ManagerController extends CommonController
 				}
 			}else{
 				//已上传完成
-				//不做处理
+				$object_info = $oss_obj->object_meta($this->media_bucket, $object);
+				//文件大小不一致，重新上传
+				if($object_info && $object_info['size'] != $filesize){
+					if($filesize <= C("oss_100K_size")){
+						//不使用分片
+						$object = oss_object($subfix);
+						$media_data = array();
+						$media_data['id'] = $media_id;
+						$media_data['object'] = $object;
+						$media_data['upload_id'] = '';
+						$media_data['status'] = 0;
+						$media_data['size'] = $filesize;
+						$meida_res = $model->save($media_data);
+						$sign_url = $oss_obj->upload_sign_uri($object, $this->media_bucket);
+						$parts = array();
+						$parts[] = array(
+							'partNumber'	=> 1,
+							'seekTo'		=> 0,
+							'length'		=> intval($filesize),
+							'url'			=> $sign_url
+						);
+						$result = array(
+							'name'	=> $filepath,
+							'md5'	=> $filemd5,
+							'key'	=> $object,
+							'parts'	=> $parts
+						);
+					}else{
+						//文件分片
+						$part_size = $oss_obj->part_size($filesize);
+						$upload_parts = $oss_obj->generate_upload_part($filesize, $part_size);
+						//获取uploadId
+						$upload_info = $oss_obj->get_upload_id($subfix, $this->media_bucket);
+						//上传文件信息入库
+						$object = $upload_info['Key'];
+						$uploadId = $upload_info['UploadId'];
+						$media_data = array();
+						$media_data['id'] = $media_id;
+						$media_data['object'] = $object;
+						$media_data['upload_id'] = $uploadId;
+						$media_data['status'] = 0;
+						$media_data['size'] = $filesize;
+						$meida_res = $model->save($media_data);
+						//获取每片文件签名地址
+						$parts = array();
+						foreach($upload_parts as $key=>$val){
+							$part_number = $key+1;
+							$sign_url = $oss_obj->upload_part_sign($object, $uploadId, $part_number, $this->media_bucket);
+							$parts[] = array(
+								'partNumber'	=> $part_number,
+								'seekTo'		=> $val['seekTo'],
+								'length'		=> $val['length'],
+								'url'			=> $sign_url
+							);
+						}
+						if($parts){
+							$result = array(
+								'name'	=> $filepath,
+								'md5'	=> $filemd5,
+								'key'	=> $object,
+								'parts'	=> $parts
+							);
+						}
+					}
+				}
 			}
 		}else{
 			//文件不存在

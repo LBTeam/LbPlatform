@@ -94,7 +94,7 @@
 		                            <a href="{:U('monitor',array('id'=>$vo['id']))}">监控数据</a>
 		                            </if>
 		                            <if condition="$vo['online'] eq 1 AND in_array('SCREEN/PICTURE', $_SESSION['_ACCESS_LIST'])">
-		                            <a href="{:U('picture',array('id'=>$vo['id']))}" target="_blank">监控图片</a>
+		                            <!--<a href="{:U('picture',array('id'=>$vo['id']))}" target="_blank">监控图片</a>-->
 		                            </if>
 		                            <if condition="in_array('SCREEN/SETTING', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('setting',array('id'=>$vo['id']))}">参数配置</a>
@@ -104,7 +104,7 @@
 			                            <a href="{:U('shutdown?id='.$vo['id'])}">一键关屏</a>
 			                            </if>
 			                            <if condition="in_array('SCREEN/NOTIFY', $_SESSION['_ACCESS_LIST'])">
-			                            <a href="{:U('notify?id='.$vo['id'])}">紧急通知</a>
+			                            <!--<a href="{:U('notify?id='.$vo['id'])}">紧急通知</a>-->
 			                            </if>
 			                        </if>
 		                        </td>
