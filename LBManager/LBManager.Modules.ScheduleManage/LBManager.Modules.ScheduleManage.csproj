@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <AssemblyVersion>1.0.16357.1018</AssemblyVersion>
+    <AssemblyVersion>1.0.16362.0635</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -94,6 +94,12 @@
     <Compile Include="Views\PlayingArrangementView.xaml.cs">
       <DependentUpon>PlayingArrangementView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ScheduledStageCard.xaml.cs">
+      <DependentUpon>ScheduledStageCard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ScheduledStageListView.xaml.cs">
+      <DependentUpon>ScheduledStageListView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ScheduleListView.xaml.cs">
       <DependentUpon>ScheduleListView.xaml</DependentUpon>
     </Compile>
@@ -114,6 +120,14 @@
   <ItemGroup />
   <ItemGroup>
     <Page Include="Views\PlayingArrangementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ScheduledStageCard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ScheduledStageListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

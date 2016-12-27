@@ -9,8 +9,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <AdornerDecorator>
-        <Grid>
-            <GroupBox Header="智能编排" Style="{DynamicResource MaterialDesignGroupBox}" materialDesign:ShadowAssist.ShadowDepth="Depth3" BorderThickness="0">
+        <Grid Margin="5,10">
+            <!--<GroupBox Header="智能编排" Style="{DynamicResource MaterialDesignGroupBox}" materialDesign:ShadowAssist.ShadowDepth="Depth3" BorderThickness="0">-->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="0"/>
+            </Grid.RowDefinitions>
                 <DockPanel LastChildFill="True">
                     <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,4">
@@ -25,23 +29,24 @@
                                                 Is24Hours="True" Width="100"
                                                         Text="{Binding EndTime, StringFormat=t}"/>
                         </StackPanel>
-                        <Controls:NumericUpDown x:Name="StringFormatNumUpDown" Padding="0"
-                                                Width="100" Height="26"
+                      
+                    </StackPanel>
+                <Controls:NumericUpDown x:Name="StringFormatNumUpDown" Padding="0" DockPanel.Dock="Bottom"
+                                                Width="100" Height="26" Margin="10,0,0,0"
                                                 Interval="1"
                                                 IsReadOnly="False" Minimum="1" StringFormat=" {0} 次"
                                                 VerticalContentAlignment="Center" VerticalAlignment="Center"
                                                 HorizontalAlignment="Left"
                                                 Value="{Binding LoopCount, Mode=TwoWay}">
-                            <Controls:NumericUpDown.Resources>
-                                <Style TargetType="TextBox">
-                                    <Setter Property="MinHeight" Value="24"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                </Style>
-                            </Controls:NumericUpDown.Resources>
-                        </Controls:NumericUpDown>
-                    </StackPanel>
-                    <!--</materialDesign:Card>-->
+                    <Controls:NumericUpDown.Resources>
+                        <Style TargetType="TextBox">
+                            <Setter Property="MinHeight" Value="24"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        </Style>
+                    </Controls:NumericUpDown.Resources>
+                </Controls:NumericUpDown>
+                <!--</materialDesign:Card>-->
                     <Grid DockPanel.Dock="Top" Margin="0,4,0,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
@@ -88,7 +93,14 @@
                         </ListBox>
                     </Grid>
                 </DockPanel>
-            </GroupBox>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="保存" Width="75" Height="30" VerticalContentAlignment="Center" Margin="0,0,10,0"
+                            Style="{DynamicResource MaterialDesignRaisedLightButton}" IsDefault="True"
+                            Command="{Binding SaveScheduleCommand}" CommandParameter="{Binding ElementName=scheduleView}"/>
+                <Button Content="取消" Width="75" Height="30" VerticalContentAlignment="Center" Margin="0,0,20,0"
+                            Style="{DynamicResource MaterialDesignRaisedLightButton}" IsCancel="True"/>
+            </StackPanel>
+            <!--</GroupBox>-->
         </Grid>
     </AdornerDecorator>
 </UserControl>

@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="LBManager.Modules.ScheduleManage.Views.ScheduledStageListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:Controls ="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:local="clr-namespace:LBManager.Modules.ScheduleManage.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+       
+        <materialDesign:ColorZone VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                                              Mode="PrimaryDark" materialDesign:ShadowAssist.ShadowDepth="Depth3">
+            <DockPanel >
+                <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" Margin="10,0,0,0">智能编排</TextBlock>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
+                                                ToolTip="添加编排时段"
+                                                    Command="{Binding AddMediaCommand}">
+                        <materialDesign:PackIcon Kind="Plus" Height="20" Width="20"/>
+                    </Button>
+                    <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
+                                                ToolTip="删除编排时段"
+                                                    Command="{Binding RemoveMediaCommand}">
+                        <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+           
+        </materialDesign:ColorZone>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ListBox Grid.Column="0" Style="{DynamicResource MaterialDesignListBox}"/>
+            <GridSplitter HorizontalAlignment="Right"  VerticalAlignment="Stretch" 
+                          Grid.Column="1" ResizeBehavior="PreviousAndNext"
+                          Width="3" Background="#FFBCBCBC"/>
+            <local:PlayingArrangementView Grid.Column="2"/>
+        </Grid>
+    </Grid>
+</UserControl>

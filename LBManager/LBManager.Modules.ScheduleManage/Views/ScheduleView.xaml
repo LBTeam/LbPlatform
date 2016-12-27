@@ -37,11 +37,11 @@
             <Grid DockPanel.Dock="Top">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="45"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="0"/>
                         <ColumnDefinition Width="4"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
@@ -72,7 +72,7 @@
                         </ListBox>
                     </DockPanel>
                     <DockPanel Grid.Column="2">
-                        <materialDesign:ColorZone DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                        <materialDesign:ColorZone DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Stretch" Visibility="Collapsed"
                                               Mode="Accent" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14">播放方案</TextBlock>
                         </materialDesign:ColorZone>
@@ -103,13 +103,13 @@
                                     </ComboBox>
                                 </StackPanel>
                             </Grid>
-                            <materialDesign:ColorZone Grid.Row="1" Grid.ColumnSpan="3" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                            <materialDesign:ColorZone Grid.Row="1" Grid.ColumnSpan="3" VerticalAlignment="Top" HorizontalAlignment="Stretch" Visibility="Collapsed"
                                               Mode="Accent" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12">显示区域</TextBlock>
                             </materialDesign:ColorZone>
                             <Grid x:Name="ScheduleInfoGrid" DataContext="{Binding CurrentDisplayRegion}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="4,0,4,0">
                                 <DockPanel>
-                                    <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Margin="0,2,0,0">
+                                    <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Margin="0,2,0,0" Visibility="Collapsed">
                                         <TextBox  materialDesign:HintAssist.Hint="区域名称" Text="{Binding Name}" Width="120" Margin="0 0 0 10" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                             <TextBox  materialDesign:HintAssist.Hint="起始位置-X" Text="{Binding X}" Margin="0 0 8 0" VerticalAlignment="Bottom" />
@@ -120,7 +120,7 @@
                                         </StackPanel>
                                     </StackPanel>
                                     <Grid DockPanel.Dock="Top" Margin="0,4,0,0">
-                                        <local:PlayingArrangementView DataContext="{Binding SelectedScheduledStage}"/>
+                                        <local:ScheduledStageListView DataContext="{Binding SelectedScheduledStage}"/>
                                     </Grid>
                                 </DockPanel>
                             </Grid>
