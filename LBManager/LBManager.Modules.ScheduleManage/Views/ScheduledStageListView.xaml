@@ -21,12 +21,12 @@
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
                                                 ToolTip="添加编排时段"
-                                                    Command="{Binding AddMediaCommand}">
+                                                    Command="{Binding AddScheduledStageCommand}">
                         <materialDesign:PackIcon Kind="Plus" Height="20" Width="20"/>
                     </Button>
                     <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
                                                 ToolTip="删除编排时段"
-                                                    Command="{Binding RemoveMediaCommand}">
+                                                    Command="{Binding RemoveScheduledStageCommand}">
                         <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
                     </Button>
                 </StackPanel>
@@ -39,11 +39,18 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ListBox Grid.Column="0" Style="{DynamicResource MaterialDesignListBox}"/>
+            <ListBox Grid.Column="0" Style="{DynamicResource MaterialDesignListBox}" ItemsSource="{Binding ScheduledStageList}" SelectedItem="{Binding SelectedScheduledStage}"
+                      HorizontalContentAlignment="Stretch">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <local:ScheduledStageCard />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
             <GridSplitter HorizontalAlignment="Right"  VerticalAlignment="Stretch" 
                           Grid.Column="1" ResizeBehavior="PreviousAndNext"
                           Width="3" Background="#FFBCBCBC"/>
-            <local:PlayingArrangementView Grid.Column="2"/>
+            <local:PlayingArrangementView Grid.Column="2" DataContext="{Binding SelectedScheduledStage}"/>
         </Grid>
     </Grid>
 </UserControl>

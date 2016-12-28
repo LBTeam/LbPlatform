@@ -16,19 +16,33 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 {
     public class ScheduledStageViewModel : BindableBase
     {
-        public ScheduledStageViewModel() { }
+        public ScheduledStageViewModel()
+        {
+            MediaList.CollectionChanged += MediaList_CollectionChanged;
+            StartTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 7, 30, 0);
+            EndTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 21, 30, 0);
+            LoopCount = 1;
+        }
 
         public ScheduledStageViewModel(ScheduledStage stage)
         {
-            _startTime = stage.StartTime;
-            _endTime = stage.EndTime;
-            _loopCount = stage.LoopCount;
+            MediaList.CollectionChanged += MediaList_CollectionChanged;
+            StartTime = stage.StartTime;
+            EndTime = stage.EndTime;
+            LoopCount = stage.LoopCount;
             foreach (var mediaItem in stage.MediaList)
             {
                 _mediaList.Add(new MediaViewModel(mediaItem));
             }
-            _currentMedia = _mediaList.Count == 0 ? null : _mediaList[0];
+            CurrentMedia = _mediaList.Count == 0 ? null : _mediaList[0];
         }
+
+        private void MediaList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            MediaCount = MediaList.Count;
+            RealTimeSpan = TimeSpan.FromSeconds(MediaList.Sum(m => m.Duration.TotalSeconds)* LoopCount);
+        }
+
         private ObservableCollection<MediaViewModel> _mediaList = new ObservableCollection<MediaViewModel>();
         public ObservableCollection<MediaViewModel> MediaList
         {
@@ -47,25 +61,58 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
         }
 
-        private DateTime _startTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 7, 30, 0);
+        private DateTime _startTime;//= new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 7, 30, 0);
         public DateTime StartTime
         {
             get { return _startTime; }
-            set { SetProperty(ref _startTime, value); }
+            set
+            {
+                SetProperty(ref _startTime, value);
+                StageTimeSpan = _endTime - _startTime;
+            }
         }
 
-        private DateTime _endTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 21, 30, 0);
+        private DateTime _endTime;//= new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 21, 30, 0);
         public DateTime EndTime
         {
             get { return _endTime; }
-            set { SetProperty(ref _endTime, value); }
+            set
+            {
+                SetProperty(ref _endTime, value);
+                StageTimeSpan = _endTime - _startTime;
+            }
         }
 
-        private int _loopCount = 1;
+        private int _loopCount;// = 1;
         public int LoopCount
         {
             get { return _loopCount; }
-            set { SetProperty(ref _loopCount, value); }
+            set
+            {
+                SetProperty(ref _loopCount, value);
+                RealTimeSpan = TimeSpan.FromSeconds(_mediaList.Sum(m => m.Duration.TotalSeconds) * _loopCount);
+            }
+        }
+
+        private TimeSpan _stageTimeSpan;
+        public TimeSpan StageTimeSpan
+        {
+            get { return _stageTimeSpan; }
+            set { SetProperty(ref _stageTimeSpan, value); }
+        }
+
+        private TimeSpan _realTimeSpan;
+        public TimeSpan RealTimeSpan
+        {
+            get { return _realTimeSpan; }
+            set { SetProperty(ref _realTimeSpan, value); }
+        }
+
+        private int _mediaCount;
+        public int MediaCount
+        {
+            get { return _mediaCount; }
+            set { SetProperty(ref _mediaCount, value); }
         }
 
 

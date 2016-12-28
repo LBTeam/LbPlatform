@@ -15,22 +15,22 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="0"/>
             </Grid.RowDefinitions>
-                <DockPanel LastChildFill="True">
-                    <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
-                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,4">
-                            <materialDesign:TimePicker  materialDesign:HintAssist.Hint="开始时间" VerticalAlignment="Bottom"
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,4">
+                        <materialDesign:TimePicker  materialDesign:HintAssist.Hint="开始时间" VerticalAlignment="Bottom"
                                                 Style="{DynamicResource MaterialDesignFloatingHintTimePicker}"
                                                 IsInvalidTextAllowed="True"
                                                 Is24Hours="True" Width="100" Margin="0,0,10,0"
-                                                        Text="{Binding StartTime, StringFormat=t}"/>
-                            <materialDesign:TimePicker  materialDesign:HintAssist.Hint="结束时间" VerticalAlignment="Bottom"
+                                                        Text="{Binding StartTime,  StringFormat={}{0:HH:mm}}"/>
+                        <materialDesign:TimePicker  materialDesign:HintAssist.Hint="结束时间" VerticalAlignment="Bottom"
                                                 Style="{DynamicResource MaterialDesignFloatingHintTimePicker}"
-                                                IsInvalidTextAllowed="True"
+                                                        IsInvalidTextAllowed="True"
                                                 Is24Hours="True" Width="100"
-                                                        Text="{Binding EndTime, StringFormat=t}"/>
-                        </StackPanel>
-                      
+                                                        Text="{Binding EndTime, StringFormat={}{0:HH:mm}}"/>
                     </StackPanel>
+
+                </StackPanel>
                 <Controls:NumericUpDown x:Name="StringFormatNumUpDown" Padding="0" DockPanel.Dock="Bottom"
                                                 Width="100" Height="26" Margin="10,0,0,0"
                                                 Interval="1"
@@ -47,52 +47,52 @@
                     </Controls:NumericUpDown.Resources>
                 </Controls:NumericUpDown>
                 <!--</materialDesign:Card>-->
-                    <Grid DockPanel.Dock="Top" Margin="0,4,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="30"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                            <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
+                <Grid DockPanel.Dock="Top" Margin="0,4,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
                                                 ToolTip="添加媒体"
                                                     Command="{Binding AddMediaCommand}">
-                                <materialDesign:PackIcon Kind="Plus" Height="20" Width="20"/>
-                            </Button>
-                            <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
+                            <materialDesign:PackIcon Kind="Plus" Height="20" Width="20"/>
+                        </Button>
+                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
                                                 ToolTip="删除媒体"
                                                     Command="{Binding RemoveMediaCommand}">
-                                <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
-                            </Button>
-                        </StackPanel>
-                        <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}" Style="{DynamicResource MaterialDesignListBox}"
+                            <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
+                        </Button>
+                    </StackPanel>
+                    <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}" Style="{DynamicResource MaterialDesignListBox}"
                                  HorizontalContentAlignment="Stretch" PreviewKeyDown="ListBox_PreviewKeyDown">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="0,2">
-                                        <Grid.Resources>
-                                            <Style TargetType="TextBox">
-                                                <Setter Property="MaxWidth" Value="75"/>
-                                            </Style>
-                                        </Grid.Resources>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="auto"/>
-                                            <ColumnDefinition Width="auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="{Binding Name}" Grid.Column="0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding Duration}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,20,0"/>
-                                        <!--<Controls:NumericUpDown x:Name="StringFormatNumUpDown"
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,2">
+                                    <Grid.Resources>
+                                        <Style TargetType="TextBox">
+                                            <Setter Property="MaxWidth" Value="75"/>
+                                        </Style>
+                                    </Grid.Resources>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}" Grid.Column="0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Duration}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                                    <!--<Controls:NumericUpDown x:Name="StringFormatNumUpDown"
                                                                                 Grid.Column="2"
                                                                                 Interval="1"
                                                                                 IsReadOnly="False" Minimum="1"
                                                                                 StringFormat=" {0} 次" VerticalContentAlignment="Center" VerticalAlignment="Center"
                                                                                 Value="{Binding LoopCount, Mode=TwoWay}" />-->
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </Grid>
-                </DockPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </DockPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Content="保存" Width="75" Height="30" VerticalContentAlignment="Center" Margin="0,0,10,0"
                             Style="{DynamicResource MaterialDesignRaisedLightButton}" IsDefault="True"

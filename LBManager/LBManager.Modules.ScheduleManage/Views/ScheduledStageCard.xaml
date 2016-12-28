@@ -7,21 +7,53 @@
              xmlns:local="clr-namespace:LBManager.Modules.ScheduleManage.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="0 8 0 8" />
+            <Setter Property="Width" Value="75"/>
+        </Style>
+    </UserControl.Resources>
     <Grid>
-        <materialDesign:Card Margin="4 4 0 0">
+        <materialDesign:Card HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="0" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                
-                <StackPanel Grid.Row="1" Orientation="Vertical" >
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="ClockStart"/>
-                    </StackPanel>
-                    
-                </StackPanel>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <materialDesign:PackIcon Kind="ClockStart" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Width="30" Height="16"/>
+                    <TextBox materialDesign:HintAssist.Hint="开始时间" Text="{Binding StartTime,StringFormat={}{0:HH:mm}}"  Width="120" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="Black"
+                              Grid.Row="0" Grid.Column="1" IsEnabled="False"/>
+                    <materialDesign:PackIcon Kind="ClockEnd" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Width="30" Height="16"/>
+                    <TextBox materialDesign:HintAssist.Hint="结束时间" Text="{Binding EndTime,StringFormat={}{0:HH:mm}}" Width="120" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="Black"
+                              Grid.Row="0" Grid.Column="3" IsEnabled="False"/>
+                    <materialDesign:PackIcon Kind="Timelapse" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Width="30" Height="16"/>
+                    <TextBox materialDesign:HintAssist.Hint="时段总长" Text="{Binding StageTimeSpan}" Width="120" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="Black"
+                              Grid.Row="1" Grid.Column="1" IsEnabled="False"/>
+                    <materialDesign:PackIcon Kind="Timelapse" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Width="30" Height="16"/>
+                    <TextBox materialDesign:HintAssist.Hint="实际时段总长" Text="{Binding RealTimeSpan}" Width="120" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="Black"
+                              Grid.Row="1" Grid.Column="3" IsEnabled="False"/>
+                    <materialDesign:PackIcon Kind="ViewList" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Width="30" Height="16"/>
+                    <TextBox materialDesign:HintAssist.Hint="媒体计数" Text="{Binding MediaCount}" Width="120" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="Black"
+                              Grid.Row="2" Grid.Column="1" IsEnabled="False"/>
+                    <materialDesign:PackIcon Kind="Counter" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Width="30" Height="16"/>
+                    <TextBox materialDesign:HintAssist.Hint="轮播次数" Text="{Binding LoopCount}" Width="120" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="Black"
+                              Grid.Row="2" Grid.Column="3" IsEnabled="False"/>
+                </Grid>
                 <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal" Margin="8">
                     <Button Style="{DynamicResource MaterialDesignToolButton}" Width="30" Padding="2 0 2 0"
                             materialDesign:RippleAssist.IsCentered="True">

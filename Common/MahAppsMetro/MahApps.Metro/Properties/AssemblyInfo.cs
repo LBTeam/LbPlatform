@@ -12,9 +12,9 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://metro.mahapps.com/winfx/xaml/shared", "MahApps.Metro.Converters")]
 [assembly: XmlnsDefinition("http://metro.mahapps.com/winfx/xaml/controls", "MahApps.Metro.Controls")]
 
-[assembly: AssemblyVersion("1.3.16362.0326")]
-[assembly: AssemblyFileVersion("1.3.16362.0326")]
-[assembly: AssemblyInformationalVersion("1.3.16362.0326")]
+[assembly: AssemblyVersion("1.3.16363.0144")]
+[assembly: AssemblyFileVersion("1.3.16363.0144")]
+[assembly: AssemblyInformationalVersion("1.3.16363.0144")]
 [assembly: AssemblyTitleAttribute("MahApps.Metro")]
 [assembly: AssemblyDescriptionAttribute("Toolkit for creating Metro styled WPF apps")]
 [assembly: AssemblyProductAttribute("MahApps.Metro 1.3.0")]

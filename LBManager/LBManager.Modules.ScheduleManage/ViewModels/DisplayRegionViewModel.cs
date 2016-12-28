@@ -17,8 +17,9 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         private DisplayRegion _displayRegion;
         public DisplayRegionViewModel()
         {
-            _selectedScheduledStage = new ScheduledStageViewModel();
-            _scheduledStageList.Add(_selectedScheduledStage);
+            ScheduledStageList.CollectionChanged += ScheduledStageList_CollectionChanged;
+            SelectedScheduledStage = new ScheduledStageViewModel();
+            ScheduledStageList.Add(_selectedScheduledStage);
         }
 
 
@@ -31,11 +32,17 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             _heigh = displayRegion.Heigh;
             _name = displayRegion.Name;
             //var mediaList = displayRegion.GetRegionMediaList();
+            ScheduledStageList.CollectionChanged += ScheduledStageList_CollectionChanged;
             foreach (var stageItem in displayRegion.StageList)
             {
-                _scheduledStageList.Add(new ScheduledStageViewModel(stageItem));
+                ScheduledStageList.Add(new ScheduledStageViewModel(stageItem));
             }
-            _selectedScheduledStage = _scheduledStageList.Count == 0 ? null : _scheduledStageList[0];
+            SelectedScheduledStage = _scheduledStageList.Count == 0 ? null : _scheduledStageList[0];
+        }
+
+        private void ScheduledStageList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            RemoveScheduledStageCommand.RaiseCanExecuteChanged();
         }
 
         private string _name;
@@ -88,6 +95,62 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             get { return _scheduledStageList; }
             set { SetProperty(ref _scheduledStageList, value); }
         }
-      
+
+        private DelegateCommand _addScheduledStageCommand;
+        public DelegateCommand AddScheduledStageCommand
+        {
+            get
+            {
+                if (_addScheduledStageCommand == null)
+                {
+                    _addScheduledStageCommand = new DelegateCommand(AddScheduledStage,CanAddScheduledStage); 
+                }
+                return _addScheduledStageCommand;
+            }
+        }
+
+        private DelegateCommand _removeScheduledStageCommand;
+        public DelegateCommand RemoveScheduledStageCommand
+        {
+            get
+            {
+                if (_removeScheduledStageCommand == null)
+                {
+                    _removeScheduledStageCommand = new DelegateCommand(RemoveScheduledStage, CanRemoveScheduledStage);
+                }
+                return _removeScheduledStageCommand;
+            }
+        }
+
+        private bool CanRemoveScheduledStage()
+        {
+            return ScheduledStageList.Count > 1 ? true : false;
+        }
+
+        private void RemoveScheduledStage()
+        {
+            ScheduledStageList.Remove(SelectedScheduledStage);
+            if (ScheduledStageList.Count > 0)
+            {
+                SelectedScheduledStage = ScheduledStageList[0];
+            }
+            else
+            {
+                SelectedScheduledStage = null;
+            }
+           
+        }
+
+        private bool CanAddScheduledStage()
+        {
+            return true;
+        }
+
+        private void AddScheduledStage()
+        {
+            ScheduledStageViewModel stageViewModel = new ScheduledStageViewModel();
+            ScheduledStageList.Add(stageViewModel);
+            SelectedScheduledStage = stageViewModel;
+        }
     }
 }

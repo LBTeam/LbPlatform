@@ -120,7 +120,7 @@
                                         </StackPanel>
                                     </StackPanel>
                                     <Grid DockPanel.Dock="Top" Margin="0,4,0,0">
-                                        <local:ScheduledStageListView DataContext="{Binding SelectedScheduledStage}"/>
+                                        <local:ScheduledStageListView DataContext="{Binding .}"/>
                                     </Grid>
                                 </DockPanel>
                             </Grid>

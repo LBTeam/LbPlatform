@@ -109,6 +109,7 @@ namespace LBPlayer.Job
 
                     JobDataMap jobDataMap = new JobDataMap();
                     jobDataMap.Add("ScheduleName", schedule.Name);
+                    jobDataMap.Add("ScheduledStageInfo", string.Format("{0}~{1}", stageItem.StartTime, stageItem.EndTime));
                     jobDataMap.Add("MediaPathList", mediaPathList);
                     jobDataMap.Add("LoopCount", stageItem.LoopCount);
 
@@ -126,7 +127,7 @@ namespace LBPlayer.Job
                     ScheduleJob(job, trigger, JobType.Main);
                 }
             }
-            Log4NetLogger.LogInfo("应用主播放方案----");
+            Log4NetLogger.LogInfo(string.Format("应用播放方案{0}",schedule.Name));
         }
 
     }
