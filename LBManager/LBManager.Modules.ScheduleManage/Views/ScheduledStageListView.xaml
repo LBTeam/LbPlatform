@@ -8,16 +8,101 @@
              xmlns:local="clr-namespace:LBManager.Modules.ScheduleManage.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MaterialDesignComboBox}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="0 8 0 8" />
+            <Setter Property="Width" Value="100"/>
+        </Style>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="0 8 0 8" />
+            <Setter Property="Width" Value="75"/>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-       
+
         <materialDesign:ColorZone VerticalAlignment="Top" HorizontalAlignment="Stretch"
                                               Mode="PrimaryDark" materialDesign:ShadowAssist.ShadowDepth="Depth3">
             <DockPanel >
                 <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" Margin="10,0,0,0">智能编排</TextBlock>
+
+            </DockPanel>
+
+        </materialDesign:ColorZone>
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <ComboBox materialDesign:HintAssist.Hint="Repeat" Margin="0,0,0,4"
+                                          VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                                          SelectedItem="{Binding Type}">
+                <!--ItemsSource="{Binding Source={utility:EnumBindingSource {x:Type model:ScheduleType}}}"-->
+            </ComboBox>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="每" VerticalAlignment="Center"/>
+                <TextBox  Text="{Binding WeekNumber}" VerticalAlignment="Center"  HorizontalContentAlignment="Center" Width="30"/>
+                <TextBlock Text="周" VerticalAlignment="Center"/>
+                <TextBlock Text="在" VerticalAlignment="Center"/>
+                <ListBox Style="{DynamicResource MaterialDesignToolToggleListBox}"  SelectionMode="Extended" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0">
+                    <ListBoxItem>
+                        <ListBoxItem.ToolTip>
+                            <TextBlock Text="周一" />
+                        </ListBoxItem.ToolTip>
+                        <materialDesign:PackIcon Kind="Numeric1BoxOutline"/>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.ToolTip>
+                            <TextBlock Text="周二" />
+                        </ListBoxItem.ToolTip>
+                        <materialDesign:PackIcon Kind="Numeric2BoxOutline"/>
+                    </ListBoxItem>
+                    <ListBoxItem >
+                        <ListBoxItem.ToolTip>
+                            <TextBlock Text="周三" />
+                        </ListBoxItem.ToolTip>
+                        <materialDesign:PackIcon Kind="Numeric3BoxOutline"/>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.ToolTip>
+                            <TextBlock Text="周四" />
+                        </ListBoxItem.ToolTip>
+                        <materialDesign:PackIcon Kind="Numeric4BoxOutline"/>
+                    </ListBoxItem>
+                    <ListBoxItem >
+                        <ListBoxItem.ToolTip>
+                            <TextBlock Text="周五" />
+                        </ListBoxItem.ToolTip>
+                        <materialDesign:PackIcon Kind="Numeric5BoxOutline"/>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <ListBoxItem.ToolTip>
+                            <TextBlock Text="周六" />
+                        </ListBoxItem.ToolTip>
+                        <materialDesign:PackIcon Kind="Numeric6BoxOutline"/>
+                    </ListBoxItem>
+                    <ListBoxItem >
+                        <ListBoxItem.ToolTip>
+                            <TextBlock Text="周日" />
+                        </ListBoxItem.ToolTip>
+                        <materialDesign:PackIcon Kind="Numeric7BoxOutline"/>
+                    </ListBoxItem>
+                </ListBox>
+            </StackPanel>
+        </StackPanel>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid  Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
                                                 ToolTip="添加编排时段"
@@ -30,23 +115,16 @@
                         <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
                     </Button>
                 </StackPanel>
-            </DockPanel>
-           
-        </materialDesign:ColorZone>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <ListBox Grid.Column="0" Style="{DynamicResource MaterialDesignListBox}" ItemsSource="{Binding ScheduledStageList}" SelectedItem="{Binding SelectedScheduledStage}"
+                <ListBox Grid.Row="1" Style="{DynamicResource MaterialDesignListBox}" ItemsSource="{Binding ScheduledStageList}" SelectedItem="{Binding SelectedScheduledStage}"
                       HorizontalContentAlignment="Stretch">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <local:ScheduledStageCard />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <local:ScheduledStageCard />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+
             <GridSplitter HorizontalAlignment="Right"  VerticalAlignment="Stretch" 
                           Grid.Column="1" ResizeBehavior="PreviousAndNext"
                           Width="3" Background="#FFBCBCBC"/>
