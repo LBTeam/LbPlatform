@@ -71,7 +71,7 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="4"/>
+                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
                 <!--<scheduleModule:ScheduleListView Grid.Column="0"/>-->
@@ -119,6 +119,9 @@
                     </ListBox>-->
 
                 </DockPanel>
+                <GridSplitter HorizontalAlignment="Right"  VerticalAlignment="Stretch" 
+                          Grid.Column="1" ResizeBehavior="PreviousAndNext"
+                          Width="3" Background="#FFBCBCBC"/>
                 <DockPanel Grid.Column="2">
                     <materialDesign:ColorZone DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Stretch"
                                               Mode="Accent" materialDesign:ShadowAssist.ShadowDepth="Depth2">
