@@ -27,69 +27,26 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <materialDesign:ColorZone VerticalAlignment="Top" HorizontalAlignment="Stretch"
+        <materialDesign:ColorZone VerticalAlignment="Top" HorizontalAlignment="Stretch" Padding="8"
                                               Mode="PrimaryDark" materialDesign:ShadowAssist.ShadowDepth="Depth3">
             <DockPanel >
+                <ToggleButton Style="{DynamicResource MaterialDesignSwitchAccentToggleButton}" VerticalAlignment="Center"
+                                  DockPanel.Dock="Right" />
+                <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="10">编排模式</TextBlock>
                 <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" Margin="10,0,0,0">智能编排</TextBlock>
-
             </DockPanel>
 
         </materialDesign:ColorZone>
-        <StackPanel Grid.Row="1" Orientation="Vertical">
+        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch" Width="auto">
             <ComboBox materialDesign:HintAssist.Hint="Repeat" Margin="0,0,0,4"
                                           VerticalAlignment="Bottom" HorizontalAlignment="Left"
                                           SelectedItem="{Binding Type}">
                 <!--ItemsSource="{Binding Source={utility:EnumBindingSource {x:Type model:ScheduleType}}}"-->
             </ComboBox>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="每" VerticalAlignment="Center"/>
-                <TextBox  Text="{Binding WeekNumber}" VerticalAlignment="Center"  HorizontalContentAlignment="Center" Width="30"/>
-                <TextBlock Text="周" VerticalAlignment="Center"/>
-                <TextBlock Text="在" VerticalAlignment="Center"/>
-                <ListBox Style="{DynamicResource MaterialDesignToolToggleListBox}"  SelectionMode="Extended" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0">
-                    <ListBoxItem>
-                        <ListBoxItem.ToolTip>
-                            <TextBlock Text="周一" />
-                        </ListBoxItem.ToolTip>
-                        <materialDesign:PackIcon Kind="Numeric1BoxOutline"/>
-                    </ListBoxItem>
-                    <ListBoxItem>
-                        <ListBoxItem.ToolTip>
-                            <TextBlock Text="周二" />
-                        </ListBoxItem.ToolTip>
-                        <materialDesign:PackIcon Kind="Numeric2BoxOutline"/>
-                    </ListBoxItem>
-                    <ListBoxItem >
-                        <ListBoxItem.ToolTip>
-                            <TextBlock Text="周三" />
-                        </ListBoxItem.ToolTip>
-                        <materialDesign:PackIcon Kind="Numeric3BoxOutline"/>
-                    </ListBoxItem>
-                    <ListBoxItem>
-                        <ListBoxItem.ToolTip>
-                            <TextBlock Text="周四" />
-                        </ListBoxItem.ToolTip>
-                        <materialDesign:PackIcon Kind="Numeric4BoxOutline"/>
-                    </ListBoxItem>
-                    <ListBoxItem >
-                        <ListBoxItem.ToolTip>
-                            <TextBlock Text="周五" />
-                        </ListBoxItem.ToolTip>
-                        <materialDesign:PackIcon Kind="Numeric5BoxOutline"/>
-                    </ListBoxItem>
-                    <ListBoxItem>
-                        <ListBoxItem.ToolTip>
-                            <TextBlock Text="周六" />
-                        </ListBoxItem.ToolTip>
-                        <materialDesign:PackIcon Kind="Numeric6BoxOutline"/>
-                    </ListBoxItem>
-                    <ListBoxItem >
-                        <ListBoxItem.ToolTip>
-                            <TextBlock Text="周日" />
-                        </ListBoxItem.ToolTip>
-                        <materialDesign:PackIcon Kind="Numeric7BoxOutline"/>
-                    </ListBoxItem>
-                </ListBox>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                <local:DailyScheduleSettingView/>
+                <local:WeeklyScheduleSettingView/>
+                <local:MonthlyScheduleSettingView HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"/>
             </StackPanel>
         </StackPanel>
         <Grid Grid.Row="2">

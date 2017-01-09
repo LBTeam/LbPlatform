@@ -1,0 +1,108 @@
+﻿<UserControl x:Class="LBManager.Modules.ScheduleManage.Views.MonthlyScheduleSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LBManager.Modules.ScheduleManage.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:Controls ="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" >
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <RadioButton Style="{StaticResource MaterialDesignRadioButton}" Margin="0 0 8 8" VerticalAlignment="Center" IsChecked="True">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource MaterialDesignToolToggleListBox}">
+                            <Setter Property="ItemsPanel">
+                                <Setter.Value>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </Setter.Value>
+                            </Setter>
+
+                        </Style>
+                    </StackPanel.Resources>
+                    <TextBlock Text="在" VerticalAlignment="Center"/>
+                    <ListBox  SelectionMode="Extended" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0">
+                        <ListBoxItem>
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="一月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="1"/>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="二月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="2"/>
+                        </ListBoxItem>
+                        <ListBoxItem >
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="三月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="3"/>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="四月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="4"/>
+                        </ListBoxItem>
+                        <ListBoxItem >
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="五月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="5"/>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="六月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="6"/>
+                        </ListBoxItem>
+                        <ListBoxItem >
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="七月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="7"/>
+                        </ListBoxItem>
+                        <ListBoxItem >
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="八月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="8"/>
+                        </ListBoxItem>
+                        <ListBoxItem >
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="九月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="9"/>
+                        </ListBoxItem>
+                        <ListBoxItem >
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="十月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="10"/>
+                        </ListBoxItem>
+                        <ListBoxItem >
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="十一月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="11"/>
+                        </ListBoxItem>
+                        <ListBoxItem >
+                            <ListBoxItem.ToolTip>
+                                <TextBlock Text="十二月" />
+                            </ListBoxItem.ToolTip>
+                            <CheckBox Content="12"/>
+                        </ListBoxItem>
+                    </ListBox>
+                </StackPanel>
+            </RadioButton>
+            <RadioButton Style="{StaticResource MaterialDesignRadioButton}" Margin="0 0 8 8" VerticalAlignment="Center" IsChecked="True">
+                每个工作日
+            </RadioButton>
+        </StackPanel>
+    </Grid>
+</UserControl>
