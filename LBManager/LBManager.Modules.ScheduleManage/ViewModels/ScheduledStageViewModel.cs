@@ -21,6 +21,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             MediaList.CollectionChanged += MediaList_CollectionChanged;
             StartTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 7, 30, 0);
             EndTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 21, 30, 0);
+            ArrangementMode = ArrangementMode.StandardCovered;
             LoopCount = 1;
         }
 
@@ -30,6 +31,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             StartTime = stage.StartTime;
             EndTime = stage.EndTime;
             LoopCount = stage.LoopCount;
+            ArrangementMode = stage.ArrangementMode;
             foreach (var mediaItem in stage.MediaList)
             {
                 _mediaList.Add(new MediaViewModel(mediaItem));

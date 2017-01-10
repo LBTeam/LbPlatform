@@ -140,6 +140,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     displayRegion.Y = displayRegionitem.Y;
                     displayRegion.Width = displayRegionitem.Width;
                     displayRegion.Heigh = displayRegionitem.Heigh;
+                    displayRegion.ScheduleMode = displayRegionitem.ScheduleMode;
+                    displayRegion.RepeatMode = displayRegionitem.RepeatMode;
                     displayRegion.StageList = new List<ScheduledStage>();
                     
                     foreach (var stageItem in displayRegionitem.ScheduledStageList)
@@ -149,6 +151,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                         stage.EndTime = stageItem.EndTime;
                         stage.LoopCount = stageItem.LoopCount;
                         stage.Cron = displayRegionitem.GetCron(stageItem.StartTime.Second, stageItem.StartTime.Minute, stageItem.StartTime.Hour);
+                        stage.ArrangementMode = stageItem.ArrangementMode;
                         stage.MediaList = new List<Media>();
                         foreach (var mediaItem in stageItem.MediaList)
                         {

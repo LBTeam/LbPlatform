@@ -90,44 +90,191 @@ namespace LBPlayer.Job
             }
             foreach (var regionItem in schedule.DisplayRegionList)
             {
-                foreach (var stageItem in regionItem.StageList)
+                if (regionItem.ScheduleMode == ScheduleMode.CPP)
                 {
-                    IList<string> mediaPathList = new List<string>();
-                    foreach (var mediaItem in stageItem.MediaList)
+                    foreach (var stageItem in regionItem.StageList)
                     {
-                        string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
-                        if (File.Exists(mediaPath) && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath))
+                        IList<string> mediaPathList = new List<string>();
+                        foreach (var mediaItem in stageItem.MediaList)
                         {
-                            mediaPathList.Add(mediaPath);
+                            string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
+                            if (File.Exists(mediaPath) && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath))
+                            {
+                                mediaPathList.Add(mediaPath);
+                            }
+                            else
+                            {
+                                Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", schedule, mediaPath));
+                                return;
+                            }
                         }
-                        else
+
+                        JobDataMap jobDataMap = new JobDataMap();
+                        jobDataMap.Add("ScheduleName", schedule.Name);
+                        jobDataMap.Add("ScheduledStageInfo", string.Format("{0}~{1}", stageItem.StartTime, stageItem.EndTime));
+                        jobDataMap.Add("MediaPathList", mediaPathList);
+                        jobDataMap.Add("LoopCount", stageItem.LoopCount);
+
+                        IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
+                            .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
+                            .UsingJobData(jobDataMap)
+                            .Build();
+
+                        ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
+                            .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
+                            .StartAt(stageItem.StartTime)
+                            .EndAt(stageItem.EndTime)
+                            .Build();
+
+                        ScheduleJob(job, trigger, JobType.Main);
+                    }
+                }
+                else if (regionItem.ScheduleMode == ScheduleMode.CPM)
+                {
+                    foreach (var stageItem in regionItem.StageList)
+                    {
+                        if (stageItem.ArrangementMode == ArrangementMode.Manual)
                         {
-                            Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", schedule, mediaPath));
-                            return;
+                            IList<string> mediaPathList = new List<string>();
+                            foreach (var mediaItem in stageItem.MediaList)
+                            {
+                                string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
+                                if (File.Exists(mediaPath) && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath))
+                                {
+                                    for (int i = 0; i < mediaItem.LoopCount; i++)
+                                    {
+                                        mediaPathList.Add(mediaPath);
+                                    }
+                                }
+                                else
+                                {
+                                    Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", schedule, mediaPath));
+                                    return;
+                                }
+                            }
+
+                            JobDataMap jobDataMap = new JobDataMap();
+                            jobDataMap.Add("ScheduleName", schedule.Name);
+                            jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stageItem.Cron));
+                            jobDataMap.Add("MediaPathList", mediaPathList);
+                            jobDataMap.Add("LoopCount", stageItem.LoopCount);
+
+                            IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
+                                .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
+                                .UsingJobData(jobDataMap)
+                                .Build();
+
+                            var trigger = TriggerBuilder.Create()
+                                .WithCronSchedule(stageItem.Cron)
+                                .Build();
+
+                            ScheduleJob(job, trigger, JobType.Main);
+                        }
+                        else if (stageItem.ArrangementMode == ArrangementMode.StandardCovered)
+                        {
+                            int repeatCount;
+                            var realTotalTime = stageItem.MediaList.Sum(m => m.Duration.TotalSeconds * m.LoopCount);
+                            var planTotalTime = (stageItem.EndTime - stageItem.StartTime).TotalSeconds;
+                            if (realTotalTime > 1)
+                                repeatCount = (int)(planTotalTime / realTotalTime) + 1;
+                            else
+                                repeatCount = (int)planTotalTime;
+                            IList<string> mediaPathList = new List<string>();
+                            foreach (var mediaItem in stageItem.MediaList)
+                            {
+                                string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
+                                if (File.Exists(mediaPath) && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath))
+                                {
+                                    for (int i = 0; i < mediaItem.LoopCount; i++)
+                                    {
+                                        mediaPathList.Add(mediaPath);
+                                    }
+                                }
+                                else
+                                {
+                                    Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", schedule, mediaPath));
+                                    return;
+                                }
+                            }
+
+                            JobDataMap jobDataMap = new JobDataMap();
+                            jobDataMap.Add("ScheduleName", schedule.Name);
+                            jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stageItem.Cron));
+                            jobDataMap.Add("MediaPathList", mediaPathList);
+                            jobDataMap.Add("LoopCount", repeatCount);
+
+                            IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
+                                .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
+                                .UsingJobData(jobDataMap)
+                                .Build();
+
+                            var trigger = TriggerBuilder.Create()
+                                .WithCronSchedule(stageItem.Cron)
+                                .Build();
+
+                            ScheduleJob(job, trigger, JobType.Main);
+                        }
+                        else if (stageItem.ArrangementMode == ArrangementMode.MixedCovered)
+                        {
+                            List<LBManager.Infrastructure.Models.Media> unitMediaList = new List<LBManager.Infrastructure.Models.Media>();
+                            int findCount = stageItem.MediaList.Max(m => m.LoopCount);
+                            for (int i = 0; i < findCount; i++)
+                            {
+                                foreach (var media in stageItem.MediaList)
+                                {
+                                    if (media.LoopCount > 0)
+                                    {
+                                        unitMediaList.Add(media);
+                                        media.LoopCount--;
+                                    }
+                                }
+                            }
+
+                            int repeatCount;
+                            var realTotalTime = unitMediaList.Sum(m => m.Duration.TotalSeconds);
+                            var planTotalTime = (stageItem.EndTime - stageItem.StartTime).TotalSeconds;
+                            if (realTotalTime > 1)
+                                repeatCount = (int)(planTotalTime / realTotalTime) + 1;
+                            else
+                                repeatCount = (int)planTotalTime;
+
+                            IList<string> mediaPathList = new List<string>();
+                            foreach (var mediaItem in unitMediaList)
+                            {
+                                string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
+                                if (File.Exists(mediaPath) && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath))
+                                {
+                                    mediaPathList.Add(mediaPath);
+                                }
+                                else
+                                {
+                                    Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", schedule, mediaPath));
+                                    return;
+                                }
+                            }
+
+                            JobDataMap jobDataMap = new JobDataMap();
+                            jobDataMap.Add("ScheduleName", schedule.Name);
+                            jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stageItem.Cron));
+                            jobDataMap.Add("MediaPathList", mediaPathList);
+                            jobDataMap.Add("LoopCount", repeatCount);
+
+                            IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
+                                .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
+                                .UsingJobData(jobDataMap)
+                                .Build();
+
+                            var trigger = TriggerBuilder.Create()
+                                .WithCronSchedule(stageItem.Cron)
+                                .Build();
+
+                            ScheduleJob(job, trigger, JobType.Main);
                         }
                     }
-
-                    JobDataMap jobDataMap = new JobDataMap();
-                    jobDataMap.Add("ScheduleName", schedule.Name);
-                    jobDataMap.Add("ScheduledStageInfo", string.Format("{0}~{1}", stageItem.StartTime, stageItem.EndTime));
-                    jobDataMap.Add("MediaPathList", mediaPathList);
-                    jobDataMap.Add("LoopCount", stageItem.LoopCount);
-
-                    IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
-                        .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
-                        .UsingJobData(jobDataMap)
-                        .Build();
-
-                    ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
-                        .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
-                        .StartAt(stageItem.StartTime)
-                        .EndAt(stageItem.EndTime)
-                        .Build();
-
-                    ScheduleJob(job, trigger, JobType.Main);
                 }
             }
-            Log4NetLogger.LogInfo(string.Format("应用播放方案{0}",schedule.Name));
+
+            Log4NetLogger.LogInfo(string.Format("应用播放方案{0}", schedule.Name));
         }
 
     }

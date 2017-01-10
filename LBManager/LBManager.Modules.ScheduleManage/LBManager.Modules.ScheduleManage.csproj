@@ -70,6 +70,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converter\BooleanToVisibilityReverseConverter.cs" />
     <Compile Include="Converter\RepeatModeToVisibilityConverter.cs" />
     <Compile Include="Converter\ScheduleModeToBooleanConverter.cs" />
     <Compile Include="Converter\ScheduleModeToVisibilityConverter.cs" />

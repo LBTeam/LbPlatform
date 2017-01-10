@@ -43,6 +43,7 @@ namespace LBManager.Infrastructure.Models
         public int Heigh { get; set; }
         public List<ScheduledStage> StageList { get; set; }
 
+        public ScheduleMode ScheduleMode { get; set; }
         public RepeatMode RepeatMode { get; set; }
         public List<Media> GetRegionMediaList()
         {

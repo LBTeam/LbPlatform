@@ -31,6 +31,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             _width = displayRegion.Width;
             _heigh = displayRegion.Heigh;
             _name = displayRegion.Name;
+            _scheduleMode = displayRegion.ScheduleMode;
             _repeatMode = displayRegion.RepeatMode;
 
             ScheduledStageList.CollectionChanged += ScheduledStageList_CollectionChanged;
@@ -81,14 +82,14 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             set { SetProperty(ref _heigh, value); }
         }
 
-        private ScheduleMode _mode;
+        private ScheduleMode _scheduleMode = ScheduleMode.CPM;
         public ScheduleMode ScheduleMode
         {
-            get { return _mode; }
-            set { SetProperty(ref _mode, value); }
+            get { return _scheduleMode; }
+            set { SetProperty(ref _scheduleMode, value); }
         }
 
-        private RepeatMode _repeatMode;
+        private RepeatMode _repeatMode = RepeatMode.Daily;
         public RepeatMode RepeatMode
         {
             get { return _repeatMode; }
