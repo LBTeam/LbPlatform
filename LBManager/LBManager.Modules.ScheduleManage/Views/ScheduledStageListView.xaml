@@ -6,9 +6,16 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:Controls ="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:local="clr-namespace:LBManager.Modules.ScheduleManage.Views"
+             xmlns:converter="clr-namespace:LBManager.Modules.ScheduleManage.Converter"
+             xmlns:model="clr-namespace:LBManager.Infrastructure.Models;assembly=LBManager.Infrastructure"
+             xmlns:utility="clr-namespace:LBManager.Infrastructure.Common.Utility;assembly=LBManager.Infrastructure.Common"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converter:ScheduleModeToBooleanConverter x:Key="ScheduleModeToBooleanConverter"/>
+        <converter:RepeatModeToVisibilityConverter x:Key="RepeatModeToVisibilityConverter"/>
+        <converter:ScheduleModeToVisibilityConverter x:Key="ScheduleModeToVisibilityConverter"/>
         <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MaterialDesignComboBox}">
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Margin" Value="0 8 0 8" />
@@ -30,62 +37,29 @@
         <materialDesign:ColorZone VerticalAlignment="Top" HorizontalAlignment="Stretch" Padding="8"
                                               Mode="PrimaryDark" materialDesign:ShadowAssist.ShadowDepth="Depth3">
             <DockPanel >
-                <ToggleButton Style="{DynamicResource MaterialDesignSwitchAccentToggleButton}" VerticalAlignment="Center"
-                                  DockPanel.Dock="Right" />
+                <ToggleButton x:Name="ScheduleModeButton" Style="{DynamicResource MaterialDesignSwitchAccentToggleButton}" VerticalAlignment="Center"
+                              DockPanel.Dock="Right" IsChecked="{Binding ScheduleMode, Converter={StaticResource ScheduleModeToBooleanConverter}}" />
                 <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="10">编排模式</TextBlock>
                 <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" Margin="10,0,0,0">智能编排</TextBlock>
             </DockPanel>
 
         </materialDesign:ColorZone>
-        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch" Width="auto">
+        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch" Width="auto" Visibility="{Binding IsChecked,ElementName=ScheduleModeButton,Converter={StaticResource BooleanToVisibilityConverter}}">
             <ComboBox materialDesign:HintAssist.Hint="Repeat" Margin="0,0,0,4"
-                                          VerticalAlignment="Bottom" HorizontalAlignment="Left"
-                                          SelectedItem="{Binding Type}">
-                <!--ItemsSource="{Binding Source={utility:EnumBindingSource {x:Type model:ScheduleType}}}"-->
+                      VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                      ItemsSource="{Binding Source={utility:EnumBindingSource {x:Type model:RepeatMode}}}"
+                      SelectedItem="{Binding RepeatMode}">
             </ComboBox>
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
-                <local:DailyScheduleSettingView/>
-                <local:WeeklyScheduleSettingView/>
-                <local:MonthlyScheduleSettingView HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"/>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="10">
+                <local:DailyScheduleSettingView DataContext="{Binding DailyScheduleSetting}" Visibility="{Binding RepeatMode,Converter={StaticResource RepeatModeToVisibilityConverter},ConverterParameter={x:Static model:RepeatMode.Daily}}"/>
+                <local:WeeklyScheduleSettingView Visibility="{Binding RepeatMode,Converter={StaticResource RepeatModeToVisibilityConverter},ConverterParameter={x:Static model:RepeatMode.Weekly}}"/>
+                <local:MonthlyScheduleSettingView Visibility="{Binding RepeatMode,Converter={StaticResource RepeatModeToVisibilityConverter},ConverterParameter={x:Static model:RepeatMode.Monthly}}"/>
+                <local:ManualScheduleSettingView Visibility="{Binding RepeatMode,Converter={StaticResource RepeatModeToVisibilityConverter},ConverterParameter={x:Static model:RepeatMode.Manual}}"/>
             </StackPanel>
         </StackPanel>
         <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid  Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
-                                                ToolTip="添加编排时段"
-                                                    Command="{Binding AddScheduledStageCommand}">
-                        <materialDesign:PackIcon Kind="Plus" Height="20" Width="20"/>
-                    </Button>
-                    <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
-                                                ToolTip="删除编排时段"
-                                                    Command="{Binding RemoveScheduledStageCommand}">
-                        <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
-                    </Button>
-                </StackPanel>
-                <ListBox Grid.Row="1" Style="{DynamicResource MaterialDesignListBox}" ItemsSource="{Binding ScheduledStageList}" SelectedItem="{Binding SelectedScheduledStage}"
-                      HorizontalContentAlignment="Stretch">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <local:ScheduledStageCard />
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Grid>
-
-            <GridSplitter HorizontalAlignment="Right"  VerticalAlignment="Stretch" 
-                          Grid.Column="1" ResizeBehavior="PreviousAndNext"
-                          Width="3" Background="#FFBCBCBC"/>
-            <local:PlayingArrangementView Grid.Column="2" DataContext="{Binding SelectedScheduledStage}"/>
+            <local:CPMScheduleView Visibility="{Binding ScheduleMode,Converter={StaticResource ScheduleModeToVisibilityConverter},ConverterParameter={x:Static model:ScheduleMode.CPM}}"/>
+            <local:CPPScheduleView Visibility="{Binding ScheduleMode,Converter={StaticResource ScheduleModeToVisibilityConverter},ConverterParameter={x:Static model:ScheduleMode.CPP}}"/>
         </Grid>
     </Grid>
 </UserControl>

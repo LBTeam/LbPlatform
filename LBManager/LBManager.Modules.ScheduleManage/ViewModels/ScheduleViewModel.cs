@@ -87,6 +87,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             set { SetProperty(ref _type, value); }
         }
 
+      
+
         private ObservableCollection<DisplayRegionViewModel> _displayRegions = new ObservableCollection<DisplayRegionViewModel>();
         public ObservableCollection<DisplayRegionViewModel> DisplayRegions
         {
@@ -139,12 +141,14 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     displayRegion.Width = displayRegionitem.Width;
                     displayRegion.Heigh = displayRegionitem.Heigh;
                     displayRegion.StageList = new List<ScheduledStage>();
+                    
                     foreach (var stageItem in displayRegionitem.ScheduledStageList)
                     {
                         var stage = new ScheduledStage();
                         stage.StartTime = stageItem.StartTime;
                         stage.EndTime = stageItem.EndTime;
                         stage.LoopCount = stageItem.LoopCount;
+                        stage.Cron = displayRegionitem.GetCron(stageItem.StartTime.Second, stageItem.StartTime.Minute, stageItem.StartTime.Hour);
                         stage.MediaList = new List<Media>();
                         foreach (var mediaItem in stageItem.MediaList)
                         {

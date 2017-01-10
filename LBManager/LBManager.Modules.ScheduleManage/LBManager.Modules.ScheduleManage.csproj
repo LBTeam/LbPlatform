@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <AssemblyVersion>1.0.17009.1100</AssemblyVersion>
+    <AssemblyVersion>1.0.17010.1002</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -70,6 +70,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converter\RepeatModeToVisibilityConverter.cs" />
+    <Compile Include="Converter\ScheduleModeToBooleanConverter.cs" />
+    <Compile Include="Converter\ScheduleModeToVisibilityConverter.cs" />
     <Compile Include="ScheduleManageModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -85,20 +88,33 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Utility\FFmpegMediaInfo.cs" />
+    <Compile Include="ViewModels\DailyScheduleSettingViewModel.cs" />
     <Compile Include="ViewModels\DisplayRegionViewModel.cs" />
     <Compile Include="ViewModels\MediaViewModel.cs" />
     <Compile Include="ViewModels\ScheduledStageViewModel.cs" />
     <Compile Include="ViewModels\ScheduleSummaryListViewModel.cs" />
     <Compile Include="ViewModels\ScheduleSummaryViewModel.cs" />
     <Compile Include="ViewModels\ScheduleViewModel.cs" />
+    <Compile Include="Views\CPMPlayingArrangementView.xaml.cs">
+      <DependentUpon>CPMPlayingArrangementView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CPMScheduleView.xaml.cs">
+      <DependentUpon>CPMScheduleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CPPScheduleView.xaml.cs">
+      <DependentUpon>CPPScheduleView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DailyScheduleSettingView.xaml.cs">
       <DependentUpon>DailyScheduleSettingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ManualScheduleSettingView.xaml.cs">
+      <DependentUpon>ManualScheduleSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MonthlyScheduleSettingView.xaml.cs">
       <DependentUpon>MonthlyScheduleSettingView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PlayingArrangementView.xaml.cs">
-      <DependentUpon>PlayingArrangementView.xaml</DependentUpon>
+    <Compile Include="Views\CPPPlayingArrangementView.xaml.cs">
+      <DependentUpon>CPPPlayingArrangementView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ScheduledStageCard.xaml.cs">
       <DependentUpon>ScheduledStageCard.xaml</DependentUpon>
@@ -128,7 +144,23 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="Views\CPMPlayingArrangementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CPMScheduleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CPPScheduleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\DailyScheduleSettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ManualScheduleSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -136,7 +168,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PlayingArrangementView.xaml">
+    <Page Include="Views\CPPPlayingArrangementView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

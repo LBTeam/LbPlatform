@@ -17,22 +17,22 @@ using System.Windows.Shapes;
 namespace LBManager.Modules.ScheduleManage.Views
 {
     /// <summary>
-    /// PlayingArrangementView.xaml 的交互逻辑
+    /// CPMPlayingArrangementView.xaml 的交互逻辑
     /// </summary>
-    public partial class PlayingArrangementView : UserControl
+    public partial class CPMPlayingArrangementView : UserControl
     {
-        public PlayingArrangementView()
+        public CPMPlayingArrangementView()
         {
             InitializeComponent();
         }
 
         private void ListBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-           var viewModel =  this.DataContext as ScheduledStageViewModel;
+            var viewModel = this.DataContext as ScheduledStageViewModel;
             if (e.Key == Key.Up && Keyboard.IsKeyDown(Key.LeftCtrl))
             {
-               int selectedMediaIndex = viewModel.MediaList.IndexOf(viewModel.CurrentMedia);
-                if(selectedMediaIndex == 0)
+                int selectedMediaIndex = viewModel.MediaList.IndexOf(viewModel.CurrentMedia);
+                if (selectedMediaIndex == 0)
                 {
                     return;
                 }
@@ -55,7 +55,7 @@ namespace LBManager.Modules.ScheduleManage.Views
                 viewModel.CurrentMedia = selectedMedia;
                 e.Handled = true;
             }
-           
+
         }
     }
 }

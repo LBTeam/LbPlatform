@@ -42,6 +42,8 @@ namespace LBManager.Infrastructure.Models
         public int Width { get; set; }
         public int Heigh { get; set; }
         public List<ScheduledStage> StageList { get; set; }
+
+        public RepeatMode RepeatMode { get; set; }
         public List<Media> GetRegionMediaList()
         {
             List<Media> mediaList = new List<Media>();

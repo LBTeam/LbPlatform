@@ -116,6 +116,36 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         }
 
 
+        private ArrangementMode _arrangementMode;
+        public ArrangementMode ArrangementMode
+        {
+            get { return _arrangementMode; }
+            set
+            {
+                SetProperty(ref _arrangementMode, value);
+            }
+        }
+
+        //private void GenerateWillPlayMediaList(ArrangementMode mode)
+        //{
+        //    switch (mode)
+        //    {
+        //        case ArrangementMode.StandardCovered:
+        //            foreach (var mediaItem in MediaList)
+        //            {
+        //                var currentMediaTotalTime = mediaItem.Duration.TotalSeconds * mediaItem.LoopCount;
+                        
+        //            }
+        //            break;
+        //        case ArrangementMode.MixedCovered:
+        //            break;
+        //        case ArrangementMode.Manual:
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
+
         private DelegateCommand _removeMediaCommand;
         public DelegateCommand RemoveMediaCommand
         {

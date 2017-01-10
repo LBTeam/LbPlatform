@@ -7,16 +7,28 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:Controls ="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" >
+    <UserControl.Resources>
+        <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MaterialDesignComboBox}" >
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="0 8 0 8" />
+            <Setter Property="Width" Value="100"/>
+        </Style>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="0 8 0 8" />
+            <Setter Property="Width" Value="75"/>
+        </Style>
+    </UserControl.Resources>
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <RadioButton Style="{StaticResource MaterialDesignRadioButton}" Margin="0 0 8 8" VerticalAlignment="Center" IsChecked="True">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
-                    <TextBlock Text="每" VerticalAlignment="Center"/>
-                    <TextBox  Text="{Binding WeekNumber}" VerticalAlignment="Center"  HorizontalContentAlignment="Center" Width="30" Margin="3,0,3,0"/>
-                    <TextBlock Text="天" VerticalAlignment="Center"/>
+        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+            <RadioButton Style="{StaticResource MaterialDesignRadioButton}" VerticalAlignment="Bottom" VerticalContentAlignment="Center" IsChecked="{Binding IsPeriod}">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="每" VerticalAlignment="Center" Margin="0"/>
+                    <TextBox  Text="{Binding Period}" VerticalAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Center" Width="30" Margin="0,0,0,10"/>
+                    <TextBlock Text="天" VerticalAlignment="Center" Margin="0"/>
                 </StackPanel>
             </RadioButton>
-            <RadioButton Style="{StaticResource MaterialDesignRadioButton}" Margin="0 0 8 8" VerticalAlignment="Center" IsChecked="True">
+            <RadioButton Style="{StaticResource MaterialDesignRadioButton}" VerticalAlignment="Center" IsChecked="{Binding IsWorkingDay}">
                 每个工作日
             </RadioButton>
         </StackPanel>
