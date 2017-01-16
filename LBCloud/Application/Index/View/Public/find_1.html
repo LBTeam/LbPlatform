@@ -212,11 +212,16 @@
 				$.post("{:U('Public/send_code')}", {phone: _mobile}, function(resp){
 					if(resp.status){
 	    				//window.location.href = resp.url;
+	    				$(".check-tips").text(resp.info);
 	    				var _this = $("#sms_btn");
 			            var count = 120;
 			            var interval = setInterval(function(){
 			                count--;
 			                if (count > 0){
+			                	if(count == 115){
+			                		var _text = '';
+			                		$(".check-tips").text(_text);
+			                	}
 			                	_this.removeAttr("onclick");
 			                	_this.attr("href", "javascript:alert('"+count+"秒后可再次发送！');");
 			                }else {

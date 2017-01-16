@@ -170,9 +170,13 @@ class UserModel extends Model
     	if(is_administrator()){
     		$map['type'] = 2;
     	}else{
-    		$uid = session("user_auth.uid");
-    		$map['type'] = 2;
-    		$map['puid'] = $uid;
+    		if($this->is_root(session("user_auth.uid"))){
+    			$map['type'] = 2;
+    		}else{
+    			$uid = session("user_auth.uid");
+	    		$map['type'] = 2;
+	    		$map['puid'] = $uid;
+    		}
     	}
     	$users = $this->field($field)->where($map)->select();
     	$agents = $this->all_agents();

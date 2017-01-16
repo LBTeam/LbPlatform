@@ -209,7 +209,7 @@ class PublicController extends Controller
 		    		$params['phones'] = $phone;
 		    		$params['msg'] = "Lbcloud管理系统验证码：{$code}";
 		    		$request_param = http_build_query($params);
-		    		$request_uri = C("SMS_SERVER") . $request_param;
+		    		$request_uri = C("SMS_SERVER") . $request_param . "&returnType=api";
 		    		$resp = file_get_contents($request_uri);
 		    		if($resp == 'success'){
 		    			session("{$phone}_code", $code);
@@ -374,7 +374,7 @@ class PublicController extends Controller
 						$email_content .= "&nbsp;&nbsp;请点击<a href='{$back_uri}'>{$back_uri}</a>重置密码！";
 						$m_info = array();
 						$m_info['adder'] = $data['email'];
-						$m_info['title'] = "重置密码";
+						$m_info['title'] = "LbCloud管理系统-重置密码";
 						$m_info['content'] = $email_content;
 						$request_uri = C("EMAIL_SERVER").http_build_query($m_info);
 						$resp = file_get_contents($request_uri);
@@ -394,7 +394,7 @@ class PublicController extends Controller
 			}
 		}
 	}
-	
+
 	public function reset(){
 		if(IS_POST){
 			$rules = array(

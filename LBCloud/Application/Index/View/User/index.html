@@ -72,7 +72,7 @@
 		                        <td>{$vo.lastip}</td>
 		                        <td>{$vo.addtime|date="Y-m-d H:i:s",###}</td>
 		                        <td>
-		                        	<if condition="in_array('USER/STATUS', $_SESSION['_ACCESS_LIST'])">
+		                        	<if condition="in_array('USER/STATUS', $_SESSION['_ACCESS_LIST']) AND ($vo['status'] neq 2)">
 		                        	<eq name="vo.status" value="0">
 		                            <a href="{:U('status', array('id'=>$vo['uid'],'value'=>abs($vo['status']-1)))}" class="ajax-get">禁用</a>
 		                            <else/>

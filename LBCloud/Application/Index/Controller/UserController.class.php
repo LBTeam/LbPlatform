@@ -16,7 +16,8 @@ class UserController extends CommonController {
 		$condition = array(
     		"status" => array(
     			0 => "正常",
-    			1 => "禁用"
+    			1 => "禁用",
+    			2 => "未分配"
     		)
     	);
     	int_to_string($users, $condition);
@@ -258,11 +259,12 @@ class UserController extends CommonController {
     	$condition = array(
     		"status" => array(
     			0 => "正常",
-    			1 => "禁用"
+    			1 => "禁用",
+    			2 => "未分配"
     		)
     	);
     	int_to_string($users, $condition);
-    	if(is_administrator()){
+    	if(is_administrator() || $user_model->is_root(session("user_auth.uid"))){
 			$this->assign("is_admin", 1);
 		}else{
 			$this->assign("is_admin", 0);
@@ -386,6 +388,8 @@ class UserController extends CommonController {
 	    		}else{
 	    			$this->assign("is_admin", 0);
 	    		}
+				$info['puid'] = $info['puid'] ? $info['puid'] : "";
+				$info['status'] = $info['status'] == "2" ? "1" : $info['status'];
 				$this->assign('info', $info);
 				$this->meta_title = '修改普通';
             	$this->display();
