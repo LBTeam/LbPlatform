@@ -41,7 +41,7 @@ class ManagerController extends CommonController
 				$this->ajaxReturn($respones);exit;
 			}
 		}
-		//$this->user_id = 13;
+		//$this->user_id = 28;
 		/*登录令牌（token）检测结束*/
 		$this->param = json_decode($request, true);
 		/*请求数据检测开始*/
@@ -405,18 +405,44 @@ class ManagerController extends CommonController
 	 * 播放方案备份
 	 */
 	public function backup(){
-		
+		$obj = $this->param;
+		$user_id = $this->user_id;
+		$respones = array();
+		$path = $obj['FileName'];
+		$name = end(explode('/', str_replace('\\', '/', $path)));
+		$md5 = strtolower($obj['FileMD5']);
+		$model = D("Program");
+		$info = $model->program_by_name_md5($name, $md5, $user_id);
+		if($info){
+			$release = $model->program_can_release($info['id'], $user_id);
+			if($release){
+				$data = array();
+				$data['id'] = $info['id'];
+				$data['backup'] = 1;
+				$res = $model->save($data);
+				if($res !== false){
+					$respones = array("err_code"=>"000000","msg"=>"ok");
+				}else{
+					$respones = array("err_code"=>"010303","msg"=>"Program backup failed");
+				}
+			}else{
+				$respones = array("err_code"=>"010302","msg"=>"Program not complete and cannot be backup");
+			}
+		}else{
+			$respones = array("err_code"=>"010301","msg"=>"Program not found");
+		}
+		$this->ajaxReturn($respones);
 	}
 
 	/**
 	 * 播放方案列表
 	 */
-	public function programs(){
+	public function plans(){
 		$user_id = $this->user_id;
 		$program_model = D("Program");
 		$media_model = D("Media");
 		$AliyunOSS = new AliyunOSS();
-		$all_program = $program_model->all_program($user_id);
+		$all_program = $program_model->all_backup_plan($user_id);
 		$programs  = array();
 		foreach($all_program as $val){
 			$release = $program_model->program_can_release($val['id'], $user_id);

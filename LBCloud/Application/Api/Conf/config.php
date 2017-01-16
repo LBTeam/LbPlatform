@@ -22,7 +22,7 @@ return array(
 		'refresh_token',
 		'configuration',
 		'screens',
-		'programs',
+		'plans',
 		'heartbeat'
 	),
 );
