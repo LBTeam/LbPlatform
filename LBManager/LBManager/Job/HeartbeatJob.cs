@@ -48,7 +48,7 @@ namespace LBManager.Job
             }
         }
 
-        private async Task<HeartbeatResponse> Heartbeat()
+        private async Task<WebCommonResponse> Heartbeat()
         {
             HttpClient httpClient = new HttpClient();
             HttpResponseMessage response = await httpClient.GetAsync(string.Format("http://lbcloud.ddt123.cn/?s=api/Manager/heartbeat&token={0}", App.SessionToken));
@@ -56,7 +56,7 @@ namespace LBManager.Job
             response.EnsureSuccessStatusCode();
 
             string content = await response.Content.ReadAsStringAsync();
-            return await Task.Run(() => JsonConvert.DeserializeObject<HeartbeatResponse>(content));
+            return await Task.Run(() => JsonConvert.DeserializeObject<WebCommonResponse>(content));
         }
     }
 }

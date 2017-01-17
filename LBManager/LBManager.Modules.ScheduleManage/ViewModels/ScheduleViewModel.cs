@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
@@ -87,7 +88,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             set { SetProperty(ref _type, value); }
         }
 
-      
+
 
         private ObservableCollection<DisplayRegionViewModel> _displayRegions = new ObservableCollection<DisplayRegionViewModel>();
         public ObservableCollection<DisplayRegionViewModel> DisplayRegions
@@ -118,7 +119,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         public DelegateCommand RemoveDisplayRegionCommand { get; private set; }
         public DelegateCommand PreviewDisplayRegionCommand { get; private set; }
         public DelegateCommand<ScheduleView> SaveScheduleCommand { get; private set; }
-       
+
+      
 
         private void SaveSchedule(ScheduleView view)
         {
@@ -143,7 +145,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     displayRegion.ScheduleMode = displayRegionitem.ScheduleMode;
                     displayRegion.RepeatMode = displayRegionitem.RepeatMode;
                     displayRegion.StageList = new List<ScheduledStage>();
-                    
+
                     foreach (var stageItem in displayRegionitem.ScheduledStageList)
                     {
                         var stage = new ScheduledStage();
@@ -171,7 +173,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
                 outputFile.WriteLine(JsonConvert.SerializeObject(_schedule, new IsoDateTimeConverter() { DateTimeFormat = "HH:mm:ss" }));
             }
-            
+
             view.Close();
         }
     }

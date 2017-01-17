@@ -34,6 +34,7 @@ namespace LBManager
         {
             builder.RegisterType<Shell>().SingleInstance();
             builder.RegisterType<ScreenService>().As<IScreenService>();
+            builder.RegisterType<ScheduleService>().As<IScheduleService>();
             base.ConfigureContainerBuilder(builder);
         }
 

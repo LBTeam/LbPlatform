@@ -1,5 +1,9 @@
-﻿using LBManager.Modules.ScheduleManage.Views;
+﻿using LBManager.Infrastructure.Interfaces;
+using LBManager.Infrastructure.Models;
+using LBManager.Infrastructure.Utility;
+using LBManager.Modules.ScheduleManage.Views;
 using Microsoft.Practices.ServiceLocation;
+using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Logging;
 using Prism.Mvvm;
@@ -19,10 +23,11 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         private static string mediaDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media");
         private FileSystemWatcher _fileWatcher;
         private ILoggerFacade _logger;
+        private IScheduleService _scheduleService;
         public ScheduleSummaryListViewModel()
         {
             _logger = ServiceLocator.Current.GetInstance<ILoggerFacade>();
-
+            _scheduleService = ServiceLocator.Current.GetInstance<IScheduleService>();
             //string mediaDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media");
             if (!Directory.Exists(mediaDirectory))
             {
@@ -39,6 +44,15 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             get { return _scheduleSummaryList; }
             set { SetProperty(ref _scheduleSummaryList, value); }
         }
+
+
+        private ObservableCollection<ScheduleSummaryViewModel> _selectedSchedules = new ObservableCollection<ScheduleSummaryViewModel>();
+        public ObservableCollection<ScheduleSummaryViewModel> SelectedSchedules
+        {
+            get { return _selectedSchedules; }
+            set { SetProperty(ref _selectedSchedules, value); }
+        }
+
 
         private ScheduleSummaryViewModel _currentScheduleSummary;
         public ScheduleSummaryViewModel CurrentScheduleSummary
@@ -117,6 +131,58 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                 return _editScheduleCommand;
             }
         }
+        private DelegateCommand _fetchBackedUpScheduleCommand;
+        public DelegateCommand FetchBackedUpScheduleCommand
+        {
+            get
+            {
+                if (_fetchBackedUpScheduleCommand == null)
+                {
+                    _fetchBackedUpScheduleCommand = new DelegateCommand(FetchBackedUpSchedule, CanFetchBackedUpSchedule);
+                }
+                return _fetchBackedUpScheduleCommand;
+            }
+        }
+
+        private DelegateCommand _backupScheduleCommand;
+
+        public DelegateCommand BackupScheduleCommand
+        {
+            get
+            {
+                if (_backupScheduleCommand == null)
+                {
+                    _backupScheduleCommand = new DelegateCommand(BackupSchedule, CanBackupSchedule);
+                }
+                return _backupScheduleCommand;
+            }
+        }
+
+        private bool CanBackupSchedule()
+        {
+            return CurrentScheduleSummary == null ? false : true;
+        }
+
+        private async void BackupSchedule()
+        {
+           // BackupScheduleRequest backupRequest = new BackupScheduleRequest();
+            var request = new BackupScheduleRequest();
+            request.FileName = CurrentScheduleSummary.FilePath;
+            request.FileMD5 = FileUtils.ComputeFileMd5(CurrentScheduleSummary.FilePath);
+
+            string jsonRequest = JsonConvert.SerializeObject(request);
+            bool bacupResult = await _scheduleService.BackupSchedules(jsonRequest);
+        }
+
+        private bool CanFetchBackedUpSchedule()
+        {
+            return true;
+        }
+
+        private async void FetchBackedUpSchedule()
+        {
+            bool bacupResult = await _scheduleService.GetBackedUpSchedules();
+        }
 
         private bool CanEditSchedule()
         {
@@ -134,7 +200,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         private void FetchProgramSchedules(string directoryPath)
         {
-            _logger.Log("获取本机播放方案...",Category.Debug,Priority.Medium);
+            _logger.Log("获取本机播放方案...", Category.Debug, Priority.Medium);
             DirectoryInfo folder = new DirectoryInfo(directoryPath);
 
             foreach (FileInfo fileInfo in folder.GetFiles("*.playprog"))
@@ -161,7 +227,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         private void _fileWatcher_Deleted(object sender, FileSystemEventArgs e)
         {
-            _logger.Log(string.Format("删除{0}文件",e.FullPath), Category.Debug, Priority.Medium);
+            _logger.Log(string.Format("删除{0}文件", e.FullPath), Category.Debug, Priority.Medium);
             System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
             {
                 ScheduleSummaryList.ToList().RemoveAll(s => s.FilePath == e.FullPath);

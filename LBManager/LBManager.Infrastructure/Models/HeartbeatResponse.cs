@@ -13,7 +13,7 @@ namespace LBManager.Infrastructure.Models
     ///"msg": "ok"
     ///}
     /// </summary>
-    public class HeartbeatResponse
+    public class WebCommonResponse
     {
         [JsonProperty("err_code")]
         public string Code { get; set; }

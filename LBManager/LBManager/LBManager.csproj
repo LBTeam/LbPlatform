@@ -139,6 +139,7 @@
     <Compile Include="SampleProgressDialog.xaml.cs">
       <DependentUpon>SampleProgressDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ScheduleService.cs" />
     <Compile Include="ScreenListView.xaml.cs">
       <DependentUpon>ScreenListView.xaml</DependentUpon>
     </Compile>

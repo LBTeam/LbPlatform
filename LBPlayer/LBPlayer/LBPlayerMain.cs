@@ -615,10 +615,12 @@ namespace LBPlayer
             {
                 if (!string.IsNullOrEmpty(md5) && FileUtils.ComputeFileMd5(strFileName) == md5)
                 {
+                    Log4NetLogger.LogError(string.Format("---{0}文件已存在！！---", strFileName));
                     return true;
                 }
                 else
                 {
+                    Log4NetLogger.LogError(string.Format("---{0}文件不存在！！---", strFileName));
                     File.Delete(strFileName);
                 }
             }
@@ -644,13 +646,13 @@ namespace LBPlayer
                                                                             //向服务器请求,获得服务器的回应数据流
                         using (Stream myStream = myRequest.GetResponse().GetResponseStream())
                         {
-                            byte[] btContent = new byte[512];
+                            byte[] btContent = new byte[1024];
                             int intSize = 0;
-                            intSize = myStream.Read(btContent, 0, 512);
+                            intSize = myStream.Read(btContent, 0, 1024);
                             while (intSize > 0)
                             {
                                 fileStream.Write(btContent, 0, intSize);
-                                intSize = myStream.Read(btContent, 0, 512);
+                                intSize = myStream.Read(btContent, 0, 1024);
                             }
                         }
                     }
@@ -1213,6 +1215,7 @@ namespace LBPlayer
                 _config.CurrentPlanPath = scheduleFilePath;
                 ConfigTool.SaveConfigData(_config);
                 _bDownloading = false;
+
                 GenerateLEDSchedule(_config.CurrentPlanPath);
                 // Start();
             }
@@ -1234,8 +1237,12 @@ namespace LBPlayer
                 Log4NetLogger.LogDebug(string.Format("获取当前排期{0}失败。", currentSchedule));
                 return;
             }
-
+            //Action displayAction = new Action(() =>
+            //{
             DisplayScheduleManager.GetInstance().ApplyMainSchedule(currentSchedule);
+            //});
+            //displayAction.BeginInvoke(null, null);
+           
 
         }
         private void Start()
