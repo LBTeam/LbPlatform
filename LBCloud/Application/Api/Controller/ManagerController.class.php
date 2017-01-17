@@ -416,14 +416,39 @@ class ManagerController extends CommonController
 		if($info){
 			$release = $model->program_can_release($info['id'], $user_id);
 			if($release){
-				$data = array();
-				$data['id'] = $info['id'];
-				$data['backup'] = 1;
-				$res = $model->save($data);
-				if($res !== false){
-					$respones = array("err_code"=>"000000","msg"=>"ok");
+				$is_backup = $model->plan_is_backup($name, $user_id);
+				if($is_backup){
+					if($info['id'] == $is_backup){
+						$respones = array("err_code"=>"000000","msg"=>"ok");
+					}else{
+						$data = array();
+						$ddata = array();
+						$data['id'] = $info['id'];
+						$data['backup'] = 1;
+						$ddata['id'] = $is_backup;
+						$ddata['backup'] = 0;
+						$m = new \Think\Model();
+						$m->startTrans();
+						$res = $model->save($data);
+						$rres = $model->save($ddata);
+						if($res && $rres){
+							$m->commit();
+							$respones = array("err_code"=>"000000","msg"=>"ok");
+						}else{
+							$m->rollback();
+							$respones = array("err_code"=>"010303","msg"=>"Program backup failed");
+						}
+					}
 				}else{
-					$respones = array("err_code"=>"010303","msg"=>"Program backup failed");
+					$data = array();
+					$data['id'] = $info['id'];
+					$data['backup'] = 1;
+					$res = $model->save($data);
+					if($res){
+						$respones = array("err_code"=>"000000","msg"=>"ok");
+					}else{
+						$respones = array("err_code"=>"010303","msg"=>"Program backup failed");
+					}
 				}
 			}else{
 				$respones = array("err_code"=>"010302","msg"=>"Program not complete and cannot be backup");
