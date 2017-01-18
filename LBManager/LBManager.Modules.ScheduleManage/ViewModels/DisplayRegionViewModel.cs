@@ -33,6 +33,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             _name = displayRegion.Name;
             _scheduleMode = displayRegion.ScheduleMode;
             _repeatMode = displayRegion.RepeatMode;
+            
 
             ScheduledStageList.CollectionChanged += ScheduledStageList_CollectionChanged;
             foreach (var stageItem in displayRegion.StageList)
@@ -40,6 +41,12 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                 ScheduledStageList.Add(new ScheduledStageViewModel(stageItem));
             }
             SelectedScheduledStage = _scheduledStageList.Count == 0 ? null : _scheduledStageList[0];
+
+            if (_repeatMode == RepeatMode.Manual)
+            {
+                ManualScheduleSetting.StartDate = SelectedScheduledStage.StartTime;
+                ManualScheduleSetting.EndDate = SelectedScheduledStage.EndTime;
+            }
         }
 
         private void ScheduledStageList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -120,6 +127,13 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         {
             get { return _dailyScheduleSetting; }
             set { SetProperty(ref _dailyScheduleSetting, value); }
+        }
+
+        private ManualScheduleSettingViewModel _manualScheduleSetting = new ManualScheduleSettingViewModel();
+        public ManualScheduleSettingViewModel ManualScheduleSetting
+        {
+            get { return _manualScheduleSetting; }
+            set { SetProperty(ref _manualScheduleSetting, value); }
         }
 
         private DelegateCommand _addScheduledStageCommand;

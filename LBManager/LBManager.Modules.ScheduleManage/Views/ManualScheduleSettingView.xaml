@@ -6,7 +6,14 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:LBManager.Modules.ScheduleManage.Views"
              mc:Ignorable="d" >
-    <Grid>
-        <DatePicker Width="100" HorizontalAlignment="Left" Margin="0 16 0 0" materialDesign:HintAssist.Hint="选择日期" Style="{StaticResource MaterialDesignFloatingHintDatePicker}" />
+    <Grid DataContext="{Binding ManualScheduleSetting}">
+        <StackPanel Orientation="Horizontal">
+            <DatePicker Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 30 0"  materialDesign:HintAssist.Hint="开始日期" 
+                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                        SelectedDate="{Binding StartDate}"/>
+            <DatePicker Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 0 0" materialDesign:HintAssist.Hint="结束日期" 
+                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" 
+                        SelectedDate="{Binding EndDate}"/>
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -149,8 +149,26 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     foreach (var stageItem in displayRegionitem.ScheduledStageList)
                     {
                         var stage = new ScheduledStage();
-                        stage.StartTime = stageItem.StartTime;
-                        stage.EndTime = stageItem.EndTime;
+                        if (displayRegion.RepeatMode == RepeatMode.Manual)
+                        {
+                            stage.StartTime = new DateTime(displayRegionitem.ManualScheduleSetting.StartDate.Year, 
+                                displayRegionitem.ManualScheduleSetting.StartDate.Month,
+                                displayRegionitem.ManualScheduleSetting.StartDate.Day, 
+                                stageItem.StartTime.Hour, 
+                                stageItem.StartTime.Minute, 
+                                stageItem.StartTime.Second);
+                            stage.EndTime = new DateTime(displayRegionitem.ManualScheduleSetting.EndDate.Year,
+                                displayRegionitem.ManualScheduleSetting.EndDate.Month,
+                                displayRegionitem.ManualScheduleSetting.EndDate.Day,
+                                stageItem.EndTime.Hour,
+                                stageItem.EndTime.Minute,
+                                stageItem.EndTime.Second);
+                        }
+                        else
+                        {
+                            stage.StartTime = stageItem.StartTime;
+                            stage.EndTime = stageItem.EndTime;
+                        }
                         stage.LoopCount = stageItem.LoopCount;
                         stage.Cron = displayRegionitem.GetCron(stageItem.StartTime.Second, stageItem.StartTime.Minute, stageItem.StartTime.Hour);
                         stage.ArrangementMode = stageItem.ArrangementMode;
@@ -171,7 +189,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     _schedule.DisplayRegionList.Add(displayRegion);
                 }
 
-                outputFile.WriteLine(JsonConvert.SerializeObject(_schedule, new IsoDateTimeConverter() { DateTimeFormat = "HH:mm:ss" }));
+                outputFile.WriteLine(JsonConvert.SerializeObject(_schedule, new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" }));
             }
 
             view.Close();
