@@ -138,11 +138,11 @@ namespace LBPlayer.Job
                         Log4NetLogger.LogDebug(string.Format("当前排期为CPM"));
                         foreach (var stageItem in regionItem.StageList)
                         {
-                            if(regionItem.RepeatMode == RepeatMode.Manual)
+                            if (regionItem.RepeatMode == RepeatMode.Manual)
                             {
                                 ApplayManualSchedule(schedule, regionItem, stageItem);
                             }
-                           else
+                            else
                             {
                                 ApplayDailySchedule(schedule, regionItem, stageItem);
                             }
@@ -191,12 +191,12 @@ namespace LBPlayer.Job
                     .WithIdentity(Guid.NewGuid().ToString(), region.Name)
                     .UsingJobData(jobDataMap)
                     .Build();
-
-                ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
-                                .WithIdentity(Guid.NewGuid().ToString(), region.Name)
-                                .StartAt(stage.StartTime)
-                                .EndAt(stage.EndTime)
-                                .Build();
+                string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
+                string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
+                string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
+                var trigger = TriggerBuilder.Create()
+                     .WithCronSchedule(cron)
+                     .Build();
 
                 ScheduleJob(job, trigger, JobType.Main);
             }
@@ -204,7 +204,7 @@ namespace LBPlayer.Job
             {
                 int repeatCount;
                 var realTotalTime = stage.MediaList.Sum(m => m.Duration.TotalSeconds * m.LoopCount);
-                var planTotalTime = (stage.EndTime - stage.StartTime).TotalSeconds;
+                var planTotalTime = (stage.EndTime.TimeOfDay - stage.StartTime.TimeOfDay).TotalSeconds;
                 if (realTotalTime > 1)
                     repeatCount = (int)(planTotalTime / realTotalTime) + 1;
                 else
@@ -238,9 +238,12 @@ namespace LBPlayer.Job
                     .UsingJobData(jobDataMap)
                     .Build();
 
+                string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
+                string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
+                string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
                 var trigger = TriggerBuilder.Create()
-                    .WithCronSchedule(stage.Cron)
-                    .Build();
+                     .WithCronSchedule(cron)
+                     .Build();
 
                 ScheduleJob(job, trigger, JobType.Main);
             }
@@ -262,7 +265,7 @@ namespace LBPlayer.Job
 
                 int repeatCount;
                 var realTotalTime = unitMediaList.Sum(m => m.Duration.TotalSeconds);
-                var planTotalTime = (stage.EndTime - stage.StartTime).TotalSeconds;
+                var planTotalTime = (stage.EndTime.TimeOfDay - stage.StartTime.TimeOfDay).TotalSeconds;
                 if (realTotalTime > 1)
                     repeatCount = (int)(planTotalTime / realTotalTime) + 1;
                 else
@@ -294,9 +297,12 @@ namespace LBPlayer.Job
                     .UsingJobData(jobDataMap)
                     .Build();
 
+                string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
+                string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
+                string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
                 var trigger = TriggerBuilder.Create()
-                    .WithCronSchedule(stage.Cron)
-                    .Build();
+                     .WithCronSchedule(cron)
+                     .Build();
 
                 ScheduleJob(job, trigger, JobType.Main);
             }
