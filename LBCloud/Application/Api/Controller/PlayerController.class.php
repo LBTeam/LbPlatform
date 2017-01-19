@@ -368,6 +368,7 @@ class PlayerController extends CommonController
 					$data['up_time'] = NOW_TIME;
 					$res = $alarm_model->save($data);
 					if($res){
+						$this->_do_alarm($screen_id, $monitor);
 						$respones = array("err_code"=>"000000","msg"=>"ok");
 					}else{
 						$respones = array("err_code"=>"020302","msg"=>"Monitor data reported failure");
@@ -380,6 +381,7 @@ class PlayerController extends CommonController
 					$data['up_time'] = NOW_TIME;
 					$res = $alarm_model->add($data);
 					if($res){
+						$this->_do_alarm($screen_id, $monitor);
 						$respones = array("err_code"=>"000000","msg"=>"ok");
 					}else{
 						$respones = array("err_code"=>"020302","msg"=>"Monitor data reported failure");
@@ -516,5 +518,123 @@ class PlayerController extends CommonController
 			$respones = array("err_code"=>"020201","msg"=>"Player MAC error");
 		}
 		$this->ajaxReturn($respones);
+	}
+
+	/**
+	 * 告警
+	 */
+	private function _do_alarm($screen_id, $alarms){
+		if($screen_id){
+			$alarm_set_m = D("AlarmSet");
+			$sets = $alarm_set_m->set_by_sid($screen_id);
+			if($sets && $sets['is_auto'] == 1){
+				$msgs = array();
+				foreach($alarms as $key=>$val){
+					switch($key){
+						case 'Cpu_usage':
+							if($alarms['Cpu_usage']){
+								if($alarms['Cpu_usage'] > $sets['cpu_usage']){
+									$msgs[] = array(
+										'title'	=> "CPU使用率",
+										'set'	=> "{$sets['cpu_usage']}%",
+										'now'	=> "{$alarms['Cpu_usage']}%"
+									);
+								}
+							}
+							break;
+						case 'Disk_usage':
+							if($alarms['Disk_usage']){
+								if($alarms['Disk_usage'] > $sets['disk_usage']){
+									$msgs[] = array(
+										'title'	=> "硬盘使用率",
+										'set'	=> "{$sets['disk_usage']}%",
+										'now'	=> "{$alarms['Disk_usage']}%"
+									);
+								}
+							}
+							break;
+						case 'Memory_usage':
+							if($alarms['Memory_usage']){
+								if($alarms['Memory_usage'] > $sets['memory_usage']){
+									$msgs[] = array(
+										'title'	=> "内存使用率",
+										'set'	=> "{$sets['memory_usage']}%",
+										'now'	=> "{$alarms['Memory_usage']}%"
+									);
+								}
+							}
+							break;
+						case 'Cpu_temperature':
+							if($alarms['Cpu_temperature']){
+								if($alarms['Cpu_temperature'] > $sets['cpu_temperature']){
+									$msgs[] = array(
+										'title'	=> "CPU温度",
+										'set'	=> "{$sets['cpu_temperature']}℃",
+										'now'	=> "{$alarms['Cpu_temperature']}℃"
+									);
+								}
+							}
+							break;
+						case 'Fan_speed':
+							if($alarms['Fan_speed']){
+								if($alarms['Fan_speed'] > $sets['fan_speed']){
+									$msgs[] = array(
+										'title'	=> "风扇转速",
+										'set'	=> "{$sets['fan_speed']}RPM/min",
+										'now'	=> "{$alarms['Fan_speed']}RPM/min"
+									);
+								}
+							}
+							break;
+						default:
+							break;
+					}
+				}
+				if($msgs){
+					$led_model = D("Screen");
+					$user_model = D("User");
+					$led = $led_model->screen_by_id($screen_id);
+					$agent = $user_model->agent_by_uid($led['uid']);
+					if($sets['alarm_mode'] == 1 && $agent['email']){
+						//电子邮件告警
+						$msg = '';
+						foreach($msgs as $val){
+							$msg .= "　{$val['title']}：【配置值：{$val['set']}，告警值：{$val['now']}】<br />";
+						}
+						if($msg){
+							$title = "LbCloud播放器告警通知";
+							$info = "屏幕名称：{$led['name']}<br />";
+							$info .= "屏幕状态：告警<br />";
+							$info .= "告警项：<br />";
+							$msg = "{$info}{$msg}";
+							$mail = array();
+							$mail['adder'] = $agent['email'];
+							$mail['title'] = $title;
+							$mail['content'] = $msg;
+							$uri = C("email_server").http_build_query($mail);
+							$resp = file_get_contents($uri);
+						}
+					}else if($sets['alarm_mode'] == 0 && $agent['phone']){
+						//手机短信告警
+						$msg = '';
+						foreach($msgs as $val){
+							$msg .= "{$val['title']}，配置值[{$val['set']}]，告警值[{$val['now']}]、";
+						}
+						if($msg){
+							$info = "屏幕名称：{$led['name']}；";
+							$info .= "告警项：";
+							$msg = trim($msg, '、');
+							$msg = "{$info}{$msg}。";
+							$params = array();
+				    		$params['phones'] = $agent['phone'];
+				    		$params['msg'] = $msg;
+				    		$request = http_build_query($params);
+				    		$uri = C("sms_server") . $request . "&returnType=api";
+				    		$resp = file_get_contents($uri);
+						}
+					}
+				}
+			}
+		}
 	}
 }

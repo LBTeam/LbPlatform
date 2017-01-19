@@ -16,60 +16,66 @@
     </div>
     
 	<div class="panel panel-default">
-		<div class="panel-heading">
-		</div>
-		<div class="panel-body">
-			<div class="row">
-				<div class="col-lg-6">
-					<div class="form-group">
-	                    <label class="item-label">屏幕名称（播放器名称）</label>
-	                    <input type="text" class="form-control" value="{$name}（{$p_name}）" style="width: 60%;" disabled="disabled"/>
-	                </div>
-			    	<div class="form-group">
-	                    <label class="item-label">CPU使用率</label>
-	                    <input type="text" class="form-control" value="{$monitor.Cpu_usage} %" style="width: 60%;" disabled="disabled"/>
-	                </div>
-	                <div class="form-group">
-	                    <label class="item-label">硬盘使用率</label>
-	                    <input type="text" class="form-control" value="{$monitor.Disk_usage} %" style="width: 60%;" disabled="disabled"/>
-	                </div>
-	                <div class="form-group">
-	                    <label class="item-label">内存使用率</label>
-	                    <input type="text" class="form-control" value="{$monitor.Memory_usage} %" style="width: 60%;" disabled="disabled"/>
-	                </div>
-	                <div class="form-group">
-	                    <label class="item-label">CPU温度</label>
-	                    <if condition="empty($monitor['Cpu_temperature'])">
-	                    	<input type="text" class="form-control" value="获取失败" style="width: 60%;" disabled="disabled"/>
-	                    <else />
-	                    	<input type="text" class="form-control" value="{$monitor.Cpu_temperature} ℃" style="width: 60%;" disabled="disabled"/>
-	                    </if>
-	                </div>
-	                <div class="form-group">
-	                    <label class="item-label">风扇转速</label>
-	                    <if condition="empty($monitor['Fan_speed'])">
-	                    	<input type="text" class="form-control" value="获取失败" style="width: 60%;" disabled="disabled"/>
-	                    <else />
-	                    	<input type="text" class="form-control" value="{$monitor.Fan_speed} RPM" style="width: 60%;" disabled="disabled"/>
-	                    </if>
-	                </div>
-	                <div class="form-group">
-	                    <label class="item-label">监控图片</label>
-                    	<a href="{:U('picture',array('id'=>$_GET['id']))}" target="_blank">点击查看</a>
-	                </div>
-	                <div class="form-group">
-	                    <label class="item-label">监控数据上传时间</label>
-	                    <input type="text" class="form-control" value="{$monitor.addtime|date='Y-m-d H:i:s', ###}" style="width: 60%;" disabled="disabled"/>
-	                </div>
-	                <div class="form-group">
-			            <button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
-			        </div>
+		<div class="tab-wrap  panel-body ">	    
+	 		<ul class="nav nav-tabs ">
+	 			<li><a href="{:U('alarm?id='.$_GET['id'])}">告警配置</a></li>
+	 			<if condition="in_array('SCREEN/MONITOR', $_SESSION['_ACCESS_LIST'])">
+				<li class="active"><a href="javascript:void(0);">监控数据</a></li>
+				</if>
+			</ul>
+	        <div class="tab-content" style="padding-top: 25px;">
+	            <div class="row">
+					<div class="col-lg-6">
+						<div class="form-group">
+		                    <label class="item-label">屏幕名称（播放器名称）</label>
+		                    <input type="text" class="form-control" value="{$name}（{$p_name}）" style="width: 60%;" disabled="disabled"/>
+		                </div>
+				    	<div class="form-group">
+		                    <label class="item-label">CPU使用率</label>
+		                    <input type="text" class="form-control" value="{$monitor.Cpu_usage} %" style="width: 60%;" disabled="disabled"/>
+		                </div>
+		                <div class="form-group">
+		                    <label class="item-label">硬盘使用率</label>
+		                    <input type="text" class="form-control" value="{$monitor.Disk_usage} %" style="width: 60%;" disabled="disabled"/>
+		                </div>
+		                <div class="form-group">
+		                    <label class="item-label">内存使用率</label>
+		                    <input type="text" class="form-control" value="{$monitor.Memory_usage} %" style="width: 60%;" disabled="disabled"/>
+		                </div>
+		                <div class="form-group">
+		                    <label class="item-label">CPU温度</label>
+		                    <if condition="empty($monitor['Cpu_temperature'])">
+		                    	<input type="text" class="form-control" value="获取失败" style="width: 60%;" disabled="disabled"/>
+		                    <else />
+		                    	<input type="text" class="form-control" value="{$monitor.Cpu_temperature} ℃" style="width: 60%;" disabled="disabled"/>
+		                    </if>
+		                </div>
+		                <div class="form-group">
+		                    <label class="item-label">风扇转速</label>
+		                    <if condition="empty($monitor['Fan_speed'])">
+		                    	<input type="text" class="form-control" value="获取失败" style="width: 60%;" disabled="disabled"/>
+		                    <else />
+		                    	<input type="text" class="form-control" value="{$monitor.Fan_speed} RPM/min" style="width: 60%;" disabled="disabled"/>
+		                    </if>
+		                </div>
+		                <div class="form-group">
+		                    <label class="item-label">监控图片</label>
+	                    	<a href="{:U('picture',array('id'=>$_GET['id']))}" target="_blank">点击查看</a>
+		                </div>
+		                <div class="form-group">
+		                    <label class="item-label">监控数据上传时间</label>
+		                    <input type="text" class="form-control" value="{$monitor.addtime|date='Y-m-d H:i:s', ###}" style="width: 60%;" disabled="disabled"/>
+		                </div>
+		                <div class="form-group">
+		                	<button class="btn btn-default btn-return ajax-get" url="{:U('Index/Index/do_alarm?id='.$_GET['id'])}">告 警</button>
+				            <button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				        </div>
+					</div>
+					<!-- /.col-lg-6 (nested) -->
 				</div>
-				<!-- /.col-lg-6 (nested) -->
-			</div>
-			<!-- /.row (nested) -->
+				<!-- /.row (nested) -->
+	        </div>
 		</div>
-		<!-- /.panel-body -->
 	</div>
 	<!-- /.panel -->
 </block>

@@ -65,4 +65,19 @@ class UserModel extends Model
 		$map['token'] = $token;
 		return $this->field($field)->where($map)->find();
 	}
+	
+	/**
+	 * 根据用户ID获取上级代理商信息
+	 */
+	public function agent_by_uid($user_id){
+		$result = array();
+		$puid = $this->where("uid = {$user_id}")->getField("puid");
+		if($puid){
+			$map = array();
+			$map['uid'] = $puid;
+			$map['type'] = 1;
+			$result = $this->where($map)->find();
+		}
+		return $result;
+	}
 }
