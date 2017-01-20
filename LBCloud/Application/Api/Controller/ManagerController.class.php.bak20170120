@@ -274,7 +274,7 @@ class ManagerController extends CommonController
 				}
 			}
 			//方案类型，0-普通方案，7-紧急插播，8-离线方案
-			$plantype = $obj['PlanType'] ? $obj['PlanType'] : 0;
+			$plantype = $obj['PlanType'] ? $obj['PlanType'] : 0; 
 			//播放方案下发
 			$cmds = array();
 			foreach($screens as $val){

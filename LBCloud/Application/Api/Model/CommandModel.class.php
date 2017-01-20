@@ -52,6 +52,52 @@ class CommandModel extends Model
 		$map['status'] = 0;
 		return $this->where($map)->select();
 	}
+
+    /**
+     * 命令列表（多播放方案版本）
+     */
+    public function cmd_lists($screen_id){
+        //非播放方案命令
+        $map = array();
+        $map['screen_id'] = $screen_id;
+        $map['status'] = 0;
+        $map['type'] = array('NEQ', 0);
+        $result = $this->where($map)->select();
+        //播放方案命令处理
+        $plan = $this->_plan_cmd($screen_id);
+        if($plan){
+            $result[] = $plan;
+        }
+        return $result;
+    }
+
+    /**
+     * 播放方案命令（多播放方案版本）
+     * @param $screen_id
+     * @return array
+     */
+    private function _plan_cmd($screen_id){
+        $map = array();
+        $map['screen_id'] = $screen_id;
+        $map['type'] = 0;
+        $map['status'] = 0;
+        $map['execute'] = array('LT', NOW_TIME);
+        $order = array("id" => "DESC");
+        $plans = $this->where($map)->order($order)->select();
+        $result = array_shift($plans);
+        if($plans){
+            $void = array();
+            foreach ($plans as $val){
+                $void[] = $val['id'];
+            }
+            if($void){
+                $m = array();
+                $m['id'] = array('IN', $void);
+                $this->where($m)->setField("status", 4);
+            }
+        }
+        return $result ? $result : array();
+    }
 	
 	/**
 	 * 更改命令为已下发
