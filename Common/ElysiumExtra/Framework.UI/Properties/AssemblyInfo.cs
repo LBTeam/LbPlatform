@@ -44,8 +44,8 @@ using System.Windows.Markup;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.17022.0809")]
-[assembly: AssemblyFileVersion("1.0.17022.0809")]
+[assembly: AssemblyVersion("1.0.17022.1040")]
+[assembly: AssemblyFileVersion("1.0.17022.1040")]
 
 [assembly: XmlnsDefinition("http://schemas.extra.com/ui", "Framework.UI")]
 [assembly: XmlnsDefinition("http://schemas.extra.com/ui", "Framework.UI.Commands")]

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using LBManager.Modules.ScheduleManage.Utility;
 using LBManager.Infrastructure.Common.Utility;
 using LBManager.Modules.ScheduleManage.Event;
+using Itenso.TimePeriod;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
@@ -25,10 +26,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             Messager.Default.EventAggregator.GetEvent<OnTimeValidationTriggeredEvent>().Subscribe(() => { VerifyTime(); });
         }
 
-        private void VerifyTime()
-        {
-            
-        }
+
 
         public DisplayRegionViewModel(DisplayRegion displayRegion)
         {
@@ -54,11 +52,48 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                 ManualScheduleSetting.StartDate = SelectedScheduledStage.StartTime;
                 ManualScheduleSetting.EndDate = SelectedScheduledStage.EndTime;
             }
+
+            Messager.Default.EventAggregator.GetEvent<OnTimeValidationTriggeredEvent>().Subscribe(() => { VerifyTime(); });
         }
 
+
+        private void VerifyTime()
+        {
+            TimePeriodCollection periods = new TimePeriodCollection();
+
+            TimeConflictError = string.Empty;
+
+            foreach (var stageItem in ScheduledStageList)
+            {
+                int periodDays = (stageItem.EndDate.Date - stageItem.StartDate.Date).Days;
+                for (int i = 0; i < periodDays; i++)
+                {
+                    DateTime start = new DateTime(stageItem.StartDate.Year, stageItem.StartDate.Month, stageItem.StartDate.Day, stageItem.StartTime.Hour, stageItem.StartTime.Minute, stageItem.StartTime.Second).AddDays(i);
+                    DateTime end = new DateTime(stageItem.StartDate.Year, stageItem.StartDate.Month, stageItem.StartDate.Day, stageItem.EndTime.Hour, stageItem.EndTime.Minute, stageItem.EndTime.Second).AddDays(i);
+                    periods.Add(new TimeRange(start, end));
+                }
+            }
+
+            TimePeriodIntersector<TimeRange> periodIntersector =
+                              new TimePeriodIntersector<TimeRange>();
+            ITimePeriodCollection intersectedPeriods = periodIntersector.IntersectPeriods(periods);
+
+            foreach (ITimePeriod intersectedPeriod in intersectedPeriods)
+            {
+                TimeConflictError += "/n在" + intersectedPeriod + "时段,时间冲突！";
+                // Console.WriteLine("Intersected Period: " + intersectedPeriod);
+            }
+        }
         private void ScheduledStageList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             RemoveScheduledStageCommand.RaiseCanExecuteChanged();
+        }
+
+        private string _timeConflictError = string.Empty;
+        public string TimeConflictError
+        {
+            get { return _timeConflictError; }
+            set { SetProperty(ref _timeConflictError, value); }
         }
 
         private string _name;
@@ -234,6 +269,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         public void Cleanup()
         {
+            Messager.Default.EventAggregator.GetEvent<OnTimeValidationTriggeredEvent>().Unsubscribe(() => { VerifyTime(); });
             foreach (var item in ScheduledStageList)
             {
                 item.Cleanup();

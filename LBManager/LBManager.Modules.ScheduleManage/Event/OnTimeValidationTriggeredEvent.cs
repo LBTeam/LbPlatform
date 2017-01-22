@@ -1,4 +1,5 @@
-﻿using Prism.Events;
+﻿using Itenso.TimePeriod;
+using Prism.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
