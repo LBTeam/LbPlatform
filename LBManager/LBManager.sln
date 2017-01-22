@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBManager.Infrastructure.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBManager.Infrastructure.Logger", "LBManager.Infrastructure.Logger\LBManager.Infrastructure.Logger.csproj", "{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimePeriod.Desktop", "..\Common\TimePeriod\TimePeriod.Desktop.csproj", "{92D30435-D11B-4FB0-81AE-350FABA83D9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppVeyor|Any CPU = AppVeyor|Any CPU
@@ -262,6 +264,24 @@ Global
 		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Release|x64.Build.0 = Release|Any CPU
 		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Release|x86.ActiveCfg = Release|Any CPU
 		{A7E39793-DB7F-4E4C-AD0D-F375C2C94ED8}.Release|x86.Build.0 = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.AppVeyor|x64.ActiveCfg = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.AppVeyor|x64.Build.0 = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.AppVeyor|x86.ActiveCfg = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.AppVeyor|x86.Build.0 = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Debug|x64.Build.0 = Debug|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Debug|x86.Build.0 = Debug|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Release|x64.ActiveCfg = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Release|x64.Build.0 = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Release|x86.ActiveCfg = Release|Any CPU
+		{92D30435-D11B-4FB0-81AE-350FABA83D9E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -104,6 +104,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             set
             {
                 SetProperty(ref _startDate, value);
+                Messager.Default.EventAggregator.GetEvent<OnTimeValidationTriggeredEvent>().Publish();
             }
         }
 
@@ -114,6 +115,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             set
             {
                 SetProperty(ref _endDate, value);
+                Messager.Default.EventAggregator.GetEvent<OnTimeValidationTriggeredEvent>().Publish();
             }
         }
 
@@ -126,6 +128,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             {
                 SetProperty(ref _startTime, value);
                 StageTimeSpan = _endTime - _startTime;
+                Messager.Default.EventAggregator.GetEvent<OnTimeValidationTriggeredEvent>().Publish();
             }
         }
 
@@ -137,6 +140,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             {
                 SetProperty(ref _endTime, value);
                 StageTimeSpan = _endTime - _startTime;
+                Messager.Default.EventAggregator.GetEvent<OnTimeValidationTriggeredEvent>().Publish();
             }
         }
 

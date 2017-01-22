@@ -22,8 +22,13 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             ScheduledStageList.CollectionChanged += ScheduledStageList_CollectionChanged;
             SelectedScheduledStage = new ScheduledStageViewModel(this);
             ScheduledStageList.Add(SelectedScheduledStage);
+            Messager.Default.EventAggregator.GetEvent<OnTimeValidationTriggeredEvent>().Subscribe(() => { VerifyTime(); });
         }
 
+        private void VerifyTime()
+        {
+            
+        }
 
         public DisplayRegionViewModel(DisplayRegion displayRegion)
         {
