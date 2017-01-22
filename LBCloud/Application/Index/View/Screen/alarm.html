@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<include file="Public/head"/>
+</head>
+<body>
+<div id="wrapper">
+  <include file="Public/header" /> 
+  <include file="Public/menu" />
+  <div id="page-wrapper"> 
+	  <div class="row">  
+	    <div id="main" class="col-lg-12 main">
+<block name="body">
+    <div class="main-title">
+        <h2>播放器告警配置</h2>
+    </div>
+    
+	<div class="panel panel-default">
+		<div class="tab-wrap  panel-body ">	    
+	 		<ul class="nav nav-tabs ">
+	 			<li class="active"><a href="javascript:void(0);">告警配置</a></li>
+	 			<if condition="in_array('SCREEN/MONITOR', $_SESSION['_ACCESS_LIST'])">
+				<li><a href="{:U('monitor?id='.$_GET['id'])}">监控数据</a></li>
+				</if>
+			</ul>
+	        <div class="tab-content" style="padding-top: 25px;">
+	            <div class="row">
+	            	<form action="{:U()}" method="post" class="form col-lg-6" role="form" >
+					<div class="col-lg-6">
+						<div class="form-group">
+		                    <label class="item-label">屏幕名称（播放器名称）</label>
+		                    <input type="text" class="form-control" value="{$name}（{$p_name}）" />
+		                </div>
+				    	<div class="form-group">
+		                    <label class="item-label">CPU使用率<span class="check-tips">（单位[%]）</span> </label>
+		                    <input type="text" class="form-control" name="cpu_usage" value="" />
+		                </div>
+		                <div class="form-group">
+		                    <label class="item-label">硬盘使用率<span class="check-tips">（单位[%]）</span> </label>
+		                    <input type="text" class="form-control" name="disk_usage" value="" />
+		                </div>
+		                <div class="form-group">
+		                    <label class="item-label">内存使用率<span class="check-tips">（单位[%]）</span> </label>
+		                    <input type="text" class="form-control" name="memory_usage" value="" />
+		                </div>
+		                <div class="form-group">
+		                    <label class="item-label">CPU温度<span class="check-tips">（单位[℃]）</span> </label>
+		                    <input type="text" class="form-control" name="cpu_temperature" value="" />
+		                </div>
+		                <div class="form-group">
+		                    <label class="item-label">风扇转速<span class="check-tips">（单位[RPM/min]）</span> </label>
+		                    <input type="text" class="form-control" name="fan_speed" value="" />
+		                </div>
+		                <div class="form-group">
+				            <label class="item-label">自动告警<span class="check-tips"></span></label>
+				 			<label class="radio"><input type="radio" name="is_auto" value="1">是</label>
+				            <label class="radio"><input type="radio" name="is_auto" value="0">否</label>
+				        </div>
+				        <div class="form-group">
+				            <label class="item-label">告警模式<span class="check-tips"></span></label>
+				 			<label class="radio"><input type="radio" name="alarm_mode" value="1">电子邮件</label>
+				            <label class="radio"><input type="radio" name="alarm_mode" value="0">手机短信</label>
+				        </div>
+		                <div class="form-group">
+		                	<input type="hidden" name="screen_id" value="{$_GET['id']}">
+		                	<button type="submit" class="btn btn-default submit-btn ajax-post" target-form="form">确 定</button>	
+				            <button class="btn btn-default btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				        </div>
+					</div>
+					<!-- /.col-lg-6 (nested) -->
+					</form>
+				</div>
+				<!-- /.row (nested) -->
+	        </div>
+		</div>
+	</div>
+	<!-- /.panel -->
+</block>
+</div>  
+	  </div>
+	</div>	
+  <include file="Public/footer" />
+</div>    
+<include file="Public/script" />
+<script type="text/javascript">
+	Think.setValue("cpu_usage", {$sets.cpu_usage|default = '""'});
+	Think.setValue("disk_usage", {$sets.disk_usage|default = '""'});
+	Think.setValue("memory_usage", {$sets.memory_usage|default = '""'});
+	Think.setValue("cpu_temperature", {$sets.cpu_temperature|default = '""'});
+	Think.setValue("fan_speed", {$sets.fan_speed|default = '""'});
+	Think.setValue("is_auto", {$sets.is_auto|default = 0});
+	Think.setValue("alarm_mode", {$sets.alarm_mode|default = 1});
+</script>
+</body>
+</html>

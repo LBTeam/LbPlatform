@@ -90,8 +90,9 @@
 		                            <a href="{:U('price',array('id'=>$vo['id']))}">时段价格</a>
 		                            </if>
 		                            <!--<a href="javascript:void(0);">播放记录</a>-->
-		                            <if condition="$vo['online'] eq 1 AND in_array('SCREEN/MONITOR', $_SESSION['_ACCESS_LIST'])">
-		                            <a href="{:U('monitor',array('id'=>$vo['id']))}">监控数据</a>
+		                            <!--<if condition="$vo['online'] eq 1 AND in_array('SCREEN/MONITOR', $_SESSION['_ACCESS_LIST'])"></if>-->
+		                            <if condition="in_array('SCREEN/ALARM', $_SESSION['_ACCESS_LIST'])">
+		                            <a href="{:U('alarm',array('id'=>$vo['id']))}">告警配置</a>
 		                            </if>
 		                            <if condition="$vo['online'] eq 1 AND in_array('SCREEN/PICTURE', $_SESSION['_ACCESS_LIST'])">
 		                            <!--<a href="{:U('picture',array('id'=>$vo['id']))}" target="_blank">监控图片</a>-->

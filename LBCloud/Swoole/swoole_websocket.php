@@ -1,6 +1,7 @@
 <?php
 /**
  * websocket
+ * nohup php swoole_websocket.php > /dev/null 2>&1 &
  */
 error_reporting(0);
 

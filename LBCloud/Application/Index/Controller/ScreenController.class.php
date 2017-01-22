@@ -25,18 +25,24 @@ class ScreenController extends CommonController
     		"city" => $regions,
     		"district" => $regions
     	);
-		$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("redis_server")));
-		foreach($leds as &$val){
-			$pl_mac = strtoupper(str_replace(':', '-', $val['mac']));
-			if($pl_mac){
-				$pl_id = $val["bind_id"];
-				$pl_key = $val["bind_key"];
-				$cache_key = md5("{$pl_id}_{$pl_key}_{$pl_mac}_fd");
-				$pl_online = $redis_serv->get($cache_key);
-				//$pl_online = true;
-				$val['online'] = $pl_online ? 1 : 0;
-			}else{
-				$val['online'] = 2;
+		try{
+			$redis_serv = \Think\Cache::getInstance('Redis', array('host'=>C("redis_server")));
+			foreach($leds as &$val){
+				$pl_mac = strtoupper(str_replace(':', '-', $val['mac']));
+				if($pl_mac){
+					$pl_id = $val["bind_id"];
+					$pl_key = $val["bind_key"];
+					$cache_key = md5("{$pl_id}_{$pl_key}_{$pl_mac}_fd");
+					$pl_online = $redis_serv->get($cache_key);
+					//$pl_online = true;
+					$val['online'] = $pl_online ? 1 : 0;
+				}else{
+					$val['online'] = 2;
+				}
+			}
+		}catch(\Exception $e){
+			foreach($leds as &$val){
+				$val['online'] = 0;
 			}
 		}
 		int_to_string($leds, $condition);
@@ -344,6 +350,65 @@ class ScreenController extends CommonController
 		}
 	}
 	
+	/*告警配置*/
+	public function alarm($id=0){
+		if(IS_POST){
+			$alarm_set_m = D("AlarmSet");
+			$rules = array(
+				array('screen_id','require','系统错误，非法访问！'),
+				array('cpu_usage','require','CPU使用率不能为空！'),
+				array('cpu_usage',array(1,100),'CPU使用率在1-100之间，单位%！', 0, 'between', 3),
+				array('disk_usage','require','硬盘使用率不能为空！'),
+				array('disk_usage',array(1,100),'硬盘使用率在1-100之间，单位%！', 0, 'between', 3),
+				array('memory_usage','require','内存使用率不能为空！'),
+				array('memory_usage',array(1,100),'内存使用率在1-100之间，单位%！', 0, 'between', 3),
+				array('cpu_temperature','require','CPU温度不能为空！'),
+				array('cpu_temperature','/^[1-9][0-9]*$/','CPU温度必须为大于0的整数！'),
+				array('fan_speed','require','风扇转速不能为空！'),
+				array('fan_speed','/^[1-9][0-9]*$/','风扇转速必须为大于0的整数！'),
+				array('is_auto','require','系统错误，非法访问！'),
+				array('is_auto',array(0,1),'系统错误，非法访问！',1,'in'),
+				array('alarm_mode','require','系统错误，非法访问！'),
+				array('alarm_mode',array(0,1),'系统错误，非法访问！',1,'in'),
+			);
+			if($alarm_set_m->validate($rules)->create()){
+				$data = array();
+				$data['screen_id'] = I("post.screen_id");
+				$data['cpu_usage'] = I("post.cpu_usage");
+				$data['disk_usage'] = I("post.disk_usage");
+				$data['memory_usage'] = I("post.memory_usage");
+				$data['cpu_temperature'] = I("post.cpu_temperature");
+				$data['fan_speed'] = I("post.fan_speed");
+				$data['is_auto'] = I("post.is_auto");
+				$data['alarm_mode'] = I("post.alarm_mode");
+				$res = $alarm_set_m->update_set($data);
+				if($res !== false){
+					$this->success("告警配置设置成功！");
+				}else{
+					$this->error("告警配置设置失败！");
+				}
+			}else{
+				$this->error($alarm_set_m->getError());
+			}
+		}else{
+			$led_model = D("Screen");
+			$info = $led_model->screen_by_id($id);
+			if($info){
+				$player_model = D("Player");
+				$set_model = D("AlarmSet");
+				$player = $player_model->player_by_id($id);
+				$sets = $set_model->set_by_sid($id);
+				$this->meta_title = "告警配置";
+				$this->assign('name', $info['name']);
+				$this->assign('p_name', $player['name']);
+				$this->assign('sets', $sets);
+				$this->display();
+			}else{
+				$this->error('屏幕不存在！');
+			}
+		}
+	}
+
 	/**
 	 * 监控图片
 	 */
