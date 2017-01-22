@@ -26,6 +26,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             DisplayRegions.Add(CurrentDisplayRegion);
             PreviewScreenScheduleCommand = new DelegateCommand(() => { PreviewScreenSchedule(); });
             SaveScheduleCommand = new DelegateCommand<ScheduleView>((v) => { SaveSchedule(v); });
+            CancelScheduleCommand = new DelegateCommand<ScheduleView>(v => { CancelSchedule(v); });
         }
 
 
@@ -39,6 +40,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             ParseScheduleFile(fileInfo.FullName);
             PreviewScreenScheduleCommand = new DelegateCommand(() => { PreviewScreenSchedule(); });
             SaveScheduleCommand = new DelegateCommand<ScheduleView>((v) => { SaveSchedule(v); });
+            CancelScheduleCommand = new DelegateCommand<ScheduleView>(v => { CancelSchedule(v); });
         }
 
         private void ParseScheduleFile(string fullName)
@@ -119,8 +121,9 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         public DelegateCommand RemoveDisplayRegionCommand { get; private set; }
         public DelegateCommand PreviewDisplayRegionCommand { get; private set; }
         public DelegateCommand<ScheduleView> SaveScheduleCommand { get; private set; }
+        public DelegateCommand<ScheduleView> CancelScheduleCommand { get; private set; }
 
-      
+
 
         private void SaveSchedule(ScheduleView view)
         {
@@ -151,15 +154,15 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                         var stage = new ScheduledStage();
                         if (displayRegion.RepeatMode == RepeatMode.Manual)
                         {
-                            stage.StartTime = new DateTime(displayRegionitem.ManualScheduleSetting.StartDate.Year, 
-                                displayRegionitem.ManualScheduleSetting.StartDate.Month,
-                                displayRegionitem.ManualScheduleSetting.StartDate.Day, 
+                            stage.StartTime = new DateTime(stageItem.StartDate.Year,
+                                stageItem.StartDate.Month,
+                                stageItem.StartDate.Day, 
                                 stageItem.StartTime.Hour, 
                                 stageItem.StartTime.Minute, 
                                 stageItem.StartTime.Second);
-                            stage.EndTime = new DateTime(displayRegionitem.ManualScheduleSetting.EndDate.Year,
-                                displayRegionitem.ManualScheduleSetting.EndDate.Month,
-                                displayRegionitem.ManualScheduleSetting.EndDate.Day,
+                            stage.EndTime = new DateTime(stageItem.EndDate.Year,
+                                stageItem.EndDate.Month,
+                                stageItem.EndDate.Day,
                                 stageItem.EndTime.Hour,
                                 stageItem.EndTime.Minute,
                                 stageItem.EndTime.Second);
@@ -191,8 +194,22 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
                 outputFile.WriteLine(JsonConvert.SerializeObject(_schedule, new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" }));
             }
-
+            Cleanup();
             view.Close();
+        }
+
+        private void CancelSchedule(ScheduleView view)
+        {
+            Cleanup();
+            view.Close();
+        }
+
+        private void Cleanup()
+        {
+            foreach (var item in DisplayRegions)
+            {
+                item.Cleanup();
+            }
         }
     }
 

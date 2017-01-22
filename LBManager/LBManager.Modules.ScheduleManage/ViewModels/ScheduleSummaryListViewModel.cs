@@ -170,8 +170,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             request.FileName = CurrentScheduleSummary.FilePath;
             request.FileMD5 = FileUtils.ComputeFileMd5(CurrentScheduleSummary.FilePath);
 
-            string jsonRequest = JsonConvert.SerializeObject(request);
-            bool bacupResult = await _scheduleService.BackupSchedules(jsonRequest);
+            //string jsonRequest = JsonConvert.SerializeObject(request);
+            bool bacupResult = await _scheduleService.BackupSchedules(request);
         }
 
         private bool CanFetchBackedUpSchedule()

@@ -136,7 +136,8 @@
                             Style="{DynamicResource MaterialDesignRaisedLightButton}" IsDefault="True"
                             Command="{Binding SaveScheduleCommand}" CommandParameter="{Binding ElementName=scheduleView}"/>
                     <Button Content="取消" Width="75" Height="30" VerticalContentAlignment="Center" Margin="0,0,20,0"
-                            Style="{DynamicResource MaterialDesignRaisedLightButton}" IsCancel="True"/>
+                            Style="{DynamicResource MaterialDesignRaisedLightButton}" 
+                            Command="{Binding CancelScheduleCommand}" CommandParameter="{Binding ElementName=scheduleView}"/>
                 </StackPanel>
             </Grid>
         </DockPanel>

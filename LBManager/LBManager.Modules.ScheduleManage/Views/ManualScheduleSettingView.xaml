@@ -7,7 +7,7 @@
              xmlns:local="clr-namespace:LBManager.Modules.ScheduleManage.Views"
              mc:Ignorable="d" >
     <Grid DataContext="{Binding ManualScheduleSetting}">
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Visibility="Collapsed">
             <DatePicker Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 30 0"  materialDesign:HintAssist.Hint="开始日期" 
                         Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
                         SelectedDate="{Binding StartDate}"/>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LBManager.Infrastructure.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,7 @@ namespace LBManager.Infrastructure.Interfaces
         Task<bool> GetBackedUpSchedules();
 
         Task<bool> BackupSchedules(string backupRequest);
+
+        Task<bool> BackupSchedules(BackupScheduleRequest request);
     }
 }

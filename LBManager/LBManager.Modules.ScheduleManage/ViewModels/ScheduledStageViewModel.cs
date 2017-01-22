@@ -1,5 +1,7 @@
-﻿using LBManager.Infrastructure.Models;
+﻿using LBManager.Infrastructure.Common.Utility;
+using LBManager.Infrastructure.Models;
 using LBManager.Infrastructure.Utility;
+using LBManager.Modules.ScheduleManage.Event;
 using LBManager.Modules.ScheduleManage.Utility;
 using Microsoft.Win32;
 using Prism.Commands;
@@ -16,27 +18,48 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 {
     public class ScheduledStageViewModel : BindableBase
     {
-        public ScheduledStageViewModel()
+        public ScheduledStageViewModel(DisplayRegionViewModel parentViewModel)
         {
             MediaList.CollectionChanged += MediaList_CollectionChanged;
+            StartDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 7, 30, 0);
             StartTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 7, 30, 0);
+
+            EndDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 21, 30, 0);
             EndTime = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 21, 30, 0);
+
             ArrangementMode = ArrangementMode.StandardCovered;
             LoopCount = 1;
+
+            IsManualMode = parentViewModel.RepeatMode == RepeatMode.Manual ? true : false;
+            Messager.Default.EventAggregator.GetEvent<OnManualModelChangedEvent>().Subscribe(arg =>
+            {
+                IsManualMode = arg;
+            });
         }
 
-        public ScheduledStageViewModel(ScheduledStage stage)
+        public ScheduledStageViewModel(DisplayRegionViewModel parentViewModel,ScheduledStage stage)
         {
             MediaList.CollectionChanged += MediaList_CollectionChanged;
+            StartDate = stage.StartTime;
             StartTime = stage.StartTime;
+
+            EndDate = stage.EndTime;
             EndTime = stage.EndTime;
             LoopCount = stage.LoopCount;
             ArrangementMode = stage.ArrangementMode;
+
+            IsManualMode = parentViewModel.RepeatMode == RepeatMode.Manual ? true : false;
+
             foreach (var mediaItem in stage.MediaList)
             {
                 _mediaList.Add(new MediaViewModel(mediaItem));
             }
             CurrentMedia = _mediaList.Count == 0 ? null : _mediaList[0];
+
+            Messager.Default.EventAggregator.GetEvent<OnManualModelChangedEvent>().Subscribe(arg => 
+            {
+                IsManualMode = arg;
+            });
         }
 
         private void MediaList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -44,6 +67,17 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             MediaCount = MediaList.Count;
             RealTimeSpan = TimeSpan.FromSeconds(MediaList.Sum(m => m.Duration.TotalSeconds)* LoopCount);
         }
+
+        private bool _isManualMode = false;
+        public bool IsManualMode
+        {
+            get { return _isManualMode; }
+            set
+            {
+                SetProperty(ref _isManualMode, value);
+            }
+        }
+
 
         private ObservableCollection<MediaViewModel> _mediaList = new ObservableCollection<MediaViewModel>();
         public ObservableCollection<MediaViewModel> MediaList
@@ -62,6 +96,27 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                 RemoveMediaCommand.RaiseCanExecuteChanged();
             }
         }
+
+        private DateTime _startDate;
+        public DateTime StartDate
+        {
+            get { return _startDate; }
+            set
+            {
+                SetProperty(ref _startDate, value);
+            }
+        }
+
+        private DateTime _endDate;
+        public DateTime EndDate
+        {
+            get { return _endDate; }
+            set
+            {
+                SetProperty(ref _endDate, value);
+            }
+        }
+
 
         private DateTime _startTime;//= new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 7, 30, 0);
         public DateTime StartTime
@@ -242,6 +297,11 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     break;
             }
             return mediaType;
+        }
+
+        public void Cleanup()
+        {
+            Messager.Default.EventAggregator.GetEvent<OnManualModelChangedEvent>().Unsubscribe(arg=> { });
         }
     }
 }

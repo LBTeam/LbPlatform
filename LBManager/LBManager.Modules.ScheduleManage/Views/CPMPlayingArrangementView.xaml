@@ -4,12 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:toolkit ="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:Controls ="http://metro.mahapps.com/winfx/xaml/controls"
               xmlns:utility="clr-namespace:LBManager.Infrastructure.Common.Utility;assembly=LBManager.Infrastructure.Common"
+             xmlns:converter="clr-namespace:LBManager.Modules.ScheduleManage.Converter"
              xmlns:model="clr-namespace:LBManager.Infrastructure.Models;assembly=LBManager.Infrastructure"
              xmlns:local="clr-namespace:LBManager.Modules.ScheduleManage.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <converter:BooleanToVisibilityReverseConverter x:Key="BooleanToVisibilityReverseConverter"/>
+    </UserControl.Resources>
     <AdornerDecorator>
         <Grid Margin="5,10">
             <!--<GroupBox Header="智能编排" Style="{DynamicResource MaterialDesignGroupBox}" materialDesign:ShadowAssist.ShadowDepth="Depth3" BorderThickness="0">-->
@@ -19,18 +24,35 @@
             </Grid.RowDefinitions>
             <DockPanel LastChildFill="True">
                 <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,4">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,4" Visibility="{Binding IsManualMode, Converter={StaticResource BooleanToVisibilityReverseConverter}}">
                         <materialDesign:TimePicker  materialDesign:HintAssist.Hint="开始时间" VerticalAlignment="Bottom"
                                                 Style="{DynamicResource MaterialDesignFloatingHintTimePicker}"
                                                 IsInvalidTextAllowed="True"
                                                 Is24Hours="True" Width="100" Margin="0,0,10,0"
-                                                        Text="{Binding StartTime,  StringFormat={}{0:HH:mm}}"/>
+                                                Text="{Binding StartTime,  StringFormat={}{0:HH:mm}}"/>
                         <materialDesign:TimePicker  materialDesign:HintAssist.Hint="结束时间" VerticalAlignment="Bottom"
-                                                Style="{DynamicResource MaterialDesignFloatingHintTimePicker}"
-                                                        IsInvalidTextAllowed="True"
-                                                Is24Hours="True" Width="100"
-                                                        Text="{Binding EndTime, StringFormat={}{0:HH:mm}}"/>
+                                                    Style="{DynamicResource MaterialDesignFloatingHintTimePicker}"
+                                                    IsInvalidTextAllowed="True"
+                                                    Is24Hours="True" Width="100"
+                                                    Text="{Binding EndTime, StringFormat={}{0:HH:mm}}"/>
                     </StackPanel>
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,4" Visibility="{Binding IsManualMode,Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <DatePicker Width="100" Height="30" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="0 0 30 0"  materialDesign:HintAssist.Hint="开始日期" 
+                                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                                    SelectedDate="{Binding StartDate}"/>
+                            <toolkit:DateTimeUpDown VerticalAlignment="Center" VerticalContentAlignment="Center" Watermark="开始时间"  ClipValueToMinMax="False"
+                                                   Value="{Binding StartTime}" Format="Custom" FormatString="HH:mm:ss"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <DatePicker Width="100" Height="30" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="0 0 30 0"  materialDesign:HintAssist.Hint="结束日期" 
+                                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                                    SelectedDate="{Binding EndDate}"/>
+                            <toolkit:DateTimeUpDown VerticalAlignment="Center" VerticalContentAlignment="Center" Watermark="结束时间"  ClipValueToMinMax="False"
+                                                Value="{Binding EndTime}" Format="Custom" FormatString="HH:mm:ss"/>
+                        </StackPanel>
+                    </StackPanel>
+                  
                     <ComboBox materialDesign:HintAssist.Hint="ArrangementMode" Margin="0,0,0,4"
                                           VerticalAlignment="Bottom" HorizontalAlignment="Left"
                                               ItemsSource="{Binding Source={utility:EnumBindingSource {x:Type model:ArrangementMode}}}"

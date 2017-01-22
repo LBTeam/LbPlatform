@@ -16,14 +16,14 @@
                     <materialDesign:PackIcon Kind="PlaylistPlay" Height="20" Width="20"/>
                 </Button>
             </StackPanel>
-            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Visibility="Collapsed">
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                 <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
                         ToolTip="获取云端排期"
                         Command="{Binding FetchBackedUpScheduleCommand}">
                     <materialDesign:PackIcon Kind="CloudDownload" Height="20" Width="20"/>
                 </Button>
             </StackPanel>
-            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Visibility="Collapsed">
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" >
                 <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
                         ToolTip="备份排期"
                         Command="{Binding BackupScheduleCommand}">

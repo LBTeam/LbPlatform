@@ -24,12 +24,12 @@ namespace LBManager
             _logger = ServiceLocator.Current.GetInstance<ILoggerFacade>();
         }
 
-        public Task<bool> BackupSchedules(string backupRequest)
+        public Task<bool> BackupSchedules(BackupScheduleRequest request)
         {
             var tcs = new TaskCompletionSource<bool>();
             var httpClient = new RestClient("http://lbcloud.ddt123.cn/?s=api");
             var httpRequest = new RestRequest(Method.POST);
-            httpRequest.AddJsonBody(backupRequest);
+            httpRequest.AddJsonBody(request);
             httpRequest.Resource = string.Format("Manager/backup&token={0}", App.SessionToken);
             httpClient.ExecuteAsync(httpRequest, response =>
             {
@@ -53,6 +53,12 @@ namespace LBManager
 
             });
             return tcs.Task;
+           
+        }
+
+        public Task<bool> BackupSchedules(string backupRequest)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<bool> GetBackedUpSchedules()

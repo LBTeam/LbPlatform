@@ -9,6 +9,8 @@ using LBManager.Infrastructure.Utility;
 using MaterialDesignThemes.Wpf;
 using System.Threading.Tasks;
 using LBManager.Modules.ScheduleManage.Utility;
+using LBManager.Infrastructure.Common.Utility;
+using LBManager.Modules.ScheduleManage.Event;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
@@ -18,8 +20,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         public DisplayRegionViewModel()
         {
             ScheduledStageList.CollectionChanged += ScheduledStageList_CollectionChanged;
-            SelectedScheduledStage = new ScheduledStageViewModel();
-            ScheduledStageList.Add(_selectedScheduledStage);
+            SelectedScheduledStage = new ScheduledStageViewModel(this);
+            ScheduledStageList.Add(SelectedScheduledStage);
         }
 
 
@@ -33,12 +35,12 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             _name = displayRegion.Name;
             _scheduleMode = displayRegion.ScheduleMode;
             _repeatMode = displayRegion.RepeatMode;
-            
+
 
             ScheduledStageList.CollectionChanged += ScheduledStageList_CollectionChanged;
             foreach (var stageItem in displayRegion.StageList)
             {
-                ScheduledStageList.Add(new ScheduledStageViewModel(stageItem));
+                ScheduledStageList.Add(new ScheduledStageViewModel(this, stageItem));
             }
             SelectedScheduledStage = _scheduledStageList.Count == 0 ? null : _scheduledStageList[0];
 
@@ -100,7 +102,11 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         public RepeatMode RepeatMode
         {
             get { return _repeatMode; }
-            set { SetProperty(ref _repeatMode, value); }
+            set
+            {
+                SetProperty(ref _repeatMode, value);
+                Messager.Default.EventAggregator.GetEvent<OnManualModelChangedEvent>().Publish(_repeatMode == RepeatMode.Manual ? true : false);
+            }
         }
 
 
@@ -188,7 +194,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         private void AddScheduledStage()
         {
-            ScheduledStageViewModel stageViewModel = new ScheduledStageViewModel();
+            ScheduledStageViewModel stageViewModel = new ScheduledStageViewModel(this);
             ScheduledStageList.Add(stageViewModel);
             SelectedScheduledStage = stageViewModel;
         }
@@ -203,9 +209,9 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     {
                         result = string.Format("{0} {1} {2} 1/{3} * ? *", second, minute, hour, DailyScheduleSetting.Period);
                     }
-                    else if(DailyScheduleSetting.IsWorkingDay)
+                    else if (DailyScheduleSetting.IsWorkingDay)
                     {
-                        result = string.Format("{0} {1} {2} ? * MON-FRI *", second, minute,hour);
+                        result = string.Format("{0} {1} {2} ? * MON-FRI *", second, minute, hour);
                     }
                     break;
                 case RepeatMode.Weekly:
@@ -219,6 +225,14 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
 
             return result;
+        }
+
+        public void Cleanup()
+        {
+            foreach (var item in ScheduledStageList)
+            {
+                item.Cleanup();
+            }
         }
     }
 }
