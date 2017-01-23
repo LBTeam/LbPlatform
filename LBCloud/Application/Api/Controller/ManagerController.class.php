@@ -275,6 +275,13 @@ class ManagerController extends CommonController
 			}
 			//方案类型，0-普通方案，7-紧急插播，8-离线方案
 			$plantype = $obj['PlanType'] ? $obj['PlanType'] : 0;
+			/*多播放方案start*/
+			//if($plantype == 0){
+			//	$publish = strtotime($obj['Publish']);
+			//}else{
+			//	$publish = NOW_TIME;
+			//}
+			/*多播放方案end*/
 			//播放方案下发
 			$cmds = array();
 			foreach($screens as $val){
@@ -284,13 +291,20 @@ class ManagerController extends CommonController
 					'param'		=> json_encode(array('program_id'=>$prog_info['id'])),
 					'publish'	=> NOW_TIME,
 					'execute'	=> NOW_TIME,
+					/*多播放方案start*/
+					//'execute'	=> $publish,
+					/*多播放方案end*/
 					'expired'	=> NOW_TIME,
 					'status'	=> 0
 				);
 			}
 			if($cmds){
 				$cmd_model = D("Command");
-				$cmd_del = $cmd_model->remove_cmd($screens, $plantype, 0);
+				/*多播放方案start*/
+				//if($plantype != 0){
+					$cmd_del = $cmd_model->remove_cmd($screens, $plantype, 0);
+				//}
+				/*多播放方案end*/
 				$cmd_add = $cmd_model->release_cmd($cmds);
 			}
 			$respones = array("err_code"=>"000000","msg"=>"success");
