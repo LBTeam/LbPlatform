@@ -113,6 +113,8 @@ class PlayerController extends CommonController
 			$led_id = $player['id'];
 			$cmd_model = D("Command");
 			$cmds_list = $cmd_model->cmds_list($led_id);
+			//多播放方案版本
+			//$cmds_list = $cmd_model->cmd_lists($led_id);
 			$cmds = array();
 			$cmd_ids = array();
 			foreach($cmds_list as $val){
