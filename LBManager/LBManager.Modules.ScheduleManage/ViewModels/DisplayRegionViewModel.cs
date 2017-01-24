@@ -81,7 +81,6 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             foreach (ITimePeriod intersectedPeriod in intersectedPeriods)
             {
                 TimeConflictError += "\n在" + intersectedPeriod + "时段,时间冲突！";
-                // Console.WriteLine("Intersected Period: " + intersectedPeriod);
             }
         }
         private void ScheduledStageList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

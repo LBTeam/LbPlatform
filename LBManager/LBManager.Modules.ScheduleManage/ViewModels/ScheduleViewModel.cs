@@ -25,22 +25,36 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             CurrentDisplayRegion = new DisplayRegionViewModel() { Name = "Default DisplayRegion" };
             DisplayRegions.Add(CurrentDisplayRegion);
             PreviewScreenScheduleCommand = new DelegateCommand(() => { PreviewScreenSchedule(); });
-            SaveScheduleCommand = new DelegateCommand<ScheduleView>((v) => { SaveSchedule(v); });
+            SaveScheduleCommand = new DelegateCommand<ScheduleView>((v) => { SaveSchedule(v); }, (v) => { return CanSaveSchedule(); });
             CancelScheduleCommand = new DelegateCommand<ScheduleView>(v => { CancelSchedule(v); });
+           
         }
 
-
-        private void PreviewScreenSchedule()
-        {
-
-        }
+       
 
         public ScheduleViewModel(FileInfo fileInfo)
         {
             ParseScheduleFile(fileInfo.FullName);
             PreviewScreenScheduleCommand = new DelegateCommand(() => { PreviewScreenSchedule(); });
-            SaveScheduleCommand = new DelegateCommand<ScheduleView>((v) => { SaveSchedule(v); });
+            SaveScheduleCommand = new DelegateCommand<ScheduleView>((v) => { SaveSchedule(v); }, (v) => { return CanSaveSchedule(); });
             CancelScheduleCommand = new DelegateCommand<ScheduleView>(v => { CancelSchedule(v); });
+        }
+
+
+        private bool CanSaveSchedule()
+        {
+            return true;
+            //bool result = true;
+            //foreach (var item in DisplayRegions)
+            //{
+            //    result = result && string.IsNullOrEmpty(item.TimeConflictError) ? false : true;
+            //}
+            //return result;
+        }
+
+        private void PreviewScreenSchedule()
+        {
+
         }
 
         private void ParseScheduleFile(string fullName)
@@ -156,9 +170,9 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                         {
                             stage.StartTime = new DateTime(stageItem.StartDate.Year,
                                 stageItem.StartDate.Month,
-                                stageItem.StartDate.Day, 
-                                stageItem.StartTime.Hour, 
-                                stageItem.StartTime.Minute, 
+                                stageItem.StartDate.Day,
+                                stageItem.StartTime.Hour,
+                                stageItem.StartTime.Minute,
                                 stageItem.StartTime.Second);
                             stage.EndTime = new DateTime(stageItem.EndDate.Year,
                                 stageItem.EndDate.Month,

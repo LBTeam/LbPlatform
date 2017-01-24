@@ -69,7 +69,7 @@ namespace LBPlayer
         public LBPlayerMain()
         {
             InitializeComponent();
-
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
         #endregion
         #region 心跳
@@ -438,7 +438,7 @@ namespace LBPlayer
         {
             LEDScreenDisplayer.GetInstance().Initialize(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
             Log4NetLogger.LogDebug("初始化播放组件...");
-            Thread.Sleep(2000);
+            Thread.Sleep(200);
             GenerateLEDSchedule(_config.CurrentPlanPath);
             //Task.Delay(TimeSpan.FromMilliseconds(1000))
             //   .ContinueWith((t, _) => GenerateLEDSchedule(_config.CurrentPlanPath);, null, TaskScheduler.FromCurrentSynchronizationContext());
@@ -1072,11 +1072,13 @@ namespace LBPlayer
             InitialCmdList();
             StartCmdTimer();
             initialPoll();
+            
             initialWebSocket(ApplicationConfig.WebSocketURL);
             InitialLock();
             InitialMonitorDataUpload();
             initialMonitorPic();
             initialPlay();
+            this.Location = new Point(int.Parse(_config.Resoul_X), 0);
         }
         /// <summary>
         /// 桌面截屏预览
@@ -1237,12 +1239,13 @@ namespace LBPlayer
                 Log4NetLogger.LogDebug(string.Format("获取当前排期{0}失败。", currentSchedule));
                 return;
             }
-            //Action displayAction = new Action(() =>
-            //{
-            DisplayScheduleManager.GetInstance().ApplyMainSchedule(currentSchedule);
-            //});
-            //displayAction.BeginInvoke(null, null);
-           
+
+            Action displayAction = new Action(() =>
+            {
+                DisplayScheduleManager.GetInstance().ApplyMainSchedule(currentSchedule);
+            });
+            displayAction.BeginInvoke(null, null);
+
 
         }
         private void Start()

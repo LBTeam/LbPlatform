@@ -181,6 +181,10 @@ namespace LBPlayer.Job
                     }
                 }
 
+                string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
+                string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
+                string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
+
                 JobDataMap jobDataMap = new JobDataMap();
                 jobDataMap.Add("ScheduleName", schedule.Name);
                 jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stage.Cron));
@@ -191,9 +195,7 @@ namespace LBPlayer.Job
                     .WithIdentity(Guid.NewGuid().ToString(), region.Name)
                     .UsingJobData(jobDataMap)
                     .Build();
-                string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
-                string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
-                string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
+
                 var trigger = TriggerBuilder.Create()
                      .WithCronSchedule(cron)
                      .Build();
@@ -227,6 +229,10 @@ namespace LBPlayer.Job
                     }
                 }
 
+                string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
+                string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
+                string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
+
                 JobDataMap jobDataMap = new JobDataMap();
                 jobDataMap.Add("ScheduleName", schedule.Name);
                 jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stage.Cron));
@@ -238,9 +244,7 @@ namespace LBPlayer.Job
                     .UsingJobData(jobDataMap)
                     .Build();
 
-                string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
-                string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
-                string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
+                
                 var trigger = TriggerBuilder.Create()
                      .WithCronSchedule(cron)
                      .Build();
@@ -286,6 +290,10 @@ namespace LBPlayer.Job
                     }
                 }
 
+                string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
+                string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
+                string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
+
                 JobDataMap jobDataMap = new JobDataMap();
                 jobDataMap.Add("ScheduleName", schedule.Name);
                 jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stage.Cron));
@@ -297,9 +305,7 @@ namespace LBPlayer.Job
                     .UsingJobData(jobDataMap)
                     .Build();
 
-                string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
-                string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
-                string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
+               
                 var trigger = TriggerBuilder.Create()
                      .WithCronSchedule(cron)
                      .Build();
