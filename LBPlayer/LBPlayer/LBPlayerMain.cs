@@ -20,6 +20,7 @@ using LBManager.Infrastructure.Models;
 using WebSocketSharp;
 using System.Diagnostics;
 using System.Net;
+using System.Security.Policy;
 using LbPlayer.Logger;
 using Quartz;
 using LBPlayer.Job;
@@ -80,7 +81,7 @@ namespace LBPlayer
         /// <param name="args"></param>
         private void _poll_GetPollResponseEvent(object sender, GetPollResponseEventArgs args)
         {
-           Log4NetLogger.LogDebug("心跳完成：" + DateTime.Now);
+            Log4NetLogger.LogDebug("心跳完成：" + DateTime.Now);
             if (!args.bSuc)
             {
                 HeartBeatFailCount++;
@@ -424,7 +425,7 @@ namespace LBPlayer
                 MonitorInfo m = new MonitorInfo(CPUUusage, diskUsage, memoryUsage, CPUTem, fanSpeed);
                 MonitorResult obj = new MonitorResult(_config.ID, _config.Key, _config.Mac, m);
 
-                args.Url = ApplicationConfig.MonitorInfoURL;
+                args.Url = new Uri(ApplicationConfig.BaseURL,ApplicationConfig.MonitorInfoURL).ToString();// ApplicationConfig.BaseURL + "/" + ApplicationConfig.MonitorInfoURL;
                 args.PollData = JsonConvert.SerializeObject(obj);
             }
             catch (Exception ex)
@@ -1072,7 +1073,7 @@ namespace LBPlayer
             InitialCmdList();
             StartCmdTimer();
             initialPoll();
-            
+
             initialWebSocket(ApplicationConfig.WebSocketURL);
             InitialLock();
             InitialMonitorDataUpload();

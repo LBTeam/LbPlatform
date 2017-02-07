@@ -8,7 +8,7 @@ namespace LBPlayer
 {
     public static class ApplicationConfig
     {
-        public const string BaseURL = "http://lbcloud.ddt123.cn";
+        public static readonly Uri BaseURL = new Uri("http://lbcloud.ddt123.cn");
         public const string BindingURL = "?s=api/Player/bind_player";
         public const string PlayBackURL = "?s=api/Player/record";
         public const string PollURL = "http://lbcloud.ddt123.cn/?s=api/Player/heartbeat";
