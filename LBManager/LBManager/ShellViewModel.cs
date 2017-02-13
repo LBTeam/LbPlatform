@@ -30,13 +30,13 @@ namespace LBManager
 
         //private ScheduleListViewModel ScheduleList;
         private System.Threading.Timer _heartbeatTimer;
-        
+
         private ILoggerFacade _logger;
         public ShellViewModel()/**/
         {
             _logger = ServiceLocator.Current.GetInstance<ILoggerFacade>();
 
-            
+
             //ScheduleDetailViewModel = new ProgramScheduleDetailViewModel();
             ScheduleList = new ScheduleSummaryListViewModel();
 
@@ -282,7 +282,35 @@ namespace LBManager
 
         public DelegateCommand NewScheduleCommand { get; private set; }
 
+        private DelegateCommand _logoutCommand;
+        public DelegateCommand LogoutCommand
+        {
+            get
+            {
+                if (_logoutCommand == null)
+                {
+                    _logoutCommand = new DelegateCommand(Logout, CanLogout);
+                }
+                return _logoutCommand;
+            }
+        }
 
+        private bool CanLogout()
+        {
+            return true;
+        }
+
+        private void Logout()
+        {
+            if (_heartbeatTimer != null)
+            {
+                _heartbeatTimer.Dispose();
+            }
+            LoginStatus = false;
+            LoginAccount = string.Empty;
+            App.SessionToken = string.Empty;
+            ScreenList.ScreenList = new System.Collections.ObjectModel.ObservableCollection<ScreenViewModel>();
+        }
 
         private void ExtendedOpenedEventHandler(object sender, DialogOpenedEventArgs eventargs)
         {

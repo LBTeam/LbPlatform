@@ -47,14 +47,19 @@
                     <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" IsChecked="False"
                                       x:Name="MenuToggleButton"/>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">LED Media Manager</TextBlock>
+                    <Button DockPanel.Dock="Right" Margin="0,0,10,0" Content="{Binding LoginAccount}" FontSize="12" 
+                            HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" 
+                            Style="{StaticResource LinkButton}"
+                            Visibility="{Binding LoginStatus,Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <Button DockPanel.Dock="Right" Margin="0,0,10,0" Content="登录" FontSize="12" 
                             HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" 
                             Style="{StaticResource LinkButton}" 
                             Command="{Binding LoginCommand}"
                             Visibility="{Binding LoginStatus,Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
-                    <Button DockPanel.Dock="Right" Margin="0,0,10,0" Content="{Binding LoginAccount}" FontSize="12" 
+                    <Button DockPanel.Dock="Right" Margin="0,0,10,0" Content="注销" FontSize="12" 
                             HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" 
-                            Style="{StaticResource LinkButton}"
+                            Style="{StaticResource LinkButton}" 
+                            Command="{Binding LogoutCommand}"
                             Visibility="{Binding LoginStatus,Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </DockPanel>
             </materialDesign:ColorZone>

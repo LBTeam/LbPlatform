@@ -17,6 +17,7 @@ namespace LBManager.Infrastructure.Models
         public string Cron { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public int LoopCount { get; set; }
+        public MediaCategory Category { get; set; }
 
 
     }

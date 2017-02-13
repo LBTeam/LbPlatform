@@ -14,6 +14,8 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <converter:BooleanToVisibilityReverseConverter x:Key="BooleanToVisibilityReverseConverter"/>
+        <converter:MediaCategoryToIsCheckedConverter x:Key="MediaCategoryToIsCheckedConverter"/>
+        <converter:MediaCategoryToVisibilityConverter x:Key="MediaCategoryToVisibilityConverter"/>
     </UserControl.Resources>
     <AdornerDecorator>
         <Grid Margin="5,10">
@@ -91,18 +93,24 @@
                                         </Style>
                                     </Grid.Resources>
                                     <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}" Grid.Column="0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding Duration}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                                    <ToggleButton Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="4,0"
+                                                  IsChecked="{Binding Category,Converter={StaticResource MediaCategoryToIsCheckedConverter}}">
+                                        <materialDesign:PackIcon Kind="AccountCheck" Height="16" Width="16" />
+                                    </ToggleButton>
+                                    <TextBlock Text="{Binding Name}" Grid.Column="1" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Duration}" Grid.Column="2" VerticalAlignment="Center" Margin="0,0,20,0"/>
                                     <Controls:NumericUpDown x:Name="StringFormatNumUpDown"
-                                                                                Grid.Column="2"
-                                                                                Interval="1"
-                                                                                IsReadOnly="False" Minimum="1"
-                                                                                StringFormat=" {0} 次" VerticalContentAlignment="Center" VerticalAlignment="Center"
-                                                                                Value="{Binding LoopCount, Mode=TwoWay}" />
+                                                            Grid.Column="3"
+                                                            Interval="30"
+                                                            IsReadOnly="False" Minimum="1"
+                                                            StringFormat=" {0} 次" VerticalContentAlignment="Center" VerticalAlignment="Center"
+                                                            Value="{Binding LoopCount, Mode=TwoWay}" 
+                                                            Visibility="{Binding Category, Converter={StaticResource MediaCategoryToVisibilityConverter}}"/>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

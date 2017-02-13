@@ -273,7 +273,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                     Type = GetMediaType(fileInfo.Extension),
                     FileSize = fileInfo.Length,
                     MD5 = FileUtils.ComputeFileMd5(fileInfo.FullName),
-                    LoopCount = 1
+                    LoopCount = 1,
+                    Category = MediaCategory.UserAd
                 };
                 CurrentMedia = new MediaViewModel(media);
                 CurrentMedia.Duration = TimeSpan.FromSeconds(Math.Round(info.Duration.TotalSeconds, 0));

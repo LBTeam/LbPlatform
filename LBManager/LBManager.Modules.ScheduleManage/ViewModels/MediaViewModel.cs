@@ -19,6 +19,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             _content = media.Content;
             _duration = media.Duration;
             _loopCount = media.LoopCount;
+            _category = media.Category;
         }
 
         private string _name;
@@ -81,6 +82,13 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         {
             get { return _duration; }
             set { SetProperty(ref _duration, value); }
+        }
+
+        private MediaCategory _category = MediaCategory.UserAd;
+        public MediaCategory Category
+        {
+            get { return _category; }
+            set { SetProperty(ref _category, value); }
         }
     }
 }
