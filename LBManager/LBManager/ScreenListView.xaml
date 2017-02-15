@@ -7,8 +7,14 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mycontrol="http://lbmanager.net/winfx/xaml/controls"
              xmlns:params="http://schemas.codeplex.com/elysium/params"
+             xmlns:converter="clr-namespace:LBManager.Converter"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <converter:SizeMultiValueConverter x:Key="SizeMultiValueConverter"/>
+        <converter:IsSelectedToStarHeightConverter x:Key="IsSelectedToStarHeightConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <DataGrid  ItemsSource="{Binding ScreenList}" 
                    AutoGenerateColumns="False"
@@ -20,25 +26,54 @@
             <!--materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                    materialDesign:DataGridAssist.ColumnHeaderPadding="8"-->
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Name}" Width="*"
-                                            Header="名称"
-                                           />
-                <!--EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"-->
-                <!-- if you want to use the pop up style (MaterialDesignDataGridTextColumnPopupEditingStyle), you must use MaterialDataGridTextColumn -->
-                <materialDesign:MaterialDataGridTextColumn Binding="{Binding Width}" Width="*"
-                                                        Header="Width"   
-                                                        />
-                <!-- set a max length to get an indicator in the editor -->
-                <materialDesign:MaterialDataGridTextColumn Binding="{Binding PixelsWidth}" Width="*"
-                                                        Header="PixelsWidth"
-                                                        />
-                <materialDesign:MaterialDataGridComboBoxColumn Header="­Plan" 
+                <DataGridTemplateColumn Header="名称" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBlock Text="{Binding Name}" TextTrimming="WordEllipsis" TextWrapping="NoWrap"/>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="尺寸规格" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBlock TextTrimming="WordEllipsis" TextWrapping="NoWrap">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource SizeMultiValueConverter}">
+                                            <Binding Path="Width" />
+                                            <Binding Path="Height" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="像素规格" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBlock TextTrimming="WordEllipsis" TextWrapping="NoWrap">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource SizeMultiValueConverter}">
+                                            <Binding Path="PixelsWidth" />
+                                            <Binding Path="PixelsHeight" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+              
+                <materialDesign:MaterialDataGridComboBoxColumn Header="­播放方案" Width="2*"
                                                                DisplayMemberPath="FileName"
                                                                SelectedItemBinding="{Binding SelectedScheduleSummaryFile, UpdateSourceTrigger=PropertyChanged}"
                                                                ItemsSourceBinding="{Binding ScheduleList.ScheduleSummaryList}" />
 
-                <DataGridTemplateColumn Header=""
-                                        Width="*">
+                <DataGridTemplateColumn Header="操作" Width="200">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid>
@@ -46,7 +81,6 @@
                                     <mycontrol:ExpanderMenuItem Style="{StaticResource PublishExpanderMenuItemStyle}" Command="{Binding PublishScheduleCommand}"/>
                                     <mycontrol:ExpanderMenuItem Style="{StaticResource PreviewExpanderMenuItemStyle}" Command="{Binding PreviewScheduleCommand}"/>
                                 </mycontrol:ExpanderMenu>
-
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

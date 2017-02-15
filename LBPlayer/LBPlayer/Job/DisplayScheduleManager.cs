@@ -102,7 +102,7 @@ namespace LBPlayer.Job
                             foreach (var mediaItem in stageItem.MediaList)
                             {
                                 string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
-                                if (File.Exists(mediaPath) && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath))
+                                if (File.Exists(mediaPath))/* && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath)*/
                                 {
                                     mediaPathList.Add(mediaPath);
                                 }
@@ -113,24 +113,7 @@ namespace LBPlayer.Job
                                 }
                             }
 
-                            JobDataMap jobDataMap = new JobDataMap();
-                            jobDataMap.Add("ScheduleName", schedule.Name);
-                            jobDataMap.Add("ScheduledStageInfo", string.Format("{0}~{1}", stageItem.StartTime, stageItem.EndTime));
-                            jobDataMap.Add("MediaPathList", mediaPathList);
-                            jobDataMap.Add("LoopCount", stageItem.LoopCount);
-
-                            IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
-                                .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
-                                .UsingJobData(jobDataMap)
-                                .Build();
-
-                            ISimpleTrigger trigger = (ISimpleTrigger)TriggerBuilder.Create()
-                                .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
-                                .StartAt(stageItem.StartTime)
-                                .EndAt(stageItem.EndTime)
-                                .Build();
-
-                            ScheduleJob(job, trigger, JobType.Main);
+                            GenerateJobSchedule(schedule, stageItem, mediaPathList, regionItem);
                         }
                     }
                     else if (regionItem.ScheduleMode == ScheduleMode.CPM)
@@ -157,6 +140,29 @@ namespace LBPlayer.Job
             }
 
             Log4NetLogger.LogInfo(string.Format("应用播放方案{0}", schedule.Name));
+        }
+
+        private void GenerateJobSchedule(Schedule schedule, ScheduledStage stageItem, IList<string> mediaPathList,
+            DisplayRegion regionItem)
+        {
+            JobDataMap jobDataMap = new JobDataMap();
+            jobDataMap.Add("ScheduleName", schedule.Name);
+            jobDataMap.Add("ScheduledStageInfo", string.Format("{0}~{1}", stageItem.StartTime, stageItem.EndTime));
+            jobDataMap.Add("MediaPathList", mediaPathList);
+            jobDataMap.Add("LoopCount", stageItem.LoopCount);
+
+            IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
+                .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
+                .UsingJobData(jobDataMap)
+                .Build();
+
+            ITrigger trigger = (ITrigger)TriggerBuilder.Create()
+                .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
+                .StartAt(stageItem.StartTime)
+                .EndAt(stageItem.EndTime)
+                .Build();
+
+            ScheduleJob(job, trigger, JobType.Main);
         }
 
         private bool ApplayManualSchedule(Schedule schedule, DisplayRegion region, ScheduledStage stage)
@@ -244,7 +250,7 @@ namespace LBPlayer.Job
                     .UsingJobData(jobDataMap)
                     .Build();
 
-                
+
                 var trigger = TriggerBuilder.Create()
                      .WithCronSchedule(cron)
                      .Build();
@@ -253,30 +259,67 @@ namespace LBPlayer.Job
             }
             else if (stage.ArrangementMode == ArrangementMode.MixedCovered)
             {
-                List<LBManager.Infrastructure.Models.Media> unitMediaList = new List<LBManager.Infrastructure.Models.Media>();
+                List<LBManager.Infrastructure.Models.Media> userMediaList = new List<LBManager.Infrastructure.Models.Media>();
+
                 int findCount = stage.MediaList.Max(m => m.LoopCount);
+                var publicMedias = stage.MediaList.Where(m => m.Category == MediaCategory.PSAs).ToList();
                 for (int i = 0; i < findCount; i++)
                 {
                     foreach (var media in stage.MediaList)
                     {
-                        if (media.LoopCount > 0)
+                        if (media.Category == MediaCategory.UserAd && media.LoopCount > 0)
                         {
-                            unitMediaList.Add(media);
+                            userMediaList.Add(media);
                             media.LoopCount--;
                         }
                     }
                 }
 
                 int repeatCount;
-                var realTotalTime = unitMediaList.Sum(m => m.Duration.TotalSeconds);
-                var planTotalTime = (stage.EndTime.TimeOfDay - stage.StartTime.TimeOfDay).TotalSeconds;
-                if (realTotalTime > 1)
-                    repeatCount = (int)(planTotalTime / realTotalTime) + 1;
-                else
-                    repeatCount = (int)planTotalTime;
+                var realTotalTime = userMediaList.Sum(m => m.Duration.TotalSeconds);
+                var planTotalTime = (stage.EndTime - stage.StartTime).TotalSeconds;
+                var remainingTime = (int)(planTotalTime - realTotalTime);
+                List<LBManager.Infrastructure.Models.Media> playMediaList = new List<LBManager.Infrastructure.Models.Media>(userMediaList);
+                int minPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
+                int maxPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
+                var minPublicMedia = publicMedias.First(m => (int)m.Duration.TotalSeconds == minPublicMediaSeconds);
+                int insertIndex = 0;
+                int publishMediaIndex = 0;
+                while (remainingTime > 0)
+                {
+                    int minDiff = remainingTime - maxPublicMediaSeconds;
+                    int maxDiff = remainingTime - minPublicMediaSeconds;
+                    int index = (2 * insertIndex + 1) >= playMediaList.Count - 1 ? playMediaList.Count - 1 : 2 * insertIndex + 1;
+                    LBManager.Infrastructure.Models.Media insertItem = publishMediaIndex >= publicMedias.Count - 1
+                        ? publicMedias[publicMedias.Count - 1]
+                        : publicMedias[publishMediaIndex];
+                    if (minDiff >= 0)
+                    {
+                        if (index == playMediaList.Count - 1)
+                            playMediaList.Add(insertItem);
+                        else
+                            playMediaList.Insert(index, insertItem);
+                        remainingTime = minDiff;
+                    }
+                    else
+                    {
+                        if (maxDiff >= 0)
+                        {
+                            playMediaList.Insert(index, minPublicMedia);
+                            remainingTime = maxDiff;
+                        }
+                        else
+                        {
+                            playMediaList.Add(insertItem);
+                            break;
+                        }
+                    }
+                    insertIndex++;
+                    publishMediaIndex++;
+                }
 
                 IList<string> mediaPathList = new List<string>();
-                foreach (var mediaItem in unitMediaList)
+                foreach (var mediaItem in playMediaList)
                 {
                     string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
                     if (File.Exists(mediaPath))/*&& mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath)*/
@@ -298,14 +341,14 @@ namespace LBPlayer.Job
                 jobDataMap.Add("ScheduleName", schedule.Name);
                 jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stage.Cron));
                 jobDataMap.Add("MediaPathList", mediaPathList);
-                jobDataMap.Add("LoopCount", repeatCount);
+                jobDataMap.Add("LoopCount", 1);
 
                 IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
                     .WithIdentity(Guid.NewGuid().ToString(), region.Name)
                     .UsingJobData(jobDataMap)
                     .Build();
 
-               
+
                 var trigger = TriggerBuilder.Create()
                      .WithCronSchedule(cron)
                      .Build();
@@ -404,30 +447,66 @@ namespace LBPlayer.Job
             }
             else if (stage.ArrangementMode == ArrangementMode.MixedCovered)
             {
-                List<LBManager.Infrastructure.Models.Media> unitMediaList = new List<LBManager.Infrastructure.Models.Media>();
+                List<LBManager.Infrastructure.Models.Media> userMediaList = new List<LBManager.Infrastructure.Models.Media>();
+
                 int findCount = stage.MediaList.Max(m => m.LoopCount);
+                var publicMedias = stage.MediaList.Where(m => m.Category == MediaCategory.PSAs).ToList();
                 for (int i = 0; i < findCount; i++)
                 {
                     foreach (var media in stage.MediaList)
                     {
-                        if (media.LoopCount > 0)
+                        if (media.Category == MediaCategory.UserAd && media.LoopCount > 0)
                         {
-                            unitMediaList.Add(media);
+                            userMediaList.Add(media);
                             media.LoopCount--;
                         }
                     }
                 }
 
                 int repeatCount;
-                var realTotalTime = unitMediaList.Sum(m => m.Duration.TotalSeconds);
+                var realTotalTime = userMediaList.Sum(m => m.Duration.TotalSeconds);
                 var planTotalTime = (stage.EndTime - stage.StartTime).TotalSeconds;
-                if (realTotalTime > 1)
-                    repeatCount = (int)(planTotalTime / realTotalTime) + 1;
-                else
-                    repeatCount = (int)planTotalTime;
+                var remainingTime = (int)(planTotalTime - realTotalTime);
+                List<LBManager.Infrastructure.Models.Media> playMediaList = new List<LBManager.Infrastructure.Models.Media>(userMediaList);
+                int minPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
+                int maxPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
+                var minPublicMedia = publicMedias.First(m => (int)m.Duration.TotalSeconds == minPublicMediaSeconds);
+                int insertIndex = 0;
+                int publishMediaIndex = 0;
+                while (remainingTime > 0)
+                {
+                    int minDiff = remainingTime - maxPublicMediaSeconds;
+                    int maxDiff = remainingTime - minPublicMediaSeconds;
+                    int index = (2 * insertIndex + 1) >= playMediaList.Count - 1 ? playMediaList.Count - 1 : 2 * insertIndex + 1;
+                    LBManager.Infrastructure.Models.Media insertItem = publishMediaIndex >= publicMedias.Count - 1
+                        ? publicMedias[publicMedias.Count - 1]
+                        : publicMedias[publishMediaIndex];
+                    if (minDiff >= 0)
+                    {
+
+                        playMediaList.Insert(index, insertItem);
+                        remainingTime = minDiff;
+                    }
+                    else
+                    {
+                        if (maxDiff >= 0)
+                        {
+                            playMediaList.Insert(index, minPublicMedia);
+                            remainingTime = maxDiff;
+                        }
+                        else
+                        {
+                            playMediaList.Add(insertItem);
+                            break;
+                        }
+                    }
+                    insertIndex++;
+                    publishMediaIndex++;
+                }
+
 
                 IList<string> mediaPathList = new List<string>();
-                foreach (var mediaItem in unitMediaList)
+                foreach (var mediaItem in playMediaList)
                 {
                     string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
                     if (File.Exists(mediaPath))/*&& mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath)*/
@@ -445,7 +524,7 @@ namespace LBPlayer.Job
                 jobDataMap.Add("ScheduleName", schedule.Name);
                 jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stage.Cron));
                 jobDataMap.Add("MediaPathList", mediaPathList);
-                jobDataMap.Add("LoopCount", repeatCount);
+                jobDataMap.Add("LoopCount", 1);
 
                 IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
                     .WithIdentity(Guid.NewGuid().ToString(), region.Name)
