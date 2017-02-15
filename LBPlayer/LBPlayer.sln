@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpTest", "..\Common\HttpC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JumpKick.HttpLib", "..\Common\httplib-2.0.13\JumpKick.HttpLib\JumpKick.HttpLib\JumpKick.HttpLib.csproj", "{D626C4EC-D793-4541-8631-1AF678A29490}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LEDScreenSDK", "..\Common\LEDScreenSDK\LEDScreenSDK.vcxproj", "{546EF49C-2654-4B15-BFF2-18F32A8D7F31}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBManager.Infrastructure", "..\LBManager\LBManager.Infrastructure\LBManager.Infrastructure.csproj", "{AE40C0E5-6C31-4364-874D-6A0A6C028367}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBPlayer", "LBPlayer\LBPlayer.csproj", "{FF243575-AED2-4247-BE00-8E3AEB264043}"
@@ -137,16 +135,6 @@ Global
 		{D626C4EC-D793-4541-8631-1AF678A29490}.Release|x64.Build.0 = Release|Any CPU
 		{D626C4EC-D793-4541-8631-1AF678A29490}.Release|x86.ActiveCfg = Release|Any CPU
 		{D626C4EC-D793-4541-8631-1AF678A29490}.Release|x86.Build.0 = Release|Any CPU
-		{546EF49C-2654-4B15-BFF2-18F32A8D7F31}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{546EF49C-2654-4B15-BFF2-18F32A8D7F31}.Debug|x64.ActiveCfg = Debug|x64
-		{546EF49C-2654-4B15-BFF2-18F32A8D7F31}.Debug|x64.Build.0 = Debug|x64
-		{546EF49C-2654-4B15-BFF2-18F32A8D7F31}.Debug|x86.ActiveCfg = Debug|Win32
-		{546EF49C-2654-4B15-BFF2-18F32A8D7F31}.Debug|x86.Build.0 = Debug|Win32
-		{546EF49C-2654-4B15-BFF2-18F32A8D7F31}.Release|Any CPU.ActiveCfg = Release|Win32
-		{546EF49C-2654-4B15-BFF2-18F32A8D7F31}.Release|x64.ActiveCfg = Release|x64
-		{546EF49C-2654-4B15-BFF2-18F32A8D7F31}.Release|x64.Build.0 = Release|x64
-		{546EF49C-2654-4B15-BFF2-18F32A8D7F31}.Release|x86.ActiveCfg = Release|Win32
-		{546EF49C-2654-4B15-BFF2-18F32A8D7F31}.Release|x86.Build.0 = Release|Win32
 		{AE40C0E5-6C31-4364-874D-6A0A6C028367}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AE40C0E5-6C31-4364-874D-6A0A6C028367}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE40C0E5-6C31-4364-874D-6A0A6C028367}.Debug|x64.ActiveCfg = Debug|Any CPU
