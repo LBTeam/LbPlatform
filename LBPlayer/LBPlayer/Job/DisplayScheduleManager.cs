@@ -167,58 +167,67 @@ namespace LBPlayer.Job
 
         private bool ApplayManualSchedule(Schedule schedule, DisplayRegion region, ScheduledStage stage)
         {
-            if (stage.ArrangementMode == ArrangementMode.Manual)
+            //if (stage.ArrangementMode == ArrangementMode.Manual)
+            //{
+            //    IList<string> mediaPathList = new List<string>();
+            //    foreach (var mediaItem in stage.MediaList)
+            //    {
+            //        string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
+            //        if (File.Exists(mediaPath))/* && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath)*/
+            //        {
+            //            for (int i = 0; i < mediaItem.LoopCount; i++)
+            //            {
+            //                mediaPathList.Add(mediaPath);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", schedule, mediaPath));
+            //            return false;
+            //        }
+            //    }
+
+            //    string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
+            //    string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
+            //    string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
+
+            //    JobDataMap jobDataMap = new JobDataMap();
+            //    jobDataMap.Add("ScheduleName", schedule.Name);
+            //    jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stage.Cron));
+            //    jobDataMap.Add("MediaPathList", mediaPathList);
+            //    jobDataMap.Add("LoopCount", stage.LoopCount);
+
+            //    IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
+            //        .WithIdentity(Guid.NewGuid().ToString(), region.Name)
+            //        .UsingJobData(jobDataMap)
+            //        .Build();
+
+            //    var trigger = TriggerBuilder.Create()
+            //         .WithCronSchedule(cron)
+            //         .Build();
+
+            //    ScheduleJob(job, trigger, JobType.Main);
+            //}
+            if (stage.ArrangementMode == ArrangementMode.StandardCovered || stage.ArrangementMode == ArrangementMode.Manual)
             {
-                IList<string> mediaPathList = new List<string>();
-                foreach (var mediaItem in stage.MediaList)
+             
+                List<LBManager.Infrastructure.Models.Media> userMediaList = new List<LBManager.Infrastructure.Models.Media>();
+
+                foreach (var media in stage.MediaList)
                 {
-                    string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
-                    if (File.Exists(mediaPath))/* && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath)*/
+                    if (media.Category == MediaCategory.UserAd && media.LoopCount > 0)
                     {
-                        for (int i = 0; i < mediaItem.LoopCount; i++)
-                        {
-                            mediaPathList.Add(mediaPath);
-                        }
-                    }
-                    else
-                    {
-                        Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", schedule, mediaPath));
-                        return false;
+                        userMediaList.Add(media);
+                        media.LoopCount--;
                     }
                 }
 
-                string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
-                string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
-                string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
+                var publicMedias = stage.MediaList.Where(m => m.Category == MediaCategory.PSAs).ToList();
 
-                JobDataMap jobDataMap = new JobDataMap();
-                jobDataMap.Add("ScheduleName", schedule.Name);
-                jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stage.Cron));
-                jobDataMap.Add("MediaPathList", mediaPathList);
-                jobDataMap.Add("LoopCount", stage.LoopCount);
+                var playMediaList = MakePlayMediaList(stage, userMediaList, publicMedias);
 
-                IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
-                    .WithIdentity(Guid.NewGuid().ToString(), region.Name)
-                    .UsingJobData(jobDataMap)
-                    .Build();
-
-                var trigger = TriggerBuilder.Create()
-                     .WithCronSchedule(cron)
-                     .Build();
-
-                ScheduleJob(job, trigger, JobType.Main);
-            }
-            else if (stage.ArrangementMode == ArrangementMode.StandardCovered)
-            {
-                int repeatCount;
-                var realTotalTime = stage.MediaList.Sum(m => m.Duration.TotalSeconds * m.LoopCount);
-                var planTotalTime = (stage.EndTime.TimeOfDay - stage.StartTime.TimeOfDay).TotalSeconds;
-                if (realTotalTime > 1)
-                    repeatCount = (int)(planTotalTime / realTotalTime) + 1;
-                else
-                    repeatCount = (int)planTotalTime;
                 IList<string> mediaPathList = new List<string>();
-                foreach (var mediaItem in stage.MediaList)
+                foreach (var mediaItem in playMediaList)
                 {
                     string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
                     if (File.Exists(mediaPath))/*&& mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath)*/
@@ -235,6 +244,8 @@ namespace LBPlayer.Job
                     }
                 }
 
+               
+
                 string dailyPart = stage.StartTime.Day == stage.EndTime.Day ? stage.StartTime.Day.ToString() : stage.StartTime.Day + "-" + stage.EndTime.Day;
                 string monthPart = stage.StartTime.Month == stage.EndTime.Month ? stage.StartTime.Month.ToString() : stage.StartTime.Month + "-" + stage.EndTime.Month;
                 string cron = string.Format("{0} {1} {2} {3} {4} ? *", stage.StartTime.Second, stage.StartTime.Minute, stage.StartTime.Hour, dailyPart, monthPart);
@@ -243,7 +254,7 @@ namespace LBPlayer.Job
                 jobDataMap.Add("ScheduleName", schedule.Name);
                 jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stage.Cron));
                 jobDataMap.Add("MediaPathList", mediaPathList);
-                jobDataMap.Add("LoopCount", repeatCount);
+                jobDataMap.Add("LoopCount", 1);
 
                 IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
                     .WithIdentity(Guid.NewGuid().ToString(), region.Name)
@@ -275,48 +286,7 @@ namespace LBPlayer.Job
                     }
                 }
 
-                int repeatCount;
-                var realTotalTime = userMediaList.Sum(m => m.Duration.TotalSeconds);
-                var planTotalTime = (stage.EndTime - stage.StartTime).TotalSeconds;
-                var remainingTime = (int)(planTotalTime - realTotalTime);
-                List<LBManager.Infrastructure.Models.Media> playMediaList = new List<LBManager.Infrastructure.Models.Media>(userMediaList);
-                int minPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
-                int maxPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
-                var minPublicMedia = publicMedias.First(m => (int)m.Duration.TotalSeconds == minPublicMediaSeconds);
-                int insertIndex = 0;
-                int publishMediaIndex = 0;
-                while (remainingTime > 0)
-                {
-                    int minDiff = remainingTime - maxPublicMediaSeconds;
-                    int maxDiff = remainingTime - minPublicMediaSeconds;
-                    int index = (2 * insertIndex + 1) >= playMediaList.Count - 1 ? playMediaList.Count - 1 : 2 * insertIndex + 1;
-                    LBManager.Infrastructure.Models.Media insertItem = publishMediaIndex >= publicMedias.Count - 1
-                        ? publicMedias[publicMedias.Count - 1]
-                        : publicMedias[publishMediaIndex];
-                    if (minDiff >= 0)
-                    {
-                        if (index == playMediaList.Count - 1)
-                            playMediaList.Add(insertItem);
-                        else
-                            playMediaList.Insert(index, insertItem);
-                        remainingTime = minDiff;
-                    }
-                    else
-                    {
-                        if (maxDiff >= 0)
-                        {
-                            playMediaList.Insert(index, minPublicMedia);
-                            remainingTime = maxDiff;
-                        }
-                        else
-                        {
-                            playMediaList.Add(insertItem);
-                            break;
-                        }
-                    }
-                    insertIndex++;
-                    publishMediaIndex++;
-                }
+                var playMediaList = MakePlayMediaList(stage, userMediaList, publicMedias);
 
                 IList<string> mediaPathList = new List<string>();
                 foreach (var mediaItem in playMediaList)
@@ -362,56 +332,113 @@ namespace LBPlayer.Job
             return true;
         }
 
-        private bool ApplayDailySchedule(Schedule schedule, DisplayRegion region, ScheduledStage stage)
+        private List<LBManager.Infrastructure.Models.Media> MakePlayMediaList(ScheduledStage stage, List<LBManager.Infrastructure.Models.Media> userMediaList, List<LBManager.Infrastructure.Models.Media> publicMedias)
         {
-            if (stage.ArrangementMode == ArrangementMode.Manual)
+            int repeatCount;
+            var realTotalTime = userMediaList.Sum(m => m.Duration.TotalSeconds);
+            var planTotalTime = (stage.EndTime - stage.StartTime).TotalSeconds;
+            var remainingTime = (int) (planTotalTime - realTotalTime);
+            List<LBManager.Infrastructure.Models.Media> playMediaList =
+                new List<LBManager.Infrastructure.Models.Media>(userMediaList);
+            int minPublicMediaSeconds = (int) publicMedias.Min(m => m.Duration.TotalSeconds);
+            int maxPublicMediaSeconds = (int) publicMedias.Min(m => m.Duration.TotalSeconds);
+            var minPublicMedia = publicMedias.FirstOrDefault(m => (int) m.Duration.TotalSeconds == minPublicMediaSeconds);
+            int insertIndex = 0;
+            int publishMediaIndex = 0;
+            while (remainingTime > 0)
             {
-                IList<string> mediaPathList = new List<string>();
-                foreach (var mediaItem in stage.MediaList)
+                int minDiff = remainingTime - maxPublicMediaSeconds;
+                int maxDiff = remainingTime - minPublicMediaSeconds;
+                int index = (2*insertIndex + 1) >= playMediaList.Count - 1 ? playMediaList.Count - 1 : 2*insertIndex + 1;
+                LBManager.Infrastructure.Models.Media insertItem = publishMediaIndex >= publicMedias.Count - 1
+                    ? publicMedias[publicMedias.Count - 1]
+                    : publicMedias[publishMediaIndex];
+                if (minDiff >= 0)
                 {
-                    string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
-                    if (File.Exists(mediaPath))/* && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath)*/
+                    if (index == playMediaList.Count - 1)
+                        playMediaList.Add(insertItem);
+                    else
+                        playMediaList.Insert(index, insertItem);
+                    remainingTime = minDiff;
+                }
+                else
+                {
+                    if (maxDiff >= 0)
                     {
-                        for (int i = 0; i < mediaItem.LoopCount; i++)
-                        {
-                            mediaPathList.Add(mediaPath);
-                        }
+                        if (minPublicMedia != null)
+                            playMediaList.Insert(index, minPublicMedia);
+                        remainingTime = maxDiff;
                     }
                     else
                     {
-                        Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", schedule, mediaPath));
-                        return false;
+                        playMediaList.Add(insertItem);
+                        break;
+                    }
+                }
+                insertIndex++;
+                publishMediaIndex++;
+            }
+            return playMediaList;
+        }
+
+        private bool ApplayDailySchedule(Schedule schedule, DisplayRegion region, ScheduledStage stage)
+        {
+            //if (stage.ArrangementMode == ArrangementMode.Manual)
+            //{
+            //    IList<string> mediaPathList = new List<string>();
+            //    foreach (var mediaItem in stage.MediaList)
+            //    {
+            //        string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
+            //        if (File.Exists(mediaPath))/* && mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath)*/
+            //        {
+            //            for (int i = 0; i < mediaItem.LoopCount; i++)
+            //            {
+            //                mediaPathList.Add(mediaPath);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            Log4NetLogger.LogDebug(string.Format("获取当前排期{0}中媒体{1}失败。", schedule, mediaPath));
+            //            return false;
+            //        }
+            //    }
+
+            //    JobDataMap jobDataMap = new JobDataMap();
+            //    jobDataMap.Add("ScheduleName", schedule.Name);
+            //    jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stage.Cron));
+            //    jobDataMap.Add("MediaPathList", mediaPathList);
+            //    jobDataMap.Add("LoopCount", stage.LoopCount);
+
+            //    IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
+            //        .WithIdentity(Guid.NewGuid().ToString(), region.Name)
+            //        .UsingJobData(jobDataMap)
+            //        .Build();
+
+            //    var trigger = TriggerBuilder.Create()
+            //        .WithCronSchedule(stage.Cron)
+            //        .Build();
+
+            //    ScheduleJob(job, trigger, JobType.Main);
+            //}
+            if (stage.ArrangementMode == ArrangementMode.StandardCovered || stage.ArrangementMode == ArrangementMode.Manual)
+            {
+                List<LBManager.Infrastructure.Models.Media> userMediaList = new List<LBManager.Infrastructure.Models.Media>();
+
+                foreach (var media in stage.MediaList)
+                {
+                    if (media.Category == MediaCategory.UserAd && media.LoopCount > 0)
+                    {
+                        userMediaList.Add(media);
+                        media.LoopCount--;
                     }
                 }
 
-                JobDataMap jobDataMap = new JobDataMap();
-                jobDataMap.Add("ScheduleName", schedule.Name);
-                jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stage.Cron));
-                jobDataMap.Add("MediaPathList", mediaPathList);
-                jobDataMap.Add("LoopCount", stage.LoopCount);
+                var publicMedias = stage.MediaList.Where(m => m.Category == MediaCategory.PSAs).ToList();
 
-                IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
-                    .WithIdentity(Guid.NewGuid().ToString(), region.Name)
-                    .UsingJobData(jobDataMap)
-                    .Build();
+                var playMediaList = MakePlayMediaList(stage, userMediaList, publicMedias);
 
-                var trigger = TriggerBuilder.Create()
-                    .WithCronSchedule(stage.Cron)
-                    .Build();
-
-                ScheduleJob(job, trigger, JobType.Main);
-            }
-            else if (stage.ArrangementMode == ArrangementMode.StandardCovered)
-            {
-                int repeatCount;
-                var realTotalTime = stage.MediaList.Sum(m => m.Duration.TotalSeconds * m.LoopCount);
-                var planTotalTime = (stage.EndTime - stage.StartTime).TotalSeconds;
-                if (realTotalTime > 1)
-                    repeatCount = (int)(planTotalTime / realTotalTime) + 1;
-                else
-                    repeatCount = (int)planTotalTime;
                 IList<string> mediaPathList = new List<string>();
-                foreach (var mediaItem in stage.MediaList)
+                foreach (var mediaItem in playMediaList)
                 {
                     string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
                     if (File.Exists(mediaPath))/*&& mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath)*/
@@ -432,7 +459,7 @@ namespace LBPlayer.Job
                 jobDataMap.Add("ScheduleName", schedule.Name);
                 jobDataMap.Add("ScheduledStageInfo", string.Format("{0}", stage.Cron));
                 jobDataMap.Add("MediaPathList", mediaPathList);
-                jobDataMap.Add("LoopCount", repeatCount);
+                jobDataMap.Add("LoopCount", 1);
 
                 IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
                     .WithIdentity(Guid.NewGuid().ToString(), region.Name)
@@ -463,46 +490,7 @@ namespace LBPlayer.Job
                     }
                 }
 
-                int repeatCount;
-                var realTotalTime = userMediaList.Sum(m => m.Duration.TotalSeconds);
-                var planTotalTime = (stage.EndTime - stage.StartTime).TotalSeconds;
-                var remainingTime = (int)(planTotalTime - realTotalTime);
-                List<LBManager.Infrastructure.Models.Media> playMediaList = new List<LBManager.Infrastructure.Models.Media>(userMediaList);
-                int minPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
-                int maxPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
-                var minPublicMedia = publicMedias.First(m => (int)m.Duration.TotalSeconds == minPublicMediaSeconds);
-                int insertIndex = 0;
-                int publishMediaIndex = 0;
-                while (remainingTime > 0)
-                {
-                    int minDiff = remainingTime - maxPublicMediaSeconds;
-                    int maxDiff = remainingTime - minPublicMediaSeconds;
-                    int index = (2 * insertIndex + 1) >= playMediaList.Count - 1 ? playMediaList.Count - 1 : 2 * insertIndex + 1;
-                    LBManager.Infrastructure.Models.Media insertItem = publishMediaIndex >= publicMedias.Count - 1
-                        ? publicMedias[publicMedias.Count - 1]
-                        : publicMedias[publishMediaIndex];
-                    if (minDiff >= 0)
-                    {
-
-                        playMediaList.Insert(index, insertItem);
-                        remainingTime = minDiff;
-                    }
-                    else
-                    {
-                        if (maxDiff >= 0)
-                        {
-                            playMediaList.Insert(index, minPublicMedia);
-                            remainingTime = maxDiff;
-                        }
-                        else
-                        {
-                            playMediaList.Add(insertItem);
-                            break;
-                        }
-                    }
-                    insertIndex++;
-                    publishMediaIndex++;
-                }
+                var playMediaList = MakePlayMediaList(stage, userMediaList, publicMedias);
 
 
                 IList<string> mediaPathList = new List<string>();
