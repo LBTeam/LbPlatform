@@ -410,14 +410,14 @@ class PlayerController extends CommonController
 		$obj = $this->param;
 		$bind_id	= $obj['Id'];
 		$bind_key	= $obj['Key'];
-		$mac		= strtoupper(str_replace(':', '-', $obj['Mac']));
-		$mac		= str_replace('-', '', $obj['Mac']);
-		$picture_bucket = C("oss_picture_bucket");
-		$AliyunOSS = new AliyunOSS();
-		$object = "{$mac}/".date("Ymd")."/".time().".jpg";
-		$sign_url = $AliyunOSS->upload_sign_uri($object, $picture_bucket, 1800);
-		$respones = array("err_code"=>"000000","msg"=>"ok","url"=>$sign_url);
-		$this->ajaxReturn($respones);
+        $mac		= strtoupper(str_replace(':', '-', $obj['Mac']));
+        $mac		= str_replace('-', '', $obj['Mac']);
+        $picture_bucket = C("oss_picture_bucket");
+        $AliyunOSS = new AliyunOSS();
+        $object = "{$mac}/".date("Ymd")."/".time().".jpg";
+        $sign_url = $AliyunOSS->upload_sign_uri($object, $picture_bucket, 1800);
+        $respones = array("err_code"=>"000000","msg"=>"ok","url"=>$sign_url);
+        $this->ajaxReturn($respones);
 	}
 	
 	/**
