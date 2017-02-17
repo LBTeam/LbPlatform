@@ -28,8 +28,10 @@
 	            	<form action="{:U()}" method="post" class="form col-lg-6" role="form" >
 					<div class="col-lg-6">
 						<div class="form-group">
-		                    <label class="item-label">屏幕名称（播放器名称）</label>
-		                    <input type="text" class="form-control" value="{$name}（{$p_name}）" />
+		                    <!--<label class="item-label">屏幕名称（播放器名称）</label>
+		                    <input type="text" class="form-control" value="{$name}（{$p_name}）" disabled="disabled"/>-->
+							<label class="item-label">屏幕名称</label>
+							<input type="text" class="form-control" value="{$name}" disabled="disabled"/>
 		                </div>
 				    	<div class="form-group">
 		                    <label class="item-label">CPU使用率<span class="check-tips">（单位[%]）</span> </label>
