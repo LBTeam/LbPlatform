@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Models = LBManager.Infrastructure.Models;
 
 namespace LBPlayer
 {
@@ -15,6 +16,9 @@ namespace LBPlayer
 
         // 定义一个标识确保线程同步
         private static readonly object locker = new object();
+
+        private OnCompletedPlayDelegate MediaDisplayCompletedDelegate;
+        public event OnCompletedPlayDelegate OnMediaDisplayCompletedEvent;
 
         // 定义私有构造函数，使外界不能创建该类实例
         private LEDScreenDisplayer()
@@ -56,23 +60,24 @@ namespace LBPlayer
             Action displayAction = new Action(() =>
             {
                 _screenPlayer = new ScreenPlayer(x, y, width, height);
-                _screenPlayer.OnCompletedPlayHandler = MediaDisplayCompleted;
+                MediaDisplayCompletedDelegate = new OnCompletedPlayDelegate(MediaDisplayCompletedHandler);
+                _screenPlayer.OnCompletedPlayHandler = MediaDisplayCompletedDelegate;
                 _screenPlayer.Initialize();
             });
             displayAction.BeginInvoke(null, null);
         }
 
-        private void MediaDisplayCompleted(string message)
+        private void MediaDisplayCompletedHandler(string message)
         {
-            //throw new NotImplementedException();
+            OnMediaDisplayCompletedEvent?.Invoke(message);
         }
 
-        public void DisplayMedias(IList<string> mediaPathList, int loopCount)
+        public void DisplayMedias(IList<Models.Media> mediaPathList, int loopCount)
         {
             List<PlayInfoWrapper> playInfos = new List<PlayInfoWrapper>();
             foreach (var item in mediaPathList)
             {
-                playInfos.Add(new PlayInfoWrapper(item, 1, 0, 0, 0, 0));
+                playInfos.Add(new PlayInfoWrapper(item.URL, item.MD5, 1, 0, 0, 0, 0));
             }
             ScheduleInfoWrapper scheduleInfo = new ScheduleInfoWrapper(playInfos, loopCount);
             _screenPlayer.Play(scheduleInfo);

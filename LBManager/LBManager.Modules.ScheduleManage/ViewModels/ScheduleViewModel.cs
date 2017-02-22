@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
+using LBManager.Modules.ScheduleManage.Event;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
@@ -101,7 +102,14 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         public ScheduleType Type
         {
             get { return _type; }
-            set { SetProperty(ref _type, value); }
+            set
+            {
+                if (value != _type)
+                {
+                    Messager.Default.EventAggregator.GetEvent<OnScheduleTypeChangedEvent>().Publish(value);
+                }
+                SetProperty(ref _type, value);
+            }
         }
 
 

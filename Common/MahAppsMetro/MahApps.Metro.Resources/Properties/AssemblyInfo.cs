@@ -7,9 +7,9 @@ using System.Windows;
 
 [assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
 
-[assembly: AssemblyVersion("0.6.17022.1040")]
-[assembly: AssemblyFileVersion("0.6.17022.1040")]
-[assembly: AssemblyInformationalVersion("0.6.17022.1040")]
+[assembly: AssemblyVersion("0.6.17052.0815")]
+[assembly: AssemblyFileVersion("0.6.17052.0815")]
+[assembly: AssemblyInformationalVersion("0.6.17052.0815")]
 [assembly: AssemblyTitle("MahApps.Metro.Resources")]
 [assembly: AssemblyDescription("XAML icon resource for creating Metro styled WPF apps")]
 [assembly: AssemblyProduct("MahApps.Metro.Resources 0.6.1")]

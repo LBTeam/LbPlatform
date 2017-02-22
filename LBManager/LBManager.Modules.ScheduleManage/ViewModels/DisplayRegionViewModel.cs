@@ -23,9 +23,8 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             ScheduledStageList.CollectionChanged += ScheduledStageList_CollectionChanged;
             SelectedScheduledStage = new ScheduledStageViewModel(this);
             ScheduledStageList.Add(SelectedScheduledStage);
-            Messager.Default.EventAggregator.GetEvent<OnTimeValidationTriggeredEvent>().Subscribe(() => { VerifyTime(); });
+            SubscribeEvent();
         }
-
 
 
         public DisplayRegionViewModel(DisplayRegion displayRegion)
@@ -53,9 +52,30 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
                 ManualScheduleSetting.EndDate = SelectedScheduledStage.EndTime;
             }
 
-            Messager.Default.EventAggregator.GetEvent<OnTimeValidationTriggeredEvent>().Subscribe(() => { VerifyTime(); });
+            SubscribeEvent();
         }
 
+
+        private void SubscribeEvent()
+        {
+            Messager.Default.EventAggregator.GetEvent<OnTimeValidationTriggeredEvent>().Subscribe(() => { VerifyTime(); });
+            Messager.Default.EventAggregator.GetEvent<OnScheduleTypeChangedEvent>()
+              .Subscribe(ScheduleTypeChangedHandler);
+        }
+
+        private void ScheduleTypeChangedHandler(ScheduleType type)
+        {
+            if (type == ScheduleType.Emergency)
+            {
+                ScheduleMode = ScheduleMode.CPM;
+                RepeatMode = RepeatMode.Manual;
+                IsEmergencyScheduleType = true;
+            }
+            else
+            {
+                IsEmergencyScheduleType = false;
+            }
+        }
 
         private void VerifyTime()
         {
@@ -128,6 +148,13 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         {
             get { return _heigh; }
             set { SetProperty(ref _heigh, value); }
+        }
+
+        private bool _isEmergencyScheduleType = false;
+        public bool IsEmergencyScheduleType
+        {
+            get { return _isEmergencyScheduleType; }
+            set { SetProperty(ref _isEmergencyScheduleType, value); }
         }
 
         private ScheduleMode _scheduleMode = ScheduleMode.CPM;

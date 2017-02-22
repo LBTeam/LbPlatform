@@ -33,8 +33,9 @@ namespace LBPlayer
     public partial class LBPlayerMain : Skin_Color
     {
         #region 字段（锁定）
+
         private KeyboardHelper _hook = new KeyboardHelper();
-        private const int WM_POWERBROADCAST = 0x218;         //此消息发送给应用程序来通知它有关电源管理事件
+        private const int WM_POWERBROADCAST = 0x218; //此消息发送给应用程序来通知它有关电源管理事件
         private const int BROADCAST_QUERY_DENY = 0x424D5144; //广播返回值为阻止事件发生
         private readonly string TASKMGR_NAME = "taskmgr.exe";
         private FileStream _TaskMgrStream;
@@ -42,6 +43,7 @@ namespace LBPlayer
         private Encryption _keyPasswordWindow = new Encryption();
 
         #endregion
+
         #region 字段
 
         private ScreenCapture _screenCapture;
@@ -65,15 +67,21 @@ namespace LBPlayer
         private ScreenCapture _screenCaptrue = new ScreenCapture();
         private int HeartBeatFailCount = 0;
         private ScreenPlayer _screenPlayer;
+
         #endregion
+
         #region 构造函数
+
         public LBPlayerMain()
         {
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
         }
+
         #endregion
+
         #region 心跳
+
         /// <summary>
         /// 心跳结束事件
         /// </summary>
@@ -95,6 +103,7 @@ namespace LBPlayer
             HartBeatHandle(hartBeatResponseObj);
 
         }
+
         /// <summary>
         /// 处理心跳结果
         /// </summary>
@@ -112,6 +121,7 @@ namespace LBPlayer
             }
             XmlUtil.XmlSerializeToFile(_cmdList, _cmdSavePath, Encoding.UTF8);
         }
+
         /// <summary>
         /// 心跳开始事件
         /// </summary>
@@ -128,8 +138,11 @@ namespace LBPlayer
             args.PollData = JsonConvert.SerializeObject(obj);
             //SetControlText(skinLabel8, "开始心跳");
         }
+
         #endregion
+
         #region 长连接
+
         private void initialWebSocket(string url)
         {
             _webSocket = new WebSocket(url);
@@ -175,8 +188,11 @@ namespace LBPlayer
         {
 
         }
+
         #endregion
+
         #region 初始化
+
         /// <summary>
         /// 初始化配置文件
         /// </summary>
@@ -186,6 +202,7 @@ namespace LBPlayer
             _config = ConfigTool.ReadConfigData();
             Log4NetLogger.LogDebug(string.Format("---初始化配置文件---\r\n{0}", JsonConvert.SerializeObject(_config)));
         }
+
         /// <summary>
         /// 初始化工作目录
         /// </summary>
@@ -233,6 +250,7 @@ namespace LBPlayer
             }
             Log4NetLogger.LogDebug("初始化工作目录");
         }
+
         /// <summary>
         /// 初始化控件值
         /// </summary>
@@ -274,6 +292,7 @@ namespace LBPlayer
 
             Log4NetLogger.LogDebug("初始化控件值");
         }
+
         /// <summary>
         /// 初始化心跳
         /// </summary>
@@ -287,6 +306,7 @@ namespace LBPlayer
             _poll.Start();
             Log4NetLogger.LogDebug("初始化心跳");
         }
+
         /// <summary>
         /// 启动命令轮询
         /// </summary>
@@ -298,6 +318,7 @@ namespace LBPlayer
             _queryTimer.Enabled = true;
             Log4NetLogger.LogDebug("启动命令轮询");
         }
+
         /// <summary>
         /// 轮询命令事件
         /// </summary>
@@ -346,6 +367,7 @@ namespace LBPlayer
                 }
             }
         }
+
         /// <summary>
         /// 初始化命令列表
         /// </summary>
@@ -370,6 +392,7 @@ namespace LBPlayer
                 return;
             }
         }
+
         /// <summary>
         /// 初始化监控图片上传
         /// </summary>
@@ -379,23 +402,28 @@ namespace LBPlayer
             _monitorDataPoll = new MonitorDataPoll();
             _monitorDataPoll.MonitorDatePollInterval = _config.MonitorDateInterval;
 
-            _monitorDataPoll.SendMonitorDatePollEvent += new SendMonitorDatePollEventHandler(_monitorDataPoll_SendMonitorDatePollEvent);
-            _monitorDataPoll.GetMonitorDatePollResponseEvent += new GetMonitorDatePollResponseEventHandler(_monitorDataPoll_GetMonitorDatePollResponseEvent);
+            _monitorDataPoll.SendMonitorDatePollEvent +=
+                new SendMonitorDatePollEventHandler(_monitorDataPoll_SendMonitorDatePollEvent);
+            _monitorDataPoll.GetMonitorDatePollResponseEvent +=
+                new GetMonitorDatePollResponseEventHandler(_monitorDataPoll_GetMonitorDatePollResponseEvent);
             _monitorDataPoll.Initializer();
             _monitorDataPoll.Start();
             Log4NetLogger.LogDebug("初始化监控图片上传");
         }
+
         /// <summary>
         /// 监控图片上传完成事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void _monitorDataPoll_GetMonitorDatePollResponseEvent(object sender, GetMonitorDatePollResponseEventArgs args)
+        private void _monitorDataPoll_GetMonitorDatePollResponseEvent(object sender,
+            GetMonitorDatePollResponseEventArgs args)
         {
             Log4NetLogger.LogDebug("上传监控完成");
             // Debug.WriteLine("上传监控完成：" + DateTime.Now);
 
         }
+
         /// <summary>
         /// 监控图片上传开始事件
         /// </summary>
@@ -425,7 +453,8 @@ namespace LBPlayer
                 MonitorInfo m = new MonitorInfo(CPUUusage, diskUsage, memoryUsage, CPUTem, fanSpeed);
                 MonitorResult obj = new MonitorResult(_config.ID, _config.Key, _config.Mac, m);
 
-                args.Url = new Uri(ApplicationConfig.BaseURL,ApplicationConfig.MonitorInfoURL).ToString();// ApplicationConfig.BaseURL + "/" + ApplicationConfig.MonitorInfoURL;
+                args.Url = new Uri(ApplicationConfig.BaseURL, ApplicationConfig.MonitorInfoURL).ToString();
+                // ApplicationConfig.BaseURL + "/" + ApplicationConfig.MonitorInfoURL;
                 args.PollData = JsonConvert.SerializeObject(obj);
             }
             catch (Exception ex)
@@ -437,7 +466,10 @@ namespace LBPlayer
 
         private void initialPlay()
         {
-            LEDScreenDisplayer.GetInstance().Initialize(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X), int.Parse(_config.Resoul_Y));
+            LEDScreenDisplayer.GetInstance()
+                .Initialize(int.Parse(_config.Size_X), int.Parse(_config.Size_Y), int.Parse(_config.Resoul_X),
+                    int.Parse(_config.Resoul_Y));
+            LEDScreenDisplayer.GetInstance().OnMediaDisplayCompletedEvent += LBPlayerMain_OnMediaDisplayCompletedEvent;
             Log4NetLogger.LogDebug("初始化播放组件...");
             Thread.Sleep(200);
             GenerateLEDSchedule(_config.CurrentPlanPath);
@@ -445,9 +477,34 @@ namespace LBPlayer
             //   .ContinueWith((t, _) => GenerateLEDSchedule(_config.CurrentPlanPath);, null, TaskScheduler.FromCurrentSynchronizationContext());
 
         }
+
+        private void LBPlayerMain_OnMediaDisplayCompletedEvent(string info)
+        {
+            Action action = new Action((() =>
+            {
+                var playBackInfo = GetPlayBackInfo(info);
+                bool result = UploadPlayBack(playBackInfo);
+                if (result)
+                {
+                    Log4NetLogger.LogDebug($"成功上传播放记录:{info}");
+                }
+            }));
+            action.BeginInvoke(null, null);
+        }
+
+        private PlayBack GetPlayBackInfo(string info)
+        {
+            var obj = JsonConvert.DeserializeObject<Rootobject>(info);
+            return new PlayBack(_config.ID, _config.Key, _config.Mac, obj.MediaName, obj.MediaMD5, obj.StartTime,
+                obj.EndTime);
+        }
+
         #endregion
+
         #region 下载紧急插播
+
         private bool _bDownloadEmergencyPlan = false;
+
         private void DownloadEmergencyPlan(Cmd cmd)
         {
             if (cmd == null || cmd.CmdType != CmdType.EmergencyPlan || _bDownloadEmergencyPlan == true)
@@ -459,7 +516,9 @@ namespace LBPlayer
             string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
             Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
             PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
-            if (!DownloadFile(Path.Combine(ApplicationConfig.GetScheduleFilePath(), Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl, string.Empty))
+            string scheduleFilePath = Path.Combine(ApplicationConfig.GetScheduleFilePath(),
+                Path.GetFileName(planCmdPar.ProgramName));
+            if (!DownloadFile(scheduleFilePath, planCmdPar.ProgramUrl, string.Empty))
             {
                 UploadCmdResult(cr);
                 DeleteCmd(cmd);
@@ -468,7 +527,10 @@ namespace LBPlayer
             }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                if (!DownloadFile(Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl, string.Empty))
+                if (!DownloadMediaFile(Path.Combine(ApplicationConfig.GetMediaFilePath(),
+                                  Path.GetFileName(planCmdPar.Medias[i].MediaName)),
+                                  planCmdPar.Medias[i].MediaUrl,
+                                  string.Empty))
                 {
                     UploadCmdResult(cr);
                     DeleteCmd(cmd);
@@ -477,13 +539,53 @@ namespace LBPlayer
                 }
             }
             cr.CmdRes = true.ToString();
-            UploadCmdResult(cr);
-            DeleteCmd(cmd);
-            _bDownloadEmergencyPlan = false;
+
+            if (UploadCmdResult(cr))
+            {
+                DeleteCmd(cmd);
+                _config.LastEmergencyPlanPath = scheduleFilePath;
+                ConfigTool.SaveConfigData(_config);
+                _bDownloading = false;
+
+                GenerateLEDEmergencySchedule(_config.LastEmergencyPlanPath);
+                // Start();
+            }
+            else
+            {
+                _bDownloading = false;
+            }
         }
+
+        private void GenerateLEDEmergencySchedule(string lastEmergencyPlanPath)
+        {
+            if (string.IsNullOrEmpty(lastEmergencyPlanPath) || !File.Exists(lastEmergencyPlanPath))
+            {
+                Log4NetLogger.LogDebug(string.Format("---插播排期文件{0}不存在---", lastEmergencyPlanPath));
+                return;
+            }
+           
+            var emergencySchedule = ScheduleParser(lastEmergencyPlanPath);
+            if (emergencySchedule == null)
+            {
+                Log4NetLogger.LogDebug(string.Format("获取当前排期{0}失败。", lastEmergencyPlanPath));
+                return;
+            }
+
+
+            Action displayAction = new Action(() =>
+            {
+                DisplayScheduleManager.GetInstance().ApplyEmergencySchedule(emergencySchedule);
+
+            });
+            displayAction.BeginInvoke(null, null);
+        }
+
         #endregion
+
         #region 下载离线策略
+
         private bool _bDownloadOfflinePlan = false;
+
         private void DownloadOfflinePlan(Cmd cmd)
         {
             if (cmd == null || cmd.CmdType != CmdType.OfflinePlan || _bDownloadOfflinePlan == true)
@@ -495,7 +597,10 @@ namespace LBPlayer
             string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
             Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
             PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
-            if (!DownloadFile(Path.Combine(ApplicationConfig.GetOfflineScheduleFilePath(), Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
+            if (
+                !DownloadFile(
+                    Path.Combine(ApplicationConfig.GetOfflineScheduleFilePath(),
+                        Path.GetFileName(planCmdPar.ProgramName)), planCmdPar.ProgramUrl))
             {
                 UploadCmdResult(cr);
                 DeleteCmd(cmd);
@@ -504,7 +609,10 @@ namespace LBPlayer
             }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                if (!DownloadFile(Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                if (
+                    !DownloadFile(
+                        Path.Combine(ApplicationConfig.GetMediaFilePath(),
+                            Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
                 {
                     UploadCmdResult(cr);
                     DeleteCmd(cmd);
@@ -515,12 +623,16 @@ namespace LBPlayer
             cr.CmdRes = true.ToString();
             UploadCmdResult(cr);
             DeleteCmd(cmd);
-            _config.CurrentOfflinePlanPath = Path.Combine(ApplicationConfig.GetOfflineScheduleFilePath(), Path.GetFileName(planCmdPar.ProgramName));
+            _config.CurrentOfflinePlanPath = Path.Combine(ApplicationConfig.GetOfflineScheduleFilePath(),
+                Path.GetFileName(planCmdPar.ProgramName));
             ConfigTool.SaveConfigData(_config);
             _bDownloadOfflinePlan = false;
         }
+
         #endregion
+
         #region 私有函数
+
         /// <summary>
         /// 获取MAC地址
         /// </summary>
@@ -533,7 +645,7 @@ namespace LBPlayer
             try
             {
                 int iOsVersion = Environment.OSVersion.Version.Major; //取得系统的版本
-                ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");//获取网卡硬件地址  
+                ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration"); //获取网卡硬件地址  
                 ManagementObjectCollection moc = mc.GetInstances();
                 foreach (ManagementObject mo in moc)
                 {
@@ -574,6 +686,7 @@ namespace LBPlayer
                 return false;
             }
         }
+
         /// <summary>
         /// 64位字符串解密
         /// </summary>
@@ -594,7 +707,9 @@ namespace LBPlayer
             }
             return decode;
         }
+
         private delegate void SetControlTextDelegate(System.Windows.Forms.Control setControl, string text);
+
         private void SetControlText(System.Windows.Forms.Control setControl, string text)
         {
             if (!this.InvokeRequired)
@@ -605,6 +720,7 @@ namespace LBPlayer
             SetControlTextDelegate setTextDelegate = new SetControlTextDelegate(SetControlText);
             this.Invoke(setTextDelegate, new object[] { setControl, text });
         }
+
         private bool DownloadFile(string strFileName, string url, string md5 = "")
         {
             //打开上次下载的文件
@@ -630,9 +746,9 @@ namespace LBPlayer
                 retryCount: 5, // Retry 3 times
                 sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(2000), // Wait 2000ms between each try.
                 onRetry: (exception, calculatedWaitDuration) => // Capture some info for logging!
-            {
-                Log4NetLogger.LogDebug(string.Format("{0}下载异常，开始下载重试！\r\n{1}", strFileName, exception.Message));
-            });
+                {
+                    Log4NetLogger.LogDebug(string.Format("{0}下载异常，开始下载重试！\r\n{1}", strFileName, exception.Message));
+                });
 
             try
             {
@@ -643,8 +759,8 @@ namespace LBPlayer
                         //打开网络连接
                         HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);
                         if (SPosition > 0)
-                            myRequest.AddRange((int)SPosition);             //设置Range值
-                                                                            //向服务器请求,获得服务器的回应数据流
+                            myRequest.AddRange((int)SPosition); //设置Range值
+                        //向服务器请求,获得服务器的回应数据流
                         using (Stream myStream = myRequest.GetResponse().GetResponseStream())
                         {
                             byte[] btContent = new byte[1024];
@@ -667,6 +783,7 @@ namespace LBPlayer
 
             return true;
         }
+
         private bool DownloadMediaFile(string strFileName, string url, string md5 = "")
         {
             //打开上次下载的文件
@@ -691,9 +808,9 @@ namespace LBPlayer
                 retryCount: 5, // Retry 3 times
                 sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(2000), // Wait 2000ms between each try.
                 onRetry: (exception, calculatedWaitDuration) => // Capture some info for logging!
-            {
-                Log4NetLogger.LogDebug(string.Format("{0}下载异常，开始下载重试！\r\n{1}", strFileName, exception.Message));
-            });
+                {
+                    Log4NetLogger.LogDebug(string.Format("{0}下载异常，开始下载重试！\r\n{1}", strFileName, exception.Message));
+                });
 
             try
             {
@@ -704,8 +821,8 @@ namespace LBPlayer
                         //打开网络连接
                         HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);
                         if (SPosition > 0)
-                            myRequest.AddRange((int)SPosition);             //设置Range值
-                                                                            //向服务器请求,获得服务器的回应数据流
+                            myRequest.AddRange((int)SPosition); //设置Range值
+                        //向服务器请求,获得服务器的回应数据流
                         using (Stream myStream = myRequest.GetResponse().GetResponseStream())
                         {
                             byte[] btContent = new byte[512];
@@ -728,6 +845,7 @@ namespace LBPlayer
 
             return true;
         }
+
         private bool DownloadFileAsync(string strFileName, string url, string md5 = "")
         {
             //打开上次下载的文件
@@ -751,35 +869,35 @@ namespace LBPlayer
                 retryCount: 5, // Retry 3 times
                 sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(2000), // Wait 2000ms between each try.
                 onRetry: (exception, calculatedWaitDuration) => // Capture some info for logging!
-            {
-                Log4NetLogger.LogDebug(string.Format("{0}下载异常，开始下载重试！\r\n{1}", strFileName, exception.Message));
-            });
+                {
+                    Log4NetLogger.LogDebug(string.Format("{0}下载异常，开始下载重试！\r\n{1}", strFileName, exception.Message));
+                });
 
             try
             {
                 policy.Execute(() =>
-               {
-                   using (FileStream fileStream = File.Create(strFileName))
-                   {
-                       //打开网络连接
-                       HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);
-                       if (SPosition > 0)
-                           myRequest.AddRange((int)SPosition);             //设置Range值
-                                                                           //向服务器请求,获得服务器的回应数据流
+                {
+                    using (FileStream fileStream = File.Create(strFileName))
+                    {
+                        //打开网络连接
+                        HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);
+                        if (SPosition > 0)
+                            myRequest.AddRange((int)SPosition); //设置Range值
+                        //向服务器请求,获得服务器的回应数据流
 
-                       using (Stream myStream = myRequest.GetResponse().GetResponseStream())
-                       {
-                           byte[] btContent = new byte[512];
-                           int intSize = 0;
-                           intSize = myStream.Read(btContent, 0, 512);
-                           while (intSize > 0)
-                           {
-                               fileStream.Write(btContent, 0, intSize);
-                               intSize = myStream.Read(btContent, 0, 512);
-                           }
-                       }
-                   }
-               });
+                        using (Stream myStream = myRequest.GetResponse().GetResponseStream())
+                        {
+                            byte[] btContent = new byte[512];
+                            int intSize = 0;
+                            intSize = myStream.Read(btContent, 0, 512);
+                            while (intSize > 0)
+                            {
+                                fileStream.Write(btContent, 0, intSize);
+                                intSize = myStream.Read(btContent, 0, 512);
+                            }
+                        }
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -816,7 +934,9 @@ namespace LBPlayer
         }
 
         #endregion
+
         #region 锁定
+
         /// <summary>
         /// 解锁事件
         /// </summary>
@@ -851,6 +971,7 @@ namespace LBPlayer
             //currentUser.Close();
 
         }
+
         /// <summary>
         /// 锁定事件
         /// </summary>
@@ -865,9 +986,9 @@ namespace LBPlayer
             //taskmgr.exe（任务管理器）
             _TaskMgrStream = File.Open(Environment.GetFolderPath(Environment.SpecialFolder.System) + @"\"
                                        + TASKMGR_NAME,
-                                        FileMode.Open,
-                                        FileAccess.Read,
-                                        FileShare.None);
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.None);
 
             _hook.KeyboardHookStart();
             _hook.MouseHookStart();
@@ -887,6 +1008,7 @@ namespace LBPlayer
             //currentUser.Close();
 
         }
+
         private void Hook_KeyUp(object sender, KeyEventArgs e)
         {
             if (!InvokeRequired)
@@ -929,6 +1051,7 @@ namespace LBPlayer
             }
 
         }
+
         protected override void WndProc(ref System.Windows.Forms.Message m)
         {
             //在键盘锁定状态下屏蔽键盘上与电源相关的操作
@@ -939,6 +1062,7 @@ namespace LBPlayer
             }
             base.WndProc(ref m);
         }
+
         private void Hook_KeyDown(object sender, KeyEventArgs e)
         {
             if (!InvokeRequired)
@@ -964,6 +1088,7 @@ namespace LBPlayer
                 Invoke(cs, new object[] { sender, e });
             }
         }
+
         private void Hook_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!InvokeRequired)
@@ -991,6 +1116,7 @@ namespace LBPlayer
                 Invoke(cs, new object[] { sender, e });
             }
         }
+
         private void Hook_MouseDown(object sender, MouseEventArgs e)
         {
             if (this.InvokeRequired)
@@ -1009,12 +1135,14 @@ namespace LBPlayer
             }
 
         }
+
         /// <summary>
         /// 初始化锁定
         /// </summary>
         private void InitialLock()
         {
             #region 锁定相关
+
             if (_hook == null)
             {
                 _hook = new KeyboardHelper();
@@ -1033,9 +1161,9 @@ namespace LBPlayer
                 //taskmgr.exe（任务管理器）
                 _TaskMgrStream = File.Open(Environment.GetFolderPath(Environment.SpecialFolder.System) + @"\"
                                            + TASKMGR_NAME,
-                                            FileMode.Open,
-                                            FileAccess.Read,
-                                            FileShare.None);
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.None);
 
                 _hook.KeyboardHookStart();
                 _hook.MouseHookStart();
@@ -1054,10 +1182,14 @@ namespace LBPlayer
                 //system.SetValue("DisableTaskmgr", 1, RegistryValueKind.DWord);
                 //currentUser.Close();
             }
+
             #endregion
         }
+
         #endregion
+
         #region 窗体事件
+
         /// <summary>
         /// 窗体加载
         /// </summary>
@@ -1081,6 +1213,7 @@ namespace LBPlayer
             initialPlay();
             this.Location = new Point(int.Parse(_config.Resoul_X), 0);
         }
+
         /// <summary>
         /// 桌面截屏预览
         /// </summary>
@@ -1094,9 +1227,12 @@ namespace LBPlayer
             }
             skinPictureBox_pic.Width = int.Parse(skinNumericUpDown_W.Value.ToString());
             skinPictureBox_pic.Height = int.Parse(skinNumericUpDown_H.Value.ToString());
-            _screenCapture.CaptrueScreenRegionToFile((int)skinNumericUpDown_X.Value, (int)skinNumericUpDown_Y.Value, (int)skinNumericUpDown_W.Value, (int)skinNumericUpDown_H.Value, Path.Combine(ApplicationConfig.GetPictureFilePath(), _privewPic));
+            _screenCapture.CaptrueScreenRegionToFile((int)skinNumericUpDown_X.Value, (int)skinNumericUpDown_Y.Value,
+                (int)skinNumericUpDown_W.Value, (int)skinNumericUpDown_H.Value,
+                Path.Combine(ApplicationConfig.GetPictureFilePath(), _privewPic));
             skinPictureBox_pic.Image = Image.FromFile(Path.Combine(ApplicationConfig.GetPictureFilePath(), _privewPic));
         }
+
         /// <summary>
         /// 锁定
         /// </summary>
@@ -1106,6 +1242,7 @@ namespace LBPlayer
         {
             InitialLock();
         }
+
         /// <summary>
         /// 配置页面保存
         /// </summary>
@@ -1128,7 +1265,8 @@ namespace LBPlayer
                 MessageBoxEx.Show("请选择MAC", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            Bind bind = new Bind(skinTextBox_Id.Text.Trim(), skinTextBox_Key.Text.Trim(), skinComboBox_Mac.SelectedItem.ToString());
+            Bind bind = new Bind(skinTextBox_Id.Text.Trim(), skinTextBox_Key.Text.Trim(),
+                skinComboBox_Mac.SelectedItem.ToString());
             var httpClient = new RestClient(ApplicationConfig.BaseURL);
             var request = new RestRequest(ApplicationConfig.BindingURL, Method.POST);
             request.AddJsonBody(bind);
@@ -1149,13 +1287,14 @@ namespace LBPlayer
             _config.ID = skinTextBox_Id.Text.Trim();
             _config.Key = skinTextBox_Key.Text.Trim();
             _config.Mac = skinComboBox_Mac.SelectedItem.ToString();
-            SetScreenInfo(sr.ScreenInfo);//modify by lixc
+            SetScreenInfo(sr.ScreenInfo); //modify by lixc
             if (ConfigTool.SaveConfigData(_config))
             {
                 MessageBoxEx.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
         }
+
         private void skinButton_b_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
@@ -1174,12 +1313,17 @@ namespace LBPlayer
             }
             catch (Exception ex)
             {
-                MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error); return;
+                MessageBoxEx.Show("保存失败", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
         }
+
         #endregion
+
         #region 下载方案
+
         private bool _bDownloading = false;
+
         private void DownloadPlan(Cmd cmd)
         {
             if (cmd == null || cmd.CmdType != CmdType.DownloadPlan || _bDownloading == true)
@@ -1193,7 +1337,8 @@ namespace LBPlayer
             Log4NetLogger.LogDebug(string.Format("---{0}命令内容---\r\n{1}", cmd.CmdType, cmdContent));
 
             PlanCmdPar planCmdPar = JsonConvert.DeserializeObject<PlanCmdPar>(cmdContent);
-            string scheduleFilePath = Path.Combine(ApplicationConfig.GetScheduleFilePath(), Path.GetFileName(planCmdPar.ProgramName));
+            string scheduleFilePath = Path.Combine(ApplicationConfig.GetScheduleFilePath(),
+                Path.GetFileName(planCmdPar.ProgramName));
             if (!DownloadFile(scheduleFilePath, planCmdPar.ProgramUrl))
             {
                 UploadCmdResult(cr);
@@ -1203,7 +1348,10 @@ namespace LBPlayer
             }
             for (int i = 0; i < planCmdPar.Medias.Count; i++)
             {
-                if (!DownloadMediaFile(Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
+                if (
+                    !DownloadMediaFile(
+                        Path.Combine(ApplicationConfig.GetMediaFilePath(),
+                            Path.GetFileName(planCmdPar.Medias[i].MediaName)), planCmdPar.Medias[i].MediaUrl))
                 {
                     UploadCmdResult(cr);
                     DeleteCmd(cmd);
@@ -1243,17 +1391,30 @@ namespace LBPlayer
 
             Action displayAction = new Action(() =>
             {
-                DisplayScheduleManager.GetInstance().ApplyMainSchedule(currentSchedule);
+                switch (currentSchedule.Type)
+                {
+                    case ScheduleType.Common:
+                        DisplayScheduleManager.GetInstance().ApplyMainSchedule(currentSchedule);
+                        break;
+                    case ScheduleType.Emergency:
+                        DisplayScheduleManager.GetInstance().ApplyMainSchedule(currentSchedule);
+                        break;
+                    default:
+                        break;
+                }
+
             });
             displayAction.BeginInvoke(null, null);
 
 
         }
+
         private void Start()
         {
             Action playAction = new Action(StartPlay);
             playAction.BeginInvoke(null, null);
         }
+
         private void StartPlay()
         {
             //if (_config.CurrentPlanPath == null || _config.CurrentPlanPath == "")
@@ -1295,15 +1456,20 @@ namespace LBPlayer
         }
 
         #endregion
+
         #region 未知命令处理
+
         private void UnKnowCmd(Cmd cmd)
         {
             string cmdContent = DecodeBase64((Encoding.UTF8), cmd.CmdParam);
             Log4NetLogger.LogDebug(string.Format("---{0}命令(Unknow)内容---\r\n{1}", cmd.CmdType, cmdContent));
             return;
         }
+
         #endregion
+
         #region 上传播放记录
+
         private bool UploadPlayBack(PlayBack playBack)
         {
             //string data = JsonConvert.SerializeObject(playBack);
@@ -1317,12 +1483,21 @@ namespace LBPlayer
                 return false;
             }
 
-            var sr = JsonConvert.DeserializeObject<SystemResult>(response.Content);
-            if (sr.Err_code != SystemCode.OK)
+            try
             {
+                var sr = JsonConvert.DeserializeObject<SystemResult>(response.Content);
+                if (sr.Err_code != SystemCode.OK)
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log4NetLogger.LogError(string.Format("上传播放记录出现错误:\r\n{1}", response.Content));
                 return false;
             }
-            return true;
+
         }
         #endregion
         #region 回复命令结果
@@ -1652,6 +1827,35 @@ namespace LBPlayer
         private void LBPlayerMain_FormClosed(object sender, FormClosedEventArgs e)
         {
             Environment.Exit(0);
+        }
+    }
+
+    public class Rootobject
+    {
+        public string MediaName { get; set; }
+        public string MediaMD5 { get; set; }
+        [JsonConverter(typeof(MyDateTimeConverter))]
+        public DateTime StartTime { get; set; }
+        [JsonConverter(typeof(MyDateTimeConverter))]
+        public DateTime EndTime { get; set; }
+    }
+
+    public class MyDateTimeConverter : Newtonsoft.Json.JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(DateTime);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            var t = (long)reader.Value;
+            return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(t);
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
         }
     }
 }

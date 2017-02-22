@@ -38,8 +38,11 @@
                                               Mode="PrimaryDark" materialDesign:ShadowAssist.ShadowDepth="Depth3">
             <DockPanel >
                 <ToggleButton x:Name="ScheduleModeButton" Style="{DynamicResource MaterialDesignSwitchAccentToggleButton}" VerticalAlignment="Center"
-                              DockPanel.Dock="Right" IsChecked="{Binding ScheduleMode, Converter={StaticResource ScheduleModeToBooleanConverter}}" />
-                <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="10" Margin="0,0,3,0">轮播模式</TextBlock>
+                              DockPanel.Dock="Right" IsChecked="{Binding ScheduleMode, Converter={StaticResource ScheduleModeToBooleanConverter}}"
+                              Visibility="{Binding IsEmergencyScheduleType,Converter={StaticResource BooleanToVisibilityReverseConverter}}"/>
+                <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="10" Margin="0,0,3,0" Visibility="{Binding IsEmergencyScheduleType,Converter={StaticResource BooleanToVisibilityReverseConverter}}">
+                    轮播模式
+                </TextBlock>
                 <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" Margin="10,0,0,0">智能编排</TextBlock>
             </DockPanel>
 
@@ -48,7 +51,8 @@
             <ComboBox materialDesign:HintAssist.Hint="Repeat" Margin="0,0,0,4"
                       VerticalAlignment="Bottom" HorizontalAlignment="Left"
                       ItemsSource="{Binding Source={utility:EnumBindingSource {x:Type model:RepeatMode}}}"
-                      SelectedItem="{Binding RepeatMode}">
+                      SelectedItem="{Binding RepeatMode}"
+                      Visibility="{Binding IsEmergencyScheduleType,Converter={StaticResource BooleanToVisibilityReverseConverter}}">
             </ComboBox>
             <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="10">
                 <local:DailyScheduleSettingView  Visibility="{Binding RepeatMode,Converter={StaticResource RepeatModeToVisibilityConverter},ConverterParameter={x:Static model:RepeatMode.Daily}}"/>
