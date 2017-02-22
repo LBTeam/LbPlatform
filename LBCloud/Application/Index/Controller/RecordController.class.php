@@ -31,7 +31,7 @@ class RecordController extends CommonController
 			$datas[] = array(
 				$val['id'],
 				$val['media_name'],
-				$val['name'],
+				$val['s_name'],
 				$temp,
 				$val['start'],
 				$val['end'],
@@ -41,7 +41,7 @@ class RecordController extends CommonController
 		$titles = array(
 			"ID",
 			"节目名称",
-			"播放器名称",
+			"屏幕名称",
 			"所有者",
 			"播放开始时间",
 			"播放结束时间",

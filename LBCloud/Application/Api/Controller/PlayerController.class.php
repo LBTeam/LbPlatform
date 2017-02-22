@@ -468,15 +468,15 @@ class PlayerController extends CommonController
 			$media_name = end(explode('/', str_replace('\\', '/', $obj['MediaName'])));
 			$media_md5 = strtolower($obj['MediaMD5']);
 			$led_info = $led_model->screen_by_id($player['id']);
-			$user_id = $led_info['id'];
+			$user_id = $led_info['uid'];
 			$media_id = $media_model->media_exists($media_name, $media_md5, $user_id);
 			if($media_id){
 				$data = array();
 				$data['screen_id'] = $player['id'];
 				$data['media_name'] = mysql_escape_string($media_name);
 				$data['media_md5'] = $media_md5;
-				$data['start'] = $obj['StartTime'];
-				$data['end'] = $obj['EndTime'];
+				$data['start'] = date("Y-m-d H:i:s", strtotime($obj['StartTime']));
+				$data['end'] = date("Y-m-d H:i:s", strtotime($obj['EndTime']));
 				$data['addtime'] = NOW_TIME;
 				$record_model = D("Record");
 				$res = $record_model->add($data);

@@ -22,12 +22,12 @@ class RecordModel extends Model
 			$map['r.media_name'] = array("LIKE", "%{$media}%");
 		}
 		if($name){
-			$map['p.name'] = array("LIKE", "%{$name}%");
+			$map['s.name'] = array("LIKE", "%{$name}%");
 		}
 		if(is_administrator()){
 			return $this
 					->alias("r")
-					->field("r.*,p.name,u.email,u.phone")
+					->field("r.*,s.name AS s_name,p.name,u.email,u.phone")
 					->join("player_screen AS s ON r.screen_id = s.id")
 					->join("player_user AS u ON s.uid = u.uid")
 					->join("player_player AS p ON r.screen_id = p.id")
@@ -42,7 +42,7 @@ class RecordModel extends Model
 			if($user_model->is_root($uid, $role_id, $roles)){
 				return $this
 						->alias("r")
-						->field("r.*,p.name,u.email,u.phone")
+						->field("r.*,s.name AS s_name,p.name,u.email,u.phone")
 						->join("player_screen AS s ON r.screen_id = s.id")
 						->join("player_user AS u ON s.uid = u.uid")
 						->join("player_player AS p ON r.screen_id = p.id")
@@ -53,7 +53,7 @@ class RecordModel extends Model
 				$map['s.uid'] = array("IN", $uids);
 				return $this
 						->alias("r")
-						->field("r.*,p.name,u.email,u.phone")
+						->field("r.*,s.name AS s_name,p.name,u.email,u.phone")
 						->join("player_screen AS s ON r.screen_id = s.id")
 						->join("player_user AS u ON s.uid = u.uid")
 						->join("player_player AS p ON r.screen_id = p.id")
@@ -63,7 +63,7 @@ class RecordModel extends Model
 				$map['s.uid'] = $uid;
 				return $this
 						->alias("r")
-						->field("r.*,p.name,u.email,u.phone")
+						->field("r.*,s.name AS s_name,p.name,u.email,u.phone")
 						->join("player_screen AS s ON r.screen_id = s.id")
 						->join("player_user AS u ON s.uid = u.uid")
 						->join("player_player AS p ON r.screen_id = p.id")
