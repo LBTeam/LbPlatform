@@ -158,6 +158,7 @@ namespace LBPlayer.Job
                 .WithIdentity(Guid.NewGuid().ToString(), regionItem.Name)
                 .StartAt(stageItem.StartTime)
                 .EndAt(stageItem.EndTime)
+                .WithPriority(7)
                 .Build();
 
             ScheduleJob(job, trigger, JobType.Main);
@@ -194,7 +195,7 @@ namespace LBPlayer.Job
                     }
                 }
 
-                var publicMedias = stage.MediaList.Where(m => m.Category == MediaCategory.PSAs).ToList();
+                var publicMedias = stage.MediaList.Where(m => m.Category == MediaCategory.PSAs)?.ToList();
 
                 var playMediaList = MakePlayMediaList(stage, userMediaList, publicMedias);
 
@@ -236,6 +237,7 @@ namespace LBPlayer.Job
 
                 var trigger = TriggerBuilder.Create()
                      .WithCronSchedule(cron)
+                     .WithPriority(7)
                      .Build();
 
                 ScheduleJob(job, trigger, JobType.Main);
@@ -292,6 +294,7 @@ namespace LBPlayer.Job
 
                 var trigger = TriggerBuilder.Create()
                      .WithCronSchedule(cron)
+                     .WithPriority(7)
                      .Build();
 
                 ScheduleJob(job, trigger, JobType.Main);
@@ -307,11 +310,18 @@ namespace LBPlayer.Job
 
         private List<Models.Media> MakePlayMediaList(ScheduledStage stage, List<Models.Media> userMediaList, List<Models.Media> publicMedias)
         {
+          
             var realTotalTime = userMediaList.Sum(m => m.Duration.TotalSeconds);
             var planTotalTime = (stage.EndTime - stage.StartTime).TotalSeconds;
             var remainingTime = (int)(planTotalTime - realTotalTime);
             List<LBManager.Infrastructure.Models.Media> playMediaList =
                 new List<LBManager.Infrastructure.Models.Media>(userMediaList);
+
+            if (publicMedias == null || publicMedias.Count == 0)
+            {
+                return playMediaList;
+            }
+
             int minPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
             int maxPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
             var minPublicMedia = publicMedias.FirstOrDefault(m => (int)m.Duration.TotalSeconds == minPublicMediaSeconds);
@@ -360,6 +370,10 @@ namespace LBPlayer.Job
             var remainingTime = (int)(planTotalTime - realTotalTime);
             List<LBManager.Infrastructure.Models.Media> playMediaList =
                 new List<LBManager.Infrastructure.Models.Media>(userMediaList);
+            if (publicMedias == null || publicMedias.Count == 0)
+            {
+                return playMediaList;
+            }
             int minPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
             int maxPublicMediaSeconds = (int)publicMedias.Min(m => m.Duration.TotalSeconds);
             var minPublicMedia = publicMedias.FirstOrDefault(m => (int)m.Duration.TotalSeconds == minPublicMediaSeconds);
@@ -370,7 +384,7 @@ namespace LBPlayer.Job
                 int minDiff = remainingTime - maxPublicMediaSeconds;
                 int maxDiff = remainingTime - minPublicMediaSeconds;
                 int index = (2 * insertIndex + 1) >= (playMediaList.Count - 1) ? (playMediaList.Count - 1) : (2 * insertIndex + 1);
-                LBManager.Infrastructure.Models.Media insertItem = publishMediaIndex >= (publicMedias.Count - 1)
+                Models.Media insertItem = publishMediaIndex >= (publicMedias.Count - 1)
                     ? publicMedias[publicMedias.Count - 1]
                     : publicMedias[publishMediaIndex];
                 if (minDiff >= 0)
@@ -529,7 +543,7 @@ namespace LBPlayer.Job
                     .WithIdentity(Guid.NewGuid().ToString(), appliedScheduleInfo.RegionName)
                     .StartAt(emergencyScheduledStage.EndTime)
                     .EndAt(appliedScheduleInfo.EndTime)
-                    .WithPriority(2)
+                    .WithPriority(4)
                     .Build();
 
                 ScheduleJob(redoJob, redoTrigger, JobType.Main);
@@ -554,7 +568,7 @@ namespace LBPlayer.Job
                     }
                 }
 
-                var publicMedias = stage.MediaList.Where(m => m.Category == MediaCategory.PSAs).ToList();
+                var publicMedias = stage.MediaList.Where(m => m.Category == MediaCategory.PSAs)?.ToList();
 
                 var playMediaList = MakePlayMediaList(stage, userMediaList, publicMedias);
 
