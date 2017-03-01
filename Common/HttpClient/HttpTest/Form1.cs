@@ -1,5 +1,4 @@
 ﻿using Com.Net;
-using JumpKick.HttpLib;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

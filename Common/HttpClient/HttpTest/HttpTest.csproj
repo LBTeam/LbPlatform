@@ -90,10 +90,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\httplib-2.0.13\JumpKick.HttpLib\JumpKick.HttpLib\JumpKick.HttpLib.csproj">
-      <Project>{d626c4ec-d793-4541-8631-1af678a29490}</Project>
-      <Name>JumpKick.HttpLib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HttpClient\HttpClient.csproj">
       <Project>{9b2237ef-04f3-4541-9189-5827a99ef851}</Project>
       <Name>HttpClient</Name>

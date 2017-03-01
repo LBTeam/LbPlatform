@@ -1,12 +1,13 @@
-﻿using Com.Net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using RestSharp;
 
 namespace com.lbplayer
 {
@@ -81,13 +82,13 @@ namespace com.lbplayer
 
     }
     #endregion
-    public class MonitorDataPoll: IDisposable
+    public class MonitorDataPoll : IDisposable
     {
         #region 字段
         private const int MaxFailTime = 3;
         private int _failTimes = 0;
         private Timer _heartTimer = null;
-        private HttpClient _httpClient;
+        private RestClient _httpClient;
         private bool _isStart = false;
         #endregion
         #region 属性
@@ -143,7 +144,7 @@ namespace com.lbplayer
         #region 构造函数
         public MonitorDataPoll()
         {
-            _httpClient = new HttpClient();
+            _httpClient = new RestClient("http://lbcloud.ddt123.cn");
         }
         #endregion
         #region public函数
@@ -185,7 +186,7 @@ namespace com.lbplayer
         private MonitorDatePollEventArgs _args = new MonitorDatePollEventArgs("", "");
         private GetMonitorDatePollResponseEventArgs _replyArgs = null;
         private String _errInfo = "";
-        private bool _isPostOk = false;
+        private HttpStatusCode _isPostOk = HttpStatusCode.OK;
         private void OnMonitorDatePoll(object state)
         {
             if (Interlocked.Exchange(ref _isUpNowTime, 0) == 1)
@@ -195,15 +196,27 @@ namespace com.lbplayer
                     OnSendMonitorDatePoll(this, _args);
                     if (_args.Url != "")
                     {
-                        _isPostOk = _httpClient.Post(_args.Url, _args.PollData, out _replydata, out _errInfo);
+                        var request = new RestRequest(_args.Url, Method.POST);
+                        request.AddBody(_args.PollData);
+                        IRestResponse response = _httpClient.Execute(request);
+                        if (response.ErrorException != null)
+                        {
+                            _errInfo = response.ErrorException.Message;
+                        }
+                        if (string.IsNullOrEmpty(response.ErrorMessage))
+                        {
+                            _errInfo = response.ErrorMessage;
+                        }
+                        _replydata = response.Content;
+                        _isPostOk = response.StatusCode;
                     }
                     else
                     {
-                        _isPostOk = false;
+                        _isPostOk = HttpStatusCode.BadRequest;
                     }
-                    _replyArgs = new GetMonitorDatePollResponseEventArgs(_isPostOk, _args.Url, _args.PollData, _replydata, _errInfo);
+                    _replyArgs = new GetMonitorDatePollResponseEventArgs(_isPostOk == HttpStatusCode.OK, _args.Url, _args.PollData, _replydata, _errInfo);
                     OnGetMonitorDatePollResponse(this, _replyArgs);
-                    if (!_isPostOk)
+                    if (_isPostOk != HttpStatusCode.OK)
                     {
                         _failTimes++;
                     }
@@ -213,12 +226,12 @@ namespace com.lbplayer
                     }
                     if (_failTimes == MaxFailTime)
                     {
-                        _httpClient = new HttpClient();
+                        //_httpClient = new HttpClient();
                     }
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Poll Error"+ex.ToString());
+                    Debug.WriteLine("Poll Error" + ex.ToString());
                 }
                 finally
                 {

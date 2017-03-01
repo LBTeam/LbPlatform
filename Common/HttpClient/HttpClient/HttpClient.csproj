@@ -60,12 +60,6 @@
     <Compile Include="UploadTransmit.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\httplib-2.0.13\JumpKick.HttpLib\JumpKick.HttpLib\JumpKick.HttpLib.csproj">
-      <Project>{d626c4ec-d793-4541-8631-1af678a29490}</Project>
-      <Name>JumpKick.HttpLib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
