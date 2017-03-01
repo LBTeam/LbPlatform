@@ -234,6 +234,31 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
         }
 
+        private DelegateCommand<object> _copyAndCreateStageCommand;
+
+        public DelegateCommand<object> CopyAndCreateStageCommand
+        {
+            get
+            {
+                if (_copyAndCreateStageCommand == null)
+                {
+                    _copyAndCreateStageCommand = new DelegateCommand<object>(CopyAndCreateStage, CanCopyAndCreateStage);
+                }
+                return _copyAndCreateStageCommand;
+            }
+        }
+
+        private bool CanCopyAndCreateStage(object arg)
+        {
+            return true;
+        }
+
+        private void CopyAndCreateStage(object obj)
+        {
+            var stageViewModel = obj as ScheduledStageViewModel;
+            ScheduledStageList.Add(stageViewModel);
+        }
+
         private bool CanRemoveScheduledStage()
         {
             return ScheduledStageList.Count > 1 ? true : false;

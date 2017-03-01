@@ -20,7 +20,13 @@ namespace LBPlayer
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.ThreadException += Application_ThreadException;
+            AppDomain.CurrentDomain.UnhandledException += AppDomainUnhandledException;
             Application.Run(new LBPlayerMain());
+        }
+
+        private static void AppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log4NetLogger.LogError(e.ExceptionObject.ToString());
         }
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
