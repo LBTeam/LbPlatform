@@ -188,10 +188,12 @@ namespace LBPlayer.Job
 
                 foreach (var media in stage.MediaList)
                 {
-                    if (media.Category == MediaCategory.UserAd && media.LoopCount > 0)
+                    if (media.Category == MediaCategory.UserAd)
                     {
-                        userMediaList.Add(media);
-                        media.LoopCount--;
+                        for (int count = 0; count < media.LoopCount; count++)
+                        {
+                            userMediaList.Add(media);
+                        }
                     }
                 }
 
@@ -205,10 +207,7 @@ namespace LBPlayer.Job
                     string mediaPath = Path.Combine(ApplicationConfig.GetMediaFilePath(), Path.GetFileNameWithoutExtension(mediaItem.URL) + "_" + mediaItem.MD5 + Path.GetExtension(mediaItem.URL));
                     if (File.Exists(mediaPath))/*&& mediaItem.MD5 == FileUtils.ComputeFileMd5(mediaPath)*/
                     {
-                        for (int i = 0; i < mediaItem.LoopCount; i++)
-                        {
                             mediaPathList.Add(mediaItem);
-                        }
                     }
                     else
                     {
@@ -466,11 +465,16 @@ namespace LBPlayer.Job
                 singleTimeSpan += userMediaList[addCounter].Duration.TotalSeconds;
             }
 
+            string dailyPart = emergencyScheduledStage.StartTime.Day == emergencyScheduledStage.EndTime.Day ? emergencyScheduledStage.StartTime.Day.ToString() : emergencyScheduledStage.StartTime.Day + "-" + emergencyScheduledStage.EndTime.Day;
+            string monthPart = emergencyScheduledStage.StartTime.Month == emergencyScheduledStage.EndTime.Month ? emergencyScheduledStage.StartTime.Month.ToString() : emergencyScheduledStage.StartTime.Month + "-" + emergencyScheduledStage.EndTime.Month;
+            string cron = string.Format("{0} {1} {2} {3} {4} ? *", emergencyScheduledStage.StartTime.Second, emergencyScheduledStage.StartTime.Minute, emergencyScheduledStage.StartTime.Hour, dailyPart, monthPart);
+            
+
             JobDataMap jobDataMap = new JobDataMap();
             jobDataMap.Add("ScheduleName", scheduleName);
             jobDataMap.Add("ScheduledStageInfo", string.Format("{0}~{1}", emergencyScheduledStage.StartTime, emergencyScheduledStage.EndTime));
             jobDataMap.Add("MediaPathList", userMediaList);
-            jobDataMap.Add("LoopCount", emergencyScheduledStage.LoopCount);
+            jobDataMap.Add("LoopCount", 1);
 
             IJobDetail job = JobBuilder.Create<LEDDisplayJob>()
                 .WithIdentity(Guid.NewGuid().ToString(), regionName)
@@ -479,8 +483,7 @@ namespace LBPlayer.Job
 
             ITrigger trigger = (ITrigger)TriggerBuilder.Create()
                 .WithIdentity(Guid.NewGuid().ToString(), regionName)
-                .StartAt(emergencyScheduledStage.StartTime)
-                .EndAt(emergencyScheduledStage.EndTime)
+                .WithCronSchedule(cron)
                 .WithPriority(1)
                 .Build();
 
@@ -561,10 +564,12 @@ namespace LBPlayer.Job
 
                 foreach (var media in stage.MediaList)
                 {
-                    if (media.Category == MediaCategory.UserAd && media.LoopCount > 0)
+                    if (media.Category == MediaCategory.UserAd)
                     {
-                        userMediaList.Add(media);
-                        media.LoopCount--;
+                        for (int count = 0; count < media.LoopCount; count++)
+                        {
+                            userMediaList.Add(media);
+                        }
                     }
                 }
 
