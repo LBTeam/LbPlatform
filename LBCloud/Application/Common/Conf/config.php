@@ -25,6 +25,7 @@ return array(
 	'oss_media_bucket'		=>	'lb-player-media',
 	'oss_program_bucket'	=>	'lb-player-program',
 	'oss_picture_bucket'	=>	'lb-monitor-picture',
+    'oss_version_bucket'    =>  'lb-software-library',
 	
 	//相关服务器配置
 	'redis_server'		=>	'10.171.126.247',

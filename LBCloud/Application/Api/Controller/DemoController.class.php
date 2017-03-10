@@ -19,6 +19,11 @@ class DemoController extends Controller
 	
 	
 	public function demo(){
+        $bucket = C("oss_version_bucket");
+        $endponit = C("aliyun_oss_endpoint");
+        $array = parse_url($endponit);
+        $host = "{$array['scheme']}://{$bucket}.{$array['host']}";
+        dump($host);
 		exit;
 		$media['name'] = "1.2.3.png";
 		$v['MediaMD5'] = "md5md5md5md5md5";
@@ -35,11 +40,33 @@ class DemoController extends Controller
 	
 	public function index(){
 		//exit;
-		/*$AliyunOSS = new AliyunOSS();
-		$result = $AliyunOSS->bucket_list();
+		$AliyunOSS = new AliyunOSS();
+		//bucket列表
+        /*$result = $AliyunOSS->bucket_list();
+        dump($result);
+        exit;*/
+        //删除bucket
+        /*$result = $AliyunOSS->delete_bucket('lb-software-test');
+        dump($result);
+        exit;*/
+        //object列表
+		$result = $AliyunOSS->object_list(C("oss_version_bucket"));
+        dump($result);
+        exit;
+		//设置bucket cors
+        /*$result = $AliyunOSS->put_bucket_cors(C("oss_version_bucket"));
+        dump($result);
+        exit;*/
+        //获取bucket cors配置
+        /*$result = $AliyunOSS->get_bucket_cors(C("oss_version_bucket"));
+        dump($result);
+        exit;*/
+        /*$result = $AliyunOSS->bucket_acl(C("oss_version_bucket"));
+        dump($result);
+        exit;*/
+        //创建bucket
+		/*$result = $AliyunOSS->create_bucket('lb-software-test', 'public-read-write');
 		dump($result);
-		exit;*/
-		/*$result = $AliyunOSS->create_bucket(C("oss_picture_bucket"));
 		exit;*/
 		/*$file = "./test.png";
 		$filesize = filesize($file);
@@ -57,7 +84,7 @@ class DemoController extends Controller
 		//获取upload_id
 		//$result = $AliyunOSS->get_upload_id("png", $media_bucket);
 		//dump($result);
-		$object = "20161025/580f1909d8f61.MOV";
+		$object = "20161207/5847a8b9efdf3.mp4";
 		$upload_id = "4C6C734773D4429183711C8749BB8AF9";
 		
 		//生成分片文件

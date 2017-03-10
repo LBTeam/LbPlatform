@@ -286,6 +286,15 @@ class PlayerController extends CommonController
 							);
 						}
 						break;
+                    /*版本更新*/
+                    case "10":
+                        if($param){
+                            $cmdParam = array(
+                                "version" => $param['version'],
+                                "url" => $param['url']
+                            );
+                        }
+                        break;
 					default:
 						break;
 				}

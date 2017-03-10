@@ -875,4 +875,26 @@ class ScreenController extends CommonController
 			$this->display();
 		}
 	}
+
+    /**
+     * 播放端版本信息
+     */
+	public function version($id=0){
+        $player = D("Player")->player_by_id($id);
+        if($player){
+            $now = $player['version'];
+            $last = D("Version")->last_package();
+            dump($now);
+            dump($last);
+        }else{
+            $this->error('屏幕不存在！');
+        }
+    }
+
+    /**
+     * 播放端更新命令发布
+     */
+    public function ajax_do_upgrade(){
+
+    }
 }

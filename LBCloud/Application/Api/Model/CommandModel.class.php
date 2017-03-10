@@ -23,6 +23,7 @@ class CommandModel extends Model
 	 * 					  |7-播放方案紧急插播
 	 * 					  |8-离线策略
 	 * 					  |9-终端长连接重连
+     * 					  |10-终端版本更新
 	 * @param int	$status 命令状态
 	 * 						|0-已发布（未下发）
 	 * 						|1-已下发

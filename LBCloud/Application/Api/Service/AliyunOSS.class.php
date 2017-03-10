@@ -7,6 +7,8 @@
 namespace Api\Service;
 use OSS\OssClient;
 use OSS\Core\OssException;
+use OSS\Model\CorsConfig;
+use OSS\Model\CorsRule;
 
 class AliyunOSS
 {
@@ -33,7 +35,7 @@ class AliyunOSS
 	public function create_bucket($bucket, $acl="private"){
 		try {
 			if($bucket){
-				$result = $this->client->createBucket($bucket);
+				$result = $this->client->createBucket($bucket, $acl);
 				if($result === null){
 					return true;
 				}else{
@@ -443,4 +445,138 @@ class AliyunOSS
 		    return false;
 		}
 	}
+
+    /**
+     * 删除bucket
+     * @param $bucket 存储空间
+     * @return boolen
+     */
+	public function delete_bucket($bucket=null){
+        try {
+            $bucket = $bucket ? $bucket : $this->bucket;
+            $response = $this->client->deleteBucket($bucket);
+            //return $response;
+            return true;
+        } catch (OssException $e) {
+            //print $e->getMessage();
+            return false;
+        }
+    }
+
+    /**
+     * 获取bucket的ACL配置情况
+     * @param $bucket 存储空间
+     * @return int 1-私有,2-公共读,3-公共读写,4-未知
+     */
+	public function bucket_acl($bucket=null){
+        try {
+            $bucket = $bucket ? $bucket : $this->bucket;
+            $response = $this->client->getBucketAcl($bucket);
+            switch ($response){
+                case 'private':
+                    $acl = 1;
+                    break;
+                case 'public-read':
+                    $acl = 2;
+                    break;
+                case 'public-read-write':
+                    $acl = 3;
+                    break;
+                default:
+                    $acl = 4;
+                    break;
+            }
+            return $acl;
+        } catch (OssException $e) {
+            //print $e->getMessage();
+            return false;
+        }
+    }
+
+    /**
+     * 获取Bucket的CORS配置情况
+     */
+    public function get_bucket_cors($bucket=null){
+        try {
+            $bucket = $bucket ? $bucket : $this->bucket;
+            $response = $this->client->getBucketCors($bucket);
+            $rules = $response->getRules();
+            $cors = array();
+            foreach ($rules as $rule){
+                $cors[] = array(
+                    'allowedHeaders' => $rule->getAllowedHeaders(),
+                    'allowedOrigins' => $rule->getAllowedOrigins(),
+                    'allowedMethods' => $rule->getAllowedMethods(),
+                    'exposeHeaders' => $rule->getExposeHeaders(),
+                    'maxAgeSeconds' => $rule->getMaxAgeSeconds()
+                );
+            }
+            return $cors;
+        } catch (OssException $e) {
+            //print $e->getMessage();
+            return false;
+        }
+    }
+
+    /**
+     * 设置Bucket的CORS配置情况
+     */
+    public function put_bucket_cors($bucket=null, $options=array()){
+        try {
+            $corsConfig = new CorsConfig();
+            $rule = new CorsRule();
+            if(isset($options['allowedHeaders']) && !empty($options['allowedHeaders'])){
+                if(is_array($options['allowedHeaders'])){
+                    foreach ($options['allowedHeaders'] as $headers){
+                        $rule->addAllowedHeader($headers);
+                    }
+                }else{
+                    $rule->addAllowedHeader($options['allowedHeaders']);
+                }
+            }
+            if(isset($options['allowedOrigins']) && !empty($options['allowedOrigins'])){
+                if(is_array($options['allowedOrigins'])){
+                    foreach ($options['allowedOrigins'] as $origins){
+                        $rule->addAllowedOrigin($origins);
+                    }
+                }else{
+                    $rule->addAllowedOrigin($options['allowedOrigins']);
+                }
+            }
+            if(isset($options['allowedMethods']) && !empty($options['allowedMethods'])){
+                if(is_array($options['allowedMethods'])){
+                    foreach ($options['allowedMethods'] as $methods){
+                        $rule->addAllowedMethod($methods);
+                    }
+                }else{
+                    $rule->addAllowedMethod($options['allowedMethods']);
+                }
+            }
+            if(isset($options['exposeHeaders']) && !empty($options['exposeHeaders'])){
+                if(is_array($options['exposeHeaders'])){
+                    foreach ($options['exposeHeaders'] as $exposes){
+                        $rule->addExposeHeader($exposes);
+                    }
+                }else{
+                    $rule->addExposeHeader($options['exposeHeaders']);
+                }
+            }
+            if(isset($options['maxAgeSeconds']) && !empty($options['maxAgeSeconds'])){
+                if(is_array($options['maxAgeSeconds'])){
+                    foreach ($options['maxAgeSeconds'] as $seconds){
+                        $rule->setMaxAgeSeconds($seconds);
+                    }
+                }else{
+                    $rule->setMaxAgeSeconds($options['maxAgeSeconds']);
+                }
+            }
+            $corsConfig->addRule($rule);
+            $bucket = $bucket ? $bucket : $this->bucket;
+            $this->client->putBucketCors($bucket, $corsConfig);
+            return true;
+        } catch (OssException $e) {
+            //print $e->getMessage();
+            return false;
+        }
+    }
 }
