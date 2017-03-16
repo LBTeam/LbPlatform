@@ -13,6 +13,17 @@ ENGINE=InnoDB;
 ALTER TABLE `player_player`
 	ADD COLUMN `version` VARCHAR(64) NULL DEFAULT '' COMMENT '播放端版本号' AFTER `mac`;
 	
+添加节点
+    系统管理
+        版本管理 version 2
+    系统管理>版本管理
+        发布更新包 add_pack 1
+        修改更新包 edit_pack 2
+        删除更新包 del_pack 3
+    屏幕管理>屏幕列表
+        版本更新 version 17
+        升级 ajax_do_upgrade 18
+	
 Modify file list path:
     LBCloud/Application/Api/Controller/DemoController.class.php
     LBCloud/Application/Api/Controller/PlayerController.class.php

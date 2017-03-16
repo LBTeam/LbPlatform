@@ -895,6 +895,48 @@ class ScreenController extends CommonController
      * 播放端更新命令发布
      */
     public function ajax_do_upgrade(){
-
+        if(IS_POST){
+            $screen_id = I("post.screen_id", 0);
+            if(empty($screen_id)){
+                $this->error('系统错误，非法操作!');
+            }else{
+                if(D("Screen")->check_screen_operation($screen_id)){
+                    $player = D("Player")->player_by_id($screen_id);
+                    $now = $player['version'];
+                    $last = D("Version")->last_package();
+                    if($now == $last['version']){
+                        $this->error("播放器为最高版本，无需更新！");
+                    }else{
+                        $param = array(
+                            "version"   => $last['version'],
+                            "url"       => $last['url']
+                        );
+                        $cmd = array();
+                        $cmd['screen_id'] = $screen_id;
+                        $cmd['type'] = 10;
+                        $cmd['param'] = json_encode($param);
+                        $cmd['publish'] = NOW_TIME;
+                        $cmd['execute'] = NOW_TIME;
+                        $cmd['expired'] = NOW_TIME;
+                        $m = new \Think\Model();
+                        $m->startTrans();
+                        $model = D("Command");
+                        $_d = $model->rm_cmd_by_sid($screen_id, 10);
+                        $_a = $model->add($cmd);
+                        if($_d !== false && $_a){
+                            $m->commit();
+                            $this->success('更新命名发布成功！');
+                        }else{
+                            $model->rollback();
+                            $this->error('更新命名发布失败！');
+                        }
+                    }
+                }else{
+                    $this->error("系统错误：权限拒绝！");
+                }
+            }
+        }else{
+            $this->error('系统错误，非法操作！');
+        }
     }
 }
