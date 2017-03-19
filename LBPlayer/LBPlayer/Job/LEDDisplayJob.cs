@@ -27,7 +27,8 @@ namespace LBPlayer.Job
             MediaPathList = dataMap["MediaPathList"] as IList<Models.Media>;
             ScheduledStageInfo = dataMap.GetString("ScheduledStageInfo");
 
-            Log4NetLogger.LogInfo(string.Format("开始执行排期[{0}]中{1}阶段任务", SchedulePath, ScheduledStageInfo));
+           
+            Log4NetLogger.LogInfo(string.Format("开始执行排期[{0}]中{1}阶段任务,播放列表个数为{2},循环次数为{3}", SchedulePath, ScheduledStageInfo,MediaPathList.Count,LoopCount));
 
             LEDScreenDisplayer.GetInstance().DisplayMedias(MediaPathList, LoopCount);
 

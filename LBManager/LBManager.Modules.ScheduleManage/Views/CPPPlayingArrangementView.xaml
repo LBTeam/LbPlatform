@@ -18,6 +18,10 @@
             <DockPanel LastChildFill="True">
                 <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,4">
+                        <!--<Controls:TimePicker SelectedTime="{Binding StartTime}" Width="100" Margin="0,0,10,0"
+                                             Controls:TextBoxHelper.Watermark="开始时间"/>
+                        <Controls:TimePicker SelectedTime="{Binding EndTime}" Width="100" Margin="0,0,10,0"
+                                             Controls:TextBoxHelper.Watermark="结束时间"/>-->
                         <materialDesign:TimePicker  materialDesign:HintAssist.Hint="开始时间" VerticalAlignment="Bottom"
                                                 Style="{DynamicResource MaterialDesignFloatingHintTimePicker}"
                                                 IsInvalidTextAllowed="True"
@@ -60,11 +64,11 @@
                         </Button>
                         <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25" 
                                                 ToolTip="删除媒体"
-                                                    Command="{Binding RemoveMediaCommand}">
+                                                    Command="{Binding RemoveMediaCommand}" CommandParameter="{x:Reference listBox}">
                             <materialDesign:PackIcon Kind="Minus" Height="20" Width="20"/>
                         </Button>
                     </StackPanel>
-                    <ListBox Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}" Style="{DynamicResource MaterialDesignListBox}"
+                    <ListBox Name="listBox" Grid.Row="1" ItemsSource="{Binding MediaList}" SelectedItem="{Binding CurrentMedia}" SelectionMode="Multiple" Style="{DynamicResource MaterialDesignListBox}"
                                  HorizontalContentAlignment="Stretch" PreviewKeyDown="ListBox_PreviewKeyDown">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -75,12 +79,14 @@
                                         </Style>
                                     </Grid.Resources>
                                     <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}" Grid.Column="0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding Duration}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                                    <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"  VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                                    <TextBlock Text="{Binding Name}" Grid.Column="1" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Duration}" Grid.Column="2" VerticalAlignment="Center" Margin="0,0,20,0"/>
                                     <!--<Controls:NumericUpDown x:Name="StringFormatNumUpDown"
                                                                                 Grid.Column="2"
                                                                                 Interval="1"

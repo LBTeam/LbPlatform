@@ -90,5 +90,12 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             get { return _category; }
             set { SetProperty(ref _category, value); }
         }
+
+        private bool _isSelected = false;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set { SetProperty(ref _isSelected, value); }
+        }
     }
 }

@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
@@ -37,7 +38,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             });
         }
 
-        public ScheduledStageViewModel(DisplayRegionViewModel parentViewModel,ScheduledStage stage)
+        public ScheduledStageViewModel(DisplayRegionViewModel parentViewModel, ScheduledStage stage)
         {
             MediaList.CollectionChanged += MediaList_CollectionChanged;
             StartDate = stage.StartTime;
@@ -56,7 +57,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
             CurrentMedia = _mediaList.Count == 0 ? null : _mediaList[0];
 
-            Messager.Default.EventAggregator.GetEvent<OnManualModelChangedEvent>().Subscribe(arg => 
+            Messager.Default.EventAggregator.GetEvent<OnManualModelChangedEvent>().Subscribe(arg =>
             {
                 IsManualMode = arg;
             });
@@ -65,7 +66,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         private void MediaList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             MediaCount = MediaList.Count;
-            RealTimeSpan = TimeSpan.FromSeconds(MediaList.Sum(m => m.Duration.TotalSeconds)* LoopCount);
+            RealTimeSpan = TimeSpan.FromSeconds(MediaList.Sum(m => m.Duration.TotalSeconds) * LoopCount);
         }
 
         private bool _isManualMode = false;
@@ -195,7 +196,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         //            foreach (var mediaItem in MediaList)
         //            {
         //                var currentMediaTotalTime = mediaItem.Duration.TotalSeconds * mediaItem.LoopCount;
-                        
+
         //            }
         //            break;
         //        case ArrangementMode.MixedCovered:
@@ -207,14 +208,14 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         //    }
         //}
 
-        private DelegateCommand _removeMediaCommand;
-        public DelegateCommand RemoveMediaCommand
+        private DelegateCommand<object> _removeMediaCommand;
+        public DelegateCommand<object> RemoveMediaCommand
         {
             get
             {
                 if (_removeMediaCommand == null)
                 {
-                    _removeMediaCommand = new DelegateCommand(RemoveMedia, CanRemoveMedia);
+                    _removeMediaCommand = new DelegateCommand<object>(RemoveMedia, CanRemoveMedia);
                 }
                 return _removeMediaCommand;
             }
@@ -235,21 +236,43 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         }
 
 
-        private bool CanRemoveMedia()
+        private bool CanRemoveMedia(object obj)
         {
-            return CurrentMedia == null ? false : true;
-        }
-
-        private void RemoveMedia()
-        {
-            MediaList.Remove(CurrentMedia);
-            if (MediaList.Count > 0)
+            var listBox = obj as ListBox;
+            if (listBox != null)
             {
-                CurrentMedia = MediaList[0];
+                return listBox.SelectedItems.Count == 0 ? false : true;
             }
             else
             {
-                CurrentMedia = null;
+                return CurrentMedia == null ? false : true;
+            }
+
+        }
+
+        private void RemoveMedia(object obj)
+        {
+            var listBox = obj as ListBox;
+            if (listBox != null)
+            {
+                List<MediaViewModel> removeList = new List<MediaViewModel>(); 
+                for (int index = 0; index < listBox.SelectedItems.Count; index++)
+                {
+                    removeList.Add(listBox.SelectedItems[index] as MediaViewModel);
+                }
+                foreach (var removeItem in removeList)
+                {
+                    MediaList.Remove(removeItem);
+                }
+
+                if (MediaList.Count > 0)
+                {
+                    CurrentMedia = MediaList[0];
+                }
+                else
+                {
+                    CurrentMedia = null;
+                }
             }
         }
 
@@ -306,7 +329,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         public void Cleanup()
         {
-            Messager.Default.EventAggregator.GetEvent<OnManualModelChangedEvent>().Unsubscribe(arg=> { });
+            Messager.Default.EventAggregator.GetEvent<OnManualModelChangedEvent>().Unsubscribe(arg => { });
         }
     }
 }

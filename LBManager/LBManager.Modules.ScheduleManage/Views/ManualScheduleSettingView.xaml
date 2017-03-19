@@ -5,9 +5,26 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:LBManager.Modules.ScheduleManage.Views"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" >
     <Grid DataContext="{Binding ManualScheduleSetting}">
         <StackPanel Orientation="Horizontal" Visibility="Collapsed">
+            <StackPanel Orientation="Vertical" Margin="0,0,0,4" >
+                <StackPanel Orientation="Horizontal">
+                    <DatePicker Width="100" Height="30" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="0 0 30 0"  materialDesign:HintAssist.Hint="开始日期" 
+                                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                                    SelectedDate="{Binding StartDate}"/>
+                    <xctk:DateTimeUpDown VerticalAlignment="Center" VerticalContentAlignment="Center" Watermark="开始时间"  ClipValueToMinMax="False"
+                                                   Value="{Binding StartTime}" Format="Custom" FormatString="HH:mm:ss"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <DatePicker Width="100" Height="30" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="0 0 30 0"  materialDesign:HintAssist.Hint="结束日期" 
+                                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                                    SelectedDate="{Binding EndDate}"/>
+                    <xctk:DateTimeUpDown VerticalAlignment="Center" VerticalContentAlignment="Center" Watermark="结束时间"  ClipValueToMinMax="False"
+                                                Value="{Binding EndTime}" Format="Custom" FormatString="HH:mm:ss"/>
+                </StackPanel>
+            </StackPanel>
             <DatePicker Width="100" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 30 0"  materialDesign:HintAssist.Hint="开始日期" 
                         Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
                         SelectedDate="{Binding StartDate}"/>
