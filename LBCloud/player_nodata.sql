@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2016-10-25 17:40:20
+-- Date/time:                    2017-03-22 13:48:38
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -43,6 +43,24 @@ CREATE TABLE IF NOT EXISTS `player_alarm` (
 -- Data exporting was unselected.
 
 
+-- Dumping structure for table player.player_alarm_set
+DROP TABLE IF EXISTS `player_alarm_set`;
+CREATE TABLE IF NOT EXISTS `player_alarm_set` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `screen_id` int(11) NOT NULL DEFAULT '0',
+  `cpu_usage` int(10) NOT NULL DEFAULT '0' COMMENT 'CPU使用率',
+  `disk_usage` int(10) NOT NULL DEFAULT '0' COMMENT '硬盘使用率',
+  `memory_usage` int(10) NOT NULL DEFAULT '0' COMMENT '内存使用率',
+  `cpu_temperature` int(10) NOT NULL DEFAULT '0' COMMENT 'CPU温度',
+  `fan_speed` int(10) NOT NULL DEFAULT '0' COMMENT '风扇转速',
+  `is_auto` tinyint(2) NOT NULL DEFAULT '0' COMMENT '自动告警，0-手动，1-自动',
+  `alarm_mode` tinyint(2) NOT NULL DEFAULT '1' COMMENT '告警模式，0-手机短信，1-邮件',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='告警配置';
+
+-- Data exporting was unselected.
+
+
 -- Dumping structure for table player.player_command
 DROP TABLE IF EXISTS `player_command`;
 CREATE TABLE IF NOT EXISTS `player_command` (
@@ -53,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `player_command` (
   `publish` int(11) NOT NULL DEFAULT '0' COMMENT '命令发布时间',
   `execute` int(11) NOT NULL DEFAULT '0' COMMENT '命令执行时间',
   `expired` int(11) NOT NULL DEFAULT '0' COMMENT '命令过期时间',
-  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '命令状态，0-已发布（未下发），1-已下发，2-执行成功，3-执行失败',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '命令状态，0-已发布（未下发），1-已下发，2-执行成功，3-执行失败，4-命令作废',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='命令';
 
@@ -143,6 +161,7 @@ CREATE TABLE IF NOT EXISTS `player_player` (
   `start` varchar(32) NOT NULL DEFAULT '' COMMENT '工作开始时间',
   `end` varchar(32) NOT NULL DEFAULT '' COMMENT '工作结束时间',
   `mac` varchar(20) DEFAULT '' COMMENT '播放器MAC地址',
+  `version` varchar(64) DEFAULT '' COMMENT '播放端版本号',
   `heartbeat_interval` smallint(6) DEFAULT '0' COMMENT '心跳间隔（秒）',
   `next_heartbeat` int(11) DEFAULT '0' COMMENT '下次心跳时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='播放器';
@@ -194,6 +213,7 @@ CREATE TABLE IF NOT EXISTS `player_program` (
   `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '播放方案类型，0-普通方案，7-紧急插播，8-离线方案',
   `size` varchar(20) NOT NULL DEFAULT '',
   `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '上传状态，0-未上传完成，1-上传完成',
+  `backup` tinyint(4) NOT NULL DEFAULT '0' COMMENT '备份状态，0-未备份，1-已备份',
   `publish` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
   `expired` int(11) NOT NULL DEFAULT '0' COMMENT '过期时间',
   PRIMARY KEY (`id`)
@@ -318,6 +338,20 @@ CREATE TABLE IF NOT EXISTS `player_user` (
   `expire` int(11) DEFAULT '0' COMMENT '令牌过期时间',
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table player.player_version
+DROP TABLE IF EXISTS `player_version`;
+CREATE TABLE IF NOT EXISTS `player_version` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '版本名',
+  `url` varchar(255) NOT NULL DEFAULT '' COMMENT '存储地址',
+  `version` varchar(255) NOT NULL DEFAULT '' COMMENT '版本号',
+  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='版本列表';
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
