@@ -475,6 +475,16 @@ class PlayerController extends CommonController
 			$media_model = D("Media");
 			$led_model = D("Screen");
 			$media_name = end(explode('/', str_replace('\\', '/', $obj['MediaName'])));
+			/*modify 20170324 start*/
+            $media_array = explode('.', $media_name);
+            $media_suffix = array_pop($media_array);
+            $media_array = implode('.', $media_array);
+            preg_match('/_[a-z0-9]{32}/', $media_array, $match);
+            if($match){
+                $media_array = substr($media_array, 0, -33);
+                $media_name = "{$media_array}.{$media_suffix}";
+            }
+            /*modify 20170324 end*/
 			$media_md5 = strtolower($obj['MediaMD5']);
 			$led_info = $led_model->screen_by_id($player['id']);
 			$user_id = $led_info['uid'];
