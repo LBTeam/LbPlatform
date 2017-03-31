@@ -3,7 +3,7 @@
 -- Server version:               5.6.17 - MySQL Community Server (GPL)
 -- Server OS:                    Win32
 -- HeidiSQL version:             7.0.0.4218
--- Date/time:                    2017-03-22 13:48:51
+-- Date/time:                    2017-03-31 11:12:27
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -4170,7 +4170,7 @@ CREATE TABLE IF NOT EXISTS `player_user` (
 -- Dumping data for table player.player_user: ~7 rows (approximately)
 /*!40000 ALTER TABLE `player_user` DISABLE KEYS */;
 INSERT INTO `player_user` (`uid`, `username`, `password`, `email`, `phone`, `realname`, `address`, `puid`, `status`, `type`, `is_del`, `is_full`, `lasttime`, `lastip`, `addtime`, `reg_code`, `token`, `expire`) VALUES
-	(1, '', '###1b2967588713b658dd803ed0c94d726d', '15934854815@163.com', '15934854818', '梁健', '西安软件园', 0, 0, 0, 0, 0, 1489393654, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
+	(1, '', '###1b2967588713b658dd803ed0c94d726d', '15934854815@163.com', '15934854818', '梁健', '西安软件园', 0, 0, 0, 0, 0, 1490841496, '127.0.0.1', 1472713200, '', 'c562e709afb0fa32cf9da97eb392758f4f377dc6', 1471859243),
 	(2, '', '###994db2163403c74d6cdae6a20a2d3881', 'admin@ddt123.cn', '15999999999', '管理员', '陕西省西安市高新区唐延路都市之门C座10616', 0, 0, 0, 0, 0, 1477117261, '127.0.0.1', 1474340261, '', '', 0),
 	(10, '', '###1b2967588713b658dd803ed0c94d726d', '136048525@qq.com', '15934854816', '梁健', '西安软件园', 0, 0, 1, 0, 0, 1477308696, '127.0.0.1', 1474361171, 'J6zAkThcdrkj', '', 0),
 	(11, '', '###1b2967588713b658dd803ed0c94d726d', 'liangjian@bestfu.com', '15934854815', '', '', 0, 0, 1, 0, 0, 1475032479, '127.0.0.1', 1474425987, 'CF8teK5B2fyx', '', 0),
