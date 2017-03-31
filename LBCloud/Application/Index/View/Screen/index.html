@@ -87,22 +87,22 @@
 		                            <a href="{:U('player',array('id'=>$vo['id']))}">播放器</a>
 		                            </if>
 		                            <if condition="in_array('SCREEN/PRICE', $_SESSION['_ACCESS_LIST'])">
-		                            <a href="{:U('price',array('id'=>$vo['id']))}">时段价格</a>
+		                            <a href="{:U('price',array('id'=>$vo['id']))}">价格</a>
 		                            </if>
 		                            <!--<a href="javascript:void(0);">播放记录</a>-->
 		                            <!--<if condition="$vo['online'] eq 1 AND in_array('SCREEN/MONITOR', $_SESSION['_ACCESS_LIST'])"></if>-->
 		                            <if condition="in_array('SCREEN/ALARM', $_SESSION['_ACCESS_LIST'])">
-		                            <a href="{:U('alarm',array('id'=>$vo['id']))}">告警配置</a>
+		                            <a href="{:U('alarm',array('id'=>$vo['id']))}">告警</a>
 		                            </if>
 		                            <if condition="$vo['online'] eq 1 AND in_array('SCREEN/PICTURE', $_SESSION['_ACCESS_LIST'])">
-		                            <!--<a href="{:U('picture',array('id'=>$vo['id']))}" target="_blank">监控图片</a>-->
+		                            <a href="{:U('picture',array('id'=>$vo['id']))}" target="_blank">监控</a>
 		                            </if>
 		                            <if condition="in_array('SCREEN/SETTING', $_SESSION['_ACCESS_LIST'])">
-		                            <a href="{:U('setting',array('id'=>$vo['id']))}">参数配置</a>
+		                            <a href="{:U('setting',array('id'=>$vo['id']))}">参数</a>
 		                            </if>
-		                            <if condition="$vo['online'] eq 1">
+		                            <if condition="$vo['onli	ne'] eq 1">
 			                            <if condition="in_array('SCREEN/SHUTDOWN', $_SESSION['_ACCESS_LIST'])">
-			                            <a href="{:U('shutdown?id='.$vo['id'])}">一键关屏</a>
+			                            <a href="{:U('shutdown?id='.$vo['id'])}">关屏</a>
 			                            </if>
 			                            <if condition="in_array('SCREEN/NOTIFY', $_SESSION['_ACCESS_LIST'])">
 			                            <!--<a href="{:U('notify?id='.$vo['id'])}">紧急通知</a>-->

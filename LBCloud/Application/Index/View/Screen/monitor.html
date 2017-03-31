@@ -18,9 +18,11 @@
 	<div class="panel panel-default">
 		<div class="tab-wrap  panel-body ">	    
 	 		<ul class="nav nav-tabs ">
-	 			<li><a href="{:U('alarm?id='.$_GET['id'])}">告警配置</a></li>
+				<if condition="in_array('SCREEN/ALARM', $_SESSION['_ACCESS_LIST'])">
+	 				<li><a href="{:U('alarm?id='.$_GET['id'])}">告警配置</a></li>
+				</if>
 	 			<if condition="in_array('SCREEN/MONITOR', $_SESSION['_ACCESS_LIST'])">
-				<li class="active"><a href="javascript:void(0);">监控数据</a></li>
+					<li class="active"><a href="javascript:void(0);">监控数据</a></li>
 				</if>
 			</ul>
 	        <div class="tab-content" style="padding-top: 25px;">
@@ -59,10 +61,6 @@
 		                    <else />
 		                    	<input type="text" class="form-control" value="{$monitor.Fan_speed} RPM/min" style="width: 60%;" disabled="disabled"/>
 		                    </if>
-		                </div>
-		                <div class="form-group">
-		                    <label class="item-label">监控图片</label>
-	                    	<a href="{:U('picture',array('id'=>$_GET['id']))}" target="_blank">点击查看</a>
 		                </div>
 		                <div class="form-group">
 		                    <label class="item-label">监控数据上传时间</label>

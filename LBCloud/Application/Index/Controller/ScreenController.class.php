@@ -445,6 +445,7 @@ class ScreenController extends CommonController
 				if($object){
 					$uri = $AliyunOSS->download_uri($picture_bucket, $object);
 					$this->assign("uri", $uri);
+                    $this->meta_title = "监控图片";
 					$this->display();
 				}else{
 					$this->error("播放器暂无监控图片！", "about:blank");
