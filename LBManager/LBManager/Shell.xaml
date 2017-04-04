@@ -73,14 +73,14 @@
                     </ToolBar>
                 </ToolBarTray>-->
             <!--<local:ScreenListView Margin="16,0,16,16" DataContext="{Binding ScreenList}"/>-->
-            <Grid>
+            <Grid IsEnabled="{Binding LoginStatus}"><!--,Converter={StaticResource BooleanToVisibilityConverter}-->
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
                 <!--<scheduleModule:ScheduleListView Grid.Column="0"/>-->
-                <DockPanel Grid.Column="0">
+                <DockPanel Grid.Column="0" >
                     <materialDesign:ColorZone DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Stretch"
                                               Mode="Accent" materialDesign:ShadowAssist.ShadowDepth="Depth2">
 

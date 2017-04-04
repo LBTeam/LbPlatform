@@ -238,15 +238,17 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         private bool CanRemoveMedia(object obj)
         {
-            var listBox = obj as ListBox;
-            if (listBox != null)
-            {
-                return listBox.SelectedItems.Count == 0 ? false : true;
-            }
-            else
-            {
-                return CurrentMedia == null ? false : true;
-            }
+            //var listBox = obj as ListBox;
+            //if (listBox != null)
+            //{
+            //    return listBox.SelectedItems.Count == 0 ? false : true;
+            //}
+            //else
+            //{
+            //    return CurrentMedia == null ? false : true;
+            //}
+
+            return MediaList.Any(m => m.IsSelected);
 
         }
 

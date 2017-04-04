@@ -121,9 +121,9 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="auto" />
                                     </Grid.ColumnDefinitions>
-                                    <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"  VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                                     <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="4,0"
-                                                  IsChecked="{Binding Category,Converter={StaticResource MediaCategoryToIsCheckedConverter}}">
+                                                  IsChecked="{Binding Category,Converter={StaticResource MediaCategoryToIsCheckedConverter}}"><!--RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}},-->
                                         <materialDesign:PackIcon Kind="AccountCheck" Height="16" Width="16" />
                                     </ToggleButton>
                                     <TextBlock Text="{Binding Name}" Grid.Column="2" VerticalAlignment="Center"/>
