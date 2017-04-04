@@ -18,14 +18,14 @@
             </StackPanel>
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                 <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
-                        ToolTip="获取云端排期"
+                        ToolTip="获取云端排期" Visibility="Collapsed"
                         Command="{Binding FetchBackedUpScheduleCommand}">
                     <materialDesign:PackIcon Kind="CloudDownload" Height="20" Width="20"/>
                 </Button>
             </StackPanel>
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" >
                 <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
-                        ToolTip="备份排期"
+                        ToolTip="备份排期" Visibility="Collapsed"
                         Command="{Binding BackupScheduleCommand}">
                     <materialDesign:PackIcon Kind="CloudUpload" Height="20" Width="20"/>
                 </Button>

@@ -15,7 +15,7 @@ namespace LBManager.Infrastructure.Models
         Common = 0,
         [Description("紧急插播")]
         Emergency = 7,
-        [Description("缺省方案")]
-        Default = 8
+        //[Description("缺省方案")]
+        //Default = 8
     }
 }
