@@ -91,8 +91,8 @@ namespace LBManager
         }
 
 
-        private ScheduleSummaryViewModel _selectedScheduleSummaryFile = new ScheduleSummaryViewModel();
-        public ScheduleSummaryViewModel SelectedScheduleSummaryFile
+        private ScheduleFileViewModel _selectedScheduleSummaryFile; //= new ScheduleFileViewModel();
+        public ScheduleFileViewModel SelectedScheduleSummaryFile
         {
             get { return _selectedScheduleSummaryFile; }
             set { SetProperty(ref _selectedScheduleSummaryFile, value); }
