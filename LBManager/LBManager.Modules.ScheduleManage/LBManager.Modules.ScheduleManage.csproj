@@ -122,10 +122,12 @@
     <Compile Include="ViewModels\DisplayRegionViewModel.cs" />
     <Compile Include="ViewModels\ManualScheduleSettingViewModel.cs" />
     <Compile Include="ViewModels\MediaViewModel.cs" />
+    <Compile Include="ViewModels\ScheduleDirectoryViewModel.cs" />
     <Compile Include="ViewModels\ScheduledStageViewModel.cs" />
     <Compile Include="ViewModels\ScheduleSummaryListViewModel.cs" />
-    <Compile Include="ViewModels\ScheduleSummaryViewModel.cs" />
+    <Compile Include="ViewModels\ScheduleFileViewModel.cs" />
     <Compile Include="ViewModels\ScheduleViewModel.cs" />
+    <Compile Include="ViewModels\TreeViewItemViewModel.cs" />
     <Compile Include="Views\CPMPlayingArrangementView.xaml.cs">
       <DependentUpon>CPMPlayingArrangementView.xaml</DependentUpon>
     </Compile>
