@@ -36,6 +36,10 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             {
                 IsManualMode = arg;
             });
+            Messager.Default.EventAggregator.GetEvent<MediaPlayConfigChangedEvent>().Subscribe(() =>
+            {
+                CalculateRealTimeSpan();
+            });
         }
 
         public ScheduledStageViewModel(DisplayRegionViewModel parentViewModel, ScheduledStage stage)
@@ -61,12 +65,17 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             {
                 IsManualMode = arg;
             });
+
+            Messager.Default.EventAggregator.GetEvent<MediaPlayConfigChangedEvent>().Subscribe(() =>
+            {
+                CalculateRealTimeSpan();
+            });
         }
 
         private void MediaList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             MediaCount = MediaList.Count;
-            RealTimeSpan = TimeSpan.FromSeconds(MediaList.Sum(m => m.Duration.TotalSeconds) * LoopCount);
+            CalculateRealTimeSpan();
         }
 
         private bool _isManualMode = false;
@@ -152,7 +161,25 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             set
             {
                 SetProperty(ref _loopCount, value);
-                RealTimeSpan = TimeSpan.FromSeconds(_mediaList.Sum(m => m.Duration.TotalSeconds) * _loopCount);
+                CalculateRealTimeSpan();
+            }
+        }
+
+        private void CalculateRealTimeSpan()
+        {
+            RealTimeSpan = TimeSpan.FromSeconds(_mediaList.Where(m => m.Category == MediaCategory.UserAd).Sum(m => m.Duration.TotalSeconds * m.LoopCount) * _loopCount);
+        }
+
+        private void CalaulateEffectiveTimeSpan()
+        {
+            EffectiveTimeSpan = (_stageTimeSpan.TotalSeconds - _realTimeSpan.TotalSeconds) >= 1 ? _stageTimeSpan - _realTimeSpan : TimeSpan.Zero;
+            if(_stageTimeSpan.TotalSeconds - _realTimeSpan.TotalSeconds < 0.0)
+            {
+                OvertimeTip = $"已超出时段时间 {Math.Abs(_stageTimeSpan.TotalSeconds - _realTimeSpan.TotalSeconds)} 秒";
+            }
+            else
+            {
+                OvertimeTip = string.Empty;
             }
         }
 
@@ -160,14 +187,36 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         public TimeSpan StageTimeSpan
         {
             get { return _stageTimeSpan; }
-            set { SetProperty(ref _stageTimeSpan, value); }
+            set
+            {
+                SetProperty(ref _stageTimeSpan, value);
+                CalaulateEffectiveTimeSpan();
+            }
         }
 
         private TimeSpan _realTimeSpan;
         public TimeSpan RealTimeSpan
         {
             get { return _realTimeSpan; }
-            set { SetProperty(ref _realTimeSpan, value); }
+            private set
+            {
+                SetProperty(ref _realTimeSpan, value);
+                CalaulateEffectiveTimeSpan();
+            }
+        }
+
+        private TimeSpan _effectiveTimeSpan;
+        public TimeSpan EffectiveTimeSpan
+        {
+            get { return _effectiveTimeSpan; }
+            private set { SetProperty(ref _effectiveTimeSpan, value); }
+        }
+
+        private string _overtimeTip;
+        public string OvertimeTip
+        {
+            get { return _overtimeTip; }
+            set { SetProperty(ref _overtimeTip, value); }
         }
 
         private int _mediaCount;
@@ -235,6 +284,24 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
         }
 
+        private DelegateCommand _selectedMediaChangedCommand;
+
+        public DelegateCommand SelectedMediaChangedCommand
+        {
+            get
+            {
+                if (_selectedMediaChangedCommand == null)
+                {
+                    _selectedMediaChangedCommand = new DelegateCommand(ChangeSelectedMedia);
+                }
+                return _selectedMediaChangedCommand;
+            }
+        }
+
+        private void ChangeSelectedMedia()
+        {
+            RemoveMediaCommand.RaiseCanExecuteChanged();
+        }
 
         private bool CanRemoveMedia(object obj)
         {
@@ -257,7 +324,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             var listBox = obj as ListBox;
             if (listBox != null)
             {
-                List<MediaViewModel> removeList = new List<MediaViewModel>(); 
+                List<MediaViewModel> removeList = new List<MediaViewModel>();
                 for (int index = 0; index < listBox.SelectedItems.Count; index++)
                 {
                     removeList.Add(listBox.SelectedItems[index] as MediaViewModel);

@@ -100,6 +100,7 @@
     <Compile Include="Converter\RepeatModeToVisibilityConverter.cs" />
     <Compile Include="Converter\ScheduleModeToBooleanConverter.cs" />
     <Compile Include="Converter\ScheduleModeToVisibilityConverter.cs" />
+    <Compile Include="Event\MediaPlayConfigChangedEvent.cs" />
     <Compile Include="Event\OnManualModelChangedEvent.cs" />
     <Compile Include="Event\OnScheduleTypeChangedEvent.cs" />
     <Compile Include="Event\OnTimeValidationTriggeredEvent.cs" />

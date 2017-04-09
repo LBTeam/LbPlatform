@@ -52,7 +52,7 @@
                              Grid.Row="1" Grid.Column="1" IsEnabled="False" />
                     <materialDesign:PackIcon Kind="Timelapse" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
                                              Width="30" Height="16" />
-                    <TextBox materialDesign:HintAssist.Hint="实际时段总长" Text="{Binding RealTimeSpan}" Width="120"
+                    <TextBox materialDesign:HintAssist.Hint="实际时段总长" Text="{Binding RealTimeSpan,Mode=OneWay}" Width="120"
                              VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="Black"
                              Grid.Row="1" Grid.Column="3" IsEnabled="False" />
                     <materialDesign:PackIcon Kind="ViewList" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"
@@ -60,24 +60,25 @@
                     <TextBox materialDesign:HintAssist.Hint="媒体计数" Text="{Binding MediaCount}" Width="120"
                              VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="Black"
                              Grid.Row="2" Grid.Column="1" IsEnabled="False" />
-                    <materialDesign:PackIcon Kind="Counter" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"
+                    <materialDesign:PackIcon Kind="Timelapse" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"
                                              Width="30" Height="16" />
-                    <TextBox materialDesign:HintAssist.Hint="轮播次数" Text="{Binding LoopCount}" Width="120"
+                    <TextBox materialDesign:HintAssist.Hint="可用有效时长" Text="{Binding EffectiveTimeSpan,Mode=OneWay}" Width="120"
                              VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="Black"
                              Grid.Row="2" Grid.Column="3" IsEnabled="False" />
                 </Grid>
-                <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal" Margin="8">
+                <DockPanel HorizontalAlignment="Stretch" Grid.Row="2"  Margin="8">
                     <!--<Button Style="{DynamicResource MaterialDesignToolButton}" Width="30" Padding="2 0 2 0"
                             materialDesign:RippleAssist.IsCentered="True">
                         <materialDesign:PackIcon Kind="MinusCircle"/>
                     </Button>-->
-                    <Button Style="{DynamicResource MaterialDesignToolButton}" Width="30" Padding="2 0 2 0"
+                    <TextBlock DockPanel.Dock="Left" Text="{Binding OvertimeTip}" VerticalAlignment="Center" Foreground="Red" FontSize="14" FontWeight="Bold"/>
+                    <Button DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignToolButton}" Width="30" Padding="2 0 2 0" HorizontalAlignment="Right"
                             materialDesign:RippleAssist.IsCentered="True"
                             Command="{Binding DataContext.CopyAndCreateStageCommand,RelativeSource={RelativeSource AncestorType=ListBox}}"
                             CommandParameter="{Binding DataContext, RelativeSource={RelativeSource AncestorType= UserControl}}">
                         <materialDesign:PackIcon Kind="ContentCopy" />
                     </Button>
-                </StackPanel>
+                </DockPanel>
             </Grid>
         </materialDesign:Card>
     </Grid>

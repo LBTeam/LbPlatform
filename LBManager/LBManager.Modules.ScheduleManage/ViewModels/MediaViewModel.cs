@@ -1,10 +1,12 @@
-﻿using LBManager.Infrastructure.Models;
+﻿using LBManager.Infrastructure.Common.Utility;
+using LBManager.Infrastructure.Models;
+using LBManager.Modules.ScheduleManage.Event;
 using Prism.Mvvm;
 using System;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
-    public class MediaViewModel:BindableBase
+    public class MediaViewModel : BindableBase
     {
         public MediaViewModel() { }
 
@@ -74,21 +76,33 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         public int LoopCount
         {
             get { return _loopCount; }
-            set { SetProperty(ref _loopCount, value); }
+            set
+            {
+                SetProperty(ref _loopCount, value);
+                Messager.Default.EventAggregator.GetEvent<MediaPlayConfigChangedEvent>().Publish();
+            }
         }
 
         private TimeSpan _duration = new TimeSpan(0);
         public TimeSpan Duration
         {
             get { return _duration; }
-            set { SetProperty(ref _duration, value); }
+            set
+            {
+                SetProperty(ref _duration, value);
+            }
         }
+
 
         private MediaCategory _category = MediaCategory.UserAd;
         public MediaCategory Category
         {
             get { return _category; }
-            set { SetProperty(ref _category, value); }
+            set
+            {
+                SetProperty(ref _category, value);
+                Messager.Default.EventAggregator.GetEvent<MediaPlayConfigChangedEvent>().Publish();
+            }
         }
 
         private bool _isSelected = false;
