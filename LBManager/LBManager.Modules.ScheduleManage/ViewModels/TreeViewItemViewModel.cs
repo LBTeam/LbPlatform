@@ -26,9 +26,6 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         {
             this.parent = parent;
             this.children = new ObservableCollection<TreeViewItemViewModel>();
-
-            if (lazyLoadChildren)
-                this.children.Add(DummyChild);
         }
 
         public ObservableCollection<TreeViewItemViewModel> Children
@@ -41,39 +38,39 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
         }
 
-        public bool HasDummyChild
-        {
-            get { return this.Children.Count > 0 && this.Children[0] == DummyChild; }
-        }
+        //public bool HasDummyChild
+        //{
+        //    get { return this.Children.Count > 0 && this.Children[0] == DummyChild; }
+        //}
 
-        public bool IsExpanded
-        {
-            get { return isExpanded; }
-            set
-            {
-                if (value != isExpanded)
-                {
-                    isExpanded = value;
-                    SetProperty(ref isExpanded, value);
-                }
+        //public bool IsExpanded
+        //{
+        //    get { return isExpanded; }
+        //    set
+        //    {
+        //        if (value != isExpanded)
+        //        {
+        //            isExpanded = value;
+        //            SetProperty(ref isExpanded, value);
+        //        }
 
-                if (isExpanded && parent != null)
-                    parent.isExpanded = true;
+        //        if (isExpanded && parent != null)
+        //            parent.isExpanded = true;
 
 
-                //if (isExpanded == false && !ProjectAppHelper.IsPublishViewModel)
-                //{
-                //    this.Children = new ObservableCollection<TreeViewItemViewModel>();
-                //    this.Children.Insert(0, DummyChild);
-                //}
+        //        //if (isExpanded == false && !ProjectAppHelper.IsPublishViewModel)
+        //        //{
+        //        //    this.Children = new ObservableCollection<TreeViewItemViewModel>();
+        //        //    this.Children.Insert(0, DummyChild);
+        //        //}
 
-                if (this.HasDummyChild && isExpanded == true)
-                {
-                    this.Children.Remove(DummyChild);
-                    this.LoadChildren();
-                }
-            }
-        }
+        //        if (this.HasDummyChild && isExpanded == true)
+        //        {
+        //            this.Children.Remove(DummyChild);
+        //            this.LoadChildren();
+        //        }
+        //    }
+        //}
 
         public bool IsSelected
         {
@@ -88,64 +85,64 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             }
         }
 
-        public bool? IsChecked
-        {
-            get { return isChecked; }
-            set { this.SetIsChecked(value, true, true); }
-        }
+        //public bool? IsChecked
+        //{
+        //    get { return isChecked; }
+        //    set { this.SetIsChecked(value, true, true); }
+        //}
 
-        void SetIsChecked(bool? value, bool updateChildren, bool updateParent)
-        {
-            //if (value == isChecked)
-            //    return;
+        //void SetIsChecked(bool? value, bool updateChildren, bool updateParent)
+        //{
+        //    //if (value == isChecked)
+        //    //    return;
 
-            isChecked = value;
+        //    isChecked = value;
 
-            if (updateChildren && isChecked.HasValue)
-            {
-                if (HasDummyChild)
-                {
-                    this.Children.Remove(DummyChild);
-                    this.LoadChildren();
-                }
-                this.Children.ToList().ForEach(c => c.SetIsChecked(isChecked, true, false));
-            }
+        //    if (updateChildren && isChecked.HasValue)
+        //    {
+        //        if (HasDummyChild)
+        //        {
+        //            this.Children.Remove(DummyChild);
+        //            this.LoadChildren();
+        //        }
+        //        this.Children.ToList().ForEach(c => c.SetIsChecked(isChecked, true, false));
+        //    }
 
-            if (updateParent && parent != null)
-                parent.VerifyCheckState();
+        //    if (updateParent && parent != null)
+        //        parent.VerifyCheckState();
 
 
-            SetProperty(ref isChecked,value);
+        //    SetProperty(ref isChecked,value);
 
-            //if (value == true || value == null)
-            //{
-            //    if (!this.GetType().Equals(typeof(FeelingFileViewModel)) && this.CheckedItem.Contains(this))
-            //        return;
-            //    else
-            //        this.CheckedItem.Add(this);
-            //}
-            //else
-            //    this.CheckedItem.Remove(this);
-        }
+        //    //if (value == true || value == null)
+        //    //{
+        //    //    if (!this.GetType().Equals(typeof(FeelingFileViewModel)) && this.CheckedItem.Contains(this))
+        //    //        return;
+        //    //    else
+        //    //        this.CheckedItem.Add(this);
+        //    //}
+        //    //else
+        //    //    this.CheckedItem.Remove(this);
+        //}
 
-        void VerifyCheckState()
-        {
-            bool? state = null;
-            for (int i = 0; i < this.Children.Count; ++i)
-            {
-                bool? current = this.Children[i].IsChecked;
-                if (i == 0)
-                {
-                    state = current;
-                }
-                else if (state != current)
-                {
-                    state = null;
-                    break;
-                }
-            }
-            this.SetIsChecked(state, false, true);
-        }
+        //void VerifyCheckState()
+        //{
+        //    bool? state = null;
+        //    for (int i = 0; i < this.Children.Count; ++i)
+        //    {
+        //        bool? current = this.Children[i].IsChecked;
+        //        if (i == 0)
+        //        {
+        //            state = current;
+        //        }
+        //        else if (state != current)
+        //        {
+        //            state = null;
+        //            break;
+        //        }
+        //    }
+        //    this.SetIsChecked(state, false, true);
+        //}
 
         public virtual void LoadChildren()
         {

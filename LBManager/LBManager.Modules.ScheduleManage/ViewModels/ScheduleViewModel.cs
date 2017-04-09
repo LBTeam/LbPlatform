@@ -21,8 +21,10 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
     public class ScheduleViewModel : BindableBase
     {
         private Schedule _schedule;
-        public ScheduleViewModel()
+        private string _directoryFullName;
+        public ScheduleViewModel(string directoryFullName)
         {
+            _directoryFullName = directoryFullName;
             CurrentDisplayRegion = new DisplayRegionViewModel() { Name = "Default DisplayRegion" };
             DisplayRegions.Add(CurrentDisplayRegion);
             PreviewScreenScheduleCommand = new DelegateCommand(() => { PreviewScreenSchedule(); });
@@ -35,6 +37,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
         public ScheduleViewModel(FileInfo fileInfo)
         {
+            _directoryFullName = fileInfo.DirectoryName;
             ParseScheduleFile(fileInfo.FullName);
             PreviewScreenScheduleCommand = new DelegateCommand(() => { PreviewScreenSchedule(); });
             SaveScheduleCommand = new DelegateCommand<ScheduleView>((v) => { SaveSchedule(v); }, (v) => { return CanSaveSchedule(); });
@@ -150,7 +153,7 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         private void SaveSchedule(ScheduleView view)
         {
 
-            string scheduleFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LBManager", "Media", this.Name + ".playprog");
+            string scheduleFilePath = Path.Combine(_directoryFullName, this.Name + ".playprog");
             using (StreamWriter outputFile = new StreamWriter(scheduleFilePath, false))
             {
                 _schedule = new Schedule();

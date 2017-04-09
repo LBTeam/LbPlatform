@@ -5,16 +5,19 @@ using Prism.Mvvm;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
+using System;
 
 namespace LBManager.Modules.ScheduleManage.ViewModels
 {
     public class ScheduleDirectoryViewModel : TreeViewItemViewModel
     {
         private ILoggerFacade _logger;
+        private DirectoryInfo _directoryInfo;
         public ScheduleDirectoryViewModel(DirectoryInfo directoryInfo, TreeViewItemViewModel parent)
             : base(parent, true)
         {
-            FetchSchedules(directoryInfo);
+            _directoryInfo = directoryInfo;
+            LoadChildren();
             DirectoryName = Path.GetFileName( directoryInfo.FullName);
         }
         private string _directoryName = string.Empty;
@@ -39,13 +42,27 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             ScheduleView scheduleView = new ScheduleView();
             scheduleView.Owner = Application.Current.MainWindow;
             scheduleView.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            scheduleView.DataContext = new ScheduleViewModel();
+            scheduleView.DataContext = new ScheduleViewModel(_directoryInfo.FullName);
             scheduleView.ShowDialog();
+        }
+
+        private DelegateCommand _addScheduleDirectoryCommand;
+        public DelegateCommand AddScheduleDirectoryCommand =>
+            _addScheduleDirectoryCommand ?? (_addScheduleDirectoryCommand = new DelegateCommand(AddScheduleDirectory, CanAddScheduleDirectory));
+
+        private bool CanAddScheduleDirectory()
+        {
+            return true;
+        }
+
+        private void AddScheduleDirectory()
+        {
+            
         }
 
         private DelegateCommand _deleteScheduleDirectoryCommand;
 
-        public DelegateCommand DeleteScheduleCommand
+        public DelegateCommand DeleteScheduleDirectoryCommand
         {
             get
             {
@@ -133,6 +150,11 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
         //    bool bacupResult = await _scheduleService.GetBackedUpSchedules();
         //}
 
+        public override void LoadChildren()
+        {
+            base.LoadChildren();
+            FetchSchedules(_directoryInfo);
+        }
         private void FetchSchedules(DirectoryInfo directoryInfo)
         {
             //_logger.Log("获取本机播放方案...", Category.Debug, Priority.Medium);

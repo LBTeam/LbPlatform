@@ -10,7 +10,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <DockPanel>
-        <DockPanel DockPanel.Dock="Top" >
+        <DockPanel DockPanel.Dock="Top">
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Visibility="Collapsed">
                 <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
                         ToolTip="预览排期"
@@ -32,10 +32,10 @@
                     <materialDesign:PackIcon Kind="CloudUpload" Height="20" Width="20"/>
                 </Button>
             </StackPanel>
-            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="Collapsed" >
                 <!--<Button Content="+" Width="25" Height="25" Margin="2"/>-->
                 <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
-                                ToolTip="新建排期"
+                                ToolTip="新建排期" 
                         Command="{Binding NewScheduleCommand}">
                     <materialDesign:PackIcon Kind="PlaylistPlus" Height="20" Width="20"/>
                 </Button>
@@ -51,34 +51,58 @@
                     <materialDesign:PackIcon Kind="PlaylistCheck" Height="20" Width="20"/>
                 </Button>
             </StackPanel >
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" >
+                <!--<Button Content="+" Width="25" Height="25" Margin="2"/>-->
+                <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,0,0" Height="20" Width="20"
+                                ToolTip="新建排期" VerticalAlignment="Center"
+                                Command="{Binding NewScheduleFileCommand}">
+                    <materialDesign:PackIcon Kind="PlaylistPlus" Height="16" Width="16"/>
+                </Button>
+
+                <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="5,0,4,0" Height="20" Width="20"
+                                ToolTip="添加文件夹" VerticalAlignment="Center"
+                                Command="{Binding AddScheduleDirectoryCommand}">
+                    <materialDesign:PackIcon Kind="FolderPlus" Height="16" Width="16"/>
+                </Button>
+
+            </StackPanel >
         </DockPanel>
 
-        <TreeView DockPanel.Dock="Top" ItemsSource="{Binding ScheduleWorkDirectorys}">
+        <TreeView DockPanel.Dock="Top" ItemsSource="{Binding ScheduleWorkDirectory.Children}">
             <TreeView.Resources>
-                <HierarchicalDataTemplate 
-                            DataType="{x:Type viewModels:ScheduleDirectoryViewModel}"
-                            ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate DataType="{x:Type viewModels:ScheduleDirectoryViewModel}" ItemsSource="{Binding Children}">
                     <StackPanel Orientation="Horizontal">
-                        <ContentPresenter Content="{Binding DirectoryName}"/>
-                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
-                                ToolTip="新建排期"
-                        Command="{Binding NewScheduleCommand}">
-                            <materialDesign:PackIcon Kind="PlaylistPlus" Height="20" Width="20"/>
+                        <materialDesign:PackIcon Kind="FolderOutline" Height="16" Width="16" VerticalAlignment="Center"/>
+                        <ContentPresenter Content="{Binding DirectoryName}" VerticalAlignment="Center"/>
+                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="10,0,0,0" Height="20" Width="20"
+                                ToolTip="新建排期" VerticalAlignment="Center"
+                                Command="{Binding NewScheduleFileCommand}">
+                            <materialDesign:PackIcon Kind="PlaylistPlus" Height="16" Width="16"/>
+                        </Button>
+                        
+                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="3,0,0,0" Height="20" Width="20"
+                                ToolTip="添加文件夹" VerticalAlignment="Center"
+                                Command="{Binding AddScheduleDirectoryCommand}">
+                            <materialDesign:PackIcon Kind="FolderPlus" Height="16" Width="16"/>
+                        </Button>
+                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="3,0,0,0" Height="20" Width="20"
+                                ToolTip="删除文件夹" VerticalAlignment="Center"
+                                Command="{Binding DeleteScheduleDirectoryCommand}">
+                            <materialDesign:PackIcon Kind="FolderRemove" Height="16" Width="16"/>
                         </Button>
                     </StackPanel>
                 </HierarchicalDataTemplate>
                 <DataTemplate DataType="{x:Type viewModels:ScheduleFileViewModel}">
                     <StackPanel Orientation="Horizontal">
-                        <ContentPresenter Content="{Binding FileName}"/>
-                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="0,0,4,0" Width="25" Height="25"
-                                ToolTip="删除排期"
-                        Command="{Binding DeleteScheduleCommand}">
-                            <materialDesign:PackIcon Kind="PlaylistRemove" Height="20" Width="20"/>
+                        <materialDesign:PackIcon Kind="FileOutline" Height="16" Width="16" VerticalAlignment="Center"/>
+                        <ContentPresenter Content="{Binding FileName}" VerticalAlignment="Center"/>
+                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="10,0,0,0" Height="20" Width="20"
+                                ToolTip="编辑排期" Command="{Binding EditScheduleFileCommand}">
+                            <materialDesign:PackIcon Kind="PlaylistCheck" Height="16" Width="16"/>
                         </Button>
-                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Width="25" Height="25"
-                                ToolTip="编辑排期"
-                        Command="{Binding EditScheduleCommand}">
-                            <materialDesign:PackIcon Kind="PlaylistCheck" Height="20" Width="20"/>
+                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Padding="0" Margin="3,0,0,0" Height="20" Width="20"
+                                ToolTip="删除文件" Command="{Binding DeleteScheduleFileCommand}">
+                            <materialDesign:PackIcon Kind="PlaylistRemove" Height="16" Width="16"/>
                         </Button>
                     </StackPanel>
                 </DataTemplate>

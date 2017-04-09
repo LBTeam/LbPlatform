@@ -57,25 +57,25 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
 
 
 
-        private DelegateCommand _editScheduleCommand;
+        private DelegateCommand _editScheduleFileCommand;
 
-        public DelegateCommand EditScheduleCommand
+        public DelegateCommand EditScheduleFileCommand
         {
             get
             {
-                if (_editScheduleCommand == null)
+                if (_editScheduleFileCommand == null)
                 {
-                    _editScheduleCommand = new DelegateCommand(EditSchedule, CanEditSchedule);
+                    _editScheduleFileCommand = new DelegateCommand(EditScheduleFile, CanEditScheduleFile);
                 }
-                return _editScheduleCommand;
+                return _editScheduleFileCommand;
             }
         }
-        private bool CanEditSchedule()
+        private bool CanEditScheduleFile()
         {
             return true;
         }
 
-        private void EditSchedule()
+        private void EditScheduleFile()
         {
             ScheduleView scheduleView = new ScheduleView();
             scheduleView.Owner = Application.Current.MainWindow;
@@ -84,6 +84,43 @@ namespace LBManager.Modules.ScheduleManage.ViewModels
             scheduleView.ShowDialog();
 
         }
+
+        private DelegateCommand _deleteScheduleFileCommand;
+
+        public DelegateCommand DeleteScheduleFileCommand
+        {
+            get
+            {
+                if (_deleteScheduleFileCommand == null)
+                {
+                    _deleteScheduleFileCommand = new DelegateCommand(DeleteScheduleFile, CanDeleteScheduleFile);
+                }
+                return _deleteScheduleFileCommand;
+            }
+        }
+
+        private bool CanDeleteScheduleFile()
+        {
+            return true;
+        }
+
+        private void DeleteScheduleFile()
+        {
+            if (File.Exists(_filePath))
+            {
+                File.Delete(_filePath);
+            }
+            //ScheduleSummaryList.Remove(CurrentScheduleSummary);
+            //if (ScheduleSummaryList.Count > 0)
+            //{
+            //    CurrentScheduleSummary = ScheduleSummaryList[0];
+            //}
+            //else
+            //{
+            //    CurrentScheduleSummary = null;
+            //}
+        }
+
 
         public DelegateCommand PreviewScreenScheduleCommand { get; private set; }
     }
