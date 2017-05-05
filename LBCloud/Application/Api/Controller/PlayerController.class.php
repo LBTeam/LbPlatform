@@ -15,6 +15,11 @@ class PlayerController extends CommonController
 	private $program_bucket;
 	public function _initialize(){
 		$request = file_get_contents('php://input');
+		$temp = CONTROLLER_NAME."/".ACTION_NAME;
+		if($temp == "Player/monitor"){
+			file_put_contents('./1.log', CONTROLLER_NAME."/".ACTION_NAME."\r\n", FILE_APPEND);
+        	file_put_contents('./1.log', $request."\r\n\r\n", FILE_APPEND);
+		}
 		$this->param = json_decode($request, true);
 		/*$this->param = array(
 			'Id' => "deMkPdrk",
@@ -360,6 +365,7 @@ class PlayerController extends CommonController
 		$bind_id	= $obj['Id'];
 		$bind_key	= $obj['Key'];
 		$mac		= strtoupper(str_replace(':', '-', $obj['Mac']));
+		//file_put_contents('./1.log', json_encode($obj)."\r\n", FILE_APPEND);
 		$player_model = D("Player");
 		$player = $player_model->player_by_bind($bind_id, $bind_key, "id,mac");
 		if($mac == $player['mac']){

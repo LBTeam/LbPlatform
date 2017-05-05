@@ -348,4 +348,44 @@ class IndexController extends CommonController {
         $expiration = substr($expiration, 0, $pos);
         return $expiration."Z";
     }
+	
+	public function ajax_media_record(){
+		$model = D("Record");
+		$search = array();
+		$search['media'] = $_GET['sSearch_0'];
+		$search['name'] = $_GET['sSearch_1'];
+		$search['start'] = $_GET['sSearch_2'];
+		$search['end'] = $_GET['sSearch_3'];
+		$page_from = $_GET['iDisplayStart'];
+		$page_size = $_GET['iDisplayLength'];
+		//数据列表
+		$result = $model->search_page_record(ADMIN_UID, $search, $page_from, $page_size);
+		//查询记录数
+		$iTotal = $model->search_record_count(ADMIN_UID, $search);
+		//所有记录数
+		$iiTotal = $model->all_record_count(ADMIN_UID);
+		
+		$output = array(
+				"sEcho" => intval($_GET['sEcho']),
+				"iTotalRecords" => $iiTotal,
+				"iTotalDisplayRecords" => $iTotal,
+				"aaData" => array()
+		);
+		
+		$nRow = array();
+		foreach($result as $val){
+			$nRow[] = array(
+				$val['id'],
+				$val['media_name'],
+				$val['s_name'],
+				$val['email'] ? $val['email'] : $val['phone'],
+				$val['start'],
+				$val['end'],
+				date("Y-m-d H:i:s", $val['addtime']),
+			);
+		}
+		$output['aaData'] = $nRow;
+		echo json_encode($output);
+		exit;
+	}
 }

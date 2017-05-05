@@ -11,20 +11,28 @@ class RecordController extends CommonController
 	public function index(){
 		$media = I("media", "");
 		$name = I("name", "");
+		$start = I("start", "");
+		$end = I("end", "");
 		$rc_model = D("Record");
-		$list = $rc_model->record_by_uid(ADMIN_UID, $media, $name);
+		$list = $rc_model->record_by_uid(ADMIN_UID, $media, $name, $start, $end);
 		$this->meta_title = "播放记录";
 		$this->assign("list", $list);
 		$this->assign("media", $media);
 		$this->assign("name", $name);
+		$this->assign("start", $start);
+		$this->assign("end", $end);
 		$this->display();
 	}
 	
 	public function export(){
+		set_time_limit(0);	//执行时间
+		ini_set('memory_limit', '512M'); //设置内存
 		$media = I("media", "");
 		$name = I("name", "");
+		$start = I("start", "");
+		$end = I("end", "");
 		$rc_model = D("Record");
-		$list = $rc_model->record_by_uid(ADMIN_UID, $media, $name);
+		$list = $rc_model->record_by_uid(ADMIN_UID, $media, $name, $start, $end);
 		$datas = array();
 		foreach($list as $val){
 			$temp = $val['email'] ? $val['email'] : $val['phone'];

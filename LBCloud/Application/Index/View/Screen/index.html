@@ -100,7 +100,7 @@
 		                            <if condition="in_array('SCREEN/SETTING', $_SESSION['_ACCESS_LIST'])">
 		                            <a href="{:U('setting',array('id'=>$vo['id']))}">参数</a>
 		                            </if>
-		                            <if condition="$vo['onli	ne'] eq 1">
+		                            <if condition="$vo['online'] eq 1">
 			                            <if condition="in_array('SCREEN/SHUTDOWN', $_SESSION['_ACCESS_LIST'])">
 			                            <a href="{:U('shutdown?id='.$vo['id'])}">关屏</a>
 			                            </if>
