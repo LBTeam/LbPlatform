@@ -44,7 +44,7 @@ class RecordController extends CommonController
 			"播放结束时间",
 			"记录上传时间"
 		);
-		$filename = "Lbcloud媒体播放记录";
+		$filename = "AIMCloud媒体播放记录";
 		$this->_export_to_excel($datas, $titles, $filename);
 	}
 	

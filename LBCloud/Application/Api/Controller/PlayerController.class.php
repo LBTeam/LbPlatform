@@ -15,20 +15,22 @@ class PlayerController extends CommonController
 	private $program_bucket;
 	public function _initialize(){
 		$request = file_get_contents('php://input');
-		$temp = CONTROLLER_NAME."/".ACTION_NAME;
-		if($temp == "Player/monitor"){
-			file_put_contents('./1.log', CONTROLLER_NAME."/".ACTION_NAME."\r\n", FILE_APPEND);
-        	file_put_contents('./1.log', $request."\r\n\r\n", FILE_APPEND);
-		}
 		$this->param = json_decode($request, true);
 		/*$this->param = array(
 			'Id' => "deMkPdrk",
 			'Key' => 'sU3PjNesZ3f4KqXg',
 			'Mac' => '4C-CC-6A-05-70-7B'
 		);*/
-		if(empty($this->param) === true){
-			$respones = array('err_code'=>'010001', 'msg'=>"Protocol content error");
-			$this->ajaxReturn($respones);exit;
+		if(in_array(ACTION_NAME, array('version'))){
+			//空请求数据可访问模块
+			
+		}else{
+			//检查请求数据
+			if(empty($this->param) === true){
+				$respones = array('err_code'=>'010001', 'msg'=>"Protocol content error");
+				$this->ajaxReturn($respones);
+				exit;
+			}
 		}
 		$this->media_bucket = C("oss_media_bucket");
 		$this->program_bucket = C("oss_program_bucket");
@@ -601,6 +603,22 @@ class PlayerController extends CommonController
 	}
 
 	/**
+	 * 版本控制
+	 */
+	public function version()
+	{
+		$_model = D("Version");
+		$package = $_model->last_package();
+		$_resp = array(
+			"version"	=> $package['version'],
+			"url"		=> $package['url'],
+			"mandatory"	=> false
+		);
+		$respones = array("err_code"=>"000000","msg"=>"ok","data"=>$_resp);
+		$this->ajaxReturn($respones);
+	}
+
+	/**
 	 * 告警
 	 */
 	private function _do_alarm($screen_id, $alarms){
@@ -682,7 +700,7 @@ class PlayerController extends CommonController
 							$msg .= "　{$val['title']}：【配置值：{$val['set']}，告警值：{$val['now']}】<br />";
 						}
 						if($msg){
-							$title = "LbCloud播放器告警通知";
+							$title = "AIMCloud播放器告警通知";
 							$info = "屏幕名称：{$led['name']}<br />";
 							$info .= "屏幕状态：告警<br />";
 							$info .= "告警项：<br />";

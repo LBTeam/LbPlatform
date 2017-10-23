@@ -236,7 +236,7 @@ class IndexController extends CommonController {
 							foreach($msgs as $val){
 								$msg .= "　{$val['title']}：【配置值：{$val['set']}，告警值：{$val['now']}】<br />";
 							}
-							$title = "LbCloud播放器告警通知";
+							$title = "AIMCloud播放器告警通知";
 							$info = "屏幕名称：{$led['name']}<br />";
 							$info .= "屏幕状态：告警<br />";
 							$info .= "告警项：<br />";

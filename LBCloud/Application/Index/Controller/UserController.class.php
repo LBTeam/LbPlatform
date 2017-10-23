@@ -479,7 +479,8 @@ class UserController extends CommonController {
         	$map2['puid'] = array('in', $id);
         	$temp2 = $user_model->where($map2)->count();
         	if($temp2 == 0){
-        		if($user_model->where($map)->setField("is_del", 1)){
+        		//if($user_model->where($map)->setField("is_del", 1)){
+    			if($user_model->where($map)->del()){
 		            $this->success('删除成功');
 		        } else {
 		            $this->error('删除失败！');
