@@ -114,4 +114,23 @@ class CommandModel extends Model
 		}
 		return true;
 	}
+	
+	/**
+	 * 根据ID获取命令
+	 */
+	public function cmd_by_id($id, $field='*'){
+		$map = array('id' => $id);
+		return $this->field($field)->where($map)->find();
+	}
+	
+	/**
+	 * 根据SCREEN ID获取命令
+	 */
+	public function cmd_by_sid($screen_id, $type=0, $status=0){
+		$map = array();
+		$map['screen_id'] = $screen_id;
+		$map['type'] = $type;
+		$map['status'] = $status;
+		return $this->where($map)->find();
+	}
 }

@@ -80,7 +80,7 @@ class AliyunOSS
 	 * @param $timeout 下载地址有效时间（秒）
 	 * @return string
 	 */
-	public function download_uri($bucket, $object, $timeout=1200){
+	public function download_uri($bucket, $object, $timeout=3600){
 		try {
 			$uri = $this->client->signUrl($bucket, $object, $timeout);
 			return $uri;

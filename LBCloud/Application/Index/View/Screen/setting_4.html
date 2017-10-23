@@ -31,11 +31,11 @@
                 </div>
                 <div class="form-group">
                     <label class="item-label ">开启软件时间</label> 
-                    <input type="text" class="form-control" name="soft_enable" value="{$info.soft_enable}" style="width: 50%;" readonly />
+                    <input type="text" class="form-control" name="soft_enable" style="width: 50%;" readonly />
                 </div>
                 <div class="form-group">
                     <label class="item-label ">关闭软件时间</label> 
-                    <input type="text" class="form-control" name="soft_disable" value="{$info.soft_disable}" style="width: 50%;" readonly />
+                    <input type="text" class="form-control" name="soft_disable" style="width: 50%;" readonly />
                 </div>
                 <div class="form-group">
                     <label class="item-label"></label>
@@ -64,10 +64,9 @@
 <block name="script">
 <link href="__STATIC__/datetimepicker/css/bootstrap.css" rel="stylesheet" media="screen">
 <link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" media="screen">
-<script src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+<script src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.time.js" charset="UTF-8"></script>
 <script src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
 <script type="text/javascript">
-Think.setValue("time_switch", {$info.time_switch|default = 1});
 $(window).load(function()
 {
     $("input[name='soft_enable']").datetimepicker({		
@@ -80,8 +79,8 @@ $(window).load(function()
 		todayHighlight: true,
 		startView: 1,
 		minView: 0,
-		maxView: 1,
-		forceParse: false
+		maxView: 0,
+		forceParse: true
     });
     $("input[name='soft_disable']").datetimepicker({
     	language: 'zh-CN',
@@ -93,8 +92,11 @@ $(window).load(function()
 		startView: 1,
 		minView: 0,
 		maxView: 1,
-		forceParse: false
+		forceParse: true
     });
 });
+Think.setValue("time_switch", "{$info.time_switch|default = 1}");
+Think.setValue("soft_enable", "{$info.soft_enable|default = ''}");
+Think.setValue("soft_disable", "{$info.soft_disable|default = ''}");
 </script>
 </block>

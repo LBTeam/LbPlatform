@@ -290,7 +290,7 @@ class UserController extends CommonController {
 				array('password', "/^[A-Za-z0-9]{6,16}$/", '密码格式错误'),
 				array('re_password','password','两次输入密码不一致',0,'confirm')
 			);
-			if(is_administrator()){
+			if(is_administrator() || $user_model->is_root(ADMIN_UID)){
 				$rules[] = array('puid','require','请选择上级代理商');
 			}
 			if($user_model->validate($rules)->create()){
@@ -324,8 +324,8 @@ class UserController extends CommonController {
 				$this->error($user_model->getError());
 			}
     	}else{
-    		if(is_administrator()){
-    			$user_model = D("User");
+    		$user_model = D("User");
+    		if(is_administrator() || $user_model->is_root(ADMIN_UID)){
     			$agents = $user_model->all_agents();
     			$this->assign("is_admin", 1);
     			$this->assign("agents", $agents);
@@ -352,7 +352,7 @@ class UserController extends CommonController {
 				array('password', "/^[A-Za-z0-9]{6,16}$/", '密码格式错误',2),
 				array('re_password','password','两次输入密码不一致',0,'confirm')
 			);
-			if(is_administrator()){
+			if(is_administrator() || $user_model->is_root(ADMIN_UID)){
 				$rules[] = array('puid','require','请选择上级代理商');
 			}
 			if($user_model->validate($rules)->create()){
@@ -381,7 +381,7 @@ class UserController extends CommonController {
     		$field = "uid,email,phone,realname,address,puid,status";
 			$info = $user_model->user_by_id($id, $field);
 			if($info){
-				if(is_administrator()){
+				if(is_administrator() || $user_model->is_root(ADMIN_UID)){
 	    			$agents = $user_model->all_agents();
 	    			$this->assign("is_admin", 1);
 	    			$this->assign("agents", $agents);

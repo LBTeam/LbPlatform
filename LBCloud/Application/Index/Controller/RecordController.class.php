@@ -9,18 +9,7 @@ namespace Index\Controller;
 class RecordController extends CommonController
 {
 	public function index(){
-		$media = I("media", "");
-		$name = I("name", "");
-		$start = I("start", "");
-		$end = I("end", "");
-		$rc_model = D("Record");
-		$list = $rc_model->record_by_uid(ADMIN_UID, $media, $name, $start, $end);
 		$this->meta_title = "播放记录";
-		$this->assign("list", $list);
-		$this->assign("media", $media);
-		$this->assign("name", $name);
-		$this->assign("start", $start);
-		$this->assign("end", $end);
 		$this->display();
 	}
 	
@@ -98,6 +87,7 @@ class RecordController extends CommonController
 		}
 		/* 生成到浏览器，提供下载 */
 		ob_end_clean();  //清空缓存
+		//ob_clean();
 		header("Pragma: public");
 		header("Expires: 0");
 		header("Cache-Control:must-revalidate,post-check=0,pre-check=0");
@@ -108,5 +98,12 @@ class RecordController extends CommonController
 		header('Content-Disposition:attachment;filename="'.$filename.'.xlsx"');
 		header("Content-Transfer-Encoding:binary");
 		$objWriter->save('php://output');
+		/*
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+		header('Cache-Control: max-age=0');
+		$objWriter->save('php://output');
+		exit;
+		*/
 	}
 }

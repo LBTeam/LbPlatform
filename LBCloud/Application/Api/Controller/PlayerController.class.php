@@ -147,6 +147,7 @@ class PlayerController extends CommonController
 								$medias[] = array(
 									'MediaId'	=> $media['id'],
 									'MediaName'	=> $media_name,
+									'MediaMD5'	=> $v['MediaMD5'],
 									'MediaUrl'	=> $AliyunOSS->download_uri($this->media_bucket, $media['object'])
 								);
 							}
@@ -157,6 +158,7 @@ class PlayerController extends CommonController
 							$cmdParam = array(
 								'ProgramId'		=> $plan['id'],
 								'ProgramName'	=> $plan_name,
+								'ProgramMD5'	=> $plan['md5'],
 								'ProgramUrl'	=> $AliyunOSS->download_uri($this->program_bucket, $plan['object']),
 								'Medias'		=> $medias
 							);
@@ -241,6 +243,7 @@ class PlayerController extends CommonController
 								$medias[] = array(
 									'MediaId'	=> $media['id'],
 									'MediaName'	=> $media_name,
+									'MediaMD5'	=> $v['MediaMD5'],
 									'MediaUrl'	=> $AliyunOSS->download_uri($this->media_bucket, $media['object'])
 								);
 							}
@@ -276,6 +279,7 @@ class PlayerController extends CommonController
 								$medias[] = array(
 									'MediaId'	=> $media['id'],
 									'MediaName'	=> $media_name,
+									'MediaMD5'	=> $v['MediaMD5'],
 									'MediaUrl'	=> $AliyunOSS->download_uri($this->media_bucket, $media['object'])
 								);
 							}
@@ -448,15 +452,59 @@ class PlayerController extends CommonController
 		if($mac == $player['mac']){
 			$cmd_id = $obj['CmdId'];
 			$cmd_res = $obj['CmdRes'];
-			if($cmd_id){
-				$cmd_model = D("Command");
-				$map = array("id" => $cmd_id);
-				$status = $cmd_res ? 2 : 3;
-				$res = $cmd_model->where($map)->setField("status", $status);
-				if($res !== false){
-					$respones = array("err_code"=>"000000","msg"=>"ok");
+			if(is_numeric($cmd_id)){
+				if($cmd_id){
+					$cmd_model = D("Command");
+					if($cmd_res){
+						//true为命令执行成功
+						$map = array("id" => $cmd_id);
+						$res = $cmd_model->where($map)->setField("status", 2);
+						if($res !== false){
+							$respones = array("err_code"=>"000000","msg"=>"ok");
+						}else{
+							$respones = array("err_code"=>"020402","msg"=>"failure");
+						}
+					}else{
+						//false为命令执行失败
+						$cmd = $cmd_model->cmd_by_id($cmd_id, "screen_id,type,param");
+						$have_new = $cmd_model->cmd_by_sid($cmd['screen_id'], $cmd['type']);
+						if($have_new){
+							//有新的同类型命令，更改命令执行结果为失败
+							$map = array("id" => $cmd_id);
+							$res = $cmd_model->where($map)->setField("status", 3);
+							if($res !== false){
+								$respones = array("err_code"=>"000000","msg"=>"ok");
+							}else{
+								$respones = array("err_code"=>"020402","msg"=>"failure");
+							}
+						}else{
+							//没有新的同类型命令，更改命令执行结果为失败并重新发布命令
+							$cmd_data = array(
+								'screen_id'	=> $cmd['screen_id'],
+								'type'		=> $cmd['type'],
+								'param'		=> $cmd['param'],
+								'publish'	=> NOW_TIME,
+								'execute'	=> NOW_TIME,
+								'expired'	=> NOW_TIME,
+								'status'	=> 0
+							);
+							$m = new \Think\Model();
+							$m->startTrans();
+							$map = array("id" => $cmd_id);
+							$res = $cmd_model->where($map)->setField("status", 3);
+							$cmd_add = $cmd_model->add($cmd_data);
+							if($res !== false && $cmd_add){
+								$m->commit();
+								$respones = array("err_code"=>"000000","msg"=>"ok");
+							}else{
+								$m->rollback();
+								$respones = array("err_code"=>"020402","msg"=>"failure");
+							}
+						}
+					}
 				}else{
-					$respones = array("err_code"=>"020402","msg"=>"failure");
+					//cmd_id为0，长连接重连
+					$respones = array("err_code"=>"000000","msg"=>"ok");
 				}
 			}else{
 				$respones = array("err_code"=>"020401","msg"=>"Command id error");
